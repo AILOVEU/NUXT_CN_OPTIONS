@@ -1,4 +1,7 @@
 import { fields_dict } from "~/data";
+import csvtojson from "csvtojson";
+import iconvLite from "iconv-lite";
+import fs from "fs";
 function handleData(dataList) {
   let all_data = [];
   dataList.forEach((item) => {
@@ -18,7 +21,7 @@ function handleData(dataList) {
     data["正股"] = call_item["正股"];
     data["到期日"] = call_item["到期日"];
     data["行权价"] = call_item["行权价"];
-
+    data["正股价格"] = call_item["正股价格"];
     all_data.push(data);
   });
   all_data.sort(function (a, b) {
@@ -40,7 +43,26 @@ function get_最新价(row) {
     return Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
   return 最新价;
 }
+function get_持仓(持仓JSON, line_dict) {
+  let target = 持仓JSON.find((item) => item["名称"] === line_dict["期权名称"]);
+  if (!target) return 0;
+  let 持仓 = +target["持仓"];
+  return target["持仓类别"] === "义务仓" ? -持仓 : 持仓;
+}
+async function get_持仓JSON() {
+  const converterStream = fs
+    .createReadStream("server\\api\\持仓.csv")
+    .pipe(iconvLite.decodeStream("gbk"));
+  return new Promise((resolve) => {
+    csvtojson()
+      .fromStream(converterStream)
+      .then((res) => {
+        resolve(res);
+      });
+  });
+}
 export default eventHandler(async (event) => {
+  let 持仓JSON = await get_持仓JSON();
   let curr_page = 1;
   let all_data = [];
   while (curr_page < 50) {
@@ -73,6 +95,10 @@ export default eventHandler(async (event) => {
         line_dict[fields_dict[key]] = _[key];
       });
       line_dict["最新价"] = get_最新价(line_dict);
+      line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
+      line_dict["成本价"] =
+        持仓JSON.find((item) => item["名称"] === line_dict["期权名称"])
+          ?.开仓均价 || undefined;
       all_data.push(line_dict);
     });
   }

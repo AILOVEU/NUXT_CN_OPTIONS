@@ -5,7 +5,7 @@
   >
     <div class="p-[12px]">{{ 买一 }}</div>
     <div class="w-[60px] flex flex-col items-center">
-      <div class="w-full text-center">{{ 差价 }}</div>
+      <div class="w-full text-center border-b-[1px]">{{ 差价 }}</div>
 
       <div class="w-full text-center">
         <el-tag type="primary">{{ 最新价 }}</el-tag>

@@ -10,6 +10,7 @@
     stripe
     highlight-current-row
     height="800px"
+    :row-class-name="getRowClassName"
   >
     <el-table-column
       v-for="key in tableData.columns"
@@ -32,6 +33,12 @@
       <template #default="{ row }" v-if="key.includes('_合约')">
         <Options :row="row" :isCall="key.includes('C')" />
       </template>
+      <template #default="{ row }" v-if="key.includes('_价值')">
+        <Time :row="row" :isCall="key.includes('C')" />
+      </template>
+      <template #default="{ row }" v-if="key.includes('_持仓')">
+        <Hold :row="row" :isCall="key.includes('C')" />
+      </template>
     </el-table-column>
   </el-table>
 </template>
@@ -40,12 +47,28 @@ const fixedCols = ["C_价格", "期权", "P_价格"];
 const tableData = reactive({
   data: [],
   loading: false,
-  columns: ["C_合约", "C_信息", "C_价格", "期权", "P_价格", "P_信息", "P_合约"],
+  columns: [
+    "C_合约",
+    "C_价值",
+    "C_信息",
+    'C_持仓',
+    "C_价格",
+    "期权",
+    "P_价格",
+    'P_持仓',
+    "P_信息",
+    "P_价值",
+    "P_合约",
+  ],
 });
 async function refresh() {
   tableData.loading = true;
   const res = await useFetch("/api/queryOps");
   tableData.data = res.data.value || [];
   tableData.loading = false;
+}
+
+function getRowClassName(){
+  
 }
 </script>

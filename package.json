@@ -13,8 +13,11 @@
     "@element-plus/icons-vue": "^2.3.2",
     "@element-plus/nuxt": "1.1.4",
     "@nuxtjs/supabase": "^1.6.1",
+    "csvtojson": "^2.0.10",
     "element-plus": "^2.11.1",
+    "iconv-lite": "^0.7.0",
     "nuxt": "^4.0.3",
+    "nuxt-lodash": "^2.5.3",
     "vue": "^3.5.20",
     "vue-router": "^4.5.1"
   },
