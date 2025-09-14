@@ -1,7 +1,10 @@
 <template>
-  <div>
+  <div v-if="!props.row?._split  && !props.row?._current">
     <div>{{ 正股 }}</div>
     <div>{{ 到期日 }}{{ 行权价 }}</div>
+  </div>
+  <div v-else>
+    {{ 行权价 }}
   </div>
 </template>
 <script setup>

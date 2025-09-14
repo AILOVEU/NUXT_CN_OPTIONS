@@ -1,12 +1,8 @@
 <template>
-  <div>
+  <div v-if="!props.row?._split && !props.row?._current">
     <div class="flex justify-between w-full border-b-[1px]">
-      <div>
-        <el-tag type="info" size="small">时</el-tag>{{ 时间价值 }}
-      </div>
-      <div>
-        <el-tag type="info" size="small">实</el-tag>{{ 实值价值 }}
-      </div>
+      <el-tag type="info" size="small">时</el-tag><div :style="{color: 时间价值 < 0 ? 'red' : ''}">{{ 时间价值 }}</div>
+      <el-tag type="info" size="small">实</el-tag><div>{{ 实值价值 }}</div>
     </div>
     <div>
       {{ 最新价 }}

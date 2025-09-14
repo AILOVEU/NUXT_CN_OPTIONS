@@ -1,9 +1,10 @@
-import { fields_dict } from "~/data";
+import { fields_dict,stock_sort_map } from "~/data";
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
 import fs from "fs";
 function handleData(dataList) {
   let all_data = [];
+  let 正股价格_dict = {};
   dataList.forEach((item) => {
     // 期权名称含有沽
     if (item["期权名称"].includes("沽")) return;
@@ -22,17 +23,38 @@ function handleData(dataList) {
     data["到期日"] = call_item["到期日"];
     data["行权价"] = call_item["行权价"];
     data["正股价格"] = call_item["正股价格"];
+    正股价格_dict[data["正股"]] = data["正股价格"];
     all_data.push(data);
   });
+  const 正股List = Array.from(new Set(all_data.map((el) => el.正股)));
+  const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
+  const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
+  行权价List.sort();
+  正股List.forEach((正股) => {
+    到期日List.forEach((到期日) => {
+      all_data.push({
+        _current: true,
+        正股,
+        到期日,
+        行权价: 正股价格_dict[正股],
+      });
+      all_data.push({
+        _split: true,
+        正股,
+        到期日,
+        行权价: 行权价List[行权价List.length - 1],
+      });
+    });
+  });
+
   all_data.sort(function (a, b) {
-    // 默认根据年龄排序，相同则按照id排序
     if (a["正股"] === b["正股"]) {
       if (a["到期日"] === b["到期日"]) {
         return a["行权价"] - b["行权价"];
       }
       return a["到期日"] - b["到期日"];
     }
-    return b["正股"] - a["正股"];
+    return stock_sort_map[b["正股"]] - stock_sort_map[a["正股"]];
   });
   return all_data;
 }
@@ -51,7 +73,7 @@ function get_持仓(持仓JSON, line_dict) {
 }
 async function get_持仓JSON() {
   const converterStream = fs
-    .createReadStream("server\\api\\持仓.csv")
+    .createReadStream("public\\持仓.csv")
     .pipe(iconvLite.decodeStream("gbk"));
   return new Promise((resolve) => {
     csvtojson()
@@ -76,12 +98,13 @@ export default eventHandler(async (event) => {
         np: "1",
         fltt: "2",
         invt: "2",
-        ut: "fa5fd1943c7b386f172d6893dbfba10c",
+        ut: "fa5fd1943c7b386f172d6193dbfba10c",
         fields: Object.keys(fields_dict).join(","),
         wbp2u: "|0|1|0|web",
-        _: "1739763465333",
-        fs: "m:10+c:510050",
+        _: "1739763465633",
+        // fs: "m:10+c:510050",
         // fs: "m:10,m:12",
+        fs: "m:10",
       },
     });
     if (!res["data"]) {
@@ -102,5 +125,6 @@ export default eventHandler(async (event) => {
       all_data.push(line_dict);
     });
   }
+  console.log("接口查询完成");
   return handleData(all_data);
 });

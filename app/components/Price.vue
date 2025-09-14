@@ -2,9 +2,10 @@
   <div
     class="flex items-center flex-row-reverse justify-center"
     :style="{ flexDirection: props.isCall ? 'row' : 'row-reverse' }"
+    v-if="!props.row?._split  && !props.row?._current"
   >
     <div class="p-[12px]">{{ 买一 }}</div>
-    <div class="w-[60px] flex flex-col items-center">
+    <div class="w-[55px] flex flex-col items-center">
       <div class="w-full text-center border-b-[1px]">{{ 差价 }}</div>
 
       <div class="w-full text-center">

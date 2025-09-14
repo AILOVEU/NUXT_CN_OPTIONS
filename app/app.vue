@@ -7,3 +7,8 @@
 </template>
 <script setup>
 </script>
+<style lang="less">
+// *{
+//   color: black;
+// }
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-2 gap-[3px]">
+  <div class="grid grid-cols-2 gap-[3px]" v-if="!props.row?._split  && !props.row?._current">
     <div>
       <el-tag type="info" size="small">隐波</el-tag>{{ 隐波.toFixed(2) }}
     </div>
