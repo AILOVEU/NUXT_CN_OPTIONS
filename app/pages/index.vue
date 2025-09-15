@@ -109,13 +109,14 @@ function getCellStyle({ column, row }) {
   // 红 | 绿
   // -------
   // 绿 | 红
-  const 实值style = { backgroundColor: "rgba(228,8,10,0.02)" };
-  const 虚值style = { backgroundColor: "rgba(73,253,2,0.02)" };
-  if (row["行权价"] > row["正股价格"]) {
-    return column?.["property"]?.includes("C_") ? 虚值style : 实值style;
-  } else {
-    return column?.["property"]?.includes("C_") ? 实值style : 虚值style;
-  }
+  const 实值style = { backgroundColor: "rgb(255, 220, 220)" };
+  const 虚值style = { backgroundColor: "rgb(190, 220, 190)" };
+  // if (row["行权价"] > row["正股价格"]) {
+  //   return column?.["property"]?.includes("C_") ? 虚值style : 实值style;
+  // } else {
+  //   return column?.["property"]?.includes("C_") ? 实值style : 虚值style;
+  // }
+  return {}
 }
 function getRowStyle({ row }) {
   return {};
@@ -135,4 +136,7 @@ function getRowStyle({ row }) {
 .el-radio-button {
   flex: 1;
 }
+// .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
+//   border: 0;
+// }
 </style>

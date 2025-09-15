@@ -8,7 +8,7 @@
 <script setup>
 </script>
 <style lang="less">
-// *{
-//   color: black;
-// }
+div{
+  color: black;
+}
 </style>

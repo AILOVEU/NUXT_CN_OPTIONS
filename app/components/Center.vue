@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!props.row?._split  && !props.row?._current">
+  <div v-if="!props.row?._split && !props.row?._current">
     <div>{{ 正股 }}</div>
-    <div>{{ 到期日 }}{{ 行权价 }}</div>
+    <div>{{ 到期日 }}{{ 行权价 }} ({{ 溢价Str }})</div>
   </div>
   <div v-else>
     {{ 行权价 }}
@@ -21,5 +21,13 @@ const 到期日 = computed(() => {
 });
 const 行权价 = computed(() => {
   return props.row["行权价"] * 1000;
+});
+
+const 正股价格 = computed(() => {
+  return props.row["正股价格"] * 1000;
+});
+
+const 溢价Str = computed(() => {
+  return (100*(行权价.value - 正股价格.value) / 正股价格.value).toFixed(2) + '%';
 });
 </script>
