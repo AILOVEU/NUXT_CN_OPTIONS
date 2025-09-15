@@ -82,9 +82,24 @@ async function refresh() {
   tableData.data = res.data.value || [];
   tableData.loading = false;
 }
-
+const 行权价RangeDict = reactive({
+  上证50ETF: [2800, 3400],
+  沪深300ETF: [4000, 5000],
+  中证500ETF: [5500, 8000],
+  科创50ETF: [1000, 1600],
+  科创板50ETF: [1000, 1600],
+});
 const filteredTableData = computed(() => {
-  return tableData.data.filter((el) => el["正股"] === stockName.value);
+  return tableData.data.filter((el) => {
+    if (el["正股"] !== stockName.value) return false;
+    if (el["C持仓"] || el["P持仓"]) return true;
+    if (el["期权"]?.includes("A")) return false;
+    if (el._current || el._split) return true;
+    return (
+      el["行权价"] * 1000 >= 行权价RangeDict[stockName.value][0] &&
+      el["行权价"] * 1000 <= 行权价RangeDict[stockName.value][1]
+    );
+  });
 });
 
 function getCellStyle({ column, row }) {
@@ -113,11 +128,11 @@ function getRowStyle({ row }) {
 .el-table--small .el-table__cell {
   padding: 2px 0;
 }
-.el-radio-group{
+.el-radio-group {
   justify-content: center;
   width: 100%;
 }
-.el-radio-button{
+.el-radio-button {
   flex: 1;
 }
 </style>
