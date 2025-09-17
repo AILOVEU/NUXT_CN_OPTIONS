@@ -105,7 +105,14 @@ const filteredTableData = computed(() => {
 function getCellStyle({ column, row }) {
   if (row?.["_current"]) return {};
   if (row?.["_split"]) return { backgroundColor: "black", color: "black" };
-  if (column?.["property"] === "期权") return { backgroundColor: "#ccc" };
+  if (column?.["property"] === "期权")
+    return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
+
+  if (column?.["property"]?.includes("C_") && row?.["C机会"])
+    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
+  if (column?.["property"]?.includes("P_") && row?.["P机会"])
+    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
+
   // 红 | 绿
   // -------
   // 绿 | 红
@@ -116,7 +123,7 @@ function getCellStyle({ column, row }) {
   // } else {
   //   return column?.["property"]?.includes("C_") ? 实值style : 虚值style;
   // }
-  return {}
+  return { backgroundColor: 'white'};
 }
 function getRowStyle({ row }) {
   return {};

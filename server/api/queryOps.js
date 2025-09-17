@@ -1,7 +1,15 @@
-import { fields_dict,stock_sort_map } from "~/data";
+import { fields_dict, stock_sort_map } from "~/data";
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
+import dayjs from "dayjs";
 import fs from "fs";
+function is_机会({ 最新价, 隐波, 到期天数, 溢价率 }) {
+  if (到期天数 < 15) return false;
+  if (溢价率 > 10) return false;
+  if (最新价 > 0.06) return false;
+  if (隐波 > 25) return false;
+  return true;
+}
 function handleData(dataList) {
   let all_data = [];
   let 正股价格_dict = {};
@@ -21,8 +29,22 @@ function handleData(dataList) {
 
     data["正股"] = call_item["正股"];
     data["到期日"] = call_item["到期日"];
+    data["到期天数"] =
+      dayjs(call_item["到期日"] + '', "YYYYMMDD").diff(dayjs(), "days") + 1;
     data["行权价"] = call_item["行权价"];
     data["正股价格"] = call_item["正股价格"];
+    data["C机会"] = is_机会({
+      最新价: data["C最新价"],
+      隐波: data["C隐波"],
+      到期天数: data["到期天数"],
+      溢价率: data["C溢价率"],
+    });
+    data["P机会"] = is_机会({
+      最新价: data["P最新价"],
+      隐波: data["P隐波"],
+      到期天数: data["到期天数"],
+      溢价率: data["P溢价率"],
+    });
     正股价格_dict[data["正股"]] = data["正股价格"];
     all_data.push(data);
   });
