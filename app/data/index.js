@@ -1,6 +1,6 @@
-export const 入金金额 = 50000
+export const 入金金额 = 2766
 export const 已提现金额 = 0
-export const 场内现金 = 1681 + 5650
+export const 场内现金 = 1681 + 5550
 export const 保证金 = 0
 
 export const fields_dict = {

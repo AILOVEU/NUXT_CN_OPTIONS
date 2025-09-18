@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center flex-row-reverse justify-center"
+    class="flex items-center flex-row-reverse justify-center w-[120px] mx-auto"
     :style="{ flexDirection: props.isCall ? 'row' : 'row-reverse' }"
     v-if="!props.row?._split  && !props.row?._current"
   >

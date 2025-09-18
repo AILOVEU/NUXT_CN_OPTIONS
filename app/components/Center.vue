@@ -10,7 +10,7 @@
     </div>
   </div>
   <div v-else>
-    {{ 行权价 }}
+    {{ (行权价/1000).toFixed(3) }}
   </div>
 </template>
 <script setup>

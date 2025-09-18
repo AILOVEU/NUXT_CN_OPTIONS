@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!props.row?._split  && !props.row?._current">
+  <div v-if="!props.row?._split  && !props.row?._current" class="px-[4px]">
     <div>
       <el-progress :percentage="(100 * 持仓量) / 150000">
         <div class="text-[12px]">{{ 持仓量 }}</div>

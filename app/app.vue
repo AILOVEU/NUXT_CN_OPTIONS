@@ -11,4 +11,7 @@
 div{
   color: black;
 }
+*{
+  line-height: 0.95;
+}
 </style>

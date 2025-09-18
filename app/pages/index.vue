@@ -6,55 +6,60 @@
         v-for="stock in stockNameList"
         :key="stock"
         :value="stock"
+        @click="() => tableRef.setScrollTop(0)"
       >
         {{ stock }}
       </el-radio-button>
     </el-radio-group>
   </div>
 
-  <el-table
-    :data="filteredTableData"
-    style="width: 100%"
-    v-loading="tableData.loading"
-    table-layout="auto"
-    size="small"
-    border
-    height="950px"
-    :highlight-current-row="false"
-    :row-style="getRowStyle"
-    :cell-style="getCellStyle"
-  >
-    <el-table-column
-      v-for="key in tableData.columns"
-      :key="key"
-      :prop="key"
-      :label="key"
-      sortable
-      align="center"
+  <div class="mx-auto">
+    <el-table
+      :data="filteredTableData"
+      style="width: 100%"
+      v-loading="tableData.loading"
+      size="small"
+      border
+      height="950px"
+      :highlight-current-row="false"
+      :row-style="getRowStyle"
+      :cell-style="getCellStyle"
+      ref="tableRef"
     >
-      <template #default="{ row }" v-if="key === '期权'">
-        <Center :row="row" />
-      </template>
-      <template #default="{ row }" v-if="key.includes('_价格')">
-        <Price :row="row" :isCall="key.includes('C')" />
-      </template>
-      <template #default="{ row }" v-if="key.includes('_信息')">
-        <Info :row="row" :isCall="key.includes('C')" />
-      </template>
-      <template #default="{ row }" v-if="key.includes('_合约')">
-        <Options :row="row" :isCall="key.includes('C')" />
-      </template>
-      <template #default="{ row }" v-if="key.includes('_价值')">
-        <Time :row="row" :isCall="key.includes('C')" />
-      </template>
-      <template #default="{ row }" v-if="key.includes('_持仓')">
-        <Hold :row="row" :isCall="key.includes('C')" />
-      </template>
-    </el-table-column>
-  </el-table>
+      <el-table-column
+        v-for="{ label, width } in tableData.columns"
+        :key="label"
+        :prop="label"
+        :label="label"
+        :width="width"
+        sortable
+        align="center"
+      >
+        <template #default="{ row }" v-if="label === '期权'">
+          <Center :row="row" />
+        </template>
+        <template #default="{ row }" v-if="label.includes('_价格')">
+          <Price :row="row" :isCall="label.includes('C')" />
+        </template>
+        <template #default="{ row }" v-if="label.includes('_信息')">
+          <Info :row="row" :isCall="label.includes('C')" />
+        </template>
+        <template #default="{ row }" v-if="label.includes('_合约')">
+          <Options :row="row" :isCall="label.includes('C')" />
+        </template>
+        <template #default="{ row }" v-if="label.includes('_价值')">
+          <Time :row="row" :isCall="label.includes('C')" />
+        </template>
+        <template #default="{ row }" v-if="label.includes('_持仓')">
+          <Hold :row="row" :isCall="label.includes('C')" />
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 <script setup>
 import { stock_name_map } from "~/data";
+const tableRef = ref();
 const stockNameList = computed(() => {
   return Object.keys(stock_name_map);
 });
@@ -63,17 +68,47 @@ const tableData = reactive({
   data: [],
   loading: false,
   columns: [
-    "C_合约",
-    "C_价值",
-    "C_信息",
-    "C_持仓",
-    "C_价格",
-    "期权",
-    "P_价格",
-    "P_持仓",
-    "P_信息",
-    "P_价值",
-    "P_合约",
+    {
+      label: "C_合约",
+    },
+    {
+      label: "C_价值",
+      width: "120px",
+    },
+    {
+      label: "C_信息",
+      width: "180px",
+    },
+    {
+      label: "C_持仓",
+      width: "180px",
+    },
+    {
+      label: "C_价格",
+      width: "160px",
+    },
+    {
+      label: "期权",
+    },
+    {
+      label: "P_价格",
+      width: "160px",
+    },
+    {
+      label: "P_持仓",
+      width: "180px",
+    },
+    {
+      label: "P_信息",
+      width: "180px",
+    },
+    {
+      label: "P_价值",
+      width: "120px",
+    },
+    {
+      label: "P_合约",
+    },
   ],
 });
 async function refresh() {
@@ -103,7 +138,7 @@ const filteredTableData = computed(() => {
 });
 
 function getCellStyle({ column, row }) {
-  if (row?.["_current"]) return {};
+  if (row?.["_current"]) return { backgroundColor: "#f5f7fa" };
   if (row?.["_split"]) return { backgroundColor: "black", color: "black" };
   if (column?.["property"] === "期权")
     return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
@@ -123,7 +158,7 @@ function getCellStyle({ column, row }) {
   // } else {
   //   return column?.["property"]?.includes("C_") ? 实值style : 虚值style;
   // }
-  return { backgroundColor: 'white'};
+  return { backgroundColor: "white" };
 }
 function getRowStyle({ row }) {
   return {};
