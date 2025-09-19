@@ -1,8 +1,9 @@
-export const 入金金额 = 2766
+export const 入金金额 = 50000
 export const 已提现金额 = 0
-export const 场内现金 = 1681 + 5550
+export const 场内现金 = 1548 + 5550
 export const 保证金 = 0
-
+export const 基础金额 = 50000
+// 股票账户2万待转出、期转股2千待处理
 export const fields_dict = {
   f2: "最新价",
   f3: "涨跌幅",
