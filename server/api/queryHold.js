@@ -18,15 +18,14 @@ function get_fist_季度月份(dataList) {
 function handleData(dataList) {
   const [month_list, month_index] = get_fist_季度月份(dataList);
   let all_data = [];
-  let data = {};
   let 正股价格_dict = {};
   dataList.forEach((item) => {
+    let data = {};
     // 期权名称含有沽
     if (item["期权名称"].includes("沽")) return;
     if (item["到期日"] !== month_list[month_index]) return;
     let 到期月份 = dayjs(item["到期日"], "YYYYMMDD").format("M月");
     month_list.forEach((month) => {
-      console.log(dayjs(month, "YYYYMMDD").format("YYYYMMDD"));
       let 实际月份 = dayjs(month, "YYYYMMDD").format("M月");
       let call_期权名称 = item["期权名称"].replace(到期月份, 实际月份);
       let put_期权名称 = item["期权名称"]
@@ -40,7 +39,6 @@ function handleData(dataList) {
         data["P" + 实际月份 + key] = put_item?.[key];
       });
     });
-
     // Center字段
     data["期权"] = item["期权名称"].replace("购", "@").replace(到期月份, "");
     data["月份"] = month_list;
@@ -84,10 +82,10 @@ function handleData(dataList) {
   return all_data;
 }
 export default eventHandler(async (event) => {
-  // const all_data = await get_http_data();
-  const all_data = MOCK_DATA.map((el) => ({
-    ...el,
-    到期日: el["到期日"] + "",
-  }));
+  const all_data = await get_http_data();
+  // const all_data = MOCK_DATA.map((el) => ({
+  //   ...el,
+  //   到期日: el["到期日"] + "",
+  // }));
   return handleData(all_data);
 });

@@ -64,6 +64,13 @@
   </div>
 </template>
 <script setup>
+import Center from '~/components/t/Center.vue'
+import Price from '~/components/t/Price.vue'
+import Info from '~/components/t/Info.vue'
+import Options from '~/components/t/Options.vue'
+import Time from '~/components/t/Time.vue'
+import Hold from '~/components/t/Hold.vue'
+
 import { stock_name_map } from "~/data";
 const tableRef = ref();
 const stockNameList = computed(() => {

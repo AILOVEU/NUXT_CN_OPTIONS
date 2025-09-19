@@ -34,30 +34,28 @@
       ref="tableRef"
     >
       <el-table-column
-        v-for="{ label, width } in tableData.columns"
-        :key="label"
-        :prop="label"
-        :label="label"
+        v-for="{ label, type, width } in tableData.columns"
+        :key="type + label"
+        :prop="type + label"
         :width="width"
         align="center"
       >
+        <template #header>
+          <div v-if="type">
+            <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+            <div>
+              ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
+            </div>
+          </div>
+          <div v-else>
+            {{ label }}
+          </div>
+        </template>
         <template #default="{ row }" v-if="label === '期权'">
           <Center :row="row" />
         </template>
-        <template #default="{ row }" v-if="label.includes('_价格')">
-          <Price :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_信息')">
-          <Info :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_合约')">
-          <Options :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_价值')">
-          <Time :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_持仓')">
-          <Hold :row="row" :isCall="label.includes('C')" />
+        <template #default="{ row }" v-if="label !== '期权'">
+          <Info :row="row" :isCall="type === 'C'" :date="label" />
         </template>
       </el-table-column>
     </el-table>
@@ -65,56 +63,35 @@
 </template>
 <script setup>
 import { stock_name_map } from "~/data";
+import dayjs from "dayjs";
+import Center from "~/components/hold/Center.vue";
+import Info from "~/components/hold/Info.vue";
+
 const tableRef = ref();
 const stockNameList = computed(() => {
   return Object.keys(stock_name_map);
 });
 const stockName = ref(stockNameList.value[0]);
+const deadline_list = [
+  "20250924",
+  "20251022",
+  "20251126",
+  "20251224",
+  "20260128",
+  "20260225",
+  "20260325",
+];
+const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   data: [],
   loading: false,
   columns: [
-    {
-      label: "C_合约",
-    },
-    {
-      label: "C_价值",
-      width: "120px",
-    },
-    {
-      label: "C_信息",
-      width: "180px",
-    },
-    {
-      label: "C_持仓",
-      width: "180px",
-    },
-    {
-      label: "C_价格",
-      width: "160px",
-    },
+    ...reversed_deadline_list.map((el) => ({ type: "C", label: el })),
     {
       label: "期权",
+      type: "",
     },
-    {
-      label: "P_价格",
-      width: "160px",
-    },
-    {
-      label: "P_持仓",
-      width: "180px",
-    },
-    {
-      label: "P_信息",
-      width: "180px",
-    },
-    {
-      label: "P_价值",
-      width: "120px",
-    },
-    {
-      label: "P_合约",
-    },
+    ...deadline_list.map((el) => ({ type: "P", label: el })),
   ],
 });
 async function refresh() {
@@ -133,7 +110,6 @@ const 行权价RangeDict = reactive({
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["正股"] !== stockName.value) return false;
-    if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
     return (
@@ -144,21 +120,17 @@ const filteredTableData = computed(() => {
 });
 
 function getCellStyle({ column, row }) {
-  if (row?.["_current"]) return { backgroundColor: "#f5f7fa" };
-  if (row?.["_split"]) return { backgroundColor: "black", color: "black" };
   if (column?.["property"] === "期权")
     return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
-
-  if (column?.["property"]?.includes("C_") && row?.["C机会"])
-    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
-  if (column?.["property"]?.includes("P_") && row?.["P机会"])
-    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
-
+  // if (column?.["property"]?.includes("C_") && row?.["C机会"])
+  //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
+  // if (column?.["property"]?.includes("P_") && row?.["P机会"])
+  //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
   // 红 | 绿
   // -------
   // 绿 | 红
-  const 实值style = { backgroundColor: "rgb(255, 220, 220)" };
-  const 虚值style = { backgroundColor: "rgb(190, 220, 190)" };
+  // const 实值style = { backgroundColor: "rgb(255, 220, 220)" };
+  // const 虚值style = { backgroundColor: "rgb(190, 220, 190)" };
   // if (row["行权价"] > row["正股价格"]) {
   //   return column?.["property"]?.includes("C_") ? 虚值style : 实值style;
   // } else {
@@ -172,10 +144,10 @@ function getRowStyle({ row }) {
 </script>
 <style lang="less">
 .el-table--small .cell {
-  padding: 0 2px;
+  padding: 0 0px;
 }
 .el-table--small .el-table__cell {
-  padding: 2px 0;
+  padding: 0px 0;
 }
 .el-radio-group {
   justify-content: center;

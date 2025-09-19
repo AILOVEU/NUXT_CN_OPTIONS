@@ -59,9 +59,9 @@ export async function get_http_data() {
         fields: Object.keys(fields_dict).join(","),
         wbp2u: "|0|1|0|web",
         _: "1739763465633",
-        fs: "m:10+c:510050",
+        // fs: "m:10+c:510050",
         // fs: "m:10,m:12",
-        // fs: "m:10",
+        fs: "m:10",
       },
     });
     if (!res["data"]) {
