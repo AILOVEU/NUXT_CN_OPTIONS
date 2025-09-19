@@ -1,9 +1,9 @@
 <template>
-  <div class="flex justify-between text-[12px]">
+  <div class="flex justify-between">
     <el-button @click="refresh">刷新</el-button>
     <div class="flex items-center">
       <a href="/">T型</a>
-      <div class="w-[200px]"></div>
+      <div class="w-[300px]"></div>
       <a href="/hold">持仓</a>
     </div>
   </div>
@@ -119,7 +119,7 @@ const tableData = reactive({
 });
 async function refresh() {
   tableData.loading = true;
-  const res = await useFetch("/api/queryT");
+  const res = await useFetch("/api/queryHold");
   tableData.data = res.data.value || [];
   tableData.loading = false;
 }

@@ -45,7 +45,6 @@ function handleData(dataList) {
       });
     });
   });
-
   all_data.sort(function (a, b) {
     if (a["正股"] === b["正股"]) {
       if (a["到期日"] === b["到期日"]) {
