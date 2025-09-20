@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 function get_fist_季度月份(dataList) {
   const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
   month_list.sort();
-  console.log(month_list);
   let month_index = 0;
   for (let _index = 0; _index < month_list.length; _index++) {
     const day = dayjs(month_list[month_index], "YYYYMMDD").format("MM月");
@@ -43,10 +42,10 @@ function handleData(dataList) {
     data["期权"] = item["期权名称"].replace("购", "@").replace(到期月份, "");
     data["月份"] = month_list;
     // 公共字段
-    ["正股", "行权价", "正股价格"].forEach((key) => {
+    ["正股代码", "行权价", "正股价格"].forEach((key) => {
       data[key] = item[key];
     });
-    正股价格_dict[data["正股"]] = data["正股价格"];
+    正股价格_dict[data["正股代码"]] = data["正股价格"];
     all_data.push(data);
   });
   // const 正股List = Array.from(new Set(all_data.map((el) => el.正股)));
@@ -71,13 +70,13 @@ function handleData(dataList) {
   // });
 
   all_data.sort(function (a, b) {
-    if (a["正股"] === b["正股"]) {
+    if (a["正股代码"] === b["正股代码"]) {
       if (a["到期日"] === b["到期日"]) {
         return a["行权价"] - b["行权价"];
       }
       return a["到期日"] - b["到期日"];
     }
-    return stock_sort_map[b["正股"]] - stock_sort_map[a["正股"]];
+    return stock_sort_map[b["正股代码"]] - stock_sort_map[a["正股代码"]];
   });
   return all_data;
 }

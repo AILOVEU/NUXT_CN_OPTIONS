@@ -1,7 +1,7 @@
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
 import fs from "fs";
-import { fields_dict } from "~/data";
+import { fields_dict, stock_code_map } from "~/data";
 import dayjs from "dayjs";
 
 function is_机会(line_dict) {
@@ -39,8 +39,16 @@ export async function get_持仓JSON() {
       });
   });
 }
-
-export async function get_http_data() {
+function get_stock_code(name) {
+  let code;
+  Object.keys(stock_code_map).forEach((key) => {
+    if (stock_code_map[key] === name){
+      code = key
+    };
+  });
+  return code;
+}
+export async function get_target_http_data(fs) {
   let 持仓JSON = await get_持仓JSON();
   let curr_page = 1;
   let all_data = [];
@@ -59,12 +67,14 @@ export async function get_http_data() {
         fields: Object.keys(fields_dict).join(","),
         wbp2u: "|0|1|0|web",
         _: "1739763465633",
+        fs,
         // fs: "m:10+c:510050",
         // fs: "m:10,m:12",
-        fs: "m:10",
+        // fs: "m:10",
       },
     });
     if (!res["data"]) {
+      console.log(fs + "请求完成" + all_data.length);
       break;
     }
     curr_page += 1;
@@ -83,10 +93,34 @@ export async function get_http_data() {
       line_dict["成本价"] =
         持仓JSON.find((item) => item["名称"] === line_dict["期权名称"])
           ?.开仓均价 || undefined;
+      line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF")
+        ? "159922"
+        : get_stock_code(line_dict["正股"]);
       all_data.push(line_dict);
     });
   }
-  console.log("接口请求成功");
+  return all_data;
+}
+
+export async function get_http_data() {
+  let all_data = [];
+  const promiseList = [
+    "m:10+c:510050",
+    "m:10+c:510300",
+    "m:10+c:510500",
+    "m:10+c:588000",
+    "m:12+c:159915",
+    "m:12+c:159922",
+  ].map((fs) => get_target_http_data(fs));
+  await Promise.all(promiseList)
+    .then((list) => {
+      list.forEach((el) => {
+        all_data.push(...el);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   return all_data;
 }
 

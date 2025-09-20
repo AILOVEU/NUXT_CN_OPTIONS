@@ -14,11 +14,11 @@
   </div>
 </template>
 <script setup>
-import { stock_name_map } from "~/data";
+import { stock_show_name_map } from "~/data";
 const props = defineProps(["row"]);
 
 const 正股 = computed(() => {
-  return stock_name_map[props.row["正股"]];
+  return stock_show_name_map[props.row["正股代码"]];
 });
 const 行权价 = computed(() => {
   return props.row["行权价"] * 1000;

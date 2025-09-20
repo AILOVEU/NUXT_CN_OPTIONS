@@ -8,14 +8,14 @@
     </div>
   </div>
   <div class="w-full pb-[12px]">
-    <el-radio-group v-model="stockName" size="small">
+    <el-radio-group v-model="stockCode" size="small">
       <el-radio-button
-        v-for="stock in stockNameList"
-        :key="stock"
-        :value="stock"
+        v-for="stock_code in stockCodeList"
+        :key="stock_code"
+        :value="stock_code"
         @click="() => tableRef.setScrollTop(0)"
       >
-        {{ stock }}
+        {{ stock_show_name_map[stock_code] }}
       </el-radio-button>
     </el-radio-group>
   </div>
@@ -64,19 +64,23 @@
   </div>
 </template>
 <script setup>
-import Center from '~/components/t/Center.vue'
-import Price from '~/components/t/Price.vue'
-import Info from '~/components/t/Info.vue'
-import Options from '~/components/t/Options.vue'
-import Time from '~/components/t/Time.vue'
-import Hold from '~/components/t/Hold.vue'
+import Center from "~/components/t/Center.vue";
+import Price from "~/components/t/Price.vue";
+import Info from "~/components/t/Info.vue";
+import Options from "~/components/t/Options.vue";
+import Time from "~/components/t/Time.vue";
+import Hold from "~/components/t/Hold.vue";
 
-import { stock_name_map } from "~/data";
+import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
 const tableRef = ref();
-const stockNameList = computed(() => {
-  return Object.keys(stock_name_map);
+const stockCodeList = computed(() => {
+  let list = Object.keys(stock_show_name_map);
+  list.sort(function (a, b) {
+    return stock_sort_map[a] - stock_sort_map[b];
+  });
+  return list;
 });
-const stockName = ref(stockNameList.value[0]);
+const stockCode = ref(stockCodeList.value[0]);
 const tableData = reactive({
   data: [],
   loading: false,
@@ -130,22 +134,17 @@ async function refresh() {
   tableData.data = res.data.value || [];
   tableData.loading = false;
 }
-const 行权价RangeDict = reactive({
-  上证50ETF: [2800, 3400],
-  沪深300ETF: [4000, 5000],
-  中证500ETF: [5500, 8000],
-  科创50ETF: [1000, 1600],
-  科创板50ETF: [1000, 1600],
-});
+const 行权价RangeDict = reactive({ ...行权价_range_map });
+
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["正股"] !== stockName.value) return false;
+    if (el["正股代码"] !== stockCode.value) return false;
     if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
     return (
-      el["行权价"] * 1000 >= 行权价RangeDict[stockName.value][0] &&
-      el["行权价"] * 1000 <= 行权价RangeDict[stockName.value][1]
+      el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] &&
+      el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1]
     );
   });
 });
