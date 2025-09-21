@@ -32,7 +32,7 @@ function handleData(dataList) {
         .replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
-      Object.keys(item).forEach((key) => {
+      [...Object.keys(item), "成本价"].forEach((key) => {
         if (["期权名称"].includes(key)) return;
         data["C" + 实际月份 + key] = call_item?.[key];
         data["P" + 实际月份 + key] = put_item?.[key];
@@ -81,10 +81,7 @@ function handleData(dataList) {
   return all_data;
 }
 export default eventHandler(async (event) => {
-  const all_data = await get_http_data();
-  // const all_data = MOCK_DATA.map((el) => ({
-  //   ...el,
-  //   到期日: el["到期日"] + "",
-  // }));
+  // const all_data = await get_http_data();
+  const all_data = MOCK_DATA;
   return handleData(all_data);
 });

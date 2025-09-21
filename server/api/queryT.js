@@ -1,5 +1,5 @@
 import { stock_sort_map } from "~/data";
-import { get_http_data } from "./utils.js";
+import { get_http_data, MOCK_DATA } from "./utils.js";
 
 function handleData(dataList) {
   let all_data = [];
@@ -19,9 +19,9 @@ function handleData(dataList) {
     // Center字段
     data["期权"] = call_item["期权名称"].replace("购", "@");
     // 公共字段
-    ["正股代码","到期日","到期天数","行权价","正股价格"].forEach(key=>{
+    ["正股代码", "到期日", "到期天数", "行权价", "正股价格"].forEach((key) => {
       data[key] = call_item[key];
-    })
+    });
     正股价格_dict[data["正股代码"]] = data["正股价格"];
     all_data.push(data);
   });
@@ -57,6 +57,7 @@ function handleData(dataList) {
   return all_data;
 }
 export default eventHandler(async (event) => {
-  const all_data = await get_http_data();
+  // const all_data = await get_http_data();
+  const all_data = MOCK_DATA;
   return handleData(all_data);
 });

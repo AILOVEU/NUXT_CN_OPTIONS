@@ -6,31 +6,37 @@
   >
     <div class="flex justify-between whitespace-nowrap">
       <div class="whitespace-nowrap">
-        <el-tag type="info" size="small">隐</el-tag>{{ 隐波 }}
+        <IvTag :隐波="隐波" :正股="正股代码" />
       </div>
       <div class="whitespace-nowrap">
-        <el-tag type="info" size="small">δ</el-tag>{{ Delta.toFixed(3) }}
+        <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div>
 
     <div class="whitespace-nowrap">
-      <el-tag type="info" size="small">价</el-tag>{{ 最新价 }}
+      <PriceTag :最新价="最新价" />
+      <DiffTag :涨跌="涨跌" />
     </div>
     <div v-if="持仓">
       <div class="flex justify-between whitespace-nowrap">
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small">持</el-tag>{{ 持仓 }}
+          <el-tag type="info" size="small" effect="plain">持 {{ 持仓 }}</el-tag>
         </div>
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small">盈</el-tag>
-          <span :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 }}</span>
+          <el-tag
+            :type="盈亏 > 0 ? 'danger' : 'success'"
+            size="small"
+            effect="plain"
+          >
+            盈 {{ 盈亏 }}
+          </el-tag>
         </div>
       </div>
       <div class="flex justify-between whitespace-nowrap">
-        <div class="whitespace-nowrap">
-          <el-tag type="info" size="small">仓</el-tag>{{ 仓位 }} ({{
-            仓位占比.toFixed(2)
-          }}%)
+        <div class="mx-auto">
+          <el-tag type="info" size="small" effect="plain">
+            仓 {{ 仓位 }} ({{ 仓位占比.toFixed(2) }}%)
+          </el-tag>
         </div>
       </div>
     </div>
@@ -38,6 +44,11 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
+import DeltaTag from "~/components/tag/DeltaTag.vue";
+import IvTag from "~/components/tag/IvTag.vue";
+import PriceTag from "~/components/tag/PriceTag.vue";
+import DiffTag from "~/components/tag/DiffTag.vue";
+
 import { UNIT, 基础金额 } from "~/data";
 import { getColorSplitHander } from "~~/server/api/utils";
 const props = defineProps(["row", "isCall", "date"]);
@@ -45,6 +56,9 @@ const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYYMMDD").format("M月");
   return type + month;
+});
+const 正股代码 = computed(() => {
+  return props.row["正股代码"];
 });
 const 隐波 = computed(() => {
   return props.row[prefixKey.value + "隐波"];
@@ -61,10 +75,17 @@ const 持仓 = computed(() => {
 const 最新价 = computed(() => {
   return Math.floor(props.row[prefixKey.value + "最新价"] * UNIT);
 });
+const 昨收 = computed(() => {
+  return Math.floor(props.row[prefixKey.value + "昨收"] * UNIT);
+});
+const 涨跌 = computed(() => {
+  return 最新价.value - 昨收.value;
+});
 const 成本价 = computed(() => {
   return Math.floor(props.row[prefixKey.value + "成本价"] * UNIT);
 });
 const 盈亏 = computed(() => {
+  console.log(props.row);
   return (最新价.value - 成本价.value) * 持仓.value;
 });
 
@@ -73,7 +94,7 @@ const 仓位 = computed(() => {
 });
 
 const 仓位占比 = computed(() => {
-  return (100 * 仓位.value) / 基础金额 ;
+  return (100 * 仓位.value) / 基础金额;
 });
 
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");

@@ -1,0 +1,21 @@
+<template>
+  <el-tag :type="type" size="small" :effect="effect">
+    {{ props.最新价 }}
+  </el-tag>
+</template>
+<script setup>
+import { stock_show_name_map } from "~/data";
+const props = defineProps(["最新价", "正股代码"]);
+const type = computed(() => {
+  const 最新价 = props.最新价;
+  if (最新价 > 800) return "info";
+  if (最新价 >= 200 && 最新价 <= 800) return "success";
+  return "primary";
+});
+const effect = computed(() => {
+  const 最新价 = props.最新价;
+  if (最新价 > 800) return "plain";
+  if (最新价 >= 200 && 最新价 <= 800) return "plain";
+  return "plain";
+});
+</script>

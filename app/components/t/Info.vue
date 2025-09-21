@@ -1,24 +1,34 @@
 <template>
-  <div class="grid grid-cols-2 gap-[3px]" v-if="!props.row?._split  && !props.row?._current">
+  <div
+    class="grid grid-cols-2 gap-[3px]"
+    v-if="!props.row?._split && !props.row?._current"
+  >
     <div>
-      <el-tag type="info" size="small">隐波</el-tag>{{ 隐波.toFixed(2) }}
+      <IvTag :隐波="隐波" :正股代码="正股代码" />
     </div>
     <div>
-      <el-tag type="info" size="small">Delta</el-tag>{{ Delta.toFixed(3) }}
+      <DeltaTag :Delta="Delta" :正股代码="正股代码" />
     </div>
     <div>
-      <el-tag type="info" size="small">溢价</el-tag>
-      {{ 溢价率}}%
+      <PremiumTag :溢价率="溢价率" :正股代码="正股代码" />
     </div>
     <div>
-      <el-tag type="info" size="small">杠杆</el-tag>{{ 杠杆.toFixed(1) }}
+      <LeverageTag :杠杆="杠杆" :正股代码="正股代码" />
     </div>
   </div>
 </template>
 <script setup>
+import DeltaTag from "~/components/tag/DeltaTag.vue";
+import IvTag from "~/components/tag/IvTag.vue";
+import PremiumTag from "~/components/tag/PremiumTag.vue";
+import LeverageTag from "~/components/tag/LeverageTag.vue";
+
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
+});
+const 正股代码 = computed(() => {
+  return props.row["正股代码"];
 });
 const 隐波 = computed(() => {
   return props.row[callOrPut.value + "隐波"];
