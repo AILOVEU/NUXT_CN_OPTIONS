@@ -12,6 +12,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "@element-plus/nuxt": "1.1.4",
+    "@nuxthub/core": "^0.9.0",
     "@nuxtjs/supabase": "^1.6.1",
     "csvtojson": "^2.0.10",
     "element-plus": "^2.11.1",
@@ -27,6 +28,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "less": "^4.4.1",
     "less-loader": "^12.3.0",
-    "sass": "^1.91.0"
+    "sass": "^1.91.0",
+    "wrangler": "^4.38.0"
   }
 }
