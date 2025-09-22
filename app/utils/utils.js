@@ -100,6 +100,9 @@ export async function get_target_http_data(持仓JSON, fs) {
         : get_stock_code(line_dict["正股"]);
       all_data.push(line_dict);
     });
+    if(res["data"]?.length < 200){
+      break;
+    }
   }
   return all_data;
 }

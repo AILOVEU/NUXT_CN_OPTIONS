@@ -61,6 +61,7 @@
         </template>
       </el-table-column>
     </el-table>
+    {{ 持仓JSON }}
   </div>
 </template>
 <script setup>
