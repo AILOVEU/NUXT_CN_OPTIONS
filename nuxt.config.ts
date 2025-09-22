@@ -6,11 +6,11 @@ export default defineNuxtConfig({
     "nuxt-lodash",
     '@nuxthub/core'
   ],
-  hub: {
-    // NuxtHub options
-  },
-  future: { compatibilityVersion: 4 },
-  compatibilityDate: '2025-07-15',
+  // hub: {
+  //   // NuxtHub options
+  // },
+  // future: { compatibilityVersion: 4 },
+  // compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   // css: ['~/styles/index.css']
 })

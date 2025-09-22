@@ -1,24 +1,26 @@
 <template>
-  <div class="flex justify-between text-[12px] mb-[12px]">
-    <el-button @click="refresh" size="small">刷新</el-button>
-    <el-button @click="copy" size="small">复制持仓</el-button>
-    <div class="flex items-center">
-      <a href="/">T型</a>
-      <div class="w-[10vw]"></div>
-      <a href="/hold">持仓</a>
+  <div>
+    <div class="flex justify-between text-[12px] mb-[12px]">
+      <el-button @click="refresh" size="small">刷新</el-button>
+      <el-button @click="copy" size="small">复制持仓</el-button>
+      <div class="flex items-center">
+        <a href="/">T型</a>
+        <div class="w-[10vw]"></div>
+        <a href="/hold">持仓</a>
+      </div>
     </div>
-  </div>
-  <div class="w-full pb-[12px]">
-    <el-radio-group v-model="stockCode" size="small">
-      <el-radio-button
-        v-for="stock_code in stockCodeList"
-        :key="stock_code"
-        :value="stock_code"
-        @click="() => tableRef.setScrollTop(0)"
-      >
-        {{ stock_show_name_map[stock_code] }}
-      </el-radio-button>
-    </el-radio-group>
+    <div class="w-full pb-[12px]">
+      <el-radio-group v-model="stockCode" size="small">
+        <el-radio-button
+          v-for="stock_code in stockCodeList"
+          :key="stock_code"
+          :value="stock_code"
+          @click="() => tableRef.setScrollTop(0)"
+        >
+          {{ stock_show_name_map[stock_code] }}
+        </el-radio-button>
+      </el-radio-group>
+    </div>
   </div>
 
   <div class="mx-auto">
@@ -73,9 +75,9 @@ import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
 import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
-import {useCopy} from "~/utils";
+import { useCopy } from "~/utils";
 function copy() {
-  useCopy(JSON.stringify(持仓JSON.value))
+  useCopy(JSON.stringify(持仓JSON.value));
 }
 const tableRef = ref();
 const stockCodeList = computed(() => {

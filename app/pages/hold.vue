@@ -1,34 +1,36 @@
 <template>
-  <div class="flex justify-between text-[12px] mb-[12px]">
-    <el-button @click="refresh" size="small">刷新</el-button>
-    <el-button @click="copy" size="small">复制持仓</el-button>
-    <div class="flex items-center">
-      <a href="/">T型</a>
-      <div class="w-[10vw]"></div>
-      <a href="/hold">持仓</a>
+  <div>
+    <div class="flex justify-between text-[12px] mb-[12px]">
+      <el-button @click="refresh" size="small">刷新</el-button>
+      <el-button @click="copy" size="small">复制持仓</el-button>
+      <div class="flex items-center">
+        <a href="/">T型</a>
+        <div class="w-[10vw]"></div>
+        <a href="/hold">持仓</a>
+      </div>
+    </div>
+    <div class="w-full pb-[12px]">
+      <el-radio-group v-model="stockCode" size="small">
+        <el-radio-button
+          v-for="stock_code in stockCodeList"
+          :key="stock_code"
+          :value="stock_code"
+          @click="() => tableRef.setScrollTop(0)"
+        >
+          {{ stock_show_name_map[stock_code] }}
+        </el-radio-button>
+      </el-radio-group>
     </div>
   </div>
-  <div class="w-full pb-[12px]">
-    <el-radio-group v-model="stockCode" size="small">
-      <el-radio-button
-        v-for="stock_code in stockCodeList"
-        :key="stock_code"
-        :value="stock_code"
-        @click="() => tableRef.setScrollTop(0)"
-      >
-        {{ stock_show_name_map[stock_code] }}
-      </el-radio-button>
-    </el-radio-group>
-  </div>
 
-  <div class="w-full">
+  <div class="w-full h-[calc(100vh-100px)]">
     <el-table
       :data="filteredTableData"
       style="width: 100%"
       v-loading="tableData.loading"
       size="small"
       border
-      height="950px"
+      height="100%"
       :highlight-current-row="false"
       :row-style="getRowStyle"
       :cell-style="getCellStyle"
@@ -40,7 +42,7 @@
         :prop="type + label"
         :width="width"
         align="center"
-        :minWidth="label === '期权' ? '60px': '120px'"
+        :minWidth="label === '期权' ? '65px' : '120px'"
       >
         <template #header>
           <div v-if="type">
@@ -85,10 +87,10 @@ const stockCode = ref(stockCodeList.value[0]);
 const deadline_list = [
   "20250924",
   "20251022",
-  "20251126",
+  // "20251126",
   "20251224",
-  "20260128",
-  "20260225",
+  // "20260128",
+  // "20260225",
   "20260325",
 ];
 const reversed_deadline_list = [...deadline_list].reverse();
