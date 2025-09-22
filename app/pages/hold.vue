@@ -15,7 +15,7 @@
           v-for="stock_code in stockCodeList"
           :key="stock_code"
           :value="stock_code"
-          @click="() => tableRef.setScrollTop(0)"
+          @click="handleStockCodeChange"
         >
           {{ stock_show_name_map[stock_code] }}
         </el-radio-button>
@@ -112,9 +112,15 @@ useFetch("/api/queryHoldJson").then((res) => {
 });
 async function refresh() {
   tableData.loading = true;
-  const holdData = await queryHold(持仓JSON.value);
+  const holdData = await queryHold(持仓JSON.value, stockCode.value);
   tableData.data = holdData || [];
   tableData.loading = false;
+}
+function handleStockCodeChange() {
+  tableRef.value.setScrollTop(0)
+  setTimeout(() => {
+    refresh();
+  });
 }
 const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {

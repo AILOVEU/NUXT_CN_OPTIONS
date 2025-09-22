@@ -56,8 +56,8 @@ function handleData(dataList) {
   });
   return all_data;
 }
-export async function queryT(持仓JSON) {
-  const all_data = await get_http_data(持仓JSON);
+export async function queryT(持仓JSON, 正股代码) {
+  const all_data = await get_http_data(持仓JSON,正股代码);
   // const all_data = MOCK_DATA;
   return handleData(all_data);
 }

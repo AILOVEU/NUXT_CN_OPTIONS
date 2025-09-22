@@ -109,7 +109,7 @@ export async function get_target_http_data(持仓JSON, fs) {
   return all_data;
 }
 
-export async function get_http_data(持仓JSON) {
+export async function get_http_data(持仓JSON, 正股代码) {
   let all_data = [];
   const promiseList = [
     "m:10+c:510050",
@@ -118,13 +118,15 @@ export async function get_http_data(持仓JSON) {
     "m:10+c:588000",
     "m:12+c:159915",
     "m:12+c:159922",
-  ].map((fs, idx) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(get_target_http_data(持仓JSON, fs));
-      }, idx * 100);
+  ]
+    .filter((el) => el.includes(正股代码))
+    .map((fs, idx) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(get_target_http_data(持仓JSON, fs));
+        }, idx * 100);
+      });
     });
-  });
   await Promise.all(promiseList)
     .then((list) => {
       list.forEach((el) => {
