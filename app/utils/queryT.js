@@ -13,8 +13,8 @@ function handleData(dataList) {
     let data = {};
     Object.keys(call_item).forEach((key) => {
       if (["期权名称"].includes(key)) return;
-      data["C" + key] = call_item[key];
-      data["P" + key] = put_item[key];
+      data["C" + key] = call_item?.[key];
+      data["P" + key] = put_item?.[key];
     });
     // Center字段
     data["期权"] = call_item["期权名称"].replace("购", "@");

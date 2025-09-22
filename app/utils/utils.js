@@ -1,6 +1,6 @@
-import csvtojson from "csvtojson";
-import iconvLite from "iconv-lite";
-import fs from "fs";
+// import csvtojson from "csvtojson";
+// import iconvLite from "iconv-lite";
+// import fs from "fs";
 import { fields_dict, stock_code_map } from "~/data";
 import dayjs from "dayjs";
 
@@ -27,18 +27,18 @@ function get_持仓(持仓JSON, line_dict) {
   return target["持仓类别"] === "义务仓" ? -持仓 : 持仓;
 }
 
-export async function get_持仓JSON() {
-  const converterStream = fs
-    .createReadStream("public\\持仓.csv")
-    .pipe(iconvLite.decodeStream("gbk"));
-  return new Promise((resolve) => {
-    csvtojson()
-      .fromStream(converterStream)
-      .then((res) => {
-        resolve(res);
-      });
-  });
-}
+// export async function get_持仓JSON() {
+//   const converterStream = fs
+//     .createReadStream("public\\持仓.csv")
+//     .pipe(iconvLite.decodeStream("gbk"));
+//   return new Promise((resolve) => {
+//     csvtojson()
+//       .fromStream(converterStream)
+//       .then((res) => {
+//         resolve(res);
+//       });
+//   });
+// }
 function get_stock_code(name) {
   let code;
   Object.keys(stock_code_map).forEach((key) => {
@@ -50,6 +50,7 @@ function get_stock_code(name) {
 }
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
+  const pz = 100
   let all_data = [];
   while (curr_page < 50) {
     const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -57,7 +58,7 @@ export async function get_target_http_data(持仓JSON, fs) {
       params: {
         fid: "f3",
         po: "1",
-        pz: "200",
+        pz,
         pn: curr_page + "",
         np: "1",
         fltt: "2",
@@ -100,7 +101,7 @@ export async function get_target_http_data(持仓JSON, fs) {
         : get_stock_code(line_dict["正股"]);
       all_data.push(line_dict);
     });
-    if(res_data?.length < 200){
+    if(res_data?.length < pz){
       break;
     }
   }

@@ -66,6 +66,7 @@ import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data
 import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
+import { queryHold } from "~/utils/queryHold.js";
 
 const tableRef = ref();
 const stockCodeList = computed(() => {
@@ -98,10 +99,14 @@ const tableData = reactive({
     ...deadline_list.map((el) => ({ type: "P", label: el })),
   ],
 });
+const 持仓JSON = ref([]);
+useFetch("/api/queryHoldJson").then((res) => {
+  持仓JSON.value = res.data.value || [];
+});
 async function refresh() {
   tableData.loading = true;
-  const res = await useFetch("/api/queryHold");
-  tableData.data = res.data.value || [];
+  const holdData = await queryHold(持仓JSON.value);
+  tableData.data = holdData || [];
   tableData.loading = false;
 }
 const 行权价RangeDict = reactive({ ...行权价_range_map });

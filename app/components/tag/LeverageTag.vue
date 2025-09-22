@@ -3,7 +3,7 @@
     type="info"
     size="small"
   >
-    杠 {{ props.杠杆.toFixed(1) }}
+    杠 {{ props.杠杆?.toFixed(1) }}
   </el-tag>
 </template>
 <script setup>
