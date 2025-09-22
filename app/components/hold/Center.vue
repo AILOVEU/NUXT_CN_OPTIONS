@@ -1,8 +1,11 @@
 <template>
-  <div v-if=" !props.row?._current">
+  <div v-if="!props.row?._current">
     <div>{{ 正股 }}</div>
     <div>
-      {{ 行权价 }} (
+      {{ 行权价 }}
+    </div>
+    <div>
+      (
       <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
         {{ 溢价Str }}
       </span>
@@ -10,7 +13,7 @@
     </div>
   </div>
   <div v-else>
-    {{ (行权价/1000).toFixed(3) }}
+    {{ (行权价 / 1000).toFixed(3) }}
   </div>
 </template>
 <script setup>

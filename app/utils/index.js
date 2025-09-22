@@ -3,7 +3,7 @@
 // import fs from "fs";
 import { fields_dict, stock_code_map } from "~/data";
 import dayjs from "dayjs";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 
 function is_机会(line_dict) {
   const { 最新价, 隐波, 到期天数, 溢价率 } = line_dict;
@@ -51,7 +51,7 @@ function get_stock_code(name) {
 }
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 50
+  const pz = 100;
   let all_data = [];
   while (curr_page < 50) {
     const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -102,7 +102,7 @@ export async function get_target_http_data(持仓JSON, fs) {
         : get_stock_code(line_dict["正股"]);
       all_data.push(line_dict);
     });
-    if(res_data?.length < pz){
+    if (res_data?.length < pz) {
       break;
     }
   }
@@ -118,7 +118,13 @@ export async function get_http_data(持仓JSON) {
     "m:10+c:588000",
     "m:12+c:159915",
     "m:12+c:159922",
-  ].map((fs) => get_target_http_data(持仓JSON, fs));
+  ].map((fs, idx) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(get_target_http_data(持仓JSON, fs));
+      }, idx * 100);
+    });
+  });
   await Promise.all(promiseList)
     .then((list) => {
       list.forEach((el) => {
@@ -202,7 +208,6 @@ export function useCopy(text) {
   textArea.blur(); //去掉选中，因为的移动端ios 上，会出现点了选择左上角出现点问题
   document.body.removeChild(textArea);
 }
-
 
 export const MOCK_DATA = [
   {

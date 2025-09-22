@@ -103,10 +103,12 @@ const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 const style = computed(() => {
   if (持仓.value > 0)
     return {
+      border: "2px solid red",
       backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
     };
   if (持仓.value < 0) {
     return {
+      border: "2px solid green",
       backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
     };
   }

@@ -1,10 +1,10 @@
 <template>
-  <div class="flex justify-between text-[12px]">
-    <el-button @click="refresh">刷新</el-button>
-    <el-button @click="copy" class="px-[50px]">复制持仓</el-button>
+  <div class="flex justify-between text-[12px] mb-[12px]">
+    <el-button @click="refresh" size="small">刷新</el-button>
+    <el-button @click="copy" size="small">复制持仓</el-button>
     <div class="flex items-center">
       <a href="/">T型</a>
-      <div class="w-[300px]"></div>
+      <div class="w-[10vw]"></div>
       <a href="/hold">持仓</a>
     </div>
   </div>
@@ -21,7 +21,7 @@
     </el-radio-group>
   </div>
 
-  <div class="mx-auto">
+  <div class="w-full">
     <el-table
       :data="filteredTableData"
       style="width: 100%"
@@ -40,6 +40,7 @@
         :prop="type + label"
         :width="width"
         align="center"
+        :minWidth="label === '期权' ? '60px': '120px'"
       >
         <template #header>
           <div v-if="type">
@@ -68,9 +69,9 @@ import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
-import {useCopy} from "~/utils";
+import { useCopy } from "~/utils";
 function copy() {
-  useCopy(JSON.stringify(持仓JSON.value))
+  useCopy(JSON.stringify(持仓JSON.value));
 }
 const tableRef = ref();
 const stockCodeList = computed(() => {
