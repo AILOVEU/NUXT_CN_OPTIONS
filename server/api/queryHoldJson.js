@@ -1,6 +1,6 @@
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
-import fs from "fs";
+import * as fs from 'fs';
 export async function get_持仓JSON() {
   const converterStream = fs
     .createReadStream("public\\持仓.csv")
