@@ -1,6 +1,7 @@
 <template>
   <div class="flex justify-between text-[12px]">
     <el-button @click="refresh">刷新</el-button>
+    <el-button @click="copy" class="px-[50px]">复制持仓</el-button>
     <div class="flex items-center">
       <a href="/">T型</a>
       <div class="w-[200px]"></div>
@@ -61,7 +62,6 @@
         </template>
       </el-table-column>
     </el-table>
-    {{ 持仓JSON }}
   </div>
 </template>
 <script setup>
@@ -73,6 +73,10 @@ import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
 import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
+import {useCopy} from "~/utils";
+function copy() {
+  useCopy(JSON.stringify(持仓JSON.value))
+}
 const tableRef = ref();
 const stockCodeList = computed(() => {
   let list = Object.keys(stock_show_name_map);

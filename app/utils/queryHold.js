@@ -1,5 +1,5 @@
 import { stock_sort_map } from "~/data";
-import { get_http_data } from "./utils.js";
+import { get_http_data } from "./";
 import dayjs from "dayjs";
 function get_fist_季度月份(dataList) {
   const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));

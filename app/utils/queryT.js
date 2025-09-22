@@ -1,5 +1,5 @@
 import { stock_sort_map } from "~/data";
-import { get_http_data } from "./utils.js";
+import { get_http_data } from "./";
 
 function handleData(dataList) {
   let all_data = [];

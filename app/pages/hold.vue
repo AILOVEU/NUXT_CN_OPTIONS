@@ -1,6 +1,7 @@
 <template>
-  <div class="flex justify-between">
+  <div class="flex justify-between text-[12px]">
     <el-button @click="refresh">刷新</el-button>
+    <el-button @click="copy" class="px-[50px]">复制持仓</el-button>
     <div class="flex items-center">
       <a href="/">T型</a>
       <div class="w-[300px]"></div>
@@ -67,7 +68,10 @@ import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
-
+import {useCopy} from "~/utils";
+function copy() {
+  useCopy(JSON.stringify(持仓JSON.value))
+}
 const tableRef = ref();
 const stockCodeList = computed(() => {
   let list = Object.keys(stock_show_name_map);

@@ -3,6 +3,7 @@
 // import fs from "fs";
 import { fields_dict, stock_code_map } from "~/data";
 import dayjs from "dayjs";
+import { ElMessage } from 'element-plus'
 
 function is_机会(line_dict) {
   const { 最新价, 隐波, 到期天数, 溢价率 } = line_dict;
@@ -50,7 +51,7 @@ function get_stock_code(name) {
 }
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 100
+  const pz = 50
   let all_data = [];
   while (curr_page < 50) {
     const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -169,6 +170,39 @@ export const getColorSplitHander = (startColor, endColor) => {
   };
 };
 // ↑ 颜色切割 end↑
+export function useCopy(text) {
+  function selectText(textbox, startIndex, stopIndex) {
+    if (textbox.createTextRange) {
+      const range = textbox.createTextRange();
+      range.moveStart("character", startIndex);
+      range.moveEnd("character", startIndex - stopIndex);
+      range.select();
+    } else {
+      textbox.setSelectionRange(startIndex, stopIndex);
+      textbox.focus();
+    }
+  }
+  let textArea = document.createElement("textarea");
+  textArea.style.position = "fixed";
+  textArea.style.top = "-10000"; // 把生成的输入框移动到视线之外
+  textArea.style.zIndex = "-1"; // 把生成的输入框移动到视线之外
+  textArea.readOnly = "readOnly"; // 设置为只读，这样在移动端才不会弹出虚拟键盘
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  selectText(textArea, 0, text.length);
+  try {
+    if (document.execCommand("copy")) {
+      document.execCommand("copy");
+      ElMessage({ message: "复制成功", type: "success" });
+    } else {
+    }
+  } catch (error) {
+    ElMessage({ message: `${error}`, type: "error" });
+  }
+  textArea.blur(); //去掉选中，因为的移动端ios 上，会出现点了选择左上角出现点问题
+  document.body.removeChild(textArea);
+}
+
 
 export const MOCK_DATA = [
   {

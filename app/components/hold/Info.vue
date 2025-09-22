@@ -50,7 +50,7 @@ import PriceTag from "~/components/tag/PriceTag.vue";
 import DiffTag from "~/components/tag/DiffTag.vue";
 
 import { UNIT, 基础金额 } from "~/data";
-import { getColorSplitHander } from "~//utils/utils";
+import { getColorSplitHander } from "~//utils";
 const props = defineProps(["row", "isCall", "date"]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
