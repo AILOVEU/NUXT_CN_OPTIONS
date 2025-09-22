@@ -81,7 +81,7 @@ function handleData(dataList) {
   return all_data;
 }
 export default eventHandler(async (event) => {
-  // const all_data = await get_http_data();
-  const all_data = MOCK_DATA;
+  const all_data = await get_http_data();
+  // const all_data = MOCK_DATA;
   return handleData(all_data);
 });

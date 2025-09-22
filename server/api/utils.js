@@ -109,11 +109,11 @@ export async function get_http_data() {
   let all_data = [];
   const promiseList = [
     "m:10+c:510050",
-    // "m:10+c:510300",
-    // "m:10+c:510500",
-    // "m:10+c:588000",
-    // "m:12+c:159915",
-    // "m:12+c:159922",
+    "m:10+c:510300",
+    "m:10+c:510500",
+    "m:10+c:588000",
+    "m:12+c:159915",
+    "m:12+c:159922",
   ].map((fs) => get_target_http_data(fs));
   await Promise.all(promiseList)
     .then((list) => {
