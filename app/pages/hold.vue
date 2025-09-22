@@ -100,7 +100,7 @@ const tableData = reactive({
   ],
 });
 const 持仓JSON = ref([]);
-useFetch("/api/queryHoldJson").then((res) => {
+$fetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
 async function refresh() {
