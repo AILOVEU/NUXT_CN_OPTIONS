@@ -70,7 +70,7 @@ import Info from "~/components/t/Info.vue";
 import Options from "~/components/t/Options.vue";
 import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
-
+import { queryT } from "~/utils/queryT.js";
 import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
 const tableRef = ref();
 const stockCodeList = computed(() => {
@@ -130,8 +130,10 @@ const tableData = reactive({
 });
 async function refresh() {
   tableData.loading = true;
-  const res = await useFetch("/api/queryT");
-  tableData.data = res.data.value || [];
+  const res = await useFetch("/api/queryHoldJson");
+  const 持仓JSON = res.data.value || [];
+  const tData = await queryT(持仓JSON);
+  tableData.data = tData || [];
   tableData.loading = false;
 }
 const 行权价RangeDict = reactive({ ...行权价_range_map });
