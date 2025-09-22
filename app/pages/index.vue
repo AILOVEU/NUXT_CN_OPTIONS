@@ -128,11 +128,14 @@ const tableData = reactive({
     },
   ],
 });
+const 持仓JSON = ref([]);
+useFetch("/api/queryHoldJson").then((res) => {
+  持仓JSON.value = res.data.value || [];
+});
 async function refresh() {
   tableData.loading = true;
   const res = await useFetch("/api/queryHoldJson");
-  const 持仓JSON = res.data.value || [];
-  const tData = await queryT(持仓JSON);
+  const tData = await queryT(持仓JSON.value);
   tableData.data = tData || [];
   tableData.loading = false;
 }
