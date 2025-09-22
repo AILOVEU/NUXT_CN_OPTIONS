@@ -134,7 +134,6 @@ useFetch("/api/queryHoldJson").then((res) => {
 });
 async function refresh() {
   tableData.loading = true;
-  const res = await useFetch("/api/queryHoldJson");
   const tData = await queryT(持仓JSON.value);
   tableData.data = tData || [];
   tableData.loading = false;
