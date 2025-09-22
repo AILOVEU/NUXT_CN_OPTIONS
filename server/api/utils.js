@@ -3,7 +3,7 @@ import iconvLite from "iconv-lite";
 import fs from "fs";
 import { fields_dict, stock_code_map } from "~/data";
 import dayjs from "dayjs";
-
+// const fs = require('fs');
 function is_机会(line_dict) {
   const { 最新价, 隐波, 到期天数, 溢价率 } = line_dict;
   if (到期天数 < 15) return false;
@@ -49,7 +49,8 @@ function get_stock_code(name) {
   return code;
 }
 export async function get_target_http_data(fs) {
-  let 持仓JSON = await get_持仓JSON();
+  // let 持仓JSON = await get_持仓JSON();
+  let 持仓JSON = [];
   let curr_page = 1;
   let all_data = [];
   while (curr_page < 50) {

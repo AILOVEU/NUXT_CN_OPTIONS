@@ -9,6 +9,7 @@
     "preview": "npx nuxthub preview",
     "deploy": "npx nuxthub deploy",
     "postinstall": "nuxt prepare",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
