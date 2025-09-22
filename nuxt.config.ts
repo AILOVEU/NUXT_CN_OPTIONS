@@ -9,6 +9,7 @@ export default defineNuxtConfig({
   hub: {
     // NuxtHub options
   },
+  future: { compatibilityVersion: 4 },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   // css: ['~/styles/index.css']
