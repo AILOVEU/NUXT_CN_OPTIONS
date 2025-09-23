@@ -10,16 +10,11 @@
       </div>
     </div>
     <div class="w-full pb-[12px]">
-      <el-radio-group v-model="stockCode" size="small">
-        <el-radio-button
-          v-for="stock_code in stockCodeList"
-          :key="stock_code"
-          :value="stock_code"
-          @click="handleStockCodeChange"
-        >
-          {{ stock_show_name_map[stock_code] }}
-        </el-radio-button>
-      </el-radio-group>
+      <TabSelect
+        :options="stockCodeOptions"
+        v-model="stockCode"
+        @click="handleStockCodeChange"
+      />
     </div>
   </div>
 
@@ -80,14 +75,17 @@ function copy() {
   useCopy(JSON.stringify(持仓JSON.value));
 }
 const tableRef = ref();
-const stockCodeList = computed(() => {
+const stockCodeOptions = computed(() => {
   let list = Object.keys(stock_show_name_map);
   list.sort(function (a, b) {
     return stock_sort_map[a] - stock_sort_map[b];
   });
-  return list;
+  return list.map((code) => ({
+    value: code,
+    label: stock_show_name_map[code],
+  }));
 });
-const stockCode = ref(stockCodeList.value[0]);
+const stockCode = ref(stockCodeOptions.value[0].value);
 const tableData = reactive({
   data: [],
   loading: false,
