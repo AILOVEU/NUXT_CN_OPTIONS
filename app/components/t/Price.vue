@@ -9,7 +9,7 @@
       <div class="w-full text-center border-b-[1px]">{{ 差价 }}</div>
 
       <div class="w-full text-center">
-        <el-tag type="primary">{{ 最新价 }}</el-tag>
+        <PriceTag :最新价="最新价"/>
       </div>
     </div>
     <div class="p-[12px]">{{ 卖一 }}</div>
@@ -17,6 +17,7 @@
 </template>
 <script setup>
 import { UNIT } from "~/data";
+import PriceTag from "~/components/tag/PriceTag.vue";
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
