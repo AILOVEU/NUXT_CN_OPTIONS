@@ -3,15 +3,19 @@ import iconvLite from "iconv-lite";
 import fs from "node:fs";
 import { MOCK_HOLD } from "./holdJson";
 export async function get_持仓JSON() {
-  const converterStream = fs
-    .createReadStream("public\\持仓.csv")
-    .pipe(iconvLite.decodeStream("gbk"));
   return new Promise((resolve) => {
-    csvtojson()
-      .fromStream(converterStream)
-      .then((res) => {
-        resolve(res);
-      });
+    try {
+      const converterStream = fs
+        .createReadStream("public\\持仓.csv")
+        .pipe(iconvLite.decodeStream("gbk"));
+      csvtojson()
+        .fromStream(converterStream)
+        .then((res) => {
+          resolve(res);
+        });
+    } catch (e) {
+      resolve([]);
+    }
   });
 }
 export default eventHandler(async (event) => {
