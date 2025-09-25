@@ -83,9 +83,9 @@ const stockCodeOptions = computed(() => {
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
 const deadline_list = [
-  "20250924",
+  // "20250924",
   "20251022",
-  // "20251126",
+  "20251126",
   "20251224",
   // "20260128",
   // "20260225",
