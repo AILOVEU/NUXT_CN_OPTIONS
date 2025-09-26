@@ -1,16 +1,42 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@element-plus/nuxt',
+    "@nuxtjs/tailwindcss",
+    "@element-plus/nuxt",
     "nuxt-lodash",
-    '@nuxthub/core'
+    "@nuxthub/core",
+    'nuxt-echarts',
   ],
+  ssr: false,
+  build: { transpile: ['echarts-liquidfill'] },
+  echarts: {
+    renderer: ['canvas', 'svg'],
+    charts: ['LineChart', 'BarChart', 'MapChart', 'PieChart'],
+    components: [
+      'TitleComponent',
+      'DatasetComponent',
+      'GridComponent',
+      'TooltipComponent',
+      'ToolboxComponent',
+      'LegendComponent',
+      'GeoComponent',
+      'VisualMapComponent',
+    ],
+  },
+  // echarts: {
+  //   charts: ["BarChart"],
+  //   components: ["DatasetComponent", "GridComponent", "TooltipComponent"],
+  // },
+  // echarts: {
+  //   charts: ['BarChart'],
+  //   components: ['DatasetComponent', 'GridComponent', 'TooltipComponent'],
+  // },
   // hub: {
   //   // NuxtHub options
   // },
   // future: { compatibilityVersion: 4 },
   // compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+
+  devtools: { enabled: false },
   // css: ['~/styles/index.css']
-})
+});

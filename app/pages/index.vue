@@ -139,7 +139,7 @@ useFetch("/api/queryHoldJson").then((res) => {
 });
 async function refresh() {
   tableData.loading = true;
-  const tData = await queryT(持仓JSON.value, stockCode.value);
+  const tData = await queryT(持仓JSON.value, [stockCode.value]);
   tableData.data = tData || [];
   tableData.loading = false;
 }

@@ -61,7 +61,12 @@
   </div>
 </template>
 <script setup>
-import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
+import {
+  stock_show_name_map,
+  stock_sort_map,
+  行权价_range_map,
+  deadline_list,
+} from "~/data";
 import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
@@ -82,15 +87,6 @@ const stockCodeOptions = computed(() => {
   }));
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
-const deadline_list = [
-  // "20250924",
-  "20251022",
-  "20251126",
-  "20251224",
-  // "20260128",
-  // "20260225",
-  "20260325",
-];
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   data: [],
@@ -110,7 +106,7 @@ useFetch("/api/queryHoldJson").then((res) => {
 });
 async function refresh() {
   tableData.loading = true;
-  const holdData = await queryHold(持仓JSON.value, stockCode.value);
+  const holdData = await queryHold(持仓JSON.value, [stockCode.value]);
   tableData.data = holdData || [];
   tableData.loading = false;
 }

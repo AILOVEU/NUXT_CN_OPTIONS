@@ -17,7 +17,7 @@ function is_机会(line_dict) {
 function get_最新价(row) {
   let { 最新价, 卖一, 买一 } = row;
   if (!卖一 || !买一) return 最新价;
-  if (最新价 === '-' || !最新价 || 最新价 > 卖一 || 最新价 < 买一)
+  if (最新价 === "-" || !最新价 || 最新价 > 卖一 || 最新价 < 买一)
     return Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
   return 最新价;
 }
@@ -109,7 +109,7 @@ export async function get_target_http_data(持仓JSON, fs) {
   return all_data;
 }
 
-export async function get_http_data(持仓JSON, 正股代码) {
+export async function get_http_data(持仓JSON, 正股代码List) {
   let all_data = [];
   const promiseList = [
     "m:10+c:510050",
@@ -119,7 +119,7 @@ export async function get_http_data(持仓JSON, 正股代码) {
     "m:12+c:159915",
     "m:12+c:159922",
   ]
-    .filter((el) => el.includes(正股代码))
+    .filter((el) => 正股代码List.some((code) => el.includes(code)))
     .map((fs, idx) => {
       return new Promise((resolve) => {
         setTimeout(() => {

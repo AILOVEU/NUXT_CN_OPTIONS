@@ -8,8 +8,7 @@
     "generate": "nuxt generate",
     "preview": "npx nuxthub preview",
     "deploy": "npx nuxthub deploy",
-    "postinstall": "nuxt prepare",
-    "lint": "eslint ."
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -17,12 +16,16 @@
     "@nuxthub/core": "^0.9.0",
     "@nuxtjs/supabase": "^1.6.1",
     "csvtojson": "^2.0.10",
+    "echarts": "^6.0.0",
     "element-plus": "^2.11.1",
     "iconv-lite": "^0.7.0",
     "nuxt": "^4.0.3",
+    "nuxt-charts": "^0.2.4",
+    "nuxt-echarts": "^1.0.0",
     "nuxt-lodash": "^2.5.3",
     "papaparse": "^5.5.3",
     "vue": "^3.5.20",
+    "vue-echarts": "^7.0.3",
     "vue-router": "^4.5.1"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
@@ -33,9 +36,5 @@
     "less-loader": "^12.3.0",
     "sass": "^1.91.0",
     "wrangler": "^4.38.0"
-  },
-  "engines": {
-    "node": "22.18.0",
-    "npm": "10.9.3"
   }
 }
