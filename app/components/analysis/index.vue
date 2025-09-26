@@ -1,10 +1,10 @@
 <template>
   <div v-loading="loading">
     <el-button @click="handleQuery">刷新</el-button>
-    <div class="flex justify-between">
-      <VChart :option="正股分布Option" style="height: 500px; width: 100vw" />
-      <VChart :option="时间分布Option" style="height: 500px; width: 100vw" />
-      <VChart :option="沽购分布Option" style="height: 500px; width: 100vw" />
+    <div class="flex justify-between flex-wrap mx-auto">
+      <VChart :option="正股分布Option" style="height: 500px; width: 550px" />
+      <VChart :option="时间分布Option" style="height: 500px; width: 550px" />
+      <VChart :option="沽购分布Option" style="height: 500px; width: 550px" />
     </div>
   </div>
 </template>
