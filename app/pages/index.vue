@@ -1,64 +1,66 @@
 <template>
   <div>
-    <div class="flex justify-between text-[12px] mb-[12px]">
-      <el-button @click="refresh" size="small">刷新</el-button>
-      <el-button @click="copy" size="small">复制持仓</el-button>
-      <div class="flex items-center">
-        <a href="/">T型</a>
-        <div class="w-[10vw]"></div>
-        <a href="/hold">持仓</a>
+    <div>
+      <div class="flex justify-between text-[12px] mb-[12px]">
+        <el-button @click="refresh" size="small">刷新</el-button>
+        <el-button @click="copy" size="small">复制持仓</el-button>
+        <div class="flex items-center">
+          <a href="/">T型</a>
+          <div class="w-[10vw]"></div>
+          <a href="/hold">持仓</a>
+        </div>
+      </div>
+      <div class="w-full pb-[12px]">
+        <TabSelect
+          :options="stockCodeOptions"
+          v-model="stockCode"
+          @click="handleStockCodeChange"
+        />
       </div>
     </div>
-    <div class="w-full pb-[12px]">
-      <TabSelect
-        :options="stockCodeOptions"
-        v-model="stockCode"
-        @click="handleStockCodeChange"
-      />
-    </div>
-  </div>
 
-  <div class="mx-auto">
-    <el-table
-      :data="filteredTableData"
-      style="width: 100%"
-      v-loading="tableData.loading"
-      size="small"
-      border
-      height="950px"
-      :highlight-current-row="false"
-      :row-style="getRowStyle"
-      :cell-style="getCellStyle"
-      ref="tableRef"
-    >
-      <el-table-column
-        v-for="{ label, width } in tableData.columns"
-        :key="label"
-        :prop="label"
-        :label="label"
-        :width="width"
-        align="center"
+    <div class="mx-auto">
+      <el-table
+        :data="filteredTableData"
+        style="width: 100%"
+        v-loading="tableData.loading"
+        size="small"
+        border
+        height="950px"
+        :highlight-current-row="false"
+        :row-style="getRowStyle"
+        :cell-style="getCellStyle"
+        ref="tableRef"
       >
-        <template #default="{ row }" v-if="label === '期权'">
-          <Center :row="row" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_价格')">
-          <Price :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_信息')">
-          <Info :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_合约')">
-          <Options :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_价值')">
-          <Time :row="row" :isCall="label.includes('C')" />
-        </template>
-        <template #default="{ row }" v-if="label.includes('_持仓')">
-          <Hold :row="row" :isCall="label.includes('C')" />
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column
+          v-for="{ label, width } in tableData.columns"
+          :key="label"
+          :prop="label"
+          :label="label"
+          :width="width"
+          align="center"
+        >
+          <template #default="{ row }" v-if="label === '期权'">
+            <Center :row="row" />
+          </template>
+          <template #default="{ row }" v-if="label.includes('_价格')">
+            <Price :row="row" :isCall="label.includes('C')" />
+          </template>
+          <template #default="{ row }" v-if="label.includes('_信息')">
+            <Info :row="row" :isCall="label.includes('C')" />
+          </template>
+          <template #default="{ row }" v-if="label.includes('_合约')">
+            <Options :row="row" :isCall="label.includes('C')" />
+          </template>
+          <template #default="{ row }" v-if="label.includes('_价值')">
+            <Time :row="row" :isCall="label.includes('C')" />
+          </template>
+          <template #default="{ row }" v-if="label.includes('_持仓')">
+            <Hold :row="row" :isCall="label.includes('C')" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script setup>
