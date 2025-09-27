@@ -2,27 +2,34 @@
   <VChart :option="option" style="height: 900px; width: 100vw" />
 </template>
 <script setup>
-import { UNIT } from "~/data";
+import { UNIT, stock_code_map } from "~/data";
 
 const props = defineProps(["all_data"]);
 const option = computed(() => {
-  if (!props.all_data?.length) return {};
+  let all_data = props.all_data;
+  if (!all_data?.length) return {};
+  all_data = all_data.filter((el) => el["隐波"]).filter(el=> el['隐波'] < 35);
   const stockCodeList = Array.from(
-    new Set(props.all_data.map((el) => el["正股代码"]))
+    new Set(all_data.map((el) => el["正股代码"]))
   );
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = props.all_data.filter((el) => el["正股代码"] === code);
-    return codeOptions.map((el) => [el["到期天数"], el["隐波"], el]);
+    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    return codeOptions.map((el) => {
+      const isCall = el["期权名称"].includes("购");
+      const 到期天数 = isCall ? el["到期天数"] : -el["到期天数"];
+      return [到期天数, el["隐波"], { ...el, 到期天数 }];
+    });
   });
   return {
     title: {
       text: "全部期权信息",
     },
     legend: {
-      data: stockCodeList,
+      data: stockCodeList.map((el) => stock_code_map[el]),
       bottom: "0",
     },
     xAxis: {
+      // type: 'category',
       splitLine: {
         lineStyle: {
           type: "dashed",
@@ -30,7 +37,7 @@ const option = computed(() => {
       },
     },
     yAxis: {
-      // type: 'log',
+      // type: "log",
       splitLine: {
         lineStyle: {
           type: "dashed",
@@ -39,12 +46,13 @@ const option = computed(() => {
       scale: true,
     },
     series: dataList.map((el) => ({
-      name: el[0][2]["正股代码"],
+      name: stock_code_map[el[0][2]["正股代码"]],
       data: el,
       type: "scatter",
       symbolSize: function (el) {
         let data = el[2];
-        return Math.sqrt((data["Delta"] / data["最新价"]) * 40000) / 16;
+        const value = Math.abs(data["Delta"]) / data["最新价"];
+        return Math.sqrt(value * value * 5000) / 16;
       },
       emphasis: {
         focus: "series",
@@ -52,9 +60,9 @@ const option = computed(() => {
           show: true,
           formatter: function (param) {
             const data = param.data[2];
-            return `${data["正股代码"]} 价：${Math.floor(
+            return `${data['期权名称']}  价：${Math.floor(
               data["最新价"] * UNIT
-            )} \n 隐波:${data["隐波"]}\nDelta: ${data["Delta"]}`;
+            )} \n 隐波:${data["隐波"]}  Delta: ${data["Delta"]}`;
           },
           position: "top",
         },
