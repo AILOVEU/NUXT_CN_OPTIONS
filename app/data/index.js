@@ -49,6 +49,14 @@ export const stock_code_map = {
   159922: "(深)中证500", // 中文名无关，特殊处理了
   159915: "创业板ETF",
 };
+export const stock_color_map = {
+  510050: "#738de4",
+  510300: "#c5de5d",
+  510500: "#73758e",
+  588000: "#ffad71",
+  159922: "#3db9e5",
+  159915: "#f70a8d",
+}
 export const stock_show_name_map = {
   510050: "50ETF 🧊",
   510300: "300ETF 🍆",

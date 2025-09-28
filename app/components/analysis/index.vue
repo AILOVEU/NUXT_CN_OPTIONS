@@ -23,13 +23,13 @@ const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
   // plan 1
-  // options_list.value = await get_http_data(持仓JSON.value, stockCodeList);
-  // all_data.value = [...options_list.value];
-  // options_list.value = options_list.filter((el) => el["持仓"]);
-  // loading.value = false;
-  // plan 2
-  options_list.value = MOCK_HOLD_DATA;
+  options_list.value = await get_http_data(持仓JSON.value, stockCodeList);
   all_data.value = [...options_list.value];
+  options_list.value = options_list.value.filter((el) => el["持仓"]);
   loading.value = false;
+  // plan 2
+  // options_list.value = MOCK_HOLD_DATA;
+  // all_data.value = [...options_list.value];
+  // loading.value = false;
 }
 </script>

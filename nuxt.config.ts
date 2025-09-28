@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   build: { transpile: ['echarts-liquidfill'] },
   echarts: {
     renderer: ['canvas', 'svg'],
-    charts: ['LineChart', 'BarChart', 'MapChart', 'PieChart','ScatterChart'],
+    charts: ['LineChart', 'BarChart', 'MapChart', 'PieChart','ScatterChart','SunburstChart'],
     components: [
       'TitleComponent',
       'DatasetComponent',
