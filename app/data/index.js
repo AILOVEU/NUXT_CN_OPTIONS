@@ -1,3 +1,4 @@
+import _ from 'lodash'
 export const 入金金额 = 50000;
 export const 已提现金额 = 0;
 export const 场内现金 = 1548 + 5550;
@@ -45,24 +46,24 @@ export const stock_code_map = {
   510050: "上证50ETF",
   510300: "沪深300ETF",
   510500: "中证500ETF",
-  588000: "科创50ETF",
   159922: "(深)中证500", // 中文名无关，特殊处理了
+  588000: "科创50ETF",
   159915: "创业板ETF",
 };
 export const stock_color_map = {
-  510050: "#738de4",
-  510300: "#c5de5d",
-  510500: "#73758e",
-  588000: "#ffad71",
-  159922: "#3db9e5",
-  159915: "#f70a8d",
-}
+  510050: "#73c0de",
+  510300: "#91cc75",
+  510500: "#fac858",
+  159922: "#fc8452",
+  588000: "#9a60b4",
+  159915: "#ea7ccc",
+};
 export const stock_show_name_map = {
   510050: "50ETF 🧊",
   510300: "300ETF 🍆",
   510500: "500ETF 🥟",
-  588000: "科创50ETF ",
   159922: "(深)中证500🥟",
+  588000: "科创50ETF 🥕",
   159915: "创业板 🦑",
 };
 export const stock_sort_map = {
@@ -75,6 +76,10 @@ export const stock_sort_map = {
   588000: 5,
   159915: 6,
 };
+export const stock_sorted_list = _.sortBy(
+  Object.keys(stock_sort_map),
+  (code) => stock_sort_map[code]
+);
 export const 行权价_range_map = {
   510050: [2800, 3400],
   510300: [4000, 5000],

@@ -19,11 +19,11 @@ import dayjs from "dayjs";
 
 const props = defineProps(["options_list"]);
 const stockCodeList = Object.keys(stock_code_map);
-const optionType = ["购", "沽"];
+const optionTypeList = ["购", "沽"];
 const COLOR_LIST = ["#fed35d", "#c6d18a", "#ff956b", "#55a2b7"];
 const 正股分布 = ref([]);
 const 时间分布 = ref([]);
-const 沽购分布 = ref({});
+const 沽购分布 = ref([]);
 function getPieOptions({ title, seriesData1, seriesData2 = [] }) {
   return {
     title: {
@@ -147,12 +147,9 @@ const 时间分布Option = computed(() => {
   });
 });
 const 沽购分布Option = computed(() => {
-  return getPieOptions({
+  return getSunburstOptions({
     title: "沽购分布",
-    seriesData1: Object.keys(沽购分布.value).map((type) => ({
-      name: type,
-      value: get_list_all_hold(沽购分布.value[type]),
-    })),
+    data: 沽购分布.value,
   });
 });
 function sortItemCode(item) {
@@ -163,7 +160,7 @@ watch(
   () => {
     if (!props.options_list?.length) return;
     const options_list = props.options_list;
-    // optionType.forEach((type) => {
+    // optionTypeList.forEach((type) => {
     //   沽购分布.value[type] = options_list.filter((el) =>
     //     el["期权名称"].includes(type)
     //   );
@@ -185,7 +182,7 @@ watch(
               name: stock_code_map[code],
               value: curSum,
               percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
-              children: optionType.map((type) => {
+              children: optionTypeList.map((type) => {
                 const curSum = get_list_all_hold(
                   options_list.filter(
                     (el) =>
@@ -229,6 +226,46 @@ watch(
                     options_list.filter(
                       (el) =>
                         el["正股代码"] === code && el["到期日"].includes(date)
+                    )
+                  );
+                  return {
+                    code,
+                    itemStyle: {
+                      color: stock_color_map[code],
+                    },
+                    name: stock_code_map[code],
+                    value: curSum,
+                    percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+                  };
+                }),
+                sortItemCode
+              ),
+            };
+          })
+        ),
+      },
+    ];
+    沽购分布.value = [
+      {
+        name: allSum,
+        children: _.sortBy(
+          optionTypeList.map((type, index) => {
+            const curSum = get_list_all_hold(
+              options_list.filter((el) => el["期权名称"].includes(type))
+            );
+            return {
+              name: type,
+              value: curSum,
+              percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+              itemStyle: {
+                color: COLOR_LIST[index],
+              },
+              children: _.sortBy(
+                stockCodeList.map((code) => {
+                  const curSum = get_list_all_hold(
+                    options_list.filter(
+                      (el) =>
+                        el["正股代码"] === code && el["期权名称"].includes(type)
                     )
                   );
                   return {

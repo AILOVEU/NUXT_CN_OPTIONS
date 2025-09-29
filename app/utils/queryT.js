@@ -11,7 +11,7 @@ function handleData(dataList) {
     let put_期权名称 = call_item["期权名称"].replace("购", "沽");
     let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
     let data = {};
-    Object.keys(call_item).forEach((key) => {
+    [...Object.keys(call_item), "单日损耗"].forEach((key) => {
       if (["期权名称"].includes(key)) return;
       data["C" + key] = call_item?.[key];
       data["P" + key] = put_item?.[key];
@@ -57,7 +57,7 @@ function handleData(dataList) {
   return all_data;
 }
 export async function queryT(持仓JSON, 正股代码) {
-  const all_data = await get_http_data(持仓JSON,正股代码);
+  const all_data = await get_http_data(持仓JSON, 正股代码);
   // const all_data = MOCK_DATA;
   return handleData(all_data);
 }

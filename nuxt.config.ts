@@ -21,6 +21,7 @@ export default defineNuxtConfig({
       'LegendComponent',
       'GeoComponent',
       'VisualMapComponent',
+      'MarkLineComponent'
     ],
   },
   // echarts: {
