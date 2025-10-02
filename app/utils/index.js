@@ -40,6 +40,13 @@ function get_持仓(持仓JSON, line_dict) {
 //       });
 //   });
 // }
+function get_option_实值(el) {
+  const isCall = el["期权名称"].includes("购");
+  const 实值 = isCall
+    ? el["正股价格"] - el["行权价"]
+    : el["行权价"] - el["正股价格"];
+  return 实值 > 0 ? Math.floor(实值 * UNIT) / UNIT : 0;
+}
 function get_stock_code(name) {
   let code;
   Object.keys(stock_code_map).forEach((key) => {
@@ -64,10 +71,11 @@ export async function get_target_http_data(持仓JSON, fs) {
         np: "1",
         fltt: "2",
         invt: "2",
-        ut: "fa5fd1943c7b386f172d6193dbfba10c",
+        dect: "1",
+        ut: "fa5fd1943c7b386f172d6893dbfba10b",
         fields: Object.keys(fields_dict).join(","),
         wbp2u: "|0|1|0|web",
-        _: "1739763465633",
+        _: "1759371496573",
         fs,
         // fs: "m:10+c:510050",
         // fs: "m:10,m:12",
@@ -90,6 +98,9 @@ export async function get_target_http_data(持仓JSON, fs) {
       line_dict["单日损耗"] =
         Math.floor((10 * line_dict["Theta"] * UNIT) / 365) / 10;
       line_dict["最新价"] = get_最新价(line_dict);
+      line_dict["内在价值"] = get_option_实值(line_dict);
+      line_dict["时间价值"] =
+        Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * UNIT) / UNIT;
       line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
       line_dict["机会"] = is_机会(line_dict);
       line_dict["到期日"] = line_dict["到期日"] + "";

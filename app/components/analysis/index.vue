@@ -1,9 +1,10 @@
 <template>
   <div v-loading="loading">
     <el-button @click="handleQuery">刷新</el-button>
+    <DescInfo :all_data="all_data" />
     <BarInfo :all_data="all_data" />
     <BubbleInfo :all_data="all_data" />
-    <PercentInfo :options_list="options_list"/>
+    <PercentInfo :all_data="all_data" />
   </div>
 </template>
 <script setup>
@@ -13,26 +14,22 @@ import { get_http_data } from "~/utils";
 import _ from "lodash";
 import PercentInfo from "./PercentInfo";
 import BubbleInfo from "./BubbleInfo";
-import BarInfo from './BarInfo'
+import BarInfo from "./BarInfo";
+import DescInfo from "./DescInfo";
 const stockCodeList = Object.keys(stock_code_map);
 const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
-const all_data = ref();
-const options_list = ref();
+const all_data = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
   // plan 1
-  options_list.value = await get_http_data(持仓JSON.value, stockCodeList);
-  all_data.value = [...options_list.value];
-  options_list.value = options_list.value.filter((el) => el["持仓"]);
-  console.log(JSON.stringify(options_list.value))
+  all_data.value = await get_http_data(持仓JSON.value, stockCodeList);
   loading.value = false;
   // plan 2
-  // options_list.value = MOCK_HOLD_DATA;
-  // all_data.value = [...options_list.value];
+  // all_data.value = MOCK_HOLD_DATA;
   // loading.value = false;
 }
 </script>

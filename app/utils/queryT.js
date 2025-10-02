@@ -11,11 +11,13 @@ function handleData(dataList) {
     let put_期权名称 = call_item["期权名称"].replace("购", "沽");
     let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
     let data = {};
-    [...Object.keys(call_item), "单日损耗"].forEach((key) => {
-      if (["期权名称"].includes(key)) return;
-      data["C" + key] = call_item?.[key];
-      data["P" + key] = put_item?.[key];
-    });
+    [...Object.keys(call_item), "单日损耗", "时间价值", "内在价值"].forEach(
+      (key) => {
+        if (["期权名称"].includes(key)) return;
+        data["C" + key] = call_item?.[key];
+        data["P" + key] = put_item?.[key];
+      }
+    );
     // Center字段
     data["期权"] = call_item["期权名称"].replace("购", "@");
     // 公共字段

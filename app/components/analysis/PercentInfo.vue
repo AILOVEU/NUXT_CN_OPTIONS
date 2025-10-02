@@ -24,52 +24,52 @@ const COLOR_LIST = ["#fed35d", "#c6d18a", "#ff956b", "#55a2b7"];
 const 正股分布 = ref([]);
 const 时间分布 = ref([]);
 const 沽购分布 = ref([]);
-function getPieOptions({ title, seriesData1, seriesData2 = [] }) {
-  return {
-    title: {
-      text: title,
-      left: "center",
-    },
-    tooltip: {
-      trigger: "item",
-    },
-    legend: {
-      // orient: "vertical",
-      bottom: "0",
-    },
-    series: [
-      {
-        radius: ["50%", "60%"],
-        smooth: true,
-        // radius: '50%',
-        // roseType: 'area',
-        padAngle: 2,
-        type: "pie",
-        data: seriesData1,
-        label: {
-          formatter: "{b}\n{c}\n({d}%)",
-        },
-      },
-      {
-        radius: ["30%", "40%"],
-        smooth: true,
-        label: {
-          show: false,
-          //   position: "inner",
-        },
-        labelLine: {
-          show: false,
-        },
-        padAngle: 2,
-        type: "pie",
-        data: seriesData2,
-        // label: {
-        //   formatter: "{b}\n{c}\n({d}%)",
-        // },
-      },
-    ],
-  };
-}
+// function getPieOptions({ title, seriesData1, seriesData2 = [] }) {
+//   return {
+//     title: {
+//       text: title,
+//       left: "center",
+//     },
+//     tooltip: {
+//       trigger: "item",
+//     },
+//     legend: {
+//       // orient: "vertical",
+//       bottom: "0",
+//     },
+//     series: [
+//       {
+//         radius: ["50%", "60%"],
+//         smooth: true,
+//         // radius: '50%',
+//         // roseType: 'area',
+//         padAngle: 2,
+//         type: "pie",
+//         data: seriesData1,
+//         label: {
+//           formatter: "{b}\n{c}\n({d}%)",
+//         },
+//       },
+//       {
+//         radius: ["30%", "40%"],
+//         smooth: true,
+//         label: {
+//           show: false,
+//           //   position: "inner",
+//         },
+//         labelLine: {
+//           show: false,
+//         },
+//         padAngle: 2,
+//         type: "pie",
+//         data: seriesData2,
+//         // label: {
+//         //   formatter: "{b}\n{c}\n({d}%)",
+//         // },
+//       },
+//     ],
+//   };
+// }
 function getSunburstOptions({ title, data }) {
   return {
     title: {
@@ -156,10 +156,10 @@ function sortItemCode(item) {
   return stock_sort_map[item.code];
 }
 watch(
-  () => props.options_list,
+  () => props.all_data,
   () => {
-    if (!props.options_list?.length) return;
-    const options_list = props.options_list;
+    if (!props.all_data?.length) return;
+    const options_list = props.all_data.filter((el) => el["持仓"]);
     // optionTypeList.forEach((type) => {
     //   沽购分布.value[type] = options_list.filter((el) =>
     //     el["期权名称"].includes(type)
