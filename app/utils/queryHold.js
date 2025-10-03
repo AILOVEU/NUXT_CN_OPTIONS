@@ -32,7 +32,13 @@ function handleData(dataList) {
         .replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
-      [...Object.keys(item), "成本价", "单日损耗",'时间价值','内在价值'].forEach((key) => {
+      [
+        ...Object.keys(item),
+        "成本价",
+        "单日损耗",
+        "时间价值",
+        "内在价值",
+      ].forEach((key) => {
         if (["期权名称"].includes(key)) return;
         data["C" + 实际月份 + key] = call_item?.[key];
         data["P" + 实际月份 + key] = put_item?.[key];
@@ -81,7 +87,7 @@ function handleData(dataList) {
   return all_data;
 }
 export async function queryHold(持仓JSON, 正股代码) {
-  const all_data = await get_http_data(持仓JSON, 正股代码);
+  const [all_data, combo_list] = await get_http_data(持仓JSON, 正股代码);
   // const all_data = MOCK_DATA;
   return handleData(all_data);
 }

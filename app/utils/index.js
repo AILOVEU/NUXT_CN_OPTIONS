@@ -56,6 +56,43 @@ function get_stock_code(name) {
   });
   return code;
 }
+function 构建组合(all_data) {
+  const 持仓List = all_data.filter((el) => el["持仓"]);
+  const 组合List = [];
+  let 持仓Map = {};
+  持仓List.forEach((el) => {
+    持仓Map[el["期权名称"]] = { ...el };
+  });
+  let 义务仓List = 持仓List.filter((el) => el["持仓"] < 0);
+  while (义务仓List.length) {
+    义务仓List.forEach((el) => {
+      const 义务Option = el["期权名称"];
+      const isCall = 义务Option.includes("购");
+      const 义务行权价 = el["行权价"] * 1000;
+      let 权利行权价 = 义务行权价 + (isCall ? -50 : 50);
+      let 权利Option = 义务Option.replace(义务行权价, 权利行权价);
+      while (
+        权利行权价 > 50 &&
+        (!持仓Map[权利Option]?.持仓 || 持仓Map[权利Option]?.持仓 < 0)
+      ) {
+        权利行权价 = 权利行权价 + (isCall ? -50 : 50);
+        权利Option = 义务Option.replace(义务行权价, 权利行权价);
+      }
+      const min持仓 = Math.min(
+        Math.abs(持仓Map[权利Option].持仓),
+        Math.abs(持仓Map[义务Option].持仓)
+      );
+      组合List.push([权利Option, 义务Option, min持仓]);
+      持仓Map[权利Option].持仓 = 持仓Map[权利Option].持仓 - min持仓;
+      持仓Map[义务Option].持仓 = 持仓Map[义务Option].持仓 + min持仓;
+      if (!持仓Map[义务Option].持仓) {
+        义务仓List = 义务仓List.filter((el) => el["期权名称"] !== 义务Option);
+      }
+    });
+  }
+  console.log("组合List", 组合List);
+  return 组合List;
+}
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
   const pz = 100;
@@ -121,7 +158,6 @@ export async function get_target_http_data(持仓JSON, fs) {
   }
   return all_data;
 }
-
 export async function get_http_data(持仓JSON, 正股代码List) {
   let all_data = [];
   const promiseList = [
@@ -149,7 +185,8 @@ export async function get_http_data(持仓JSON, 正股代码List) {
     .catch((err) => {
       console.log(err);
     });
-  return all_data;
+  const combo_list = 构建组合(all_data);
+  return [all_data, combo_list];
 }
 
 // ↓ 颜色切割 start↓

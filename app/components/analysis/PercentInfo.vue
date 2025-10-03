@@ -13,11 +13,10 @@ import {
   stock_sort_map,
   stock_color_map,
 } from "~/data";
-import { get_http_data } from "~/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 
-const props = defineProps(["options_list"]);
+const props = defineProps(["all_data"]);
 const stockCodeList = Object.keys(stock_code_map);
 const optionTypeList = ["购", "沽"];
 const COLOR_LIST = ["#fed35d", "#c6d18a", "#ff956b", "#55a2b7"];
@@ -160,11 +159,6 @@ watch(
   () => {
     if (!props.all_data?.length) return;
     const options_list = props.all_data.filter((el) => el["持仓"]);
-    // optionTypeList.forEach((type) => {
-    //   沽购分布.value[type] = options_list.filter((el) =>
-    //     el["期权名称"].includes(type)
-    //   );
-    // });
     const allSum = get_list_all_hold(options_list);
     正股分布.value = [
       {
