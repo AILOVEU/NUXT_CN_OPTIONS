@@ -57,6 +57,13 @@ import {
 } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
+const itemStyle = {
+  opacity: 0.8,
+  shadowBlur: 10,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  shadowColor: "rgba(0,0,0,0.3)",
+};
 const 到期天数List = deadline_list.map(
   (date) => dayjs(date, "YYYYMMDD").diff(dayjs(), "days") + 1
 );
@@ -87,14 +94,20 @@ const option = computed(() => {
       const isCall = el["期权名称"].includes("购");
       const 到期天数 = isCall ? el["到期天数"] : -el["到期天数"];
       const symbolSize =
-        10 *
-        Math.abs(
-          el["Delta"] /
-            el["最新价"] /
-            Math.sqrt(
-              !el["时间损耗"] || el["时间损耗"] > -1 ? 1 : -el["单日损耗"]
-            )
-        );
+        (el["Gamma"] *
+          el["Delta"] *
+          Math.sqrt(el["到期天数"]) *
+          el["正股价格"]) /
+        el["最新价"] /
+        5;
+      // 10 *
+      // Math.abs(
+      //   el["Delta"] /
+      //     el["最新价"] /
+      //     Math.sqrt(
+      //       !el["时间损耗"] || el["时间损耗"] > -1 ? 1 : -el["单日损耗"]
+      //     )
+      // );
       return [
         到期天数,
         el["隐波"],
@@ -165,7 +178,7 @@ const option = computed(() => {
                 data["最新价"] * UNIT
               )} \n 隐波:${data["隐波"]}  Delta: ${data["Delta"]} 单日损耗: ${
                 data["单日损耗"]
-              }`;
+              } \n Gamma: ${data["Gamma"]}`;
             },
             position: "top",
           },
