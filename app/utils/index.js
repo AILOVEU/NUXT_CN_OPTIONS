@@ -1,8 +1,9 @@
 // import csvtojson from "csvtojson";
 // import iconvLite from "iconv-lite";
 // import fs from "fs";
-import { UNIT, fields_dict, stock_code_map } from "~/data";
+import { UNIT, fields_dict, stock_code_map, 金额 } from "~/data";
 import dayjs from "dayjs";
+import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 
 function is_机会(line_dict) {
@@ -57,6 +58,7 @@ function get_stock_code(name) {
   return code;
 }
 function 构建组合(all_data) {
+  const { set保证金 } = useMoneyStore();
   const 持仓List = all_data.filter((el) => el["持仓"]);
   const 组合List = [];
   let 持仓Map = {};
@@ -91,6 +93,12 @@ function 构建组合(all_data) {
     });
   }
   console.log("组合List", 组合List);
+  let 占用保证金 = 0;
+  组合List.forEach((el) => {
+    占用保证金 += el[2] * 50;
+  });
+  // 金额.占用保证金 = 占用保证金;
+  set保证金(占用保证金);
   return 组合List;
 }
 export async function get_target_http_data(持仓JSON, fs) {

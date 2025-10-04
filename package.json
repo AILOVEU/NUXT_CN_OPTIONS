@@ -15,6 +15,7 @@
     "@element-plus/nuxt": "1.1.4",
     "@nuxthub/core": "^0.9.0",
     "@nuxtjs/supabase": "^1.6.1",
+    "@pinia/nuxt": "^0.11.2",
     "csvtojson": "^2.0.10",
     "echarts": "^6.0.0",
     "element-plus": "^2.11.1",
@@ -24,6 +25,7 @@
     "nuxt-echarts": "^1.0.0",
     "nuxt-lodash": "^2.5.3",
     "papaparse": "^5.5.3",
+    "pinia": "^3.0.3",
     "vue": "^3.5.20",
     "vue-echarts": "^7.0.3",
     "vue-router": "^4.5.1"

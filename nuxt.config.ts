@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     "nuxt-lodash",
     "@nuxthub/core",
     'nuxt-echarts',
+    '@pinia/nuxt'
   ],
   ssr: false,
   build: { transpile: ['echarts-liquidfill'] },

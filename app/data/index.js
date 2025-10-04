@@ -1,10 +1,12 @@
-import _ from 'lodash'
-export const 入金金额 = 50000;
-export const 已提现金额 = 0;
-export const 场内现金 = 1548 + 5550;
-export const 保证金 = 0;
-export const 基础金额 = 50000;
-// 股票账户2万待转出、期转股2千待处理
+import _ from "lodash";
+export const 金额 = {
+  基础金额: 50000,
+  入金金额: 50000,
+  场内现金: 340,
+  占用保证金: 0, // 组合自动计算
+  股票转入金额: 30000, // 提现
+  // 已提现金额: 0, // 金额详见<期货期权激励>
+};
 export const fields_dict = {
   f2: "最新价",
   f3: "涨跌幅",
