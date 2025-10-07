@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
     <el-button @click="handleQuery">刷新</el-button>
-    <DescInfo :all_data="all_data"   :combo_list="combo_list"/>
+    <MoneyInfo :all_data="all_data"   :combo_list="combo_list"/>
     <TimeInfo :all_data="all_data" :combo_list="combo_list" />
     <BarInfo :all_data="all_data" />
     <BubbleInfo :all_data="all_data" />
@@ -17,7 +17,7 @@ import PercentInfo from "./PercentInfo";
 import BubbleInfo from "./BubbleInfo";
 import BarInfo from "./BarInfo";
 import TimeInfo from "./TimeInfo";
-import DescInfo from "./DescInfo";
+import MoneyInfo from "./MoneyInfo";
 const stockCodeList = Object.keys(stock_code_map);
 const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {

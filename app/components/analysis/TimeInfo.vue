@@ -25,6 +25,29 @@
         }})
       </div>
     </div>
+  </div>
+  <div class="mt-[20px]">其他组合</div>
+  <div
+    v-for="[权利, 义务, 持仓] in 时间价值收益.otherList"
+    class="flex items-center justify-between w-[600px] border-[1px]"
+  >
+    <div class="w-[200px]">
+      <div>{{ 权利["期权名称"] }}</div>
+      <div>{{ 义务["期权名称"] }}</div>
+    </div>
+    <div>*{{ 持仓 }}</div>
+    <div class="w-[250px]">
+      <div>
+        {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
+          权利["内在价值"]
+        }})
+      </div>
+      <div>
+        {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
+          义务["内在价值"]
+        }})
+      </div>
+    </div>
     <!-- <div>{{ item["期权名称"] }}</div>
     <div>*{{ item["持仓"] }}</div>
     <div>
@@ -56,6 +79,7 @@ const 时间价值收益 = computed(() => {
   //   .filter((el) => el["持仓"] < 0 || el["内在价值"] > 0);
   let value = 0;
   const list = [];
+  const otherList = [];
   props.combo_list.forEach((el) => {
     const [权利Option, 义务Option, 组合持仓] = el;
     const 权利期权Item = props.all_data.find(
@@ -64,7 +88,10 @@ const 时间价值收益 = computed(() => {
     const 义务期权Item = props.all_data.find(
       (el) => el["期权名称"] === 义务Option
     );
-    if (!权利期权Item["内在价值"]) return;
+    if (!权利期权Item["内在价值"]) {
+      otherList.push([权利期权Item, 义务期权Item, 组合持仓]);
+      return;
+    }
     // list.push({ ...权利期权Item, 持仓: 组合持仓 });
     // list.push({ ...义务期权Item, 持仓: -组合持仓 });
     list.push([权利期权Item, 义务期权Item, 组合持仓]);
@@ -74,7 +101,7 @@ const 时间价值收益 = computed(() => {
     // const 最新价差 = Math.abs(权利期权Item["最新价"] - 义务期权Item['最新价'] )
     // value += UNIT * (行权价差 - 最新价差) * 组合持仓
   });
-  return { list, value: Math.floor(value) };
+  return { list, value: Math.floor(value), otherList };
 });
 const 时间价值收益Option = computed(() => {
   let total = 0;
@@ -144,7 +171,7 @@ function getPieOptions({ total, title, seriesData1, seriesData2 = [] }) {
         // roseType: 'area',
         // padAngle: 2,
         type: "pie",
-        data: [{ name: total,value: total }],
+        data: [{ name: total, value: total }],
         label: {
           position: "inner",
           formatter: "{b}",

@@ -37,18 +37,25 @@
       </div>
       <!-- 亏损金额 -->
       <div
-        v-if="亏损金额 > 0"
-        :style="{ width: (baseWidth * 亏损金额) / money.基础金额 + 'vw' }"
-        class="h-[60px] py-[10px] bg-[#d87f7f] relative top-[180px]"
+        :style="{
+          width: (baseWidth * 亏损金额.value) / money.基础金额 + 'vw',
+          left: 亏损金额.is亏损
+            ? '0'
+            : -(baseWidth * 亏损金额.value) / money.基础金额 + 'vw',
+          backgroundColor: 亏损金额.is亏损 ? '#d87f7f' : '#82e082',
+        }"
+        class="h-[60px] py-[10px] relative top-[180px]"
       >
-        <div class="whitespace-nowrap">亏损金额</div>
-        <div>{{ 亏损金额 }}</div>
-        <div>{{ ((100 * 亏损金额) / money.基础金额).toFixed(1) }}%</div>
+        <div class="whitespace-nowrap">
+          {{ 亏损金额.is亏损 ? "亏损金额" : "盈利金额" }}
+        </div>
+        <div>{{ 亏损金额.value }}</div>
+        <div>{{ ((100 * 亏损金额.value) / money.基础金额).toFixed(1) }}%</div>
       </div>
     </div>
     <div class="absolute left-0 top-[240px] flex items-center">
       <div
-        class="h-[60px] py-[10px] relative bg-[#82e082] "
+        class="h-[60px] py-[10px] relative bg-[#82e082]"
         :style="{
           width: (baseWidth * money.股票转入金额) / money.基础金额 + 'vw',
         }"
@@ -78,8 +85,12 @@ const 持仓金额 = computed(() => {
   return value;
 });
 const 亏损金额 = computed(() => {
-  const value =
+  let value =
     money.基础金额 - 持仓金额.value - money.占用保证金 - money.场内现金;
-  return value;
+  const is亏损 = value > 0;
+  if (value < 0) {
+    value = Math.abs(value);
+  }
+  return { value, is亏损 };
 });
 </script>
