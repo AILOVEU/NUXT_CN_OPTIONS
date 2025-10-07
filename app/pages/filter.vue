@@ -1,24 +1,14 @@
 <template>
   <div v-loading="loading">
     <el-button @click="handleQuery">刷新</el-button>
-    <MoneyInfo :all_data="all_data" :combo_list="combo_list" />
-    <TimeInfo :all_data="all_data" :combo_list="combo_list" />
-    <BarInfo :all_data="all_data" />
-    <BubbleInfo :all_data="all_data" />
-    <PercentInfo :all_data="all_data" />
     <FilterInfo :all_data="all_data" />
   </div>
 </template>
 <script setup>
-import { stock_code_map} from "~/data";
+import { stock_code_map } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
-import PercentInfo from "./PercentInfo";
-import BubbleInfo from "./BubbleInfo";
-import BarInfo from "./BarInfo";
-import TimeInfo from "./TimeInfo";
-import MoneyInfo from "./MoneyInfo";
-import FilterInfo from "./FilterInfo";
+import FilterInfo from "~/components/analysis/FilterInfo";
 const stockCodeList = Object.keys(stock_code_map);
 const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {

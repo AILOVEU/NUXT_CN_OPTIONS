@@ -21,7 +21,7 @@ function handleData(dataList) {
     // Center字段
     data["期权"] = call_item["期权名称"].replace("购", "@");
     // 公共字段
-    ["正股代码", "到期日", "到期天数", "行权价", "正股价格"].forEach((key) => {
+    ["正股代码", "到期日", "到期天数", "行权价", "正股价格",'沽购'].forEach((key) => {
       data[key] = call_item[key];
     });
     正股价格_dict[data["正股代码"]] = data["正股价格"];
@@ -60,6 +60,5 @@ function handleData(dataList) {
 }
 export async function queryT(持仓JSON, 正股代码) {
   const [all_data, combo_list] = await get_http_data(持仓JSON, 正股代码);
-  // const all_data = MOCK_DATA;
   return handleData(all_data);
 }
