@@ -48,9 +48,11 @@ import DeltaTag from "~/components/tag/DeltaTag.vue";
 import IvTag from "~/components/tag/IvTag.vue";
 import PriceTag from "~/components/tag/PriceTag.vue";
 import DiffTag from "~/components/tag/DiffTag.vue";
+import { useMoneyStore } from "~/stores/useMoneyStore";
 
-import { UNIT, 基础金额 } from "~/data";
+import { UNIT } from "~/data";
 import { getColorSplitHander } from "~//utils";
+const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date"]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
@@ -94,7 +96,7 @@ const 仓位 = computed(() => {
 });
 
 const 仓位占比 = computed(() => {
-  return (100 * 仓位.value) / 基础金额;
+  return (100 * 仓位.value) / money.基础金额;
 });
 
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
