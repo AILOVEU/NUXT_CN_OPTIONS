@@ -67,7 +67,7 @@
       </div>
     </div>
   </div>
-  <VChart :option="时间价值收益Option" style="height: 700px; width: 100vw" />
+  <VChartLight :option="时间价值收益Option" style="height: 700px; width: 100vw" />
 </template>
 
 <script setup>

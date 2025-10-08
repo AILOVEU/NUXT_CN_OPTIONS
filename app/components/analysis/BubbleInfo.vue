@@ -44,7 +44,7 @@
     </el-form>
   </div>
   <div>
-    <VChart :option="option" style="height: 900px; width: 100vw" />
+    <VChartLight :option="option" style="height: 900px; width: 100vw" />
   </div>
 </template>
 <script setup>

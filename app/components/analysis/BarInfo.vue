@@ -1,9 +1,9 @@
 <template>
   <div class="grid grid-cols-2 max-md:grid-cols-1">
-    <VChart :option="deltaOption" style="height: 300px; width: 100%" />
-    <VChart :option="代替正股Option" style="height: 300px; width: 100%" />
-    <VChart :option="gammaOption" style="height: 300px; width: 100%" />
-    <VChart :option="单日损耗Option" style="height: 300px; width: 100%" />
+    <VChartLight :option="deltaOption" style="height: 300px; width: 100%" />
+    <VChartLight :option="代替正股Option" style="height: 300px; width: 100%" />
+    <VChartLight :option="gammaOption" style="height: 300px; width: 100%" />
+    <VChartLight :option="单日损耗Option" style="height: 300px; width: 100%" />
   </div>
 </template>
 <script setup>
