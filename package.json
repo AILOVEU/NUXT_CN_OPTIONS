@@ -19,11 +19,11 @@
     "lodash": "^4.17.21",
     "nuxt": "^4.0.3",
     "nuxt-charts": "^0.2.4",
-    "nuxt-echarts": "^1.0.0",
+    "nuxt-echarts": "^1.0.1",
     "papaparse": "^5.5.3",
     "pinia": "^3.0.3",
     "vue": "^3.5.20",
-    "vue-echarts": "^7.0.3",
+    "vue-echarts": "^8.0.0",
     "vue-router": "^4.5.1"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",

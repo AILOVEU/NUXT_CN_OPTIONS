@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col mx-auto">
-    <VChartLight :option="正股分布Option" style="height: 700px; width: 100vw" />
-    <VChartLight :option="时间分布Option" style="height: 700px; width: 100vw" />
-    <VChartLight :option="沽购分布Option" style="height: 700px; width: 100vw" />
+    <VChart :option="正股分布Option" style="height: 700px; width: 100vw" />
+    <VChart :option="时间分布Option" style="height: 700px; width: 100vw" />
+    <VChart :option="沽购分布Option" style="height: 700px; width: 100vw" />
   </div>
 </template>
 <script setup>

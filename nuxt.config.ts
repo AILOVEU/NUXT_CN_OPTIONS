@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   ssr: true,
   build: { transpile: ["echarts-liquidfill"] },
   echarts: {
-    renderer: ["canvas", "svg"],
+    renderer: ["svg"],
     charts: [
       "LineChart",
       "BarChart",

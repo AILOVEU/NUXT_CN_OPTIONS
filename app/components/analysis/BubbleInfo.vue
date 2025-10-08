@@ -44,7 +44,7 @@
     </el-form>
   </div>
   <div>
-    <VChartLight :option="option" style="height: 900px; width: 100vw" />
+    <VChart :option="option" style="height: 900px; width: 100vw" />
   </div>
 </template>
 <script setup>
@@ -57,13 +57,6 @@ import {
 } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-const itemStyle = {
-  opacity: 0.8,
-  shadowBlur: 10,
-  shadowOffsetX: 0,
-  shadowOffsetY: 0,
-  shadowColor: "rgba(0,0,0,0.3)",
-};
 const 到期天数List = deadline_list.map(
   (date) => dayjs(date, "YYYYMMDD").diff(dayjs(), "days") + 1
 );
