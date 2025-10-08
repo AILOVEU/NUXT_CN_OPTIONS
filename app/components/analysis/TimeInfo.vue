@@ -1,12 +1,13 @@
 <template>
   <div>
     时间价值待收益<span class="text-[8px]">(正为收益，负为时间损耗)</span>：{{
-      时间价值收益.value
+      时间价值收益.待收益Value
     }}
   </div>
+  <div>占用资金(无时间损耗)：{{ 时间价值收益.实值Value }}</div>
   <div
     v-for="[权利, 义务, 持仓] in 时间价值收益.list"
-    class="flex items-center justify-between w-[600px] border-[1px]"
+    class="flex items-center justify-between w-[600px] border-[1px] mt-[20px]"
   >
     <div class="w-[200px]">
       <div>{{ 权利["期权名称"] }}</div>
@@ -26,7 +27,9 @@
       </div>
     </div>
   </div>
-  <div class="mt-[20px]">其他组合</div>
+  <div class="mt-[20px]">
+    组合期权(占用时间价值)：{{ 时间价值收益.otherValue }}
+  </div>
   <div
     v-for="[权利, 义务, 持仓] in 时间价值收益.otherList"
     class="flex items-center justify-between w-[600px] border-[1px]"
@@ -48,36 +51,33 @@
         }})
       </div>
     </div>
-    <!-- <div>{{ item["期权名称"] }}</div>
-    <div>*{{ item["持仓"] }}</div>
-    <div>
-      {{ item["最新价"] }}(时间:{{ item["时间价值"] }} 内在:{{
-        item["内在价值"]
-      }})
-    </div> -->
+  </div>
+  <div class="mt-[20px]">单腿期权(占用时间价值)：{{ 非组合持仓.value }}</div>
+  <div
+    v-for="{ 期权名称, 持仓, 最新价, 时间价值, 内在价值 } in 非组合持仓.list"
+    class="flex items-center justify-between w-[600px] border-[1px]"
+  >
+    <div class="w-[200px]">
+      <div>{{ 期权名称 }}</div>
+    </div>
+    <div>*{{ 持仓 }}</div>
+    <div class="w-[250px]">
+      <div>
+        {{ 最新价.toFixed(3) }}(时间:{{ 时间价值 }} 内在:{{ 内在价值 }})
+      </div>
+    </div>
   </div>
   <VChart :option="时间价值收益Option" style="height: 700px; width: 100vw" />
-  <!-- <div>时间价值损耗：{{ 时间价值损耗.value }}</div>
-  <div v-for="item in 时间价值损耗.list" class="grid grid-cols-3 gap-[50px]">
-    <div>{{ item["期权名称"] }}</div>
-    <div>*{{ item["持仓"] }}</div>
-    <div>
-      {{ item["最新价"] }}(时间:{{ item["时间价值"] }} 内在:{{
-        item["内在价值"]
-      }})
-    </div>
-  </div> -->
-  <!-- {{ 剩余List.map((el) => el["期权名称"]) }} -->
 </template>
 
 <script setup>
 import { UNIT } from "~/data";
+import _ from "lodash";
 const props = defineProps(["all_data", "combo_list"]);
 const 时间价值收益 = computed(() => {
-  // const 时间价值收益List = props.all_data
-  //   .filter((el) => el["持仓"])
-  //   .filter((el) => el["持仓"] < 0 || el["内在价值"] > 0);
-  let value = 0;
+  let 待收益Value = 0;
+  let otherValue = 0;
+  let 实值Value = 0;
   const list = [];
   const otherList = [];
   props.combo_list.forEach((el) => {
@@ -90,18 +90,25 @@ const 时间价值收益 = computed(() => {
     );
     if (!权利期权Item["内在价值"]) {
       otherList.push([权利期权Item, 义务期权Item, 组合持仓]);
+      otherValue += 权利期权Item["最新价"] * UNIT * 组合持仓;
+      otherValue -= 义务期权Item["最新价"] * UNIT * 组合持仓;
       return;
+    } else {
+      list.push([权利期权Item, 义务期权Item, 组合持仓]);
+      待收益Value += -权利期权Item["时间价值"] * UNIT * 组合持仓;
+      待收益Value += 义务期权Item["时间价值"] * UNIT * 组合持仓;
+
+      实值Value += 权利期权Item["最新价"] * UNIT * 组合持仓;
+      实值Value -= 义务期权Item["最新价"] * UNIT * 组合持仓;
     }
-    // list.push({ ...权利期权Item, 持仓: 组合持仓 });
-    // list.push({ ...义务期权Item, 持仓: -组合持仓 });
-    list.push([权利期权Item, 义务期权Item, 组合持仓]);
-    value += -权利期权Item["时间价值"] * UNIT * 组合持仓;
-    value += 义务期权Item["时间价值"] * UNIT * 组合持仓;
-    // const 行权价差 = Math.abs(权利期权Item["行权价"] - 义务期权Item['行权价'] )
-    // const 最新价差 = Math.abs(权利期权Item["最新价"] - 义务期权Item['最新价'] )
-    // value += UNIT * (行权价差 - 最新价差) * 组合持仓
   });
-  return { list, value: Math.floor(value), otherList };
+  return {
+    list,
+    待收益Value: Math.floor(待收益Value),
+    otherList,
+    otherValue: Math.floor(otherValue),
+    实值Value: Math.floor(实值Value),
+  };
 });
 const 时间价值收益Option = computed(() => {
   let total = 0;
@@ -123,32 +130,29 @@ const 时间价值收益Option = computed(() => {
     seriesData1,
   });
 });
-// const 时间价值损耗 = computed(() => {
-//   const 时间价值收益List = props.all_data
-//     .filter((el) => el["持仓"] > 0)
-//     .filter((el) => !el["内在价值"]);
-//   let value = 0;
-//   时间价值收益List.forEach((el) => {
-//     value += el["时间价值"] * UNIT * el["持仓"];
-//   });
-//   return { list: 时间价值收益List, value: Math.floor(value) };
-// });
-// const 剩余List = computed(() => {
-//   const list = props.all_data
-//     .filter((el) => el["持仓"])
-//     .filter((el) => {
-//       !时间价值收益.value.list.some(
-//         (item) => item["期权名称"] === el["期权名称"]
-//       );
-//     })
-//     .filter((el) => {
-//       !时间价值损耗.value.list.some(
-//         (item) => item["期权名称"] === el["期权名称"]
-//       );
-//     });
-//   return list;
-// });
-function get时间价值收益() {}
+
+const 非组合持仓 = computed(() => {
+  let 持仓List = props.all_data
+    ?.filter((el) => el["持仓"])
+    .map((el) => ({ ...el }));
+  props.combo_list.forEach(([权利Option, 义务Option, 组合持仓]) => {
+    for (let i = 0; i < 持仓List.length; i++) {
+      if (持仓List[i]["期权名称"] === 权利Option) {
+        持仓List[i]["持仓"] -= 组合持仓;
+      }
+      if (持仓List[i]["期权名称"] === 义务Option) {
+        持仓List[i]["持仓"] += 组合持仓;
+      }
+    }
+  });
+  持仓List = 持仓List.filter((el) => el["持仓"]);
+  持仓List = _.sortBy(持仓List, ["正股代码", "到期日", "行权价"]);
+  let value = 0;
+  持仓List.forEach((el) => {
+    value += el["最新价"] * UNIT * el["持仓"];
+  });
+  return { list: 持仓List, value: Math.floor(value) };
+});
 
 function getPieOptions({ total, title, seriesData1, seriesData2 = [] }) {
   return {

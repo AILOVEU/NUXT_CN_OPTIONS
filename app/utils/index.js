@@ -66,7 +66,9 @@ function 构建组合(all_data) {
     持仓Map[el["期权名称"]] = { ...el };
   });
   let 义务仓List = 持仓List.filter((el) => el["持仓"] < 0);
-  while (义务仓List.length) {
+  let loopCount = 0;
+  while (义务仓List.length && loopCount < 1000) {
+    loopCount += 1;
     义务仓List.forEach((el) => {
       const 义务Option = el["期权名称"];
       const isCall = 义务Option.includes("购");
@@ -93,12 +95,12 @@ function 构建组合(all_data) {
     });
   }
   console.log("组合List", 组合List);
-  let 占用保证金 = 0;
-  组合List.forEach((el) => {
-    占用保证金 += el[2] * 50;
-  });
-  // 金额.占用保证金 = 占用保证金;
-  set保证金(占用保证金);
+  // let 占用保证金 = 0;
+  // 组合List.forEach((el) => {
+  //   占用保证金 += el[2] * 50;
+  // });
+  // // 金额.占用保证金 = 占用保证金;
+  // set保证金(占用保证金);
   return 组合List;
 }
 export async function get_target_http_data(持仓JSON, fs) {
