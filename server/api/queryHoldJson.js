@@ -6,7 +6,7 @@ export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
       const converterStream = fs
-        .createReadStream("public\\持仓.csv")
+        .createReadStream("持仓.csv")
         .pipe(iconvLite.decodeStream("gbk"));
       csvtojson()
         .fromStream(converterStream)
