@@ -3,7 +3,6 @@
 </template>
 <script setup>
 import { useHead } from "nuxt/app";
-
 // 配置视口（确保适配准确性）
 useHead({
   meta: [
