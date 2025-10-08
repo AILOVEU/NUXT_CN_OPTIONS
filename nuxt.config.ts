@@ -3,7 +3,11 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/public/favicon.ico" }, // 指定 favicon 路径
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: (process.env.NUXT_APP_BASE_URL || "") + "/favicon.ico",
+        }, // 指定 favicon 路径
       ],
     },
   },
