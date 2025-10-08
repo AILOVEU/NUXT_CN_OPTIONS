@@ -1,26 +1,40 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/public/favicon.ico" }, // 指定 favicon 路径
+      ],
+    },
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "@element-plus/nuxt",
-    'nuxt-echarts',
-    '@pinia/nuxt'
+    "nuxt-echarts",
+    "@pinia/nuxt",
   ],
   ssr: true,
-  build: { transpile: ['echarts-liquidfill'] },
+  build: { transpile: ["echarts-liquidfill"] },
   echarts: {
-    renderer: ['canvas', 'svg'],
-    charts: ['LineChart', 'BarChart', 'MapChart', 'PieChart','ScatterChart','SunburstChart'],
+    renderer: ["canvas", "svg"],
+    charts: [
+      "LineChart",
+      "BarChart",
+      "MapChart",
+      "PieChart",
+      "ScatterChart",
+      "SunburstChart",
+    ],
     components: [
-      'TitleComponent',
-      'DatasetComponent',
-      'GridComponent',
-      'TooltipComponent',
-      'ToolboxComponent',
-      'LegendComponent',
-      'GeoComponent',
-      'VisualMapComponent',
-      'MarkLineComponent'
+      "TitleComponent",
+      "DatasetComponent",
+      "GridComponent",
+      "TooltipComponent",
+      "ToolboxComponent",
+      "LegendComponent",
+      "GeoComponent",
+      "VisualMapComponent",
+      "MarkLineComponent",
     ],
   },
   // echarts: {
