@@ -3,7 +3,6 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "@element-plus/nuxt",
-    // "@nuxthub/core",
     'nuxt-echarts',
     '@pinia/nuxt'
   ],
