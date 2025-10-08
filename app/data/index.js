@@ -8,6 +8,7 @@ export const 金额 = {
   // 已提现金额: 0, // 金额详见<期货期权激励>
 };
 export const fields_dict = {
+  
   f2: "最新价",
   f3: "涨跌幅",
   f4: "涨跌额",
