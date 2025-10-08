@@ -32,6 +32,9 @@ dependencies:
   iconv-lite:
     specifier: ^0.7.0
     version: 0.7.0
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   nuxt:
     specifier: ^4.0.3
     version: 4.0.3(@vue/compiler-sfc@3.5.21)(less@4.4.1)(sass@1.91.0)(vite@7.1.5)
