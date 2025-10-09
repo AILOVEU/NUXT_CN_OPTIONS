@@ -88,18 +88,19 @@ const 时间价值收益 = computed(() => {
     const 义务期权Item = props.all_data.find(
       (el) => el["期权名称"] === 义务Option
     );
-    if (!权利期权Item["内在价值"]) {
-      otherList.push([权利期权Item, 义务期权Item, 组合持仓]);
-      otherValue += 权利期权Item["最新价"] * UNIT * 组合持仓;
-      otherValue -= 义务期权Item["最新价"] * UNIT * 组合持仓;
-      return;
-    } else {
+    if (
+      权利期权Item["内在价值"] &&
+      权利期权Item["时间价值"] < 义务期权Item["时间价值"]
+    ) {
       list.push([权利期权Item, 义务期权Item, 组合持仓]);
       待收益Value += -权利期权Item["时间价值"] * UNIT * 组合持仓;
       待收益Value += 义务期权Item["时间价值"] * UNIT * 组合持仓;
-
       实值Value += 权利期权Item["最新价"] * UNIT * 组合持仓;
       实值Value -= 义务期权Item["最新价"] * UNIT * 组合持仓;
+    } else {
+      otherList.push([权利期权Item, 义务期权Item, 组合持仓]);
+      otherValue += 权利期权Item["最新价"] * UNIT * 组合持仓;
+      otherValue -= 义务期权Item["最新价"] * UNIT * 组合持仓;
     }
   });
   return {
