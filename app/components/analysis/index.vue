@@ -1,16 +1,28 @@
 <template>
   <div v-loading="loading">
     <el-button @click="handleQuery">刷新</el-button>
-    <MoneyInfo :all_data="all_data" :combo_list="combo_list" />
-    <TimeInfo :all_data="all_data" :combo_list="combo_list" />
-    <BarInfo :all_data="all_data" />
-    <BubbleInfo :all_data="all_data" />
-    <PercentInfo :all_data="all_data" />
-    <FilterInfo :all_data="all_data" />
+    <Card header="资金分析">
+      <MoneyInfo :all_data="all_data" :combo_list="combo_list" />
+    </Card>
+    <Card header="时间价值分析">
+      <TimeInfo :all_data="all_data" :combo_list="combo_list" />
+    </Card>
+    <Card header="持仓分析">
+      <BarInfo :all_data="all_data" />
+    </Card>
+    <Card header="气泡图分析">
+      <BubbleInfo :all_data="all_data" />
+    </Card>
+    <Card header="持仓占比分析">
+      <PercentInfo :all_data="all_data" />
+    </Card>
+    <Card header="筛选">
+      <FilterInfo :all_data="all_data" />
+    </Card>
   </div>
 </template>
 <script setup>
-import { stock_code_map} from "~/data";
+import { stock_code_map } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
 import PercentInfo from "./PercentInfo";

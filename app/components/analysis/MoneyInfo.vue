@@ -1,6 +1,8 @@
 <template>
+  <div>总盈亏金额：{{ 总盈亏金额 }}</div>
+  <VChart :option="盈亏曲线Option" style="height: 400px; width: 100vw" />
   <div
-    class="border-[5px] border-[black] h-[360px] relative text-[15px] font-medium"
+    class="border-[5px] border-[black] h-[480px] relative text-[15px] font-medium mt-[10px]"
     :style="{ width: `calc(${baseWidth}vw + 8px)` }"
   >
     <div class="absolute left-0 top-[0px] flex items-center">
@@ -37,41 +39,78 @@
       </div>
       <!-- 亏损金额 -->
       <div
-        :style="{
-          width: (baseWidth * 亏损金额.value) / money.基础金额 + 'vw',
-          left: 亏损金额.is亏损
-            ? '0'
-            : -(baseWidth * 亏损金额.value) / money.基础金额 + 'vw',
-          backgroundColor: 亏损金额.is亏损 ? '#d87f7f' : '#82e082',
-        }"
-        class="h-[60px] py-[10px] relative top-[180px]"
+        v-if="盈亏金额 <= 0"
+        :style="{ width: (baseWidth * -盈亏金额) / money.基础金额 + 'vw' }"
+        class="h-[60px] py-[10px] relative top-[180px] left-0 bg-[#d87f7f]"
       >
-        <div class="whitespace-nowrap">
-          {{ 亏损金额.is亏损 ? "亏损金额" : "盈利金额" }}
+        <div class="whitespace-nowrap">亏损金额</div>
+        <div>{{ 盈亏金额 }}</div>
+        <div>{{ ((100 * 盈亏金额) / money.基础金额).toFixed(1) }}%</div>
+        <div
+          class="absolute top-[60px] h-[60px] right-0 bg-[#d87f7f] py-[10px]"
+          :style="{ width: (baseWidth * money.贷款) / money.基础金额 + 'vw' }"
+        >
+          <div class="whitespace-nowrap">贷款</div>
+          <div>{{ money.贷款 }}</div>
+          <div>{{ ((100 * money.贷款) / money.基础金额).toFixed(1) }}%</div>
         </div>
-        <div>{{ 亏损金额.value }}</div>
-        <div>{{ ((100 * 亏损金额.value) / money.基础金额).toFixed(1) }}%</div>
       </div>
+      <!-- 盈利金额 -->
+      <template v-if="盈亏金额 > 0">
+        <div
+          :style="{
+            width: (baseWidth * 盈亏金额) / money.基础金额 + 'vw',
+            left:
+              -(baseWidth * (盈亏金额 + money.贷款)) / money.基础金额 + 'vw',
+          }"
+          class="h-[60px] py-[10px] relative top-[180px] bg-[#82e082]"
+        >
+          <div class="whitespace-nowrap">盈利金额</div>
+          <div>{{ 盈亏金额 }}</div>
+          <div>{{ ((100 * 盈亏金额) / money.基础金额).toFixed(1) }}%</div>
+        </div>
+        <div
+          class="h-[60px] relative top-[240px] bg-[#d87f7f] py-[10px]"
+          :style="{
+            width: (baseWidth * money.贷款) / money.基础金额 + 'vw',
+            left:
+              -(baseWidth * (盈亏金额 + money.贷款)) / money.基础金额 + 'vw',
+          }"
+        >
+          <div class="whitespace-nowrap">贷款</div>
+          <div>{{ money.贷款 }}</div>
+          <div>{{ ((100 * money.贷款) / money.基础金额).toFixed(1) }}%</div>
+        </div>
+      </template>
     </div>
-    <div class="absolute left-0 top-[240px] flex items-center">
+    <!-- 期转股 -->
+    <div class="absolute left-0 top-[300px] flex items-center">
       <div
         class="h-[60px] py-[10px] relative bg-[#82e082]"
         :style="{
-          width: (baseWidth * money.股票转入金额) / money.基础金额 + 'vw',
+          width: (baseWidth * money.期转股金额) / money.基础金额 + 'vw',
         }"
       >
-        <div class="whitespace-nowrap">股票转入金额</div>
-        <div>{{ money.股票转入金额 }}</div>
-        <div>
-          {{ ((100 * money.股票转入金额) / money.基础金额).toFixed(1) }}%
-        </div>
+        <div class="whitespace-nowrap">期转股金额</div>
+        <div>{{ money.期转股金额 }}</div>
+        <div>{{ ((100 * money.期转股金额) / money.基础金额).toFixed(1) }}%</div>
+      </div>
+      <div
+        class="h-[60px] py-[10px] relative top-[60px] bg-[#06ed5b]"
+        :style="{
+          width: (baseWidth * money.已提现金额) / money.基础金额 + 'vw',
+        }"
+      >
+        <div class="whitespace-nowrap">已提现金额</div>
+        <div>{{ money.已提现金额 }}</div>
+        <div>{{ ((100 * money.已提现金额) / money.基础金额).toFixed(1) }}%</div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { useMoneyStore } from "~/stores/useMoneyStore";
-import { UNIT } from "~/data";
+import { UNIT, 盈亏曲线数据 } from "~/data";
 const props = defineProps(["all_data", "combo_list"]);
 const baseWidth = 50;
 const { money } = useMoneyStore();
@@ -84,13 +123,68 @@ const 持仓金额 = computed(() => {
     });
   return value;
 });
-const 亏损金额 = computed(() => {
-  let value =
-    money.基础金额 - 持仓金额.value - money.占用保证金 - money.场内现金;
-  const is亏损 = value > 0;
-  if (value < 0) {
-    value = Math.abs(value);
-  }
-  return { value, is亏损 };
+const 盈亏金额 = computed(() => {
+  return (
+    持仓金额.value +
+    money.占用保证金 +
+    money.场内现金 -
+    money.贷款 -
+    money.基础金额
+  );
+});
+
+const 总盈亏金额 = computed(() => {
+  return 盈亏金额.value + money.已提现金额 + money.期转股金额;
+});
+
+const 盈亏曲线Option = computed(() => {
+  return {
+    xAxis: {
+      type: "category",
+      data: 盈亏曲线数据.map((el) => el.name),
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
+      {
+        label: {
+          show: true,
+          position: "top",
+        },
+        data: 盈亏曲线数据.map((el) => el.value),
+        type: "line",
+        markLine: {
+          symbol: "none",
+          label: {
+            formatter: "{b} {c}",
+          },
+          data: [
+            {
+              lineStyle: {
+                color: "orange",
+              },
+              name: "平均值",
+              type: "average",
+            },
+            // {
+            //   lineStyle: {
+            //     color: "green",
+            //   },
+            //   name: "最小值",
+            //   type: "min",
+            // },
+            // {
+            //   lineStyle: {
+            //     color: "red",
+            //   },
+            //   name: "最大值",
+            //   type: "max",
+            // },
+          ],
+        },
+      },
+    ],
+  };
 });
 </script>
