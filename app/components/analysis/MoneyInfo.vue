@@ -1,15 +1,16 @@
 <template>
   <div>总盈亏金额：{{ 总盈亏金额 }}</div>
-  <VChart :option="盈亏曲线Option" style="height: 400px; width: 100vw" />
+  <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%" />
+  <div class="mx-auto text-center text-[18px] font-semibold">资金分布</div>
   <div
-    class="border-[5px] border-[black] h-[480px] relative text-[15px] font-medium mt-[10px]"
-    :style="{ width: `calc(${baseWidth}vw + 8px)` }"
+    class="border-[3px] rounded-[3px] border-[black] h-[480px] relative text-[15px] font-medium mt-[10px] mx-auto"
+    :style="{ width: `calc(${baseWidth}vw + 4px)` }"
   >
     <div class="absolute left-0 top-[0px] flex items-center">
       <!-- 持仓 -->
       <div
         :style="{ width: (baseWidth * 持仓金额) / money.基础金额 + 'vw' }"
-        class="h-[60px] py-[10px] bg-[#dede4e]"
+        class="h-[60px] py-[10px] bg-[#409eff] rounded-[3px]"
       >
         <div class="whitespace-nowrap">持仓</div>
         <div>{{ 持仓金额 }}</div>
@@ -20,7 +21,7 @@
         :style="{
           width: (baseWidth * money.占用保证金) / money.基础金额 + 'vw',
         }"
-        class="h-[60px] py-[10px] bg-[gray] relative top-[60px]"
+        class="h-[60px] py-[10px] bg-[#909399] relative top-[60px] rounded-[3px]"
       >
         <div class="whitespace-nowrap">占用保证金</div>
         <div>{{ money.占用保证金 }}</div>
@@ -31,7 +32,7 @@
         :style="{
           width: (baseWidth * money.场内现金) / money.基础金额 + 'vw',
         }"
-        class="h-[60px] py-[10px] bg-[#edc67f] relative top-[120px]"
+        class="h-[60px] py-[10px] bg-[#e6a23c] rounded-[3px] relative top-[120px]"
       >
         <div class="whitespace-nowrap">场内现金</div>
         <div>{{ money.场内现金 }}</div>
@@ -41,13 +42,13 @@
       <div
         v-if="盈亏金额 <= 0"
         :style="{ width: (baseWidth * -盈亏金额) / money.基础金额 + 'vw' }"
-        class="h-[60px] py-[10px] relative top-[180px] left-0 bg-[#d87f7f]"
+        class="h-[60px] py-[10px] relative top-[180px] left-0 bg-[#d87f7f] rounded-[3px]"
       >
         <div class="whitespace-nowrap">亏损金额</div>
         <div>{{ 盈亏金额 }}</div>
         <div>{{ ((100 * 盈亏金额) / money.基础金额).toFixed(1) }}%</div>
         <div
-          class="absolute top-[60px] h-[60px] right-0 bg-[#d87f7f] py-[10px]"
+          class="absolute top-[60px] h-[60px] right-0 bg-[#f56c6c] py-[10px] rounded-[3px]"
           :style="{ width: (baseWidth * money.贷款) / money.基础金额 + 'vw' }"
         >
           <div class="whitespace-nowrap">贷款</div>
@@ -63,14 +64,14 @@
             left:
               -(baseWidth * (盈亏金额 + money.贷款)) / money.基础金额 + 'vw',
           }"
-          class="h-[60px] py-[10px] relative top-[180px] bg-[#82e082]"
+          class="h-[60px] py-[10px] relative top-[180px] bg-[#82e082] rounded-[3px]"
         >
           <div class="whitespace-nowrap">盈利金额</div>
           <div>{{ 盈亏金额 }}</div>
           <div>{{ ((100 * 盈亏金额) / money.基础金额).toFixed(1) }}%</div>
         </div>
         <div
-          class="h-[60px] relative top-[240px] bg-[#d87f7f] py-[10px]"
+          class="h-[60px] relative top-[240px] bg-[#d87f7f] rounded-[3px] py-[10px]"
           :style="{
             width: (baseWidth * money.贷款) / money.基础金额 + 'vw',
             left:
@@ -86,7 +87,7 @@
     <!-- 期转股 -->
     <div class="absolute left-0 top-[300px] flex items-center">
       <div
-        class="h-[60px] py-[10px] relative bg-[#82e082]"
+        class="h-[60px] py-[10px] relative bg-[#82e082] rounded-[3px]"
         :style="{
           width: (baseWidth * money.期转股金额) / money.基础金额 + 'vw',
         }"
@@ -96,7 +97,7 @@
         <div>{{ ((100 * money.期转股金额) / money.基础金额).toFixed(1) }}%</div>
       </div>
       <div
-        class="h-[60px] py-[10px] relative top-[60px] bg-[#06ed5b]"
+        class="h-[60px] py-[10px] relative top-[60px] bg-[#06ed5b] rounded-[3px]"
         :style="{
           width: (baseWidth * money.已提现金额) / money.基础金额 + 'vw',
         }"
@@ -139,6 +140,10 @@ const 总盈亏金额 = computed(() => {
 
 const 盈亏曲线Option = computed(() => {
   return {
+    backgroundColor: "#fefefe",
+    title: {
+      text: "历史盈亏曲线",
+    },
     xAxis: {
       type: "category",
       data: 盈亏曲线数据.map((el) => el.name),

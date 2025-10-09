@@ -44,7 +44,7 @@
     </el-form>
   </div>
   <div>
-    <VChart :option="option" style="height: 900px; width: 100vw" />
+    <VChart :option="option" style="height: 900px; width: 100%" />
   </div>
 </template>
 <script setup>
@@ -110,6 +110,7 @@ const option = computed(() => {
     });
   });
   return {
+    backgroundColor: '#fefefe',
     title: {
       text: "全部期权信息",
     },

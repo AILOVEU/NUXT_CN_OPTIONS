@@ -22,6 +22,7 @@ const 到期天数List = deadline_list.map(
 const props = defineProps(["all_data"]);
 function getBarOps({ stockCodeList, name, dataList }) {
   return {
+    backgroundColor: '#fefefe',
     tooltip: {
       trigger: "axis",
       axisPointer: {

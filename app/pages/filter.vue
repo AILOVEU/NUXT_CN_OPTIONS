@@ -1,6 +1,13 @@
 <template>
   <div v-loading="loading">
-    <el-button @click="handleQuery">刷新</el-button>
+    <el-affix :offset="0">
+      <div class="flex justify-between text-[12px] mb-[12px]">
+        <el-button @click="handleQuery" class="flex-1" type="primary">
+          刷新
+        </el-button>
+        <Nav />
+      </div>
+    </el-affix>
     <FilterInfo :all_data="all_data" />
   </div>
 </template>

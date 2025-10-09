@@ -122,7 +122,7 @@ export async function get_target_http_data(持仓JSON, fs) {
         ut: "fa5fd1943c7b386f172d6893dbfba10b",
         fields: Object.keys(fields_dict).join(","),
         wbp2u: "|0|1|0|web",
-        _: "1759371496573",
+        _: dayjs().valueOf() - Math.floor(Math.random() * 100),
         fs,
         // fs: "m:10+c:510050",
         // fs: "m:10,m:12",

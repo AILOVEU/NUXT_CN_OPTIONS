@@ -1,15 +1,14 @@
 <template>
-  <div>
+  <div v-loading="tableData.loading">
     <div>
-      <div class="flex justify-between text-[12px] mb-[12px]">
-        <el-button @click="refresh" size="small">刷新</el-button>
-        <el-button @click="copy" size="small">复制持仓</el-button>
-        <div class="flex items-center">
-          <a href="/">T型</a>
-          <div class="w-[10vw]"></div>
-          <a href="/hold">持仓</a>
+      <el-affix :offset="0">
+        <div class="flex justify-between text-[12px] mb-[12px]">
+          <el-button @click="handleQuery" class="flex-1" type="primary">
+            刷新
+          </el-button>
+          <Nav />
         </div>
-      </div>
+      </el-affix>
       <div class="w-full pb-[12px]">
         <TabSelect
           :options="stockCodeOptions"
@@ -23,7 +22,6 @@
       <el-table
         :data="filteredTableData"
         style="width: 100%"
-        v-loading="tableData.loading"
         size="small"
         border
         height="950px"

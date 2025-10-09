@@ -67,7 +67,7 @@
       </div>
     </div>
   </div>
-  <VChart :option="时间价值收益Option" style="height: 700px; width: 100vw" />
+  <VChart :option="时间价值收益Option" style="height: 700px; width: 100%" />
 </template>
 
 <script setup>
@@ -157,6 +157,7 @@ const 非组合持仓 = computed(() => {
 
 function getPieOptions({ total, title, seriesData1, seriesData2 = [] }) {
   return {
+    backgroundColor: '#fefefe',
     title: {
       text: title,
       left: "center",
