@@ -1,8 +1,17 @@
 <template>
   <div class="flex flex-col mx-auto">
-    <VChart :option="正股分布Option" style="height: 700px; width: 100%" />
-    <VChart :option="时间分布Option" style="height: 700px; width: 100%" />
-    <VChart :option="沽购分布Option" style="height: 700px; width: 100%" />
+    <VChart
+      :option="正股分布Option"
+      style="height: 700px; width: 100%; margin: auto"
+    />
+    <VChart
+      :option="时间分布Option"
+      style="height: 700px; width: 100%; margin: auto"
+    />
+    <VChart
+      :option="沽购分布Option"
+      style="height: 700px; width: 100%; margin: auto"
+    />
   </div>
 </template>
 <script setup>
@@ -71,7 +80,7 @@ const 沽购分布 = ref([]);
 // }
 function getSunburstOptions({ title, data }) {
   return {
-    backgroundColor: '#fefefe',
+    backgroundColor: "#fefefe",
     title: {
       text: title,
     },
@@ -123,7 +132,7 @@ function getSunburstOptions({ title, data }) {
             formatter: (params) => {
               const { data } = params;
               const { value, name, percent } = data;
-              return `${name} ${value} (${percent})`;
+              return `${name}\n${value} (${percent})`;
             },
           },
           itemStyle: {

@@ -1,69 +1,71 @@
 <template>
-  <div>
-    时间价值待收益<span class="text-[8px]">(正为收益，负为时间损耗)</span>：{{
-      时间价值收益.待收益Value
-    }}
-  </div>
-  <div>占用资金(无时间损耗)：{{ 时间价值收益.实值Value }}</div>
-  <div
-    v-for="[权利, 义务, 持仓] in 时间价值收益.list"
-    class="flex items-center justify-between w-[600px] border-[1px] mt-[20px]"
-  >
-    <div class="w-[200px]">
-      <div>{{ 权利["期权名称"] }}</div>
-      <div>{{ 义务["期权名称"] }}</div>
+  <div class="overflow-x-auto">
+    <div>
+      时间价值待收益<span class="text-[8px]">(正为收益，负为时间损耗)</span>：{{
+        时间价值收益.待收益Value
+      }}
     </div>
-    <div>*{{ 持仓 }}</div>
-    <div class="w-[250px]">
-      <div>
-        {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
-          权利["内在价值"]
-        }})
+    <div>占用资金(无时间损耗)：{{ 时间价值收益.实值Value }}</div>
+    <div
+      v-for="[权利, 义务, 持仓] in 时间价值收益.list"
+      class="flex items-center justify-between w-[600px] border-[1px] mt-[20px]"
+    >
+      <div class="w-[200px]">
+        <div>{{ 权利["期权名称"] }}</div>
+        <div>{{ 义务["期权名称"] }}</div>
       </div>
-      <div>
-        {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
-          义务["内在价值"]
-        }})
-      </div>
-    </div>
-  </div>
-  <div class="mt-[20px]">
-    组合期权(占用时间价值)：{{ 时间价值收益.otherValue }}
-  </div>
-  <div
-    v-for="[权利, 义务, 持仓] in 时间价值收益.otherList"
-    class="flex items-center justify-between w-[600px] border-[1px]"
-  >
-    <div class="w-[200px]">
-      <div>{{ 权利["期权名称"] }}</div>
-      <div>{{ 义务["期权名称"] }}</div>
-    </div>
-    <div>*{{ 持仓 }}</div>
-    <div class="w-[250px]">
-      <div>
-        {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
-          权利["内在价值"]
-        }})
-      </div>
-      <div>
-        {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
-          义务["内在价值"]
-        }})
+      <div>*{{ 持仓 }}</div>
+      <div class="w-[250px]">
+        <div>
+          {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
+            权利["内在价值"]
+          }})
+        </div>
+        <div>
+          {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
+            义务["内在价值"]
+          }})
+        </div>
       </div>
     </div>
-  </div>
-  <div class="mt-[20px]">单腿期权(占用时间价值)：{{ 非组合持仓.value }}</div>
-  <div
-    v-for="{ 期权名称, 持仓, 最新价, 时间价值, 内在价值 } in 非组合持仓.list"
-    class="flex items-center justify-between w-[600px] border-[1px]"
-  >
-    <div class="w-[200px]">
-      <div>{{ 期权名称 }}</div>
+    <div class="mt-[20px]">
+      组合期权(占用时间价值)：{{ 时间价值收益.otherValue }}
     </div>
-    <div>*{{ 持仓 }}</div>
-    <div class="w-[250px]">
-      <div>
-        {{ 最新价.toFixed(3) }}(时间:{{ 时间价值 }} 内在:{{ 内在价值 }})
+    <div
+      v-for="[权利, 义务, 持仓] in 时间价值收益.otherList"
+      class="flex items-center justify-between w-[600px] border-[1px]"
+    >
+      <div class="w-[200px]">
+        <div>{{ 权利["期权名称"] }}</div>
+        <div>{{ 义务["期权名称"] }}</div>
+      </div>
+      <div>*{{ 持仓 }}</div>
+      <div class="w-[250px]">
+        <div>
+          {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
+            权利["内在价值"]
+          }})
+        </div>
+        <div>
+          {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
+            义务["内在价值"]
+          }})
+        </div>
+      </div>
+    </div>
+    <div class="mt-[20px]">单腿期权(占用时间价值)：{{ 非组合持仓.value }}</div>
+    <div
+      v-for="{ 期权名称, 持仓, 最新价, 时间价值, 内在价值 } in 非组合持仓.list"
+      class="flex items-center justify-between w-[600px] border-[1px]"
+    >
+      <div class="w-[200px]">
+        <div>{{ 期权名称 }}</div>
+      </div>
+      <div>*{{ 持仓 }}</div>
+      <div class="w-[250px]">
+        <div>
+          {{ 最新价.toFixed(3) }}(时间:{{ 时间价值 }} 内在:{{ 内在价值 }})
+        </div>
       </div>
     </div>
   </div>
@@ -111,26 +113,6 @@ const 时间价值收益 = computed(() => {
     实值Value: Math.floor(实值Value),
   };
 });
-const 时间价值收益Option = computed(() => {
-  let total = 0;
-  const seriesData1 = 时间价值收益.value.list?.map((el) => {
-    const [权利期权Item, 义务期权Item, 组合持仓] = el;
-    const value = Math.floor(
-      (-权利期权Item["时间价值"] + 义务期权Item["时间价值"]) * 组合持仓 * UNIT
-    );
-    total += value;
-    return {
-      name: 权利期权Item["期权名称"] + "-" + 义务期权Item["期权名称"],
-      value,
-    };
-  });
-
-  return getPieOptions({
-    total,
-    title: "时间价值收益分布",
-    seriesData1,
-  });
-});
 
 const 非组合持仓 = computed(() => {
   let 持仓List = props.all_data
@@ -155,9 +137,29 @@ const 非组合持仓 = computed(() => {
   return { list: 持仓List, value: Math.floor(value) };
 });
 
+const 时间价值收益Option = computed(() => {
+  let total = 0;
+  const seriesData1 = 时间价值收益.value.list?.map((el) => {
+    const [权利期权Item, 义务期权Item, 组合持仓] = el;
+    const value = Math.floor(
+      (-权利期权Item["时间价值"] + 义务期权Item["时间价值"]) * 组合持仓 * UNIT
+    );
+    total += value;
+    return {
+      name: 权利期权Item["期权名称"] + "-" + 义务期权Item["期权名称"],
+      value,
+    };
+  });
+
+  return getPieOptions({
+    total,
+    title: "时间价值收益分布",
+    seriesData1,
+  });
+});
 function getPieOptions({ total, title, seriesData1, seriesData2 = [] }) {
   return {
-    backgroundColor: '#fefefe',
+    backgroundColor: "#fefefe",
     title: {
       text: title,
       left: "center",
