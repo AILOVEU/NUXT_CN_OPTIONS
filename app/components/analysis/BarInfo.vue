@@ -22,7 +22,7 @@ const 到期天数List = deadline_list.map(
 const props = defineProps(["all_data"]);
 function getBarOps({ stockCodeList, name, dataList }) {
   return {
-    backgroundColor: '#fefefe',
+    backgroundColor: "#fefefe",
     tooltip: {
       trigger: "axis",
       axisPointer: {
@@ -57,7 +57,7 @@ function getBarOps({ stockCodeList, name, dataList }) {
   };
 }
 const deltaOption = computed(() => {
-  let all_data = props.all_data;
+  let all_data = props.all_data.filter((el) => el["持仓"]);
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -74,7 +74,7 @@ const deltaOption = computed(() => {
 });
 
 const 代替正股Option = computed(() => {
-  let all_data = props.all_data;
+  let all_data = props.all_data.filter((el) => el["持仓"]);
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -91,7 +91,7 @@ const 代替正股Option = computed(() => {
 });
 
 const gammaOption = computed(() => {
-  let all_data = props.all_data;
+  let all_data = props.all_data.filter((el) => el["持仓"]);
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -108,7 +108,7 @@ const gammaOption = computed(() => {
 });
 
 const 单日损耗Option = computed(() => {
-  let all_data = props.all_data;
+  let all_data = props.all_data.filter((el) => el["持仓"]);
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -141,7 +141,9 @@ function get_list_all_代替正股(list) {
 function get_list_all_gamma(list) {
   let sum = 0;
   list.forEach((el) => {
-    sum += el["持仓"] * el["Gamma"];
+    let Gamma = el["Gamma"];
+    if (el["沽购"] === "沽") Gamma = -Gamma;
+    sum += el["持仓"] * Gamma;
   });
   return Math.floor(sum * 100) / 100;
 }
