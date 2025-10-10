@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
     <a
-      :href="item.href"
+      :href="prefix + item.href"
       :class="{ active: activePath === item.href }"
       v-for="item in navList"
       >{{ item.name }}</a
@@ -10,6 +10,9 @@
 </template>
 
 <script setup>
+const prefix = process.env.NUXT_APP_BASE_URL
+  ? "/" + process.env.NUXT_APP_BASE_URL
+  : "";
 const route = useRoute();
 const navList = [
   {
