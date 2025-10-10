@@ -1,19 +1,22 @@
 <template>
   <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
-    <a
-      :href="prefix + item.href"
+    <div
       :class="{ active: activePath === item.href }"
       v-for="item in navList"
-      >{{ item.name }}</a
+      @click="() => handleClick(item.href)"
+      class="cursor-pointer"
     >
+      {{ item.name }}
+    </div>
   </div>
 </template>
 
 <script setup>
-const prefix = process.env.NUXT_APP_BASE_URL
-  ? "/" + process.env.NUXT_APP_BASE_URL
-  : "";
+// const prefix = process.env.NUXT_APP_BASE_URL
+//   ? "/" + process.env.NUXT_APP_BASE_URL
+//   : "";
 const route = useRoute();
+const router = useRouter();
 const navList = [
   {
     href: "/",
@@ -37,6 +40,9 @@ const activePath = computed(() => {
   if (path === "") return "/";
   return route.path;
 });
+function handleClick(href) {
+  router.push(href);
+}
 </script>
 <style scoped>
 .active {
