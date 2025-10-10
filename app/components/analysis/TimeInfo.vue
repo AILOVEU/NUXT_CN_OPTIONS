@@ -55,12 +55,20 @@
                 {{ row["实值"] }}
               </template>
             </el-table-column>
-            <el-table-column label="总价" prop="总价" />
-            <el-table-column label="占比" prop="占比" #default="{ row }">
+            <el-table-column label="总价" prop="总价" sortable/>
+            <el-table-column label="涨跌" prop="涨跌" sortable/>
+            <el-table-column
+              :label="
+                props.row._custom
+                  ? `待收益占比(${props.row.value})`
+                  : `总价占比(${持仓总价})`
+              "
+              prop="总价占比"
+              #default="{ row }"
+            >
               <el-progress
-                :percentage="row['占比']"
-                :status="getPercentType(row['占比'])"
-                :format="(percentage) => `${percentage}%`"
+                :percentage="row['总价占比']"
+                :color="getPercentColor(row['总价占比'])"
               />
             </el-table-column>
           </el-table>
@@ -68,91 +76,34 @@
       </template>
     </el-table-column>
     <el-table-column label="名" prop="title" />
-    <el-table-column label="值" prop="value" />
+    <el-table-column label="值" prop="value" #default="props">
+      <div class="flex items-center gap-[12px]">
+        <div>
+          {{ props.row.value }}
+        </div>
+        <div v-if="!props.row._custom">
+          ({{ Math.floor((1000 * props.row.value) / 持仓总价) / 10 }}%)
+        </div>
+        <DiffTag v-if="!props.row._custom" :涨跌="props.row.涨跌" />
+      </div>
+    </el-table-column>
   </el-table>
-  <!-- <div class="overflow-x-auto">
-    <div>
-      时间价值待收益<span class="text-[8px]">(正为收益，负为时间损耗)</span>：{{
-        组合时间价值.待收益Value
-      }}
-    </div>
-    <div>占用资金(无时间损耗)：{{ 组合时间价值.实值Value }}</div>
-    <div
-      v-for="[权利, 义务, 持仓] in 组合时间价值.待收益组合List"
-      class="flex items-center justify-between w-[600px] border-[1px] mt-[20px]"
-    >
-      <div class="w-[200px]">
-        <div>{{ 权利["期权名称"] }}</div>
-        <div>{{ 义务["期权名称"] }}</div>
-      </div>
-      <div>*{{ 持仓 }}</div>
-      <div class="w-[250px]">
-        <div>
-          {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
-            权利["内在价值"]
-          }})
-        </div>
-        <div>
-          {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
-            义务["内在价值"]
-          }})
-        </div>
-      </div>
-    </div>
-    <div class="mt-[20px]">
-      组合期权(占用时间价值)：{{ 组合时间价值.otherValue }}
-    </div>
-    <div
-      v-for="[权利, 义务, 持仓] in 组合时间价值.otherList"
-      class="flex items-center justify-between w-[600px] border-[1px]"
-    >
-      <div class="w-[200px]">
-        <div>{{ 权利["期权名称"] }}</div>
-        <div>{{ 义务["期权名称"] }}</div>
-      </div>
-      <div>*{{ 持仓 }}</div>
-      <div class="w-[250px]">
-        <div>
-          {{ 权利["最新价"].toFixed(3) }}(时间:{{ 权利["时间价值"] }} 内在:{{
-            权利["内在价值"]
-          }})
-        </div>
-        <div>
-          {{ 义务["最新价"].toFixed(3) }}(时间:{{ 义务["时间价值"] }} 内在:{{
-            义务["内在价值"]
-          }})
-        </div>
-      </div>
-    </div>
-    <div class="mt-[20px]">单腿期权(占用时间价值)：{{ 非组合持仓.value }}</div>
-    <div
-      v-for="{ 期权名称, 持仓, 最新价, 时间价值, 内在价值 } in 非组合持仓.list"
-      class="flex items-center justify-between w-[600px] border-[1px]"
-    >
-      <div class="w-[200px]">
-        <div>{{ 期权名称 }}</div>
-      </div>
-      <div>*{{ 持仓 }}</div>
-      <div class="w-[250px]">
-        <div>
-          {{ 最新价.toFixed(3) }}(时间:{{ 时间价值 }} 内在:{{ 内在价值 }})
-        </div>
-      </div>
-    </div>
-  </div> -->
-  <VChart :option="组合时间价值Option" style="height: 700px; width: 100%" />
 </template>
 
 <script setup>
 import { UNIT } from "~/data";
 import _ from "lodash";
+import DiffTag from "~/components/tag/DiffTag.vue";
 const props = defineProps(["all_data", "combo_list"]);
-const 组合时间价值 = computed(() => {
-  let 待收益Value = 0;
-  let otherValue = 0;
-  let 实值Value = 0;
-  const 待收益组合List = [];
-  const otherList = [];
+const 组合期权持仓 = computed(() => {
+  let 时间收益组合Value = 0;
+  let 时间损耗组合Value = 0;
+  let 时间收益组合持仓Value = 0;
+  let 时间收益组合涨跌 = 0;
+  let 时间损耗组合涨跌 = 0;
+
+  const 时间收益组合List = [];
+  const 时间损耗组合List = [];
   props.combo_list.forEach((el) => {
     const [权利Option, 义务Option, 组合持仓] = el;
     const 权利期权Item = props.all_data.find(
@@ -161,31 +112,40 @@ const 组合时间价值 = computed(() => {
     const 义务期权Item = props.all_data.find(
       (el) => el["期权名称"] === 义务Option
     );
+    // 时间收益
     if (
       权利期权Item["内在价值"] &&
       权利期权Item["时间价值"] < 义务期权Item["时间价值"]
     ) {
-      待收益组合List.push([权利期权Item, 义务期权Item, 组合持仓]);
-      待收益Value += -权利期权Item["时间价值"] * UNIT * 组合持仓;
-      待收益Value += 义务期权Item["时间价值"] * UNIT * 组合持仓;
-      实值Value += 权利期权Item["最新价"] * UNIT * 组合持仓;
-      实值Value -= 义务期权Item["最新价"] * UNIT * 组合持仓;
-    } else {
-      otherList.push([权利期权Item, 义务期权Item, 组合持仓]);
-      otherValue += 权利期权Item["最新价"] * UNIT * 组合持仓;
-      otherValue -= 义务期权Item["最新价"] * UNIT * 组合持仓;
+      时间收益组合List.push([权利期权Item, 义务期权Item, 组合持仓]);
+      时间收益组合Value +=
+        (义务期权Item["时间价值"] - 权利期权Item["时间价值"]) * UNIT * 组合持仓;
+      时间收益组合持仓Value +=
+        (权利期权Item["最新价"] - 义务期权Item["最新价"]) * UNIT * 组合持仓;
+      时间收益组合涨跌 +=
+        (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * UNIT * 组合持仓;
+    }
+    // 时间损耗
+    else {
+      时间损耗组合List.push([权利期权Item, 义务期权Item, 组合持仓]);
+      时间损耗组合Value +=
+        (权利期权Item["最新价"] - 义务期权Item["最新价"]) * UNIT * 组合持仓;
+      时间损耗组合涨跌 +=
+        (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * UNIT * 组合持仓;
     }
   });
   return {
-    待收益组合List,
-    待收益Value: Math.floor(待收益Value),
-    otherList,
-    otherValue: Math.floor(otherValue),
-    实值Value: Math.floor(实值Value),
+    时间收益组合List,
+    时间收益组合Value: Math.floor(时间收益组合Value),
+    时间收益组合涨跌: Math.floor(时间收益组合涨跌),
+    时间损耗组合List,
+    时间损耗组合Value: Math.floor(时间损耗组合Value),
+    时间损耗组合涨跌: Math.floor(时间损耗组合涨跌),
+    时间收益组合持仓Value: Math.floor(时间收益组合持仓Value),
   };
 });
 
-const 非组合持仓 = computed(() => {
+const 单腿期权持仓 = computed(() => {
   let 持仓List = props.all_data
     ?.filter((el) => el["持仓"])
     .map((el) => ({ ...el }));
@@ -199,103 +159,30 @@ const 非组合持仓 = computed(() => {
       }
     }
   });
+  let 涨跌 = 0;
   持仓List = 持仓List.filter((el) => el["持仓"]);
   持仓List = _.sortBy(持仓List, ["正股代码", "到期日", "行权价"]);
   let value = 0;
   持仓List.forEach((el) => {
     value += el["最新价"] * UNIT * el["持仓"];
+    涨跌 += el["涨跌额"] * UNIT * el["持仓"];
   });
-  return { list: 持仓List, value: Math.floor(value) };
+  return { list: 持仓List, value: Math.floor(value), 涨跌: Math.floor(涨跌) };
 });
-
-const 组合时间价值Option = computed(() => {
-  let total = 0;
-  const seriesData1 = 组合时间价值.value.list?.map((el) => {
-    const [权利期权Item, 义务期权Item, 组合持仓] = el;
-    const value = Math.floor(
-      (-权利期权Item["时间价值"] + 义务期权Item["时间价值"]) * 组合持仓 * UNIT
-    );
-    total += value;
-    return {
-      name: 权利期权Item["期权名称"] + "-" + 义务期权Item["期权名称"],
-      value,
-    };
-  });
-
-  return getPieOptions({
-    total,
-    title: "组合时间价值分布",
-    seriesData1,
-  });
+const 持仓总价 = computed(() => {
+  return (
+    组合期权持仓.value.时间收益组合持仓Value +
+      组合期权持仓.value.时间损耗组合Value +
+      单腿期权持仓.value.value || 1
+  );
 });
-function getPieOptions({ total, title, seriesData1, seriesData2 = [] }) {
-  return {
-    backgroundColor: "#fefefe",
-    title: {
-      text: title,
-      left: "center",
-    },
-    tooltip: {
-      trigger: "item",
-    },
-    // legend: {
-    //   // orient: "vertical",
-    //   bottom: "0",
-    // },
-    series: [
-      {
-        radius: [0, "30%"],
-        smooth: true,
-        // radius: '50%',
-        // roseType: 'area',
-        // padAngle: 2,
-        type: "pie",
-        data: [{ name: total, value: total }],
-        label: {
-          position: "inner",
-          formatter: "{b}",
-        },
-      },
-      {
-        radius: ["50%", "60%"],
-        smooth: true,
-        // radius: '50%',
-        // roseType: 'area',
-        padAngle: 2,
-        type: "pie",
-        data: seriesData1,
-        label: {
-          formatter: "{b}\n{c}\n({d}%)",
-        },
-      },
-      // {
-      //   radius: ["30%", "40%"],
-      //   smooth: true,
-      //   label: {
-      //     show: false,
-      //     //   position: "inner",
-      //   },
-      //   labelLine: {
-      //     show: false,
-      //   },
-      //   padAngle: 2,
-      //   type: "pie",
-      //   data: seriesData2,
-      //   // label: {
-      //   //   formatter: "{b}\n{c}\n({d}%)",
-      //   // },
-      // },
-    ],
-  };
-}
-
 const richTableData = computed(() => {
   return [
     {
-      isCombo: true,
-      title: "时间价值待收益",
-      value: 组合时间价值.value.待收益Value,
-      children: 组合时间价值.value.待收益组合List.map(
+      _custom: true,
+      title: "组合时间价值待收益",
+      value: 组合期权持仓.value.时间收益组合Value,
+      children: 组合期权持仓.value.时间收益组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
           const 总价 = Math.floor(
             (义务期权Item["时间价值"] - 权利期权Item["时间价值"]) *
@@ -309,17 +196,18 @@ const richTableData = computed(() => {
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             总价,
-            占比:
-              Math.floor((1000 * 总价) / 组合时间价值.value.待收益Value) / 10,
+            总价占比:
+              Math.floor((1000 * 总价) / 组合期权持仓.value.时间收益组合Value) /
+              10,
           };
         }
       ),
     },
     {
-      isCombo: true,
-      title: "占用资金(无时间损耗)",
-      value: 组合时间价值.value.实值Value,
-      children: 组合时间价值.value.待收益组合List.map(
+      title: "组合占用资金(无时间损耗)",
+      value: 组合期权持仓.value.时间收益组合持仓Value,
+      涨跌: 组合期权持仓.value.时间收益组合涨跌,
+      children: 组合期权持仓.value.时间收益组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
           const 总价 = Math.floor(
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
@@ -331,16 +219,21 @@ const richTableData = computed(() => {
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             总价,
-            占比: Math.floor((1000 * 总价) / 组合时间价值.value.实值Value) / 10,
+            涨跌: Math.floor(
+              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
+                组合持仓 *
+                UNIT
+            ),
+            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
           };
         }
       ),
     },
     {
-      isCombo: true,
-      title: "组合期权(占用时间价值)",
-      value: 组合时间价值.value.otherValue,
-      children: 组合时间价值.value.otherList.map(
+      title: "组合期权持仓(占用时间价值)",
+      value: 组合期权持仓.value.时间损耗组合Value,
+      涨跌: 组合期权持仓.value.时间损耗组合涨跌,
+      children: 组合期权持仓.value.时间损耗组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
           const 总价 = Math.floor(
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
@@ -352,18 +245,22 @@ const richTableData = computed(() => {
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             总价,
-            占比:
-              Math.floor((1000 * 总价) / 组合时间价值.value.otherValue) / 10,
+            涨跌: Math.floor(
+              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
+                组合持仓 *
+                UNIT
+            ),
+            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
           };
         }
       ),
     },
     {
-      isCombo: false,
       title: "单腿期权(占用时间价值)",
-      value: 非组合持仓.value.value,
-      children: 非组合持仓.value.list.map(
-        ({ 期权名称, 最新价, 持仓, 内在价值, 时间价值 }) => {
+      value: 单腿期权持仓.value.value,
+      涨跌: 单腿期权持仓.value.涨跌,
+      children: 单腿期权持仓.value.list.map(
+        ({ 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值 }) => {
           const 总价 = Math.floor(最新价 * UNIT * 持仓);
           return {
             名称: 期权名称,
@@ -371,18 +268,20 @@ const richTableData = computed(() => {
             最新价,
             实值: 内在价值,
             时间: 时间价值,
+            涨跌: Math.floor(涨跌额 * 持仓 * UNIT),
             总价,
-            占比: Math.floor((1000 * 总价) / 非组合持仓.value.value) / 10,
+            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
           };
         }
       ),
     },
   ];
 });
-function getPercentType(val) {
-  if (val > 25) return "warning";
-  if (val > 50) return "exception";
-  return undefined;
+function getPercentColor(val) {
+  if (val > 50) return "#f56c6c";
+  if (val > 25) return "#e6a23c";
+  if (val > 5) return "#409eff";
+  return "#909399";
 }
 </script>
 <style>

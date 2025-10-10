@@ -114,8 +114,11 @@
         <template #default="{ row }" v-if="label === '最新价'">
           {{ Math.floor(row[label] * UNIT) }}
         </template>
-        <template #default="{ row }" v-if="label === '隐波'">
+        <template #default="{ row }" v-else-if="label === '隐波'">
           <IvTag :隐波="row[label]" />
+        </template>
+        <template #default="{ row }" v-else-if="label === '组合'">
+          {{ row["组合"] ? "是" : "" }}
         </template>
         <template #default="{ row }" v-else>
           {{ row[label] }}
@@ -172,6 +175,9 @@ const tableColumns = [
   },
   {
     label: "沽购",
+  },
+  {
+    label: "组合",
   },
   {
     label: "行权价",

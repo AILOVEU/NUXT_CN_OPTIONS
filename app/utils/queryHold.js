@@ -38,6 +38,7 @@ function handleData(dataList) {
         "单日损耗",
         "时间价值",
         "内在价值",
+        "组合",
       ].forEach((key) => {
         if (["期权名称"].includes(key)) return;
         data["C" + 实际月份 + key] = call_item?.[key];
@@ -48,7 +49,7 @@ function handleData(dataList) {
     data["期权"] = item["期权名称"].replace("购", "@").replace(到期月份, "");
     data["月份"] = month_list;
     // 公共字段
-    ["正股代码", "行权价", "正股价格",'沽购'].forEach((key) => {
+    ["正股代码", "行权价", "正股价格", "沽购"].forEach((key) => {
       data[key] = item[key];
     });
     正股价格_dict[data["正股代码"]] = data["正股价格"];

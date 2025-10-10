@@ -197,6 +197,12 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       console.log(err);
     });
   const combo_list = 构建组合(all_data);
+  all_data = all_data.map((el) => {
+    return {
+      ...el,
+      组合: combo_list.some((item) => item.includes(el["期权名称"])),
+    };
+  });
   return [all_data, combo_list];
 }
 
