@@ -137,7 +137,7 @@ const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
-async function refresh() {
+async function handleQuery() {
   tableData.loading = true;
   const tData = await queryT(持仓JSON.value, [stockCode.value]);
   tableData.data = tData || [];
@@ -146,7 +146,7 @@ async function refresh() {
 function handleStockCodeChange() {
   tableRef.value.setScrollTop(0);
   setTimeout(() => {
-    refresh();
+    handleQuery();
   });
 }
 const 行权价RangeDict = reactive({ ...行权价_range_map });

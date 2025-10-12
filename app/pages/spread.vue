@@ -7,7 +7,6 @@
           刷新
         </el-button>
         <Nav />
-
       </div>
     </el-affix>
 
@@ -33,19 +32,27 @@
       ref="tableRef"
     >
       <el-table-column
-        v-for="{ label, type, width } in tableData.columns"
+        v-for="{ label, type, width, diff } in tableData.columns"
         :key="type + label"
         :prop="type + label"
-        :width="width"
         align="center"
-        :minWidth="label === '期权' ? '65px' : '120px'"
+        width="150px"
       >
         <template #header>
-          <div v-if="type">
+          <div
+            v-if="type"
+            :style="
+              getHeaderStyle(
+                diff,
+                dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1
+              )
+            "
+          >
             <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
             <div>
               ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
             </div>
+            <div>{{ diff }}</div>
           </div>
           <div v-else>
             {{ label }}
@@ -55,7 +62,13 @@
           <Center :row="row" />
         </template>
         <template #default="{ row }" v-if="label !== '期权'">
-          <Info :row="row" :isCall="type === 'C'" :date="label" />
+          <Info
+            :row="row"
+            :isCall="type === 'C'"
+            :date="label"
+            :tiledData="tableData.tiledData"
+            :diffValue="diff"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -69,10 +82,14 @@ import {
   deadline_list,
 } from "~/data";
 import dayjs from "dayjs";
-import Center from "~/components/hold/Center.vue";
-import Info from "~/components/hold/Info.vue";
-import { queryHold } from "~/utils/queryHold.js";
-import { useCopy } from "~/utils";
+import _ from "lodash";
+import Center from "~/components/spread/Center.vue";
+import Info from "~/components/spread/Info.vue";
+import { querySpread } from "~/utils/querySpread.js";
+import { ElMessage } from "element-plus";
+import { useCopy, getColorSplitHander } from "~/utils";
+import { useHttpStore } from "~/stores/useHttpStore.js";
+const { httpStore, setHttpStore } = useHttpStore();
 function copy() {
   useCopy(JSON.stringify(持仓JSON.value));
 }
@@ -91,14 +108,31 @@ const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   data: [],
+  tiledData: [],
   loading: false,
   columns: [
-    ...reversed_deadline_list.map((el) => ({ type: "C", label: el })),
+    ..._.flattenDeep(
+      [250, 200, 100].map((diff) =>
+        reversed_deadline_list.map((el) => ({
+          type: "C",
+          label: el,
+          diff: diff,
+        }))
+      )
+    ),
     {
       label: "期权",
       type: "",
     },
-    ...deadline_list.map((el) => ({ type: "P", label: el })),
+    ..._.flattenDeep(
+      [100, 200, 250].map((diff) =>
+        deadline_list.map((el) => ({
+          type: "C",
+          label: el,
+          diff: diff,
+        }))
+      )
+    ),
   ],
 });
 const 持仓JSON = ref([]);
@@ -106,9 +140,20 @@ useFetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
 async function handleQuery() {
+  // if (httpStore.value) {
+  //   ElMessage("网络请求，使用缓存代替");
+  //   const [holdData, tiledData] = httpStore.value;
+  //   tableData.data = holdData || [];
+  //   tableData.tiledData = tiledData;
+  //   return;
+  // }
   tableData.loading = true;
-  const holdData = await queryHold(持仓JSON.value, [stockCode.value]);
+  const [holdData, , tiledData] = await querySpread(持仓JSON.value, [
+    stockCode.value,
+  ]);
   tableData.data = holdData || [];
+  tableData.tiledData = tiledData;
+  setHttpStore([holdData, tiledData]);
   tableData.loading = false;
 }
 function handleStockCodeChange() {
@@ -151,6 +196,24 @@ function getCellStyle({ column, row }) {
 }
 function getRowStyle({ row }) {
   return {};
+}
+function getHeaderStyle(diff, day) {
+  let bgColor;
+  let percent = (day / (9 * 30)) * 100;
+  if (diff === 100) {
+    bgColor = getColorSplitHander("#feb6ff", "#a29ed1")(percent);
+  }
+  if (diff === 200) {
+    bgColor = getColorSplitHander("#c0fe91", "#84c29b")(percent);
+  }
+  if (diff === 250) {
+    bgColor = getColorSplitHander("#2fb7c3", "#007598")(percent);
+  }
+  return {
+    backgroundColor: bgColor,
+    color: "black",
+    padding: "5px 0",
+  };
 }
 </script>
 <style lang="less">

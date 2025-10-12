@@ -245,6 +245,8 @@ export const getColorSplitHander = (startColor, endColor) => {
   };
 };
 // ↑ 颜色切割 end↑
+
+
 export function useCopy(text) {
   function selectText(textbox, startIndex, stopIndex) {
     if (textbox.createTextRange) {
@@ -276,4 +278,8 @@ export function useCopy(text) {
   }
   textArea.blur(); //去掉选中，因为的移动端ios 上，会出现点了选择左上角出现点问题
   document.body.removeChild(textArea);
+}
+
+export function toFixed(value, number = 0) {
+  return parseFloat(value.toFixed(number));
 }

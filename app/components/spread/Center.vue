@@ -1,0 +1,39 @@
+<template>
+  <div v-if="!props.row?._current">
+    <div>{{ 正股 }}</div>
+    <div>
+      {{ 行权价 }}
+    </div>
+    <div>
+      (
+      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
+        {{ 溢价Str }}
+      </span>
+      )
+    </div>
+  </div>
+  <div v-else>
+    {{ (行权价 / 1000).toFixed(3) }}
+  </div>
+</template>
+<script setup>
+import { stock_show_name_map } from "~/data";
+const props = defineProps(["row"]);
+
+const 正股 = computed(() => {
+  return stock_show_name_map[props.row["正股代码"]];
+});
+const 行权价 = computed(() => {
+  return props.row["行权价"] * 1000;
+});
+
+const 正股价格 = computed(() => {
+  return props.row["正股价格"] * 1000;
+});
+const 溢价 = computed(() => {
+  return (100 * (行权价.value - 正股价格.value)) / 正股价格.value;
+});
+const 溢价Str = computed(() => {
+  return 溢价.value.toFixed(2) + "%";
+});
+</script>
