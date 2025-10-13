@@ -34,6 +34,10 @@ const navList = [
     href: "/filter",
     name: "过滤",
   },
+  {
+    href: "/spread",
+    name: "价差",
+  },
 ];
 const activePath = computed(() => {
   const path = route.path;
