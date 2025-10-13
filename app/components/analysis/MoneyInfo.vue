@@ -1,10 +1,10 @@
 <template>
-  <div>总盈亏金额：{{ 总盈亏金额 }}</div>
+  <div></div>
   <div>
     <VChart :option="盈亏曲线Option" style="height: 400px; width: 80%; margin:
     0 auto; "/>
   </div>
-  <div class="mx-auto text-center text-[18px] font-semibold">资金分布</div>
+  <div class="mx-auto text-center text-[18px] font-semibold">资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
   <div
     class="border-[3px] rounded-[3px] border-[black] h-[480px] relative text-[15px] font-medium mt-[10px] mx-auto"
     :style="{ width: `calc(${baseWidth}vw + 4px)` }"

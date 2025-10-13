@@ -120,6 +120,9 @@
         <template #default="{ row }" v-else-if="label === '组合'">
           {{ row["组合"] ? "是" : "" }}
         </template>
+        <template #default="{ row }" v-else-if="label === '持仓'">
+          {{ row["持仓"] || "" }}
+        </template>
         <template #default="{ row }" v-else>
           {{ row[label] }}
         </template>
