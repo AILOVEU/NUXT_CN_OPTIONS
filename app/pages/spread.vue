@@ -127,7 +127,7 @@ const tableData = reactive({
     ..._.flattenDeep(
       [100, 200, 250].map((diff) =>
         deadline_list.map((el) => ({
-          type: "C",
+          type: "P",
           label: el,
           diff: diff,
         }))
