@@ -117,7 +117,8 @@ export const deadline_map = {
 export const UNIT = 10000;
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
-    ["20251013", 46176],
+    ["20251014", 46176],
+    ["20251013", 45554],
     ["20251010", 40322],
     ["20251009", 33513],
   ]),
