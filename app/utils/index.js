@@ -67,7 +67,7 @@ function 构建组合(all_data) {
   });
   let 义务仓List = 持仓List.filter((el) => el["持仓"] < 0);
   let loopCount = 0;
-  while (义务仓List.length && loopCount < 1000) {
+  while (义务仓List.length && loopCount < 100) {
     loopCount += 1;
     义务仓List.forEach((el) => {
       const 义务Option = el["期权名称"];
@@ -75,12 +75,18 @@ function 构建组合(all_data) {
       const 义务行权价 = el["行权价"] * 1000;
       let 权利行权价 = 义务行权价 + (isCall ? -50 : 50);
       let 权利Option = 义务Option.replace(义务行权价, 权利行权价);
+      let loopCount2 = 0;
       while (
+        loopCount2 < 100 &&
         权利行权价 > 50 &&
         (!持仓Map[权利Option]?.持仓 || 持仓Map[权利Option]?.持仓 < 0)
       ) {
+        loopCount2 += 1;
         权利行权价 = 权利行权价 + (isCall ? -50 : 50);
         权利Option = 义务Option.replace(义务行权价, 权利行权价);
+      }
+      if (loopCount2 > 99) {
+        return;
       }
       const min持仓 = Math.min(
         Math.abs(持仓Map[权利Option].持仓),
@@ -245,7 +251,6 @@ export const getColorSplitHander = (startColor, endColor) => {
   };
 };
 // ↑ 颜色切割 end↑
-
 
 export function useCopy(text) {
   function selectText(textbox, startIndex, stopIndex) {
