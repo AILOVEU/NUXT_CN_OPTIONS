@@ -105,7 +105,9 @@ const stockCodeOptions = computed(() => {
   }));
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
-const reversed_deadline_list = [...deadline_list].reverse();
+const reversed_deadline_list = [...deadline_list]
+  .filter((el, index) => index !== 0)
+  .reverse();
 const tableData = reactive({
   data: [],
   tiledData: [],
@@ -177,7 +179,7 @@ const filteredTableData = computed(() => {
 
 function getCellStyle({ column, row }) {
   if (column?.["property"] === "期权")
-    return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
+    return { backgroundColor: "rgba(150,150,150,0.1)", fontWeight: "600" };
   // if (column?.["property"]?.includes("C_") && row?.["C机会"])
   //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
   // if (column?.["property"]?.includes("P_") && row?.["P机会"])
@@ -201,13 +203,13 @@ function getHeaderStyle(diff, day) {
   let bgColor;
   let percent = (day / (9 * 30)) * 100;
   if (diff === 100) {
-    bgColor = getColorSplitHander("#feb6ff", "#a29ed1")(percent);
+    bgColor = getColorSplitHander("#ffffff", "#228B22")(percent);
   }
   if (diff === 200) {
-    bgColor = getColorSplitHander("#c0fe91", "#84c29b")(percent);
+    bgColor = getColorSplitHander("#ffffff", "#8B6914")(percent);
   }
   if (diff === 250) {
-    bgColor = getColorSplitHander("#2fb7c3", "#007598")(percent);
+    bgColor = getColorSplitHander("#ffffff", "#0000CD")(percent);
   }
   return {
     backgroundColor: bgColor,

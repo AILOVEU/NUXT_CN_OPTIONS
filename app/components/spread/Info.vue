@@ -1,5 +1,5 @@
 <template>
-  <div class="p-[2px] h-[84px]" v-if="spread期权Item && show">
+  <div class="p-[2px] h-[64px]">
     <!-- <div class="flex justify-between whitespace-nowrap">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
@@ -8,29 +8,44 @@
         <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div> -->
-
-    <div class="text-[gray]">
-      <div class="mx-auto">
-        {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;&nbsp;{{
-          spread期权Item?.["行权价"] * 1000
-        }}
+    <div v-if="spread期权Item && show">
+      <div class="text-[gray]">
+        <div class="mx-auto">
+          {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;&nbsp;{{
+            spread期权Item?.["行权价"] * 1000
+          }}
+        </div>
+        <div class="mx-auto">
+          δ {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{
+            spread期权Item?.["Delta"]
+          }}
+        </div>
+        <div class="mx-auto">
+          Iv {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{
+            spread期权Item?.["隐波"]
+          }}
+        </div>
       </div>
-      <div class="mx-auto">
-        δ {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}
+      <div
+        class="mx-auto w-full mt-[6px] flex gap-[4px] items-center justify-around"
+      >
+        <div>
+          {{ Math.floor(current期权Item?.["卖一"] * UNIT) }}
+        </div>
+        <DiffPriceTag
+          :最新价="
+            toFixed(
+              current期权Item?.['卖一'] * UNIT -
+                spread期权Item?.['买一'] * UNIT,
+              0
+            )
+          "
+          :diffValue="props.diffValue"
+        />
+        <div>
+          {{ Math.floor(spread期权Item?.["买一"] * UNIT) }}
+        </div>
       </div>
-      <div class="mx-auto">
-        Iv {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}
-      </div>
-    </div>
-    <div class="mx-auto w-full mt-[6px]">
-      <DiffPriceTag
-        :最新价="
-          toFixed(
-            current期权Item?.['卖一'] * UNIT - spread期权Item?.['买一'] * UNIT,
-            0
-          )
-        "
-      />
     </div>
   </div>
 </template>
@@ -89,9 +104,18 @@ const style = computed(() => {
   return {};
 });
 function is50Multiple(val) {
-  return;
+  return val % 100 === 50;
 }
 const show = computed(() => {
+  if (
+    is50Multiple(current期权Item.value["行权价"] * 1000) &&
+    is50Multiple(spread期权Item.value["行权价"] * 1000)
+  ) {
+    return false;
+  }
+  if (spread期权Item.value["最新价"] < 0.01) {
+    return false;
+  }
   if (current期权Item.value["行权价"] * 1000 < 5000 && props.diffValue === 250)
     return false;
   return true;
