@@ -141,7 +141,7 @@ const stockOptions = stock_sorted_list.map((el) => ({
 }));
 const formData = reactive({
   最新价Range: [0, 400],
-  DeltaRange: [0, 1],
+  DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
   GammaRange: [1, 9999],
   正股List: [...stock_sorted_list],

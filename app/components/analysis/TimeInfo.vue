@@ -55,8 +55,9 @@
                 {{ row["实值"] }}
               </template>
             </el-table-column>
-            <el-table-column label="总价" prop="总价" sortable/>
-            <el-table-column label="涨跌" prop="涨跌" sortable/>
+            <el-table-column label="总价" prop="总价" sortable />
+            <el-table-column label="到期天数" prop="到期天数" sortable />
+            <el-table-column label="涨跌" prop="涨跌" sortable />
             <el-table-column
               :label="
                 props.row._custom
@@ -65,6 +66,7 @@
               "
               prop="总价占比"
               #default="{ row }"
+              width="200"
             >
               <el-progress
                 :percentage="row['总价占比']"
@@ -195,6 +197,7 @@ const richTableData = computed(() => {
             最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+            到期天数: 权利期权Item["到期天数"],
             总价,
             总价占比:
               Math.floor((1000 * 总价) / 组合期权持仓.value.时间收益组合Value) /
@@ -218,6 +221,7 @@ const richTableData = computed(() => {
             最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+            到期天数: 权利期权Item["到期天数"],
             总价,
             涨跌: Math.floor(
               (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
@@ -244,6 +248,7 @@ const richTableData = computed(() => {
             最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
             实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+            到期天数: 权利期权Item["到期天数"],
             总价,
             涨跌: Math.floor(
               (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
@@ -260,7 +265,7 @@ const richTableData = computed(() => {
       value: 单腿期权持仓.value.value,
       涨跌: 单腿期权持仓.value.涨跌,
       children: 单腿期权持仓.value.list.map(
-        ({ 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值 }) => {
+        ({ 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值, 到期天数 }) => {
           const 总价 = Math.floor(最新价 * UNIT * 持仓);
           return {
             名称: 期权名称,
@@ -268,6 +273,7 @@ const richTableData = computed(() => {
             最新价,
             实值: 内在价值,
             时间: 时间价值,
+            到期天数,
             涨跌: Math.floor(涨跌额 * 持仓 * UNIT),
             总价,
             总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
