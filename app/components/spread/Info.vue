@@ -8,15 +8,21 @@
         <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div> -->
-    <div class="absolute top-0 right-0 bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" v-if=" 组合Flag">
+    <div
+      class="absolute top-0 right-0 bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]"
+      v-if="组合Flag"
+    >
       {{ 组合Flag }}
     </div>
     <div v-if="spread期权Item && show">
       <div class="text-[gray]">
         <div class="mx-auto">
-          {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;&nbsp;{{
+          {{
+            dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月")
+          }}&nbsp;
+          {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;{{
             spread期权Item?.["行权价"] * 1000
-          }}
+          }}&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         <div class="mx-auto">
           δ {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{
@@ -30,7 +36,7 @@
         </div>
       </div>
       <div
-        class="mx-auto w-full mt-[6px] flex gap-[4px] items-center justify-around"
+        class="mx-auto w-full mt-[3px] flex gap-[4px] items-center justify-around"
       >
         <div>
           {{ Math.floor(current期权Item?.["卖一"] * UNIT) }}

@@ -1,10 +1,14 @@
 <template>
   <div></div>
   <div>
-    <VChart :option="盈亏曲线Option" style="height: 400px; width: 80%; margin:
-    0 auto; "/>
+    <VChart
+      :option="盈亏曲线Option"
+      style="height: 400px; width: 80%; margin: 0 auto"
+    />
   </div>
-  <div class="mx-auto text-center text-[18px] font-semibold">资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
+  <div class="mx-auto text-center text-[18px] font-semibold">
+    资金分布(总盈亏金额：{{ 总盈亏金额 }})
+  </div>
   <div
     class="border-[3px] rounded-[3px] border-[black] h-[480px] relative text-[15px] font-medium mt-[10px] mx-auto"
     :style="{ width: `calc(${baseWidth}vw + 4px)` }"
@@ -143,6 +147,19 @@ const 总盈亏金额 = computed(() => {
 
 const 盈亏曲线Option = computed(() => {
   return {
+    // toolbox: {
+    //   feature: {
+    //     dataZoom: {
+    //       yAxisIndex: "none",
+    //     },
+    //   },
+    // },
+    tooltip: {
+      trigger: "axis",
+      // position: function (pt) {
+      //   return [pt[0], "10%"];
+      // },
+    },
     backgroundColor: "#fefefe",
     title: {
       text: "历史盈亏曲线",
@@ -157,15 +174,15 @@ const 盈亏曲线Option = computed(() => {
     series: [
       {
         label: {
-          show: true,
-          position: "top",
+          show: false,
+          // position: "insideTop",
         },
         data: 盈亏曲线数据.map((el) => el.value),
         type: "line",
         markLine: {
           symbol: "none",
           label: {
-            formatter: "{b} {c}",
+            formatter: "{b}\n{c}",
           },
           data: [
             {

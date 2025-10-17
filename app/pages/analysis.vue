@@ -8,6 +8,7 @@
         <Nav />
       </div>
     </el-affix>
+    <Map />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px]">
       <Card header="资金分析">
         <MoneyInfo :all_data="all_data" :combo_list="combo_list" />
@@ -34,7 +35,7 @@
 import { stock_code_map } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 import PercentInfo from "~/components/analysis/PercentInfo";
 import BubbleInfo from "~/components/analysis/BubbleInfo";
 import BarInfo from "~/components/analysis/BarInfo";

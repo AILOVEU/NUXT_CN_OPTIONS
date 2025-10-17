@@ -127,7 +127,7 @@ function copy() {
 const diff_list = [100, 200, 250, 300, 400, 500];
 const formData = reactive({
   到期日List: [...deadline_list].filter((el, index) => index),
-  价差List: [...diff_list],
+  价差List: [100, 200, 250],
 });
 
 const tableRef = ref();
