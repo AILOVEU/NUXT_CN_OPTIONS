@@ -6,7 +6,7 @@ function get_fist_季度月份(dataList) {
   month_list.sort();
   let month_index = 0;
   for (let _index = 0; _index < month_list.length; _index++) {
-    const day = dayjs(month_list[month_index], "YYYYMMDD").format("MM月");
+    const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
     if (["03月", "06月", "09月", "12月"].includes(day)) {
       month_index = _index;
       break;

@@ -19,6 +19,36 @@
     </div>
   </div>
 
+  <div>
+    <el-form
+      :model="formData"
+      label-width="auto"
+      style="max-width: 600px"
+      label-suffix=":"
+    >
+      <el-form-item label="到期日">
+        <el-select v-model="formData.到期日List" multiple>
+          <el-option
+            v-for="date in deadline_list"
+            :key="date"
+            :label="date"
+            :value="date"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="价差">
+        <el-select v-model="formData.价差List" multiple>
+          <el-option
+            v-for="diff in diff_list"
+            :key="diff"
+            :label="diff"
+            :value="diff"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </div>
+
   <div class="w-full h-[calc(100vh-100px)]">
     <el-table
       :data="filteredTableData"
@@ -32,9 +62,9 @@
       ref="tableRef"
     >
       <el-table-column
-        v-for="{ label, type, width, diff } in tableData.columns"
-        :key="type + label"
-        :prop="type + label"
+        v-for="{ label, type, width, diff } in columns"
+        :key="type + label + diff"
+        :prop="type + label + diff"
         align="center"
         width="150px"
       >
@@ -67,6 +97,7 @@
             :isCall="type === 'C'"
             :date="label"
             :tiledData="tableData.tiledData"
+            :combo_list="tableData.combo_list"
             :diffValue="diff"
           />
         </template>
@@ -93,6 +124,12 @@ const { httpStore, setHttpStore } = useHttpStore();
 function copy() {
   useCopy(JSON.stringify(持仓JSON.value));
 }
+const diff_list = [100, 200, 250, 300, 400, 500];
+const formData = reactive({
+  到期日List: [...deadline_list].filter((el, index) => index),
+  价差List: [...diff_list],
+});
+
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
   let list = Object.keys(stock_show_name_map);
@@ -105,17 +142,13 @@ const stockCodeOptions = computed(() => {
   }));
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
-const reversed_deadline_list = [...deadline_list]
-  .filter((el, index) => index !== 0)
-  .reverse();
-const tableData = reactive({
-  data: [],
-  tiledData: [],
-  loading: false,
-  columns: [
+const columns = computed(() => {
+  const 价差List = _.sortBy([...formData.价差List]);
+  const 到期日List = _.sortBy([...formData.到期日List]);
+  return [
     ..._.flattenDeep(
-      [250, 200, 100].map((diff) =>
-        reversed_deadline_list.map((el) => ({
+      [...价差List].reverse().map((diff) =>
+        [...到期日List].reverse().map((el) => ({
           type: "C",
           label: el,
           diff: diff,
@@ -127,15 +160,20 @@ const tableData = reactive({
       type: "",
     },
     ..._.flattenDeep(
-      [100, 200, 250].map((diff) =>
-        deadline_list.map((el) => ({
+      价差List.map((diff) =>
+        到期日List.map((el) => ({
           type: "P",
           label: el,
           diff: diff,
         }))
       )
     ),
-  ],
+  ];
+});
+const tableData = reactive({
+  data: [],
+  tiledData: [],
+  loading: false,
 });
 const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {
@@ -150,12 +188,17 @@ async function handleQuery() {
   //   return;
   // }
   tableData.loading = true;
-  const [holdData, , tiledData] = await querySpread(持仓JSON.value, [
+  const [holdData, combo_list, tiledData] = await querySpread(持仓JSON.value, [
     stockCode.value,
   ]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
-  setHttpStore([holdData, tiledData]);
+  console.log(
+    "tiledData",
+    Array.from(new Set(tiledData.map((el) => el["行权价"])))
+  );
+  tableData.combo_list = combo_list;
+  // setHttpStore([holdData, tiledData]);
   tableData.loading = false;
 }
 function handleStockCodeChange() {

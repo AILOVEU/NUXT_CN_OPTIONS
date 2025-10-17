@@ -132,7 +132,13 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import { UNIT, deadline_list, stock_sorted_list, stock_code_map } from "~/data";
+import {
+  UNIT,
+  deadline_list,
+  stock_sorted_list,
+  stock_code_map,
+  最大建议买入价,
+} from "~/data";
 import IvTag from "~/components/tag/IvTag.vue";
 const props = defineProps(["all_data"]);
 const stockOptions = stock_sorted_list.map((el) => ({
@@ -140,7 +146,7 @@ const stockOptions = stock_sorted_list.map((el) => ({
   value: el,
 }));
 const formData = reactive({
-  最新价Range: [0, 400],
+  最新价Range: [0, 最大建议买入价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
   GammaRange: [1, 9999],

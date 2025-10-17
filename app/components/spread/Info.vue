@@ -1,5 +1,5 @@
 <template>
-  <div class="p-[2px] h-[64px]">
+  <div class="p-[2px] h-[64px] relative">
     <!-- <div class="flex justify-between whitespace-nowrap">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
@@ -8,6 +8,9 @@
         <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div> -->
+    <div class="absolute top-0 right-0 bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" v-if=" 组合Flag">
+      {{ 组合Flag }}
+    </div>
     <div v-if="spread期权Item && show">
       <div class="text-[gray]">
         <div class="mx-auto">
@@ -33,13 +36,8 @@
           {{ Math.floor(current期权Item?.["卖一"] * UNIT) }}
         </div>
         <DiffPriceTag
-          :最新价="
-            toFixed(
-              current期权Item?.['卖一'] * UNIT -
-                spread期权Item?.['买一'] * UNIT,
-              0
-            )
-          "
+          :current期权Item="current期权Item"
+          :spread期权Item="spread期权Item"
           :diffValue="props.diffValue"
         />
         <div>
@@ -54,17 +52,21 @@ import dayjs from "dayjs";
 import { UNIT } from "~/data";
 import { getColorSplitHander, toFixed } from "~//utils";
 import DiffPriceTag from "~/components/tag/DiffPriceTag.vue";
-import IvTag from "~/components/tag/IvTag.vue";
-import DeltaTag from "~/components/tag/DeltaTag.vue";
 
-const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue"]);
+const props = defineProps([
+  "row",
+  "isCall",
+  "date",
+  "tiledData",
+  "diffValue",
+  "combo_list",
+]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYYMMDD").format("M月");
   return type + month;
 });
 const 期权名称 = computed(() => {
-  console.log(" props.row", props.row);
   return props.row[prefixKey.value + "期权名称"];
 });
 const 行权价 = computed(() => {
@@ -85,24 +87,6 @@ const current期权Item = computed(() => {
   return props.tiledData?.find((el) => el["期权名称"] === 期权名称.value);
 });
 
-const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
-const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
-
-const style = computed(() => {
-  if (持仓.value > 0)
-    return {
-      border: "2px solid red",
-      backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
-    };
-  if (持仓.value < 0) {
-    return {
-      border: "2px solid green",
-      backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
-    };
-  }
-
-  return {};
-});
 function is50Multiple(val) {
   return val % 100 === 50;
 }
@@ -119,5 +103,17 @@ const show = computed(() => {
   if (current期权Item.value["行权价"] * 1000 < 5000 && props.diffValue === 250)
     return false;
   return true;
+});
+
+const 组合Flag = computed(() => {
+  if (!spread期权Item.value) return "";
+  const current期权Option = current期权Item.value["期权名称"];
+  const spread期权Option = spread期权Item.value["期权名称"];
+  const target = props.combo_list.find(
+    ([权利期权Option, 义务期权Option, 组合持仓]) =>
+      current期权Option === 权利期权Option &&
+      spread期权Option === 义务期权Option
+  );
+  return target?.[2];
 });
 </script>
