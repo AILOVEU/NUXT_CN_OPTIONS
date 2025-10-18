@@ -18,6 +18,7 @@
               prop="名称"
               #default="{ row }"
               width="180"
+              sortable
             >
               <template v-if="Array.isArray(row['名称'])">
                 <div>{{ row["名称"][0] }}</div>
@@ -55,10 +56,11 @@
                 {{ row["实值"] }}
               </template>
             </el-table-column>
-            <el-table-column label="总价" prop="总价" sortable />
             <el-table-column label="到期天数" prop="到期天数" sortable />
-            <el-table-column label="涨跌" prop="涨跌" sortable />
+            <el-table-column label="持仓涨跌" prop="涨跌" sortable />
+            <el-table-column label="总价" prop="总价" sortable />
             <el-table-column
+              sortable
               :label="
                 props.row._custom
                   ? `待收益占比(${props.row.value})`

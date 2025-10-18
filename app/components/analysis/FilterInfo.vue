@@ -6,7 +6,7 @@
       style="max-width: 600px"
       label-suffix=":"
     >
-      <el-form-item label="到期日">
+      <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple>
           <el-option
             v-for="item in stockOptions"

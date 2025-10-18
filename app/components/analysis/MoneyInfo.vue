@@ -17,7 +17,7 @@
       <!-- 持仓 -->
       <div
         :style="{ width: (baseWidth * 持仓金额) / money.基础金额 + 'vw' }"
-        class="h-[60px] py-[10px] bg-[#409eff] rounded-[3px]"
+        class="h-[60px] py-[10px] bg-[#00B3B3] rounded-[3px]"
       >
         <div class="whitespace-nowrap">持仓</div>
         <div>{{ 持仓金额 }}</div>
@@ -28,7 +28,7 @@
         :style="{
           width: (baseWidth * money.占用保证金) / money.基础金额 + 'vw',
         }"
-        class="h-[60px] py-[10px] bg-[#909399] relative top-[60px] rounded-[3px]"
+        class="h-[60px] py-[10px] bg-[#B3B300] relative top-[60px] rounded-[3px]"
       >
         <div class="whitespace-nowrap">占用保证金</div>
         <div>{{ money.占用保证金 }}</div>
@@ -39,7 +39,7 @@
         :style="{
           width: (baseWidth * money.场内现金) / money.基础金额 + 'vw',
         }"
-        class="h-[60px] py-[10px] bg-[#e6a23c] rounded-[3px] relative top-[120px]"
+        class="h-[60px] py-[10px] bg-[#FFFF29] rounded-[3px] relative top-[120px]"
       >
         <div class="whitespace-nowrap">场内现金</div>
         <div>{{ money.场内现金 }}</div>
@@ -49,13 +49,13 @@
       <div
         v-if="盈亏金额 <= 0"
         :style="{ width: (baseWidth * -盈亏金额) / money.基础金额 + 'vw' }"
-        class="h-[60px] py-[10px] relative top-[180px] left-0 bg-[#d87f7f] rounded-[3px]"
+        class="h-[60px] py-[10px] relative top-[180px] left-0 bg-[#FF1414] rounded-[3px]"
       >
         <div class="whitespace-nowrap">亏损金额</div>
         <div>{{ 盈亏金额 }}</div>
         <div>{{ ((100 * 盈亏金额) / money.基础金额).toFixed(1) }}%</div>
         <div
-          class="absolute top-[60px] h-[60px] right-0 bg-[#f56c6c] py-[10px] rounded-[3px]"
+          class="absolute top-[60px] h-[60px] right-0 bg-[#B30059] py-[10px] rounded-[3px]"
           :style="{ width: (baseWidth * money.贷款) / money.基础金额 + 'vw' }"
         >
           <div class="whitespace-nowrap">贷款</div>

@@ -1,4 +1,33 @@
 <template>
+  <div>
+    <el-form
+      :model="formData"
+      label-width="auto"
+      style="max-width: 600px"
+      label-suffix=":"
+    >
+      <el-form-item label="正股">
+        <el-select v-model="formData.正股List" multiple>
+          <el-option
+            v-for="item in stockOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="到期日">
+        <el-select v-model="formData.到期日List" multiple>
+          <el-option
+            v-for="date in deadline_list"
+            :key="date"
+            :label="date"
+            :value="date"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </div>
   <div class="grid grid-cols-2 max-md:grid-cols-1">
     <VChart
       :option="deltaOption"
@@ -28,9 +57,16 @@ import {
 } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-const 到期天数List = deadline_list.map(
-  (date) => dayjs(date, "YYYYMMDD").diff(dayjs(), "days") + 1
-);
+const stockOptions = stock_sorted_list.map((el) => ({
+  label: stock_code_map[el],
+  value: el,
+}));
+
+const formData = reactive({
+  正股List: [...stock_sorted_list],
+  到期日List: [...deadline_list],
+});
+
 const props = defineProps(["all_data"]);
 function getBarOps({ stockCodeList, name, dataList }) {
   return {
@@ -68,8 +104,17 @@ function getBarOps({ stockCodeList, name, dataList }) {
     },
   };
 }
+
+const filteredData = computed(() => {
+  return (
+    props.all_data
+      ?.filter((el) => el["持仓"])
+      ?.filter((el) => formData.正股List.includes(el["正股代码"]))
+      ?.filter((el) => formData.到期日List.includes(el["到期日"])) || []
+  );
+});
 const deltaOption = computed(() => {
-  let all_data = props.all_data.filter((el) => el["持仓"]);
+  let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -86,7 +131,7 @@ const deltaOption = computed(() => {
 });
 
 const 代替正股Option = computed(() => {
-  let all_data = props.all_data.filter((el) => el["持仓"]);
+  let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -103,7 +148,7 @@ const 代替正股Option = computed(() => {
 });
 
 const gammaOption = computed(() => {
-  let all_data = props.all_data.filter((el) => el["持仓"]);
+  let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
@@ -120,7 +165,7 @@ const gammaOption = computed(() => {
 });
 
 const 单日损耗Option = computed(() => {
-  let all_data = props.all_data.filter((el) => el["持仓"]);
+  let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = stock_sorted_list.filter((el) =>
     Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
