@@ -1,9 +1,15 @@
 <template>
   <div
     v-if="!props.row?._current && 最新价"
-    class="p-[2px] h-[84px] flex flex-col justify-center"
+    class="p-[2px] h-[64px] flex flex-col justify-center relative"
     :style="style"
   >
+    <HoldTag :持仓="持仓" v-if="持仓" />
+    <div class="whitespace-nowrap">
+      <PriceTag :最新价="最新价" />
+      <DiffTag :涨跌="涨跌" />
+    </div>
+
     <div class="flex justify-between whitespace-nowrap">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
@@ -12,15 +18,12 @@
         <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div>
-
-    <div class="whitespace-nowrap">
-      <PriceTag :最新价="最新价" />
-      <DiffTag :涨跌="涨跌" />
-    </div>
     <div v-if="持仓">
       <div class="flex justify-between whitespace-nowrap">
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small" effect="plain">持 {{ 持仓 }}</el-tag>
+          <el-tag type="info" size="small" effect="plain">
+            仓 {{ 仓位 }} ({{ 仓位占比.toFixed(2) }}%)
+          </el-tag>
         </div>
         <div class="whitespace-nowrap">
           <el-tag
@@ -29,13 +32,6 @@
             effect="plain"
           >
             盈 {{ 盈亏 }}
-          </el-tag>
-        </div>
-      </div>
-      <div class="flex justify-between whitespace-nowrap">
-        <div class="mx-auto">
-          <el-tag type="info" size="small" effect="plain">
-            仓 {{ 仓位 }} ({{ 仓位占比.toFixed(2) }}%)
           </el-tag>
         </div>
       </div>
@@ -52,6 +48,7 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 
 import { UNIT } from "~/data";
 import { getColorSplitHander } from "~//utils";
+import HoldTag from "../tag/HoldTag.vue";
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date"]);
 const prefixKey = computed(() => {
@@ -87,7 +84,6 @@ const 成本价 = computed(() => {
   return Math.floor(props.row[prefixKey.value + "成本价"] * UNIT);
 });
 const 盈亏 = computed(() => {
-  console.log(props.row);
   return (最新价.value - 成本价.value) * 持仓.value;
 });
 

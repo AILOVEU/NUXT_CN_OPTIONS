@@ -200,6 +200,7 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       });
     })
     .catch((err) => {
+      ElMessage({ message: err, type: "error" });
       console.log(err);
     });
   const combo_list = 构建组合(all_data);
