@@ -2,7 +2,7 @@ import csvtojson from "csvtojson/v2";
 import iconvLite from "iconv-lite";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
-const csvPath = isDeno ? "./持仓.csv" : "./持仓.csv";
+const csvPath = isDeno ? "../public/持仓.csv" : "./public/持仓.csv";
 export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
