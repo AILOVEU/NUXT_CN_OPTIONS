@@ -17,7 +17,7 @@ export default defineNuxtConfig({
     "nuxt-echarts",
     "@pinia/nuxt",
   ],
-  ssr: true,
+  ssr: false,
   build: { transpile: ["echarts-liquidfill"] },
   echarts: {
     renderer: ["svg"],
