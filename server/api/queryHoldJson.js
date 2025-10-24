@@ -3,10 +3,14 @@ import iconvLite from "iconv-lite";
 import fs from "fs";
 import path from "path";
 export async function get_持仓JSON() {
+  // console.log(
+  //   'path.join(__dirname, "持仓.csv")',
+  //   path.join(__dirname, "持仓.csv")
+  // );
   return new Promise((resolve) => {
     try {
       const converterStream = fs
-        .createReadStream(path.join(__dirname, "持仓.csv"))
+        .createReadStream("持仓.csv")
         .pipe(iconvLite.decodeStream("gbk"));
       csvtojson()
         .fromStream(converterStream)
