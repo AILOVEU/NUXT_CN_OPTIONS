@@ -14,6 +14,7 @@ export async function get_持仓JSON() {
           resolve(res);
         });
     } catch (e) {
+      console.log("持仓解析错误");
       resolve([]);
     }
   });
