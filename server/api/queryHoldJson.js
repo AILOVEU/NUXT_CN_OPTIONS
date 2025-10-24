@@ -1,11 +1,12 @@
 import csvtojson from "csvtojson/v2";
 import iconvLite from "iconv-lite";
 import fs from "fs";
+import path from "path";
 export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
       const converterStream = fs
-        .createReadStream("持仓.csv")
+        .createReadStream(path.join(__dirname, "持仓.csv"))
         .pipe(iconvLite.decodeStream("gbk"));
       csvtojson()
         .fromStream(converterStream)
