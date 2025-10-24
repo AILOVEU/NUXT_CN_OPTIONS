@@ -134,6 +134,7 @@ const tableData = reactive({
   ],
 });
 const 持仓JSON = ref([]);
+// useFetch 生成静态文件
 useFetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
