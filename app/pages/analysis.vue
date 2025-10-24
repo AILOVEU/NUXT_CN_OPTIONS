@@ -53,13 +53,13 @@ const all_data = ref([]);
 const combo_list = ref([]);
 const loading = ref(false);
 async function handleQuery() {
-  if (httpStore.value) {
-    ElMessage("网络请求，使用缓存代替");
-    const [data, list] = httpStore.value;
-    combo_list.value = list;
-    all_data.value = data;
-    return;
-  }
+  // if (httpStore.value) {
+  //   ElMessage("网络请求，使用缓存代替");
+  //   const [data, list] = httpStore.value;
+  //   combo_list.value = list;
+  //   all_data.value = data;
+  //   return;
+  // }
   loading.value = true;
   // plan 1
   const [data, list] = await get_http_data(持仓JSON.value, stockCodeList);

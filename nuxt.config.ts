@@ -39,6 +39,7 @@ export default defineNuxtConfig({
       "GeoComponent",
       "VisualMapComponent",
       "MarkLineComponent",
+      "MarkPointComponent",
     ],
   },
   // echarts: {

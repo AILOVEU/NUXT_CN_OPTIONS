@@ -179,6 +179,38 @@ const 盈亏曲线Option = computed(() => {
         },
         data: 盈亏曲线数据.map((el) => el.value),
         type: "line",
+        markPoint: {
+          data: [
+            {
+              type: "max",
+              name: "最大值",
+              // symbol: "none",
+              itemStyle: {
+                normal: {
+                  color: 'red',
+                  // label: {
+                  //   show: true,
+                  //   color: '#ffffff'
+                  // }
+                }
+              }
+            },
+            {
+              type: "min",
+              name: "最小值",
+              // symbol: "none",
+              itemStyle: {
+                normal: {
+                  color: 'green',
+                  // label: {
+                  //   show: true,
+                  //   color: '#ffffff'
+                  // }
+                }
+              }
+            },
+          ],
+        },
         markLine: {
           symbol: "none",
           label: {

@@ -12,6 +12,8 @@ useHead({
     },
   ],
 });
+
+// 设置 Cookie
 </script>
 <style lang="less">
 // div{

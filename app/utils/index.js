@@ -114,22 +114,24 @@ export async function get_target_http_data(持仓JSON, fs) {
   const pz = 100;
   let all_data = [];
   while (curr_page < 50) {
-    const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
+    // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
+    const res = await $fetch("/api/queryEastmoney", {
       method: "get",
       params: {
-        fid: "f3",
-        po: "1",
-        pz,
-        pn: curr_page + "",
         np: "1",
         fltt: "2",
         invt: "2",
-        dect: "1",
-        ut: "fa5fd1943c7b386f172d6893dbfba10b",
+        fs,
         fields: Object.keys(fields_dict).join(","),
+        fid: "f3",
+        pn: curr_page + "",
+        pz,
+        po: "1",
+        dect: "1",
+        // ut: generateRandomString(32),
+        ut: "fa5fd1943c7b386f172d6893dbfba10b",
         wbp2u: "|0|1|0|web",
         _: dayjs().valueOf() - Math.floor(Math.random() * 100),
-        fs,
         // fs: "m:10+c:510050",
         // fs: "m:10,m:12",
         // fs: "m:10",
@@ -200,7 +202,7 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       });
     })
     .catch((err) => {
-      ElMessage({ message: err, type: "error" });
+      // ElMessage({ message: err, type: "error" });
       console.log(err);
     });
   const combo_list = 构建组合(all_data);
@@ -288,4 +290,14 @@ export function useCopy(text) {
 
 export function toFixed(value, number = 0) {
   return parseFloat(value.toFixed(number));
+}
+
+function generateRandomString(length) {
+  var result = "";
+  var characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
