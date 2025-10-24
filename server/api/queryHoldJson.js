@@ -1,15 +1,13 @@
 import csvtojson from "csvtojson/v2";
 import iconvLite from "iconv-lite";
 import fs from "node:fs";
+const isDeno = process.env.NITRO_PRESET;
+const csvPath = isDeno ? "./持仓.csv" : "/server/api/持仓.csv";
 export async function get_持仓JSON() {
-  // console.log(
-  //   'path.join(__dirname, "持仓.csv")',
-  //   path.join(__dirname, "持仓.csv")
-  // );
   return new Promise((resolve) => {
     try {
       const converterStream = fs
-        .createReadStream("./持仓.csv")
+        .createReadStream(csvPath)
         .pipe(iconvLite.decodeStream("gbk"));
       csvtojson()
         .fromStream(converterStream)
