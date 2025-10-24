@@ -19,6 +19,6 @@ export async function get_持仓JSON() {
 }
 export default eventHandler(async (event) => {
   const 持仓JSON = await get_持仓JSON();
-  if (!持仓JSON?.length) return MOCK_HOLD;
+  if (!持仓JSON?.length) return [];
   return 持仓JSON;
 });
