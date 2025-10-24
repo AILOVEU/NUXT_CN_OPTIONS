@@ -1,6 +1,6 @@
 import csvtojson from "csvtojson/v2";
 import iconvLite from "iconv-lite";
-import fs from "node:fs";
+import fs from "fs";
 export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
