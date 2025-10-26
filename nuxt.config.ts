@@ -22,6 +22,7 @@ export default defineNuxtConfig({
   echarts: {
     renderer: ["svg"],
     charts: [
+      'SankeyChart',
       "LineChart",
       "BarChart",
       "MapChart",

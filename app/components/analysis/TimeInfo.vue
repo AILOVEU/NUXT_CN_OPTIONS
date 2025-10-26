@@ -11,6 +11,12 @@
     <el-table-column type="expand">
       <template #expand> </template>
       <template #default="props">
+        <div v-if="props.row.showChart">
+          <VChart
+            :option="options"
+            style="height: 900px; width: 90vw; margin: auto"
+          />
+        </div>
         <div>
           <el-table :data="props.row.children" :border="false">
             <el-table-column
@@ -95,8 +101,9 @@
 </template>
 
 <script setup>
-import { UNIT } from "~/data";
+import { UNIT, deadline_list, stock_code_map } from "~/data";
 import _ from "lodash";
+import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
 const props = defineProps(["all_data", "combo_list"]);
 const 组合期权持仓 = computed(() => {
@@ -263,11 +270,23 @@ const richTableData = computed(() => {
       ),
     },
     {
+      showChart: true,
       title: "单腿期权(占用时间价值)",
       value: 单腿期权持仓.value.value,
       涨跌: 单腿期权持仓.value.涨跌,
       children: 单腿期权持仓.value.list.map(
-        ({ 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值, 到期天数 }) => {
+        ({
+          期权名称,
+          最新价,
+          涨跌额,
+          持仓,
+          内在价值,
+          时间价值,
+          到期天数,
+          到期日,
+          正股代码,
+          沽购,
+        }) => {
           const 总价 = Math.floor(最新价 * UNIT * 持仓);
           return {
             名称: 期权名称,
@@ -279,6 +298,9 @@ const richTableData = computed(() => {
             涨跌: Math.floor(涨跌额 * 持仓 * UNIT),
             总价,
             总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            正股代码,
+            沽购,
+            到期日,
           };
         }
       ),
@@ -291,6 +313,103 @@ function getPercentColor(val) {
   if (val > 5) return "#409eff";
   return "#909399";
 }
+
+const options = computed(() => {
+  const 单腿期权TableData = richTableData.value?.[3]?.children;
+
+  let 沽购to正股Map = {};
+  ["沽", "购"].forEach((type) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["正股代码"] === stock_code && el["沽购"] === type) {
+          const key = stock_code + "-" + type;
+          沽购to正股Map[key] = {
+            source: type,
+            target: stock_code_map[stock_code] + " ",
+            value: (沽购to正股Map[key]?.value || 0) + (el?.总价 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 到日期to沽购Map = {};
+  deadline_list.forEach((date) => {
+    ["沽", "购"].forEach((type) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["沽购"] === type && el["到期日"] === date) {
+          const key = date + "-" + type;
+          到日期to沽购Map[key] = {
+            source: dayjs(date, "YYYYMMDD").format("M月"),
+            target: type,
+            value: (到日期to沽购Map[key]?.value || 0) + (el?.总价 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期Map = {};
+  deadline_list.forEach((date) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["正股代码"] === stock_code && el["到期日"] === date) {
+          const key = stock_code + "-" + date;
+          正股to到日期Map[key] = {
+            source: stock_code_map[stock_code],
+            target: dayjs(date, "YYYYMMDD").format("M月"),
+            value: (正股to到日期Map[key]?.value || 0) + (el?.总价 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期 = Object.values(正股to到日期Map);
+  let 到日期to沽购 = Object.values(到日期to沽购Map);
+  let 沽购to正股 = Object.values(沽购to正股Map);
+  正股to到日期 = 正股to到日期.filter((el) => el.value);
+  到日期to沽购 = 到日期to沽购.filter((el) => el.value);
+  沽购to正股 = 沽购to正股.filter((el) => el.value);
+  let dataList = [];
+  正股to到日期.forEach((el) => {
+    dataList.push(el.source);
+    dataList.push(el.target);
+  });
+  到日期to沽购.forEach((el) => {
+    dataList.push(el.source);
+    dataList.push(el.target);
+  });
+  沽购to正股.forEach((el) => {
+    dataList.push(el.source);
+    dataList.push(el.target);
+  });
+  dataList = Array.from(new Set(dataList));
+  console.log("dataList", dataList);
+  return {
+    tooltip: {
+      trigger: "item",
+      triggerOn: "mousemove",
+    },
+    animation: false,
+    series: [
+      {
+        type: "sankey",
+        bottom: "10%",
+        emphasis: {
+          focus: "adjacency",
+        },
+        data: dataList.map((el) => ({ name: el })),
+        links: [...正股to到日期, ...到日期to沽购, ...沽购to正股],
+        orient: "vertical",
+        label: {
+          position: "top",
+        },
+        lineStyle: {
+          color: "source",
+          curveness: 0.5,
+        },
+      },
+    ],
+  };
+});
 </script>
 <style>
 .el-table .highlight-line {
