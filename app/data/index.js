@@ -102,6 +102,7 @@ export const deadline_list = [
   "20260325",
   "20260624",
 ];
+export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {
   "01": "1月🧳",
   "02": "2月🌂",

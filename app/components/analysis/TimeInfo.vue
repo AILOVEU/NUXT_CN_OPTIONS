@@ -1,4 +1,49 @@
 <template>
+  <div class="mx-auto">
+    <VChart
+      :option="options"
+      style="height: 900px; width: 90vw; margin: auto"
+    />
+  </div>
+  <div>
+    <el-form
+      :model="formData"
+      label-width="auto"
+      style="max-width: 600px"
+      label-suffix=":"
+    >
+      <el-form-item label="正股">
+        <el-select v-model="formData.正股List" multiple>
+          <el-option
+            v-for="item in stockOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="到期日">
+        <el-select v-model="formData.到期日List" multiple>
+          <el-option
+            v-for="date in deadline_list"
+            :key="date"
+            :label="date"
+            :value="date"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="沽购">
+        <el-select v-model="formData.沽购List" multiple>
+          <el-option
+            v-for="type in ['沽', '购']"
+            :key="type"
+            :label="type"
+            :value="type"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </div>
   <el-table
     :data="richTableData"
     :border="false"
@@ -11,14 +56,8 @@
     <el-table-column type="expand">
       <template #expand> </template>
       <template #default="props">
-        <div v-if="props.row.showChart">
-          <VChart
-            :option="options"
-            style="height: 900px; width: 90vw; margin: auto"
-          />
-        </div>
         <div>
-          <el-table :data="props.row.children" :border="false">
+          <el-table :data="filterTableData(props.row.children)" :border="false">
             <el-table-column
               label="名称"
               prop="名称"
@@ -34,6 +73,8 @@
                 {{ row["名称"] }}
               </template>
             </el-table-column>
+            <el-table-column label="沽购" prop="沽购" />
+            <el-table-column label="正股" prop="正股代码" />
             <el-table-column label="持仓" prop="持仓" />
             <el-table-column label="最新价" #default="{ row }" prop="最新价">
               <template v-if="Array.isArray(row['最新价'])">
@@ -101,10 +142,27 @@
 </template>
 
 <script setup>
-import { UNIT, deadline_list, stock_code_map } from "~/data";
+import {
+  UNIT,
+  deadline_list,
+  stock_code_map,
+  deadline_color_list,
+  stock_color_map,
+  stock_sorted_list,
+} from "~/data";
+import { toFixed } from "~/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
+const stockOptions = stock_sorted_list.map((el) => ({
+  label: stock_code_map[el],
+  value: el,
+}));
+const formData = reactive({
+  正股List: [...stock_sorted_list],
+  到期日List: [...deadline_list],
+  沽购List: ["沽", "购"],
+});
 const props = defineProps(["all_data", "combo_list"]);
 const 组合期权持仓 = computed(() => {
   let 时间收益组合Value = 0;
@@ -211,6 +269,9 @@ const richTableData = computed(() => {
             总价占比:
               Math.floor((1000 * 总价) / 组合期权持仓.value.时间收益组合Value) /
               10,
+            正股代码: 权利期权Item["正股代码"],
+            沽购: 权利期权Item["沽购"],
+            到期日: 权利期权Item["到期日"],
           };
         }
       ),
@@ -225,6 +286,7 @@ const richTableData = computed(() => {
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
           );
           return {
+            isCombo: true,
             名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
             持仓: 组合持仓,
             最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
@@ -238,6 +300,9 @@ const richTableData = computed(() => {
                 UNIT
             ),
             总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            正股代码: 权利期权Item["正股代码"],
+            沽购: 权利期权Item["沽购"],
+            到期日: 权利期权Item["到期日"],
           };
         }
       ),
@@ -252,6 +317,7 @@ const richTableData = computed(() => {
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
           );
           return {
+            isCombo: true,
             名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
             持仓: 组合持仓,
             最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
@@ -265,6 +331,9 @@ const richTableData = computed(() => {
                 UNIT
             ),
             总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            正股代码: 权利期权Item["正股代码"],
+            沽购: 权利期权Item["沽购"],
+            到期日: 权利期权Item["到期日"],
           };
         }
       ),
@@ -314,18 +383,30 @@ function getPercentColor(val) {
   return "#909399";
 }
 
-const options = computed(() => {
-  const 单腿期权TableData = richTableData.value?.[3]?.children;
+function filterTableData(tableData) {
+  return tableData
+    .filter((el) => formData.正股List.includes(el["正股代码"]))
+    .filter((el) => formData.到期日List.includes(el["到期日"]))
+    .filter((el) => formData.沽购List.includes(el["沽购"]));
+}
 
+const options = computed(() => {
+  const 单腿期权TableData = [
+    ...richTableData.value?.[1]?.children,
+    ...richTableData.value?.[2]?.children,
+    ...richTableData.value?.[3]?.children,
+  ];
   let 沽购to正股Map = {};
   ["沽", "购"].forEach((type) => {
     Object.keys(stock_code_map).forEach((stock_code) => {
       单腿期权TableData.forEach((el) => {
         if (el["正股代码"] === stock_code && el["沽购"] === type) {
-          const key = stock_code + "-" + type;
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + type;
           沽购to正股Map[key] = {
             source: type,
-            target: stock_code_map[stock_code] + " ",
+            target: stock_code_map[stock_code] + 组合Str,
+            stock_code,
             value: (沽购to正股Map[key]?.value || 0) + (el?.总价 || 0),
           };
         }
@@ -337,10 +418,10 @@ const options = computed(() => {
     ["沽", "购"].forEach((type) => {
       单腿期权TableData.forEach((el) => {
         if (el["沽购"] === type && el["到期日"] === date) {
-          const key = date + "-" + type;
+          const key = date + type;
           到日期to沽购Map[key] = {
             source: dayjs(date, "YYYYMMDD").format("M月"),
-            target: type,
+            target: type + " ",
             value: (到日期to沽购Map[key]?.value || 0) + (el?.总价 || 0),
           };
         }
@@ -352,9 +433,11 @@ const options = computed(() => {
     Object.keys(stock_code_map).forEach((stock_code) => {
       单腿期权TableData.forEach((el) => {
         if (el["正股代码"] === stock_code && el["到期日"] === date) {
-          const key = stock_code + "-" + date;
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + date;
           正股to到日期Map[key] = {
-            source: stock_code_map[stock_code],
+            stock_code,
+            source: stock_code_map[stock_code] + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.总价 || 0),
           };
@@ -366,8 +449,12 @@ const options = computed(() => {
   let 到日期to沽购 = Object.values(到日期to沽购Map);
   let 沽购to正股 = Object.values(沽购to正股Map);
   正股to到日期 = 正股to到日期.filter((el) => el.value);
+  正股to到日期 = _.sortBy(正股to到日期, ["stock_code", "source"]);
   到日期to沽购 = 到日期to沽购.filter((el) => el.value);
+  到日期to沽购 = _.sortBy(到日期to沽购, ["source"]);
   沽购to正股 = 沽购to正股.filter((el) => el.value);
+  沽购to正股 = _.sortBy(沽购to正股, ["source", "stock_code", "target"]);
+  // console.log("沽购to正股", 沽购to正股);
   let dataList = [];
   正股to到日期.forEach((el) => {
     dataList.push(el.source);
@@ -381,8 +468,41 @@ const options = computed(() => {
     dataList.push(el.source);
     dataList.push(el.target);
   });
-  dataList = Array.from(new Set(dataList));
+  dataList = [...Array.from(new Set(dataList)), "总和"];
+  // console.log("dataList", dataList);
+  const dataListSort = [
+    ...stock_sorted_list.map((code) => stock_code_map[code]),
+    ...stock_sorted_list.map((code) => stock_code_map[code] + "[组合]"),
+    "购",
+    "购 ",
+    "沽",
+    "沽 ",
+    ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")),
+    "总和",
+  ];
+  dataList = dataListSort.filter((el) => dataList.includes(el));
   console.log("dataList", dataList);
+  const colorMap = {
+    沽: "green",
+    购: "red",
+    "沽 ": "green",
+    "购 ": "red",
+    总和: "black",
+  };
+  deadline_list.forEach((el, index) => {
+    colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
+  });
+  Object.keys(stock_color_map).forEach((stock_code) => {
+    const key = stock_code_map[stock_code];
+    const color = stock_color_map[stock_code];
+    colorMap[key] = color;
+    colorMap[key + "[组合]"] = color;
+  });
+  const totalData = 沽购to正股.map((el) => ({
+    source: el["source"] + " ",
+    target: "总和",
+    value: el["value"],
+  }));
   return {
     tooltip: {
       trigger: "item",
@@ -396,12 +516,50 @@ const options = computed(() => {
         emphasis: {
           focus: "adjacency",
         },
-        data: dataList.map((el) => ({ name: el })),
-        links: [...正股to到日期, ...到日期to沽购, ...沽购to正股],
-        orient: "vertical",
+        layoutlterations: 64,
+        data: dataList.map((el) => {
+          if (colorMap[el])
+            return {
+              name: el,
+              itemStyle: {
+                color: colorMap[el],
+              },
+            };
+          return { name: el };
+        }),
         label: {
-          position: "top",
+          show: true,
+          rich: {
+            a: {
+              // width: 100,
+              height: 20,
+              // margin: 100,
+              color: "black",
+            },
+            b: {
+              // width: 100,
+              color: "#89a8c5",
+            },
+            c: {
+              // width: 100,
+              color: "#89a8c5",
+            },
+          },
+          formatter: function (params) {
+            const { value, data } = params;
+            // return `${data.name}:${value}`;
+            return `{a|${data.name}}  {b|${value}} {c|(${toFixed(
+              (100 * value) / 持仓总价.value,
+              1
+            )}%)}`;
+          },
         },
+        links: [...沽购to正股, ...正股to到日期, ...到日期to沽购, ...totalData],
+        // links: [...沽购to正股],
+        // orient: "vertical",
+        // label: {
+        //   position: "top",
+        // },
         lineStyle: {
           color: "source",
           curveness: 0.5,

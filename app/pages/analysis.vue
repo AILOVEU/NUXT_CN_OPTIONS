@@ -19,12 +19,12 @@
       <Card header="持仓分析">
         <BarInfo :all_data="all_data" />
       </Card>
-      <Card header="气泡图分析">
+      <!-- <Card header="气泡图分析">
         <BubbleInfo :all_data="all_data" />
-      </Card>
-      <Card header="持仓占比分析">
+      </Card> -->
+      <!-- <Card header="持仓占比分析">
         <PercentInfo :all_data="all_data" />
-      </Card>
+      </Card> -->
       <Card header="筛选">
         <FilterInfo :all_data="all_data" />
       </Card>
