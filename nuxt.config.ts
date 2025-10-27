@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   ssr: false, // false 对应 server路径 ./持仓.csv；true 对应路径根目录 持仓.csv ; deno不支持true
   build: { transpile: ["echarts-liquidfill"] },
   echarts: {
-    renderer: ["svg"],
+    renderer: ["canvas"],
     charts: [
       'SankeyChart',
       "LineChart",

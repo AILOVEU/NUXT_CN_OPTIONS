@@ -1,10 +1,5 @@
 <template>
-  <div class="mx-auto">
-    <VChart
-      :option="options"
-      style="height: 900px; width: 90vw; margin: auto"
-    />
-  </div>
+  <VChart :option="options" style="height: 900px; width: 100%" />
   <div>
     <el-form
       :model="formData"

@@ -1,11 +1,5 @@
 <template>
-  <div></div>
-  <div>
-    <VChart
-      :option="盈亏曲线Option"
-      style="height: 400px; width: 80%; margin: 0 auto"
-    />
-  </div>
+  <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%;" />
   <div class="mx-auto text-center text-[18px] font-semibold">
     资金分布(总盈亏金额：{{ 总盈亏金额 }})
   </div>
@@ -154,6 +148,9 @@ const 盈亏曲线Option = computed(() => {
     //     },
     //   },
     // },
+    // grid: {
+    //   right: '10'
+    // },
     tooltip: {
       trigger: "axis",
       // position: function (pt) {
@@ -187,13 +184,13 @@ const 盈亏曲线Option = computed(() => {
               // symbol: "none",
               itemStyle: {
                 normal: {
-                  color: 'red',
+                  color: "red",
                   // label: {
                   //   show: true,
                   //   color: '#ffffff'
                   // }
-                }
-              }
+                },
+              },
             },
             {
               type: "min",
@@ -201,13 +198,13 @@ const 盈亏曲线Option = computed(() => {
               // symbol: "none",
               itemStyle: {
                 normal: {
-                  color: 'green',
+                  color: "green",
                   // label: {
                   //   show: true,
                   //   color: '#ffffff'
                   // }
-                }
-              }
+                },
+              },
             },
           ],
         },
