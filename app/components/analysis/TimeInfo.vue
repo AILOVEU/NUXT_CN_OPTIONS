@@ -1,5 +1,7 @@
 <template>
-  <VChart :option="options" style="height: 900px; width: 100%" />
+  <div class="w-full min-w-[1200px] overflow-auto">
+    <VChart :option="options" style="height: 900px; width: 100%" />
+  </div>
   <div>
     <el-form
       :model="formData"
@@ -463,11 +465,18 @@ const options = computed(() => {
     dataList.push(el.source);
     dataList.push(el.target);
   });
-  dataList = [...Array.from(new Set(dataList)), "总和"];
+  dataList = [
+    ...Array.from(new Set(dataList)),
+    // , "总和"
+  ];
   // console.log("dataList", dataList);
   const dataListSort = [
-    ...stock_sorted_list.map((code) => stock_code_map[code]),
-    ...stock_sorted_list.map((code) => stock_code_map[code] + "[组合]"),
+    ..._.flattenDeep(
+      stock_sorted_list.map((code) => [
+        stock_code_map[code],
+        stock_code_map[code] + "[组合]",
+      ])
+    ),
     "购",
     "购 ",
     "沽",
@@ -501,17 +510,18 @@ const options = computed(() => {
   return {
     tooltip: {
       trigger: "item",
-      triggerOn: "mousemove",
+      triggerOn: "mousemove|click",
     },
     animation: false,
     series: [
       {
         type: "sankey",
         bottom: "10%",
-        emphasis: {
-          focus: "adjacency",
-        },
-        layoutlterations: 64,
+        draggable: false,
+        layoutIterations: 0,
+        // emphasis: {
+        //   focus: "adjacency",
+        // },
         data: dataList.map((el) => {
           if (colorMap[el])
             return {
@@ -549,7 +559,12 @@ const options = computed(() => {
             )}%)}`;
           },
         },
-        links: [...沽购to正股, ...正股to到日期, ...到日期to沽购, ...totalData],
+        links: [
+          ...沽购to正股,
+          ...正股to到日期,
+          ...到日期to沽购,
+          // , ...totalData
+        ],
         // links: [...沽购to正股],
         // orient: "vertical",
         // label: {

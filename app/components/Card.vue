@@ -5,7 +5,7 @@
         <span>{{ props.header }}</span>
       </div>
     </template>
-    <slot></slot>
+    <div class="overflow-auto"><slot> </slot></div>
   </el-card>
 </template>
 <script setup>

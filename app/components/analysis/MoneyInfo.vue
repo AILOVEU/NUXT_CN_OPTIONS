@@ -1,5 +1,7 @@
 <template>
-  <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%;" />
+  <div class="w-full min-w-[520px]">
+    <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%" />
+  </div>
   <div class="mx-auto text-center text-[18px] font-semibold">
     资金分布(总盈亏金额：{{ 总盈亏金额 }})
   </div>
