@@ -73,7 +73,7 @@
             <el-table-column label="沽购" prop="沽购" />
             <el-table-column label="正股" prop="正股代码" />
             <el-table-column label="持仓" prop="持仓" />
-            <el-table-column label="最新价" #default="{ row }" prop="最新价">
+            <el-table-column label="最新价" #default="{ row }" prop="最新价" sortable>
               <template v-if="Array.isArray(row['最新价'])">
                 <div>{{ row["最新价"][0] }}</div>
                 <div>{{ row["最新价"][1] }}</div>
