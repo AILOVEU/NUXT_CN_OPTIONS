@@ -511,6 +511,16 @@ const options = computed(() => {
     tooltip: {
       trigger: "item",
       triggerOn: "mousemove|click",
+      formatter: (params) => {
+        const { dataType, data, value } = params;
+        if (dataType === "node") {
+          return `${data.name}<br />${value}`;
+        }
+        if (dataType === "edge") {
+          return `${data.source} > ${data.target}<br />${value}`;
+        }
+        console.log(params);
+      },
     },
     animation: false,
     series: [
@@ -519,9 +529,12 @@ const options = computed(() => {
         bottom: "10%",
         draggable: false,
         layoutIterations: 0,
-        // emphasis: {
-        //   focus: "adjacency",
-        // },
+        emphasis: {
+          focus: "adjacency",
+          // edgeLabel: {
+          //   show: true
+          // }
+        },
         data: dataList.map((el) => {
           if (colorMap[el])
             return {
