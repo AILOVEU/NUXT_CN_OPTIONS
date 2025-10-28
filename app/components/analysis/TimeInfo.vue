@@ -449,6 +449,11 @@ function getSankeyOption({
   title,
   总和标识 = "持",
 }) {
+  const 单腿期权TableData = [
+    ...richTableData.value?.[1]?.children,
+    ...richTableData.value?.[2]?.children,
+    ...richTableData.value?.[3]?.children,
+  ];
   let totalData = [
     {
       source: "沽 ",
@@ -478,7 +483,32 @@ function getSankeyOption({
       triggerOn: "mousemove|click",
       formatter: (params) => {
         const { dataType, data, value } = params;
-        if (dataType === "node") return `${data.name}<br />${亏损符号 * value}`;
+        if (dataType === "node") {
+          let list = [];
+          let str = "";
+          let type = data.name.replace(" ", "");
+          let 展示字段 = 总和标识 === "持" ? "总价" : "涨跌";
+          if (["沽", "购"].some((type) => data.name.includes(type))) {
+            list = 单腿期权TableData.filter((el) => el["沽购"] === type);
+          }
+          if (data.name.includes("月")) {
+            list = 单腿期权TableData.filter(
+              (el) =>
+                dayjs(el["到期日"], "YYYYMMDD").format("M月") === data.name
+            );
+          }
+          if (总和标识 === "盈") list = list.filter((el) => el[展示字段] > 0);
+          if (总和标识 === "亏") list = list.filter((el) => el[展示字段] < 0);
+          list = _.sortBy(list, (el) => -el[展示字段]);
+          str += list
+            .map(
+              (el) =>
+                `<div style="display:flex;justify-content: space-between;column-gap: 10px;height: 20px;"><div>${el[展示字段]}</div><div>${el["名称"]}</div></div>`
+            )
+            .join("");
+          if (str) str += "<br /><br />";
+          return `${str}${data.name}<br />${亏损符号 * value}`;
+        }
         if (dataType === "edge")
           return `${data.source} > ${data.target}<br />${亏损符号 * value}`;
       },
@@ -543,6 +573,7 @@ const 持仓分布Option = computed(() => {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
           const key = 组合Str + stock_code + type;
           沽购to正股Map[key] = {
+            // list: [...(沽购to正股Map[key]?.list || []),el],
             source: type,
             target: stock_code_map[stock_code] + 组合Str,
             stock_code,
