@@ -1,108 +1,110 @@
 <template>
-  <div v-loading="tableData.loading">
-    <!-- 顶部 -->
-    <el-affix :offset="0">
-      <div class="flex justify-between text-[12px] mb-[12px]">
-        <el-button @click="handleQuery" class="flex-1" type="primary">
-          刷新
-        </el-button>
-        <Nav />
+  <div v-loading="tableData.loading" class="max-md:w-[140%]">
+    <div>
+      <!-- 顶部 -->
+      <el-affix :offset="0">
+        <div class="flex justify-between text-[12px] mb-[12px]">
+          <el-button @click="handleQuery" class="flex-1" type="primary">
+            刷新
+          </el-button>
+          <Nav />
+        </div>
+      </el-affix>
+
+      <div class="w-full pb-[12px]">
+        <TabSelect
+          :options="stockCodeOptions"
+          v-model="stockCode"
+          @click="handleStockCodeChange"
+        />
       </div>
-    </el-affix>
-
-    <div class="w-full pb-[12px]">
-      <TabSelect
-        :options="stockCodeOptions"
-        v-model="stockCode"
-        @click="handleStockCodeChange"
-      />
     </div>
-  </div>
 
-  <div>
-    <el-form
-      :model="formData"
-      label-width="auto"
-      style="max-width: 600px"
-      label-suffix=":"
-    >
-      <el-form-item label="到期日">
-        <el-select v-model="formData.到期日List" multiple>
-          <el-option
-            v-for="date in deadline_list"
-            :key="date"
-            :label="date"
-            :value="date"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="价差">
-        <el-select v-model="formData.价差List" multiple>
-          <el-option
-            v-for="diff in diff_list"
-            :key="diff"
-            :label="diff"
-            :value="diff"
-          />
-        </el-select>
-      </el-form-item>
-    </el-form>
-  </div>
-
-  <div class="w-full h-[calc(100vh-100px)]">
-    <el-table
-      :data="filteredTableData"
-      style="width: 100%"
-      size="small"
-      border
-      height="100%"
-      :highlight-current-row="false"
-      :row-style="getRowStyle"
-      :cell-style="getCellStyle"
-      ref="tableRef"
-    >
-      <el-table-column
-        v-for="{ label, type, width, diff } in columns"
-        :key="type + label + diff"
-        :prop="type + label + diff"
-        align="center"
-        width="150px"
+    <div>
+      <el-form
+        :model="formData"
+        label-width="auto"
+        style="max-width: 600px"
+        label-suffix=":"
       >
-        <template #header>
-          <div
-            v-if="type"
-            :style="
-              getHeaderStyle(
-                diff,
-                dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1
-              )
-            "
-          >
-            <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-            <div>
-              ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
+        <el-form-item label="到期日">
+          <el-select v-model="formData.到期日List" multiple>
+            <el-option
+              v-for="date in deadline_list"
+              :key="date"
+              :label="date"
+              :value="date"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="价差">
+          <el-select v-model="formData.价差List" multiple>
+            <el-option
+              v-for="diff in diff_list"
+              :key="diff"
+              :label="diff"
+              :value="diff"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <div class="w-full h-[calc(100vh-100px)]">
+      <el-table
+        :data="filteredTableData"
+        style="width: 100%"
+        size="small"
+        border
+        height="100%"
+        :highlight-current-row="false"
+        :row-style="getRowStyle"
+        :cell-style="getCellStyle"
+        ref="tableRef"
+      >
+        <el-table-column
+          v-for="{ label, type, width, diff } in columns"
+          :key="type + label + diff"
+          :prop="type + label + diff"
+          align="center"
+          width="150px"
+        >
+          <template #header>
+            <div
+              v-if="type"
+              :style="
+                getHeaderStyle(
+                  diff,
+                  dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1
+                )
+              "
+            >
+              <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+              <div>
+                ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
+              </div>
+              <div>{{ diff }}</div>
             </div>
-            <div>{{ diff }}</div>
-          </div>
-          <div v-else>
-            {{ label }}
-          </div>
-        </template>
-        <template #default="{ row }" v-if="label === '期权'">
-          <Center :row="row" />
-        </template>
-        <template #default="{ row }" v-if="label !== '期权'">
-          <Info
-            :row="row"
-            :isCall="type === 'C'"
-            :date="label"
-            :tiledData="tableData.tiledData"
-            :combo_list="tableData.combo_list"
-            :diffValue="diff"
-          />
-        </template>
-      </el-table-column>
-    </el-table>
+            <div v-else>
+              {{ label }}
+            </div>
+          </template>
+          <template #default="{ row }" v-if="label === '期权'">
+            <Center :row="row" />
+          </template>
+          <template #default="{ row }" v-if="label !== '期权'">
+            <Info
+              :row="row"
+              :isCall="type === 'C'"
+              :date="label"
+              :tiledData="tableData.tiledData"
+              :combo_list="tableData.combo_list"
+              :diffValue="diff"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script setup>

@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading">
+  <div v-loading="tableData.loading" class="max-md:w-[140%]">
     <div>
       <el-affix :offset="0">
         <div class="flex justify-between text-[12px] mb-[12px]">

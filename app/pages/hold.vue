@@ -1,64 +1,65 @@
 <template>
-  <div v-loading="tableData.loading">
-    <!-- 顶部 -->
-    <el-affix :offset="0">
-      <div class="flex justify-between text-[12px] mb-[12px]">
-        <el-button @click="handleQuery" class="flex-1" type="primary">
-          刷新
-        </el-button>
-        <Nav />
+  <div v-loading="tableData.loading" class="max-md:w-[140%]">
+    <div>
+      <!-- 顶部 -->
+      <el-affix :offset="0">
+        <div class="flex justify-between text-[12px] mb-[12px]">
+          <el-button @click="handleQuery" class="flex-1" type="primary">
+            刷新
+          </el-button>
+          <Nav />
+        </div>
+      </el-affix>
 
+      <div class="w-full pb-[12px]">
+        <TabSelect
+          :options="stockCodeOptions"
+          v-model="stockCode"
+          @click="handleStockCodeChange"
+        />
       </div>
-    </el-affix>
-
-    <div class="w-full pb-[12px]">
-      <TabSelect
-        :options="stockCodeOptions"
-        v-model="stockCode"
-        @click="handleStockCodeChange"
-      />
     </div>
-  </div>
 
-  <div class="w-full h-[calc(100vh-100px)]">
-    <el-table
-      :data="filteredTableData"
-      style="width: 100%"
-      size="small"
-      border
-      height="100%"
-      :highlight-current-row="false"
-      :row-style="getRowStyle"
-      :cell-style="getCellStyle"
-      ref="tableRef"
-    >
-      <el-table-column
-        v-for="{ label, type, width } in tableData.columns"
-        :key="type + label"
-        :prop="type + label"
-        :width="width"
-        align="center"
-        :minWidth="label === '期权' ? '65px' : '120px'"
+    <div class="w-full h-[calc(100vh-100px)]">
+      <el-table
+        :data="filteredTableData"
+        style="width: 100%"
+        size="small"
+        border
+        height="100%"
+        :highlight-current-row="false"
+        :row-style="getRowStyle"
+        :cell-style="getCellStyle"
+        ref="tableRef"
       >
-        <template #header>
-          <div v-if="type">
-            <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-            <div>
-              ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
+        <el-table-column
+          v-for="{ label, type, width } in tableData.columns"
+          :key="type + label"
+          :prop="type + label"
+          :width="width"
+          align="center"
+          :minWidth="label === '期权' ? '65px' : '120px'"
+        >
+          <template #header>
+            <div v-if="type">
+              <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+              <div>
+                ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
+              </div>
             </div>
-          </div>
-          <div v-else>
-            {{ label }}
-          </div>
-        </template>
-        <template #default="{ row }" v-if="label === '期权'">
-          <Center :row="row" />
-        </template>
-        <template #default="{ row }" v-if="label !== '期权'">
-          <Info :row="row" :isCall="type === 'C'" :date="label" />
-        </template>
-      </el-table-column>
-    </el-table>
+            <div v-else>
+              {{ label }}
+            </div>
+          </template>
+          <template #default="{ row }" v-if="label === '期权'">
+            <Center :row="row" />
+          </template>
+          <template #default="{ row }" v-if="label !== '期权'">
+            <Info :row="row" :isCall="type === 'C'" :date="label" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script setup>

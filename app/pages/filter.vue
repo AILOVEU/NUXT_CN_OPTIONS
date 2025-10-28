@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" class="max-md:w-[140%]">
     <el-affix :offset="0">
       <div class="flex justify-between text-[12px] mb-[12px]">
         <el-button @click="handleQuery" class="flex-1" type="primary">

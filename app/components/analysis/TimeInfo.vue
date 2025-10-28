@@ -1,6 +1,8 @@
 <template>
   <div class="w-full min-w-[1200px] overflow-auto">
-    <VChart :option="options" style="height: 900px; width: 100%" />
+    <VChart :option="持仓分布Option" style="height: 900px; width: 100%" />
+    <VChart :option="盈利分布Option" style="height: 450px; width: 100%" />
+    <VChart :option="亏损分布Option" style="height: 450px; width: 100%" />
   </div>
   <div>
     <el-form
@@ -73,7 +75,12 @@
             <el-table-column label="沽购" prop="沽购" />
             <el-table-column label="正股" prop="正股代码" />
             <el-table-column label="持仓" prop="持仓" />
-            <el-table-column label="最新价" #default="{ row }" prop="最新价" sortable>
+            <el-table-column
+              label="最新价"
+              #default="{ row }"
+              prop="最新价"
+              sortable
+            >
               <template v-if="Array.isArray(row['最新价'])">
                 <div>{{ row["最新价"][0] }}</div>
                 <div>{{ row["最新价"][1] }}</div>
@@ -387,7 +394,123 @@ function filterTableData(tableData) {
     .filter((el) => formData.沽购List.includes(el["沽购"]));
 }
 
-const options = computed(() => {
+function getSankeyLegenColorMap() {
+  const colorMap = {
+    沽: "green",
+    购: "red",
+    "沽 ": "green",
+    "购 ": "red",
+    总和: "black",
+  };
+  deadline_list.forEach((el, index) => {
+    colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
+  });
+  Object.keys(stock_color_map).forEach((stock_code) => {
+    const key = stock_code_map[stock_code];
+    const color = stock_color_map[stock_code];
+    colorMap[key] = color;
+    colorMap[key + "[组合]"] = color;
+  });
+  return colorMap;
+}
+
+function getSortedLegenList(sourceToTargetList) {
+  let dataList = [];
+  sourceToTargetList.forEach((el) => {
+    dataList.push(el.source);
+    dataList.push(el.target);
+  });
+  dataList = [
+    ...Array.from(new Set(dataList)),
+    // , "总和"
+  ];
+  const dataListSort = [
+    ..._.flattenDeep(
+      stock_sorted_list.map((code) => [
+        stock_code_map[code],
+        stock_code_map[code] + "[组合]",
+      ])
+    ),
+    "购",
+    "购 ",
+    "沽",
+    "沽 ",
+    ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")),
+    "总和",
+  ];
+  dataList = dataListSort.filter((el) => dataList.includes(el));
+  return dataList;
+}
+function getSankeyOption({
+  sourceToTargetList,
+  sumValue,
+  title,
+  is亏损 = false,
+}) {
+  let dataList = getSortedLegenList(sourceToTargetList);
+  const colorMap = getSankeyLegenColorMap();
+  const 亏损符号 = is亏损 ? -1 : 1;
+  return {
+    title: {
+      text: title,
+    },
+    tooltip: {
+      trigger: "item",
+      triggerOn: "mousemove|click",
+      formatter: (params) => {
+        const { dataType, data, value } = params;
+        if (dataType === "node") return `${data.name}<br />${亏损符号 * value}`;
+        if (dataType === "edge")
+          return `${data.source} > ${data.target}<br />${亏损符号 * value}`;
+      },
+    },
+    animation: false,
+    series: [
+      {
+        type: "sankey",
+        bottom: "10%",
+        draggable: false,
+        layoutIterations: 0,
+        emphasis: {
+          focus: "adjacency",
+        },
+        data: dataList.map((el) => {
+          return colorMap[el]
+            ? { name: el, itemStyle: { color: colorMap[el] } }
+            : { name: el };
+        }),
+        label: {
+          show: true,
+          rich: {
+            a: {
+              height: 20,
+              color: "black",
+            },
+            b: {
+              color: "#89a8c5",
+            },
+            c: {
+              color: "#89a8c5",
+            },
+          },
+          formatter: function (params) {
+            const { value, data } = params;
+            return `{a|${data.name}}  {b|${亏损符号 * value}} {c|(${toFixed(
+              (100 * value) / sumValue,
+              1
+            )}%)}`;
+          },
+        },
+        links: sourceToTargetList,
+        lineStyle: {
+          color: "source",
+          curveness: 0.5,
+        },
+      },
+    ],
+  };
+}
+const 持仓分布Option = computed(() => {
   const 单腿期权TableData = [
     ...richTableData.value?.[1]?.children,
     ...richTableData.value?.[2]?.children,
@@ -442,154 +565,164 @@ const options = computed(() => {
       });
     });
   });
-  let 正股to到日期 = Object.values(正股to到日期Map);
-  let 到日期to沽购 = Object.values(到日期to沽购Map);
-  let 沽购to正股 = Object.values(沽购to正股Map);
-  正股to到日期 = 正股to到日期.filter((el) => el.value);
-  正股to到日期 = _.sortBy(正股to到日期, ["stock_code", "source"]);
-  到日期to沽购 = 到日期to沽购.filter((el) => el.value);
-  到日期to沽购 = _.sortBy(到日期to沽购, ["source"]);
-  沽购to正股 = 沽购to正股.filter((el) => el.value);
-  沽购to正股 = _.sortBy(沽购to正股, ["source", "stock_code", "target"]);
-  // console.log("沽购to正股", 沽购to正股);
-  let dataList = [];
-  正股to到日期.forEach((el) => {
-    dataList.push(el.source);
-    dataList.push(el.target);
+  let 正股to到日期 = Object.values(正股to到日期Map).filter((el) => el.value);
+  let 到日期to沽购 = Object.values(到日期to沽购Map).filter((el) => el.value);
+  let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
+  const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
+  return getSankeyOption({
+    sourceToTargetList,
+    sumValue: 持仓总价.value,
+    title: "持仓分布",
   });
-  到日期to沽购.forEach((el) => {
-    dataList.push(el.source);
-    dataList.push(el.target);
-  });
-  沽购to正股.forEach((el) => {
-    dataList.push(el.source);
-    dataList.push(el.target);
-  });
-  dataList = [
-    ...Array.from(new Set(dataList)),
-    // , "总和"
+});
+
+const 盈利分布Option = computed(() => {
+  const 单腿期权TableData = [
+    ...richTableData.value?.[1]?.children,
+    ...richTableData.value?.[2]?.children,
+    ...richTableData.value?.[3]?.children,
   ];
-  // console.log("dataList", dataList);
-  const dataListSort = [
-    ..._.flattenDeep(
-      stock_sorted_list.map((code) => [
-        stock_code_map[code],
-        stock_code_map[code] + "[组合]",
-      ])
-    ),
-    "购",
-    "购 ",
-    "沽",
-    "沽 ",
-    ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")),
-    "总和",
+  let 沽购to正股Map = {};
+  ["沽", "购"].forEach((type) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (
+          el["正股代码"] === stock_code &&
+          el["沽购"] === type &&
+          el?.涨跌 > 0
+        ) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + type;
+          沽购to正股Map[key] = {
+            source: type,
+            target: stock_code_map[stock_code] + 组合Str,
+            stock_code,
+            value: (沽购to正股Map[key]?.value || 0) + (el?.涨跌 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 到日期to沽购Map = {};
+  deadline_list.forEach((date) => {
+    ["沽", "购"].forEach((type) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["沽购"] === type && el["到期日"] === date && el?.涨跌 > 0) {
+          const key = date + type;
+          到日期to沽购Map[key] = {
+            source: dayjs(date, "YYYYMMDD").format("M月"),
+            target: type + " ",
+            value: (到日期to沽购Map[key]?.value || 0) + (el?.涨跌 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期Map = {};
+  deadline_list.forEach((date) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (
+          el["正股代码"] === stock_code &&
+          el["到期日"] === date &&
+          el?.涨跌 > 0
+        ) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + date;
+          正股to到日期Map[key] = {
+            stock_code,
+            source: stock_code_map[stock_code] + 组合Str,
+            target: dayjs(date, "YYYYMMDD").format("M月"),
+            value: (正股to到日期Map[key]?.value || 0) + (el?.涨跌 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期 = Object.values(正股to到日期Map).filter((el) => el.value);
+  let 到日期to沽购 = Object.values(到日期to沽购Map).filter((el) => el.value);
+  let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
+  const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
+  return getSankeyOption({
+    sourceToTargetList,
+    sumValue: 持仓总价.value,
+    title: "盈利分布",
+  });
+});
+
+const 亏损分布Option = computed(() => {
+  const 单腿期权TableData = [
+    ...richTableData.value?.[1]?.children,
+    ...richTableData.value?.[2]?.children,
+    ...richTableData.value?.[3]?.children,
   ];
-  dataList = dataListSort.filter((el) => dataList.includes(el));
-  console.log("dataList", dataList);
-  const colorMap = {
-    沽: "green",
-    购: "red",
-    "沽 ": "green",
-    "购 ": "red",
-    总和: "black",
-  };
-  deadline_list.forEach((el, index) => {
-    colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
-  });
-  Object.keys(stock_color_map).forEach((stock_code) => {
-    const key = stock_code_map[stock_code];
-    const color = stock_color_map[stock_code];
-    colorMap[key] = color;
-    colorMap[key + "[组合]"] = color;
-  });
-  const totalData = 沽购to正股.map((el) => ({
-    source: el["source"] + " ",
-    target: "总和",
-    value: el["value"],
-  }));
-  return {
-    tooltip: {
-      trigger: "item",
-      triggerOn: "mousemove|click",
-      formatter: (params) => {
-        const { dataType, data, value } = params;
-        if (dataType === "node") {
-          return `${data.name}<br />${value}`;
+  let 沽购to正股Map = {};
+  ["沽", "购"].forEach((type) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (
+          el["正股代码"] === stock_code &&
+          el["沽购"] === type &&
+          el?.涨跌 < 0
+        ) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + type;
+          沽购to正股Map[key] = {
+            source: type,
+            target: stock_code_map[stock_code] + 组合Str,
+            stock_code,
+            value: (沽购to正股Map[key]?.value || 0) + (-el?.涨跌 || 0),
+          };
         }
-        if (dataType === "edge") {
-          return `${data.source} > ${data.target}<br />${value}`;
+      });
+    });
+  });
+  let 到日期to沽购Map = {};
+  deadline_list.forEach((date) => {
+    ["沽", "购"].forEach((type) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["沽购"] === type && el["到期日"] === date && el?.涨跌 < 0) {
+          const key = date + type;
+          到日期to沽购Map[key] = {
+            source: dayjs(date, "YYYYMMDD").format("M月"),
+            target: type + " ",
+            value: (到日期to沽购Map[key]?.value || 0) + (-el?.涨跌 || 0),
+          };
         }
-        console.log(params);
-      },
-    },
-    animation: false,
-    series: [
-      {
-        type: "sankey",
-        bottom: "10%",
-        draggable: false,
-        layoutIterations: 0,
-        emphasis: {
-          focus: "adjacency",
-          // edgeLabel: {
-          //   show: true
-          // }
-        },
-        data: dataList.map((el) => {
-          if (colorMap[el])
-            return {
-              name: el,
-              itemStyle: {
-                color: colorMap[el],
-              },
-            };
-          return { name: el };
-        }),
-        label: {
-          show: true,
-          rich: {
-            a: {
-              // width: 100,
-              height: 20,
-              // margin: 100,
-              color: "black",
-            },
-            b: {
-              // width: 100,
-              color: "#89a8c5",
-            },
-            c: {
-              // width: 100,
-              color: "#89a8c5",
-            },
-          },
-          formatter: function (params) {
-            const { value, data } = params;
-            // return `${data.name}:${value}`;
-            return `{a|${data.name}}  {b|${value}} {c|(${toFixed(
-              (100 * value) / 持仓总价.value,
-              1
-            )}%)}`;
-          },
-        },
-        links: [
-          ...沽购to正股,
-          ...正股to到日期,
-          ...到日期to沽购,
-          // , ...totalData
-        ],
-        // links: [...沽购to正股],
-        // orient: "vertical",
-        // label: {
-        //   position: "top",
-        // },
-        lineStyle: {
-          color: "source",
-          curveness: 0.5,
-        },
-      },
-    ],
-  };
+      });
+    });
+  });
+  let 正股to到日期Map = {};
+  deadline_list.forEach((date) => {
+    Object.keys(stock_code_map).forEach((stock_code) => {
+      单腿期权TableData.forEach((el) => {
+        if (
+          el["正股代码"] === stock_code &&
+          el["到期日"] === date &&
+          el?.涨跌 < 0
+        ) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + stock_code + date;
+          正股to到日期Map[key] = {
+            stock_code,
+            source: stock_code_map[stock_code] + 组合Str,
+            target: dayjs(date, "YYYYMMDD").format("M月"),
+            value: (正股to到日期Map[key]?.value || 0) + (-el?.涨跌 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期 = Object.values(正股to到日期Map).filter((el) => el.value);
+  let 到日期to沽购 = Object.values(到日期to沽购Map).filter((el) => el.value);
+  let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
+  const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
+  return getSankeyOption({
+    sourceToTargetList,
+    sumValue: 持仓总价.value,
+    title: "亏损分布",
+    is亏损: true,
+  });
 });
 </script>
 <style>
