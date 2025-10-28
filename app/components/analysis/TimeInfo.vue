@@ -394,13 +394,17 @@ function filterTableData(tableData) {
     .filter((el) => formData.沽购List.includes(el["沽购"]));
 }
 
-function getSankeyLegenColorMap() {
+function getSankeyLegenColorMap({ 总和标识 }) {
+  let 总和Color = "black";
+  if (总和标识 === "盈") 总和Color = "#e9291a";
+  if (总和标识 === "亏") 总和Color = "#2f972f";
+
   const colorMap = {
     沽: "green",
     购: "red",
     "沽 ": "green",
     "购 ": "red",
-    总和: "black",
+    [总和标识]: 总和Color,
   };
   deadline_list.forEach((el, index) => {
     colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
@@ -414,16 +418,13 @@ function getSankeyLegenColorMap() {
   return colorMap;
 }
 
-function getSortedLegenList(sourceToTargetList) {
+function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
   let dataList = [];
   sourceToTargetList.forEach((el) => {
     dataList.push(el.source);
     dataList.push(el.target);
   });
-  dataList = [
-    ...Array.from(new Set(dataList)),
-    // , "总和"
-  ];
+  dataList = [...Array.from(new Set(dataList)), 总和标识];
   const dataListSort = [
     ..._.flattenDeep(
       stock_sorted_list.map((code) => [
@@ -436,20 +437,38 @@ function getSortedLegenList(sourceToTargetList) {
     "沽",
     "沽 ",
     ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")),
-    "总和",
+    总和标识,
   ];
   dataList = dataListSort.filter((el) => dataList.includes(el));
   return dataList;
 }
 function getSankeyOption({
+  沽购to正股,
   sourceToTargetList,
   sumValue,
   title,
-  is亏损 = false,
+  总和标识 = "持",
 }) {
-  let dataList = getSortedLegenList(sourceToTargetList);
-  const colorMap = getSankeyLegenColorMap();
-  const 亏损符号 = is亏损 ? -1 : 1;
+  let totalData = [
+    {
+      source: "沽 ",
+      target: 总和标识,
+      value: 0,
+    },
+    {
+      source: "购 ",
+      target: 总和标识,
+      value: 0,
+    },
+  ];
+  沽购to正股.forEach((el) => {
+    const idx = totalData.findIndex((item) => item.source === el.source + " ");
+    totalData[idx].value += el.value;
+  });
+  totalData = totalData.filter((el) => el.value);
+  let dataList = getSortedLegenList({ sourceToTargetList, 总和标识 });
+  const colorMap = getSankeyLegenColorMap({ 总和标识 });
+  const 亏损符号 = 总和标识 === "亏" ? -1 : 1;
   return {
     title: {
       text: title,
@@ -501,7 +520,7 @@ function getSankeyOption({
             )}%)}`;
           },
         },
-        links: sourceToTargetList,
+        links: [...sourceToTargetList, ...totalData],
         lineStyle: {
           color: "source",
           curveness: 0.5,
@@ -569,10 +588,13 @@ const 持仓分布Option = computed(() => {
   let 到日期to沽购 = Object.values(到日期to沽购Map).filter((el) => el.value);
   let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
   const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
+
   return getSankeyOption({
+    沽购to正股,
     sourceToTargetList,
     sumValue: 持仓总价.value,
     title: "持仓分布",
+    总和标识: "持",
   });
 });
 
@@ -644,9 +666,11 @@ const 盈利分布Option = computed(() => {
   let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
   const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
   return getSankeyOption({
+    沽购to正股,
     sourceToTargetList,
     sumValue: 持仓总价.value,
     title: "盈利分布",
+    总和标识: "盈",
   });
 });
 
@@ -718,10 +742,11 @@ const 亏损分布Option = computed(() => {
   let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
   const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
   return getSankeyOption({
+    沽购to正股,
     sourceToTargetList,
     sumValue: 持仓总价.value,
     title: "亏损分布",
-    is亏损: true,
+    总和标识: "亏",
   });
 });
 </script>
