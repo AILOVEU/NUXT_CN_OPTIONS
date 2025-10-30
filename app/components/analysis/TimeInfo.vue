@@ -75,6 +75,7 @@
             <el-table-column label="沽购" prop="沽购" />
             <el-table-column label="正股" prop="正股代码" />
             <el-table-column label="持仓" prop="持仓" />
+            <el-table-column label="总盈亏" prop="总盈亏" sortable />
             <el-table-column
               label="最新价"
               #default="{ row }"
@@ -289,6 +290,13 @@ const richTableData = computed(() => {
           const 总价 = Math.floor(
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
           );
+          const 总盈亏 = Math.floor(
+            (权利期权Item["最新价"] -
+              权利期权Item["成本价"] -
+              (义务期权Item["最新价"] - 义务期权Item["成本价"])) *
+              UNIT *
+              组合持仓
+          );
           return {
             isCombo: true,
             名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
@@ -298,6 +306,7 @@ const richTableData = computed(() => {
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             到期天数: 权利期权Item["到期天数"],
             总价,
+            总盈亏,
             涨跌: Math.floor(
               (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
                 组合持仓 *
@@ -320,6 +329,13 @@ const richTableData = computed(() => {
           const 总价 = Math.floor(
             (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
           );
+          const 总盈亏 = Math.floor(
+            (权利期权Item["最新价"] -
+              权利期权Item["成本价"] -
+              (义务期权Item["最新价"] - 义务期权Item["成本价"])) *
+              UNIT *
+              组合持仓
+          );
           return {
             isCombo: true,
             名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
@@ -329,6 +345,7 @@ const richTableData = computed(() => {
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             到期天数: 权利期权Item["到期天数"],
             总价,
+            总盈亏,
             涨跌: Math.floor(
               (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
                 组合持仓 *
@@ -349,6 +366,7 @@ const richTableData = computed(() => {
       涨跌: 单腿期权持仓.value.涨跌,
       children: 单腿期权持仓.value.list.map(
         ({
+          成本价,
           期权名称,
           最新价,
           涨跌额,
@@ -361,6 +379,7 @@ const richTableData = computed(() => {
           沽购,
         }) => {
           const 总价 = Math.floor(最新价 * UNIT * 持仓);
+          const 总盈亏 = Math.floor((最新价 - 成本价) * UNIT * 持仓);
           return {
             名称: 期权名称,
             持仓: 持仓,
@@ -370,6 +389,7 @@ const richTableData = computed(() => {
             到期天数,
             涨跌: Math.floor(涨跌额 * 持仓 * UNIT),
             总价,
+            总盈亏,
             总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
             正股代码,
             沽购,

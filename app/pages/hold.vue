@@ -38,7 +38,7 @@
           :prop="type + label"
           :width="width"
           align="center"
-          :minWidth="label === '期权' ? '65px' : '120px'"
+          :minWidth="label === '期权' ? '65px' : '180px'"
         >
           <template #header>
             <div v-if="type">

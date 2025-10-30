@@ -149,7 +149,7 @@ const formData = reactive({
   最新价Range: [0, 最大建议买入价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
-  GammaRange: [1, 9999],
+  GammaRange: [0.5, 9999],
   正股List: [...stock_sorted_list],
   到期日List: [...deadline_list].filter((el, index) => index),
   过滤持有: false,

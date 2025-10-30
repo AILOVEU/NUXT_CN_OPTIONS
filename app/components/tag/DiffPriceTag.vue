@@ -35,10 +35,11 @@ const type = computed(() => {
 });
 const effect = computed(() => {
   if (props.current期权Item["溢价率"] > 10) return "plain";
+  if (props.spread期权Item?.["买一"] < 0.02) return "plain"; // 限制义务仓最小价
   if (
     (props.current期权Item?.["卖一"] - props.spread期权Item?.["买一"]) /
       props.spread期权Item?.["买一"] >
-    1.5
+    2
   )
     return "plain";
   if (最新价.value > 最大建议买入价) return "plain";
