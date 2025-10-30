@@ -5,7 +5,7 @@ import { UNIT, fields_dict, stock_code_map, 金额 } from "~/data";
 import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
-
+import { MOCK_ALL_DATA } from "./mock.js";
 function is_机会(line_dict) {
   const { 最新价, 隐波, 到期天数, 溢价率 } = line_dict;
   if (到期天数 < 15) return false;
@@ -200,9 +200,14 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       list.forEach((el) => {
         all_data.push(...el);
       });
+      // $fetch("/api/querySaveFile", {
+      //   method: "post",
+      //   body: { data: all_data },
+      // });
     })
     .catch((err) => {
-      // ElMessage({ message: err, type: "error" });
+      ElMessage({ message: err, type: "error" });
+      all_data = MOCK_ALL_DATA;
       console.log(err);
     });
   const combo_list = 构建组合(all_data);
