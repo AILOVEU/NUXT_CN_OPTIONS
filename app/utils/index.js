@@ -200,10 +200,12 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       list.forEach((el) => {
         all_data.push(...el);
       });
-      // $fetch("/api/querySaveFile", {
-      //   method: "post",
-      //   body: { data: all_data },
-      // });
+      if (all_data.length) {
+        $fetch("/api/querySaveFile", {
+          method: "post",
+          body: { data: all_data },
+        });
+      }
     })
     .catch((err) => {
       ElMessage({ message: err, type: "error" });
