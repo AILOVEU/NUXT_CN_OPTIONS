@@ -2,7 +2,7 @@ import _ from "lodash";
 export const 金额 = {
   基础金额: 50000,
   入金金额: 50000,
-  场内现金: 34,
+  场内现金: 134,
   占用保证金: 1150,
   期转股金额: 12500,
   贷款: 0,
@@ -120,6 +120,7 @@ export const deadline_map = {
 export const UNIT = 10000;
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20251103", 49306],
     ["20251031", 53562],
     ["20251030", 55999],
     ["20251029", 64566],
