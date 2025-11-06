@@ -1,4 +1,5 @@
 export default eventHandler(async (event) => {
+  let cookie = 'qgqp_b_id=de87bbec62f1d2c7d9626e3127ebb846; st_pvi=56990777245722; st_sp=2024-01-02%2010%3A52%3A25; st_inirUrl=https%3A%2F%2Fwww.google.com%2F'
   const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
     method: "get",
     params: getQuery(event),
