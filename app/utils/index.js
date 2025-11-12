@@ -154,6 +154,8 @@ export async function get_target_http_data(持仓JSON, fs) {
       line_dict["单日损耗"] =
         Math.floor((10 * line_dict["Theta"] * UNIT) / 365) / 10;
       line_dict["最新价"] = get_最新价(line_dict);
+      // console.log(line_dict['涨跌额'],line_dict["最新价"] - line_dict["昨收"])
+      line_dict['涨跌额'] = line_dict["最新价"] - line_dict["昨收"];
       line_dict["内在价值"] = get_option_实值(line_dict);
       line_dict["时间价值"] =
         Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * UNIT) / UNIT;
