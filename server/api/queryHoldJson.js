@@ -1,4 +1,4 @@
-import csvtojson from "csvtojson/v2";
+import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
