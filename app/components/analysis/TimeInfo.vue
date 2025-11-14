@@ -109,7 +109,7 @@
               </template>
             </el-table-column>
             <el-table-column label="到期天数" prop="到期天数" sortable />
-            <el-table-column label="持仓涨跌" prop="涨跌" sortable />
+            <el-table-column label="当日涨跌" prop="涨跌" sortable />
             <el-table-column label="总价" prop="总价" sortable />
             <el-table-column
               sortable
