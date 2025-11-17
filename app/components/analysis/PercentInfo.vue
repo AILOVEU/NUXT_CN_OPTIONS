@@ -24,6 +24,7 @@ import {
 } from "~/data";
 import _ from "lodash";
 import dayjs from "dayjs";
+import { toPercent1, toPrice } from "~/utils";
 
 const props = defineProps(["all_data"]);
 const stockCodeList = Object.keys(stock_code_map);
@@ -185,7 +186,7 @@ watch(
               },
               name: stock_code_map[code],
               value: curSum,
-              percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+              percent: toPercent1(curSum / allSum) + "%",
               children: optionTypeList.map((type) => {
                 const curSum = get_list_all_hold(
                   options_list.filter(
@@ -197,7 +198,7 @@ watch(
                   type,
                   name: type,
                   value: curSum,
-                  percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+                  percent: toPercent1(curSum / allSum) + "%",
                   itemStyle: {
                     color: type === "购" ? "#f37674" : "#5e9a80",
                   },
@@ -220,7 +221,7 @@ watch(
             return {
               name: dayjs(date, "YYYYMMDD").format("M月"),
               value: curSum,
-              percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+              percent: toPercent1(curSum / allSum) + "%",
               itemStyle: {
                 color: COLOR_LIST[index],
               },
@@ -239,7 +240,7 @@ watch(
                     },
                     name: stock_code_map[code],
                     value: curSum,
-                    percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+                    percent: toPercent1(curSum / allSum) + "%",
                   };
                 }),
                 sortItemCode
@@ -260,7 +261,7 @@ watch(
             return {
               name: type,
               value: curSum,
-              percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+              percent: toPercent1(curSum / allSum) + "%",
               itemStyle: {
                 color: COLOR_LIST[index],
               },
@@ -279,7 +280,7 @@ watch(
                     },
                     name: stock_code_map[code],
                     value: curSum,
-                    percent: Math.floor((1000 * curSum) / allSum) / 10 + "%",
+                    percent: toPercent1(curSum / allSum) + "%",
                   };
                 }),
                 sortItemCode
@@ -298,8 +299,8 @@ watch(
 function get_list_all_hold(list) {
   let sum = 0;
   list.forEach((el) => {
-    sum += el["持仓"] * el["最新价"] * UNIT;
+    sum += el["持仓"] * el["最新价"];
   });
-  return Math.floor(sum);
+  return toPrice(sum);
 }
 </script>

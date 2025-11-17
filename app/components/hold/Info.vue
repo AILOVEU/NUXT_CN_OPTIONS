@@ -47,7 +47,7 @@ import DiffTag from "~/components/tag/DiffTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 
 import { UNIT } from "~/data";
-import { getColorSplitHander } from "~//utils";
+import { getColorSplitHander,toPrice } from "~//utils";
 import HoldTag from "../tag/HoldTag.vue";
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date"]);
@@ -72,16 +72,16 @@ const 持仓 = computed(() => {
   return props.row[prefixKey.value + "持仓"];
 });
 const 最新价 = computed(() => {
-  return Math.floor(props.row[prefixKey.value + "最新价"] * UNIT);
+  return toPrice(props.row[prefixKey.value + "最新价"]);
 });
 const 昨收 = computed(() => {
-  return Math.floor(props.row[prefixKey.value + "昨收"] * UNIT);
+  return toPrice(props.row[prefixKey.value + "昨收"]);
 });
 const 涨跌 = computed(() => {
   return 最新价.value - 昨收.value;
 });
 const 成本价 = computed(() => {
-  return Math.floor(props.row[prefixKey.value + "成本价"] * UNIT);
+  return toPrice(props.row[prefixKey.value + "成本价"]);
 });
 const 盈亏 = computed(() => {
   return (最新价.value - 成本价.value) * 持仓.value;

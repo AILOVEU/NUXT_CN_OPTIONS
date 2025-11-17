@@ -39,7 +39,7 @@
         class="mx-auto w-full mt-[3px] flex gap-[4px] items-center justify-around"
       >
         <div>
-          {{ Math.floor(current期权Item?.["卖一"] * UNIT) }}
+          {{ toPrice(current期权Item?.["卖一"]) }}
         </div>
         <DiffPriceTag
           :current期权Item="current期权Item"
@@ -47,7 +47,7 @@
           :diffValue="props.diffValue"
         />
         <div>
-          {{ Math.floor(spread期权Item?.["买一"] * UNIT) }}
+          {{ toPrice(spread期权Item?.["买一"]) }}
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { UNIT } from "~/data";
-import { getColorSplitHander, toFixed } from "~//utils";
+import { getColorSplitHander, toFixed, toPrice } from "~//utils";
 import DiffPriceTag from "~/components/tag/DiffPriceTag.vue";
 
 const props = defineProps([

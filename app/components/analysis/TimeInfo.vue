@@ -72,9 +72,23 @@
                 {{ row["名称"] }}
               </template>
             </el-table-column>
-            <el-table-column label="沽购" prop="沽购" />
-            <el-table-column label="正股" prop="正股代码" />
-            <el-table-column label="持仓" prop="持仓" />
+            <el-table-column
+              label="沽购"
+              #default="{ row }"
+              prop="沽购"
+              sortable
+            >
+              <CallPutTag :沽购="row['沽购']" />
+            </el-table-column>
+            <el-table-column
+              label="正股"
+              #default="{ row }"
+              prop="正股代码"
+              sortable
+            >
+              {{ stock_show_name_map[row["正股代码"]] }}
+            </el-table-column>
+            <el-table-column label="持仓" prop="持仓" sortable />
             <el-table-column label="总盈亏" prop="总盈亏" sortable />
             <el-table-column
               label="最新价"
@@ -83,33 +97,45 @@
               sortable
             >
               <template v-if="Array.isArray(row['最新价'])">
-                <div>{{ row["最新价"][0] }}</div>
-                <div>{{ row["最新价"][1] }}</div>
+                <div>{{ toPrice(row["最新价"][0]) }}</div>
+                <div>{{ toPrice(row["最新价"][1]) }}</div>
               </template>
               <template v-else>
-                {{ row["最新价"] }}
+                {{ toPrice(row["最新价"]) }}
               </template>
             </el-table-column>
-            <el-table-column label="时间" #default="{ row }" prop="时间">
+            <el-table-column
+              label="时间"
+              #default="{ row }"
+              prop="时间"
+              sortable
+            >
               <template v-if="Array.isArray(row['时间'])">
-                <div>{{ row["时间"][0] }}</div>
-                <div>{{ row["时间"][1] }}</div>
+                <div>{{ toPrice(row["时间"][0]) }}</div>
+                <div>{{ toPrice(row["时间"][1]) }}</div>
               </template>
               <template v-else>
-                {{ row["时间"] }}
+                {{ toPrice(row["时间"]) }}
               </template>
             </el-table-column>
-            <el-table-column label="实值" #default="{ row }" prop="实值">
+            <el-table-column
+              label="实值"
+              #default="{ row }"
+              prop="实值"
+              sortable
+            >
               <template v-if="Array.isArray(row['实值'])">
-                <div>{{ row["实值"][0] }}</div>
-                <div>{{ row["实值"][1] }}</div>
+                <div>{{ toPrice(row["实值"][0]) }}</div>
+                <div>{{ toPrice(row["实值"][1]) }}</div>
               </template>
               <template v-else>
-                {{ row["实值"] }}
+                {{ toPrice(row["实值"]) }}
               </template>
             </el-table-column>
             <el-table-column label="到期天数" prop="到期天数" sortable />
             <el-table-column label="当日涨跌" prop="涨跌" sortable />
+            <el-table-column label="持仓" prop="持仓" />
+            <el-table-column label="单手涨跌" prop="单手涨跌" sortable />
             <el-table-column label="总价" prop="总价" sortable />
             <el-table-column
               sortable
@@ -138,7 +164,7 @@
           {{ props.row.value }}
         </div>
         <div v-if="!props.row._custom">
-          ({{ Math.floor((1000 * props.row.value) / 持仓总价) / 10 }}%)
+          ({{ toPercent1(props.row.value / 持仓总价) }}%)
         </div>
         <DiffTag v-if="!props.row._custom" :涨跌="props.row.涨跌" />
       </div>
@@ -154,11 +180,13 @@ import {
   deadline_color_list,
   stock_color_map,
   stock_sorted_list,
+  stock_show_name_map
 } from "~/data";
-import { toFixed } from "~/utils";
+import { toFixed, toPrice, toPercent1 } from "~/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
+import CallPutTag from "~/components/tag/CallPutTag.vue";
 const stockOptions = stock_sorted_list.map((el) => ({
   label: stock_code_map[el],
   value: el,
@@ -258,10 +286,8 @@ const richTableData = computed(() => {
       value: 组合期权持仓.value.时间收益组合Value,
       children: 组合期权持仓.value.时间收益组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
-          const 总价 = Math.floor(
-            (义务期权Item["时间价值"] - 权利期权Item["时间价值"]) *
-              组合持仓 *
-              UNIT
+          const 总价 = toPrice(
+            (义务期权Item["时间价值"] - 权利期权Item["时间价值"]) * 组合持仓
           );
           return {
             名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
@@ -271,9 +297,7 @@ const richTableData = computed(() => {
             时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
             到期天数: 权利期权Item["到期天数"],
             总价,
-            总价占比:
-              Math.floor((1000 * 总价) / 组合期权持仓.value.时间收益组合Value) /
-              10,
+            总价占比: toPercent1(总价 / 组合期权持仓.value.时间收益组合Value),
             正股代码: 权利期权Item["正股代码"],
             沽购: 权利期权Item["沽购"],
             到期日: 权利期权Item["到期日"],
@@ -287,14 +311,13 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间收益组合涨跌,
       children: 组合期权持仓.value.时间收益组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
-          const 总价 = Math.floor(
-            (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
+          const 总价 = toPrice(
+            (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓
           );
-          const 总盈亏 = Math.floor(
+          const 总盈亏 = toPrice(
             (权利期权Item["最新价"] -
               权利期权Item["成本价"] -
               (义务期权Item["最新价"] - 义务期权Item["成本价"])) *
-              UNIT *
               组合持仓
           );
           return {
@@ -307,12 +330,11 @@ const richTableData = computed(() => {
             到期天数: 权利期权Item["到期天数"],
             总价,
             总盈亏,
-            涨跌: Math.floor(
-              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
-                组合持仓 *
-                UNIT
+            涨跌: toPrice(
+              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓
             ),
-            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
+            总价占比: toPercent1(总价 / 持仓总价.value),
             正股代码: 权利期权Item["正股代码"],
             沽购: 权利期权Item["沽购"],
             到期日: 权利期权Item["到期日"],
@@ -326,14 +348,13 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间损耗组合涨跌,
       children: 组合期权持仓.value.时间损耗组合List.map(
         ([权利期权Item, 义务期权Item, 组合持仓]) => {
-          const 总价 = Math.floor(
-            (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓 * UNIT
+          const 总价 = toPrice(
+            (权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓
           );
-          const 总盈亏 = Math.floor(
+          const 总盈亏 = toPrice(
             (权利期权Item["最新价"] -
               权利期权Item["成本价"] -
               (义务期权Item["最新价"] - 义务期权Item["成本价"])) *
-              UNIT *
               组合持仓
           );
           return {
@@ -346,12 +367,11 @@ const richTableData = computed(() => {
             到期天数: 权利期权Item["到期天数"],
             总价,
             总盈亏,
-            涨跌: Math.floor(
-              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) *
-                组合持仓 *
-                UNIT
+            涨跌: toPrice(
+              (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓
             ),
-            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
+            总价占比: toPercent1(总价 / 持仓总价.value),
             正股代码: 权利期权Item["正股代码"],
             沽购: 权利期权Item["沽购"],
             到期日: 权利期权Item["到期日"],
@@ -378,8 +398,8 @@ const richTableData = computed(() => {
           正股代码,
           沽购,
         }) => {
-          const 总价 = Math.floor(最新价 * UNIT * 持仓);
-          const 总盈亏 = Math.floor((最新价 - 成本价) * UNIT * 持仓);
+          const 总价 = toPrice(最新价 * 持仓);
+          const 总盈亏 = toPrice((最新价 - 成本价) * 持仓);
           return {
             名称: 期权名称,
             持仓: 持仓,
@@ -387,10 +407,11 @@ const richTableData = computed(() => {
             实值: 内在价值,
             时间: 时间价值,
             到期天数,
-            涨跌: Math.floor(涨跌额 * 持仓 * UNIT),
+            涨跌: toPrice(涨跌额 * 持仓),
+            单手涨跌: toPrice(涨跌额),
             总价,
             总盈亏,
-            总价占比: Math.floor((1000 * 总价) / 持仓总价.value) / 10,
+            总价占比: toPercent1(总价 / 持仓总价.value),
             正股代码,
             沽购,
             到期日,

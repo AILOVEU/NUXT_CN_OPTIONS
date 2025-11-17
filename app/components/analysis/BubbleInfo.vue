@@ -55,6 +55,7 @@ import {
   stock_color_map,
   stock_sorted_list,
 } from "~/data";
+import { toPrice } from "~/utils";
 import dayjs from "dayjs";
 import _ from "lodash";
 const 到期天数List = deadline_list.map(
@@ -168,8 +169,8 @@ const option = computed(() => {
             show: true,
             formatter: function (param) {
               const data = param.data[3];
-              return `${param.data[2]} \n ${data["期权名称"]}  价：${Math.floor(
-                data["最新价"] * UNIT
+              return `${param.data[2]} \n ${data["期权名称"]}  价：${toPrice(
+                data["最新价"]
               )} \n 隐波:${data["隐波"]}  Delta: ${data["Delta"]} 单日损耗: ${
                 data["单日损耗"]
               } \n Gamma: ${data["Gamma"]}`;

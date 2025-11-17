@@ -16,22 +16,26 @@
         </div>
       </div>
     </div>
-    <div :style="{ color: 持仓 > 0 ? 'red' : 'green' }" class="h-[12px] leading-[16px] align-bottom">
+    <div
+      :style="{ color: 持仓 > 0 ? 'red' : 'green' }"
+      class="h-[12px] leading-[16px] align-bottom"
+    >
       {{ 持仓Str }}
     </div>
   </div>
 </template>
 <script setup>
 import { UNIT } from "~/data";
+import { toPrice } from "~/utils";
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
 });
 const 最新价 = computed(() => {
-  return Math.floor(props.row[callOrPut.value + "最新价"] * UNIT);
+  return toPrice(props.row[callOrPut.value + "最新价"]);
 });
 const 成本价 = computed(() => {
-  return Math.floor(props.row[callOrPut.value + "成本价"] * UNIT);
+  return toPrice(props.row[callOrPut.value + "成本价"]);
 });
 const 持仓 = computed(() => {
   return props.row[callOrPut.value + "持仓"];

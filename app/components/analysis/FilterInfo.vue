@@ -112,7 +112,10 @@
           {{ label }}
         </template>
         <template #default="{ row }" v-if="label === '最新价'">
-          {{ Math.floor(row[label] * UNIT) }}
+          {{ toPrice(row[label]) }}
+        </template>
+        <template #default="{ row }" v-if="label === '涨跌额'">
+          {{ toPrice(row[label]) }}
         </template>
         <template #default="{ row }" v-else-if="label === '隐波'">
           <IvTag :隐波="row[label]" />
@@ -132,6 +135,7 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
+import { toPrice } from "~/utils";
 import {
   UNIT,
   deadline_list,

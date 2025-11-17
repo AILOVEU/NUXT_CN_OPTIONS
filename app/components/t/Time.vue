@@ -1,8 +1,10 @@
 <template>
   <div v-if="!props.row?._split && !props.row?._current">
     <div class="flex justify-between w-full border-b-[1px]">
-      <el-tag type="info" size="small">时</el-tag><div :style="{color: 时间价值 < 0 ? 'red' : ''}">{{ 时间价值 }}</div>
-      <el-tag type="info" size="small">实</el-tag><div>{{ 实值价值 }}</div>
+      <el-tag type="info" size="small">时</el-tag>
+      <div :style="{ color: 时间价值 < 0 ? 'red' : '' }">{{ 时间价值 }}</div>
+      <el-tag type="info" size="small">实</el-tag>
+      <div>{{ 实值价值 }}</div>
     </div>
     <div>
       {{ 最新价 }}
@@ -11,20 +13,21 @@
 </template>
 <script setup>
 import { UNIT } from "~/data";
+import { toPrice } from "~/utils";
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
 });
 const 最新价 = computed(() => {
-  return Math.floor(props.row[callOrPut.value + "最新价"] * UNIT);
+  return toPrice(props.row[callOrPut.value + "最新价"]);
 });
 const 实值价值 = computed(() => {
   const 行权价 = props.row[callOrPut.value + "行权价"];
   const 正股价格 = props.row["正股价格"];
   if (props.isCall) {
-    if (正股价格 > 行权价) return Math.floor((正股价格 - 行权价) * UNIT);
+    if (正股价格 > 行权价) return toPrice((正股价格 - 行权价));
   } else {
-    if (正股价格 < 行权价) return Math.floor((行权价 - 正股价格) * UNIT);
+    if (正股价格 < 行权价) return toPrice((行权价 - 正股价格));
   }
   return 0;
 });

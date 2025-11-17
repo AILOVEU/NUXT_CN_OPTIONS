@@ -309,3 +309,13 @@ function generateRandomString(length) {
   }
   return result;
 }
+export function toFloor(val){
+  return Math.floor(val)
+}
+export function toPrice(val){
+  return toFloor(val * UNIT)
+}
+// 保留一位小数
+export function toPercent1(val){
+  return toFloor(val * 1000 )/10
+}
