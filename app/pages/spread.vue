@@ -195,10 +195,6 @@ async function handleQuery() {
   ]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
-  console.log(
-    "tiledData",
-    Array.from(new Set(tiledData.map((el) => el["行权价"])))
-  );
   tableData.combo_list = combo_list;
   // setHttpStore([holdData, tiledData]);
   tableData.loading = false;

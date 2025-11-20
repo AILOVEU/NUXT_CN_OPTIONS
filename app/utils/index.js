@@ -23,10 +23,20 @@ function get_最新价(row) {
   return 最新价;
 }
 function get_持仓(持仓JSON, line_dict) {
-  let target = 持仓JSON.find((item) => item["名称"] === line_dict["期权名称"]);
-  if (!target) return 0;
-  let 持仓 = +target["持仓"];
-  return target["持仓类别"] === "义务仓" ? -持仓 : 持仓;
+  let targetList = 持仓JSON.filter(
+    (item) => item["名称"] === line_dict["期权名称"]
+  );
+  if (!targetList.length) return 0;
+  let 持仓 = 0;
+  targetList.forEach((item) => {
+    let item持仓 = +item['持仓'];
+    持仓 += item["持仓类别"] === "义务仓" ? -item持仓 : item持仓;
+  });
+  return 持仓;
+  // let target = 持仓JSON.find((item) => item["名称"] === line_dict["期权名称"]);
+  // if (!target) return 0;
+  // let 持仓 = +target["持仓"];
+  // return target["持仓类别"] === "义务仓" ? -持仓 : 持仓;
 }
 
 // export async function get_持仓JSON() {
@@ -100,7 +110,6 @@ function 构建组合(all_data) {
       }
     });
   }
-  console.log("组合List", 组合List);
   // let 占用保证金 = 0;
   // 组合List.forEach((el) => {
   //   占用保证金 += el[2] * 50;
@@ -154,7 +163,7 @@ export async function get_target_http_data(持仓JSON, fs) {
       line_dict["单日损耗"] =
         Math.floor((10 * line_dict["Theta"] * UNIT) / 365) / 10;
       line_dict["最新价"] = get_最新价(line_dict);
-      line_dict['涨跌额'] = line_dict["最新价"] - line_dict["昨收"];
+      line_dict["涨跌额"] = line_dict["最新价"] - line_dict["昨收"];
       line_dict["内在价值"] = get_option_实值(line_dict);
       line_dict["时间价值"] =
         Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * UNIT) / UNIT;
@@ -309,13 +318,13 @@ function generateRandomString(length) {
   }
   return result;
 }
-export function toFloor(val){
-  return Math.floor(val)
+export function toFloor(val) {
+  return Math.floor(val);
 }
-export function toPrice(val){
-  return toFloor(val * UNIT)
+export function toPrice(val) {
+  return toFloor(val * UNIT);
 }
 // 保留一位小数
-export function toPercent1(val){
-  return toFloor(val * 1000 )/10
+export function toPercent1(val) {
+  return toFloor(val * 1000) / 10;
 }
