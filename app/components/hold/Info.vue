@@ -31,7 +31,7 @@
             size="small"
             effect="plain"
           >
-            盈 {{ 盈亏 }}
+            {{盈亏 > 0 ? '盈' : '亏'}} {{ 盈亏 }}
           </el-tag>
         </div>
       </div>

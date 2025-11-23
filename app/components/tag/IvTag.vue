@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    Iv {{ props.隐波 }}
+    隐波 {{ props.隐波 }}
   </el-tag>
 </template>
 <script setup>

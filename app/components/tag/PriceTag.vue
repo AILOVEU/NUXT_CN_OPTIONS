@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    {{ props.最新价 }}
+    价:{{ props.最新价 }}
   </el-tag>
 </template>
 <script setup>
