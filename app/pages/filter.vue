@@ -26,13 +26,9 @@ const combo_list = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  // plan 1
   const [data, list] = await get_http_data(持仓JSON.value, stockCodeList);
   combo_list.value = list;
   all_data.value = data;
   loading.value = false;
-  // plan 2
-  // all_data.value = MOCK_HOLD_DATA;
-  // loading.value = false;
 }
 </script>

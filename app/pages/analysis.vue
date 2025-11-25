@@ -36,14 +36,11 @@ import { stock_code_map } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
 import { ElMessage } from "element-plus";
-import PercentInfo from "~/components/analysis/PercentInfo";
-import BubbleInfo from "~/components/analysis/BubbleInfo";
 import BarInfo from "~/components/analysis/BarInfo";
 import TimeInfo from "~/components/analysis/TimeInfo";
 import MoneyInfo from "~/components/analysis/MoneyInfo";
 import FilterInfo from "~/components/analysis/FilterInfo";
 import { useHttpStore } from "~/stores/useHttpStore.js";
-const { httpStore, setHttpStore } = useHttpStore();
 const stockCodeList = Object.keys(stock_code_map);
 const 持仓JSON = ref([]);
 useFetch("/api/queryHoldJson").then((res) => {
@@ -53,22 +50,10 @@ const all_data = ref([]);
 const combo_list = ref([]);
 const loading = ref(false);
 async function handleQuery() {
-  // if (httpStore.value) {
-  //   ElMessage("网络请求，使用缓存代替");
-  //   const [data, list] = httpStore.value;
-  //   combo_list.value = list;
-  //   all_data.value = data;
-  //   return;
-  // }
   loading.value = true;
-  // plan 1
   const [data, list] = await get_http_data(持仓JSON.value, stockCodeList);
-  setHttpStore([data, list]);
   combo_list.value = list;
   all_data.value = data;
   loading.value = false;
-  // plan 2
-  // all_data.value = MOCK_HOLD_DATA;
-  // loading.value = false;
 }
 </script>

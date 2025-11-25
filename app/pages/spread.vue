@@ -119,10 +119,7 @@ import _ from "lodash";
 import Center from "~/components/spread/Center.vue";
 import Info from "~/components/spread/Info.vue";
 import { querySpread } from "~/utils/querySpread.js";
-import { ElMessage } from "element-plus";
 import { useCopy, getColorSplitHander } from "~/utils";
-import { useHttpStore } from "~/stores/useHttpStore.js";
-const { httpStore, setHttpStore } = useHttpStore();
 function copy() {
   useCopy(JSON.stringify(持仓JSON.value));
 }
@@ -182,13 +179,6 @@ useFetch("/api/queryHoldJson").then((res) => {
   持仓JSON.value = res.data.value || [];
 });
 async function handleQuery() {
-  // if (httpStore.value) {
-  //   ElMessage("网络请求，使用缓存代替");
-  //   const [holdData, tiledData] = httpStore.value;
-  //   tableData.data = holdData || [];
-  //   tableData.tiledData = tiledData;
-  //   return;
-  // }
   tableData.loading = true;
   const [holdData, combo_list, tiledData] = await querySpread(持仓JSON.value, [
     stockCode.value,
@@ -196,7 +186,6 @@ async function handleQuery() {
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
   tableData.combo_list = combo_list;
-  // setHttpStore([holdData, tiledData]);
   tableData.loading = false;
 }
 function handleStockCodeChange() {

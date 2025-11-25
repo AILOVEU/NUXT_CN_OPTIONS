@@ -206,7 +206,4 @@ function getRowStyle({ row }) {
 .el-radio-button {
   flex: 1;
 }
-// .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
-//   border: 0;
-// }
 </style>
