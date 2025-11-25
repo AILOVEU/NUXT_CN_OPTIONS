@@ -1,5 +1,6 @@
 <template>
   <div v-loading="tableData.loading" class="max-md:w-[140%]">
+    <!-- {{tableData.data}} -->
     <div>
       <!-- 顶部 -->
       <el-affix :offset="0">
@@ -41,13 +42,13 @@
           :minWidth="label === '期权' ? '65px' : '180px'"
         >
           <template #header>
-            <div v-if="type">
-              <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-              <div>
+            <div v-if="type" class="leading-[1.2]">
+              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+              <div class="leading-[1.2]">
                 ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
               </div>
             </div>
-            <div v-else>
+            <div v-else class="leading-[1.2]">
               {{ label }}
             </div>
           </template>
@@ -83,10 +84,11 @@ const stockCodeOptions = computed(() => {
   list.sort(function (a, b) {
     return stock_sort_map[a] - stock_sort_map[b];
   });
-  return list.map((code) => ({
+  let ops = list.map((code) => ({
     value: code,
     label: stock_show_name_map[code],
   }));
+  return [...ops, { value: "all", label: "全" }];
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = [...deadline_list].reverse();
@@ -108,7 +110,12 @@ useFetch("/api/queryHoldJson").then((res) => {
 });
 async function handleQuery() {
   tableData.loading = true;
-  const holdData = await queryHold(持仓JSON.value, [stockCode.value]);
+  const holdData = await queryHold(
+    持仓JSON.value,
+    stockCode.value === "all"
+      ? Object.keys(stock_show_name_map)
+      : [stockCode.value]
+  );
   tableData.data = holdData || [];
   tableData.loading = false;
 }
@@ -121,12 +128,12 @@ function handleStockCodeChange() {
 const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["正股代码"] !== stockCode.value) return false;
+    // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
     return (
-      el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] &&
-      el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1]
+      el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] &&
+      el["行权价"] * 1000 <= 行权价RangeDict[el["正股代码"]][1]
     );
   });
 });

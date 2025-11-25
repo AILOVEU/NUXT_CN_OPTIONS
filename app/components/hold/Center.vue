@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!props.row?._current">
+  <div v-if="props.row._split" style="background-color: black;">
+    &nbsp;
+  </div>
+  <div v-else-if="!props.row?._current">
     <div>{{ 正股 }}</div>
     <div>
       {{ 行权价 }}

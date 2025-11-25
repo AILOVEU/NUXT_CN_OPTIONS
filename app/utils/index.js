@@ -29,7 +29,7 @@ function get_持仓(持仓JSON, line_dict) {
   if (!targetList.length) return 0;
   let 持仓 = 0;
   targetList.forEach((item) => {
-    let item持仓 = +item['持仓'];
+    let item持仓 = +item["持仓"];
     持仓 += item["持仓类别"] === "义务仓" ? -item持仓 : item持仓;
   });
   return 持仓;
@@ -118,9 +118,16 @@ function 构建组合(all_data) {
   // set保证金(占用保证金);
   return 组合List;
 }
+function sleep(time) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, time);
+  });
+}
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 20;
+  const pz = 50;
   let all_data = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -145,7 +152,10 @@ export async function get_target_http_data(持仓JSON, fs) {
         // fs: "m:10,m:12",
         // fs: "m:10",
       },
+    }).catch((res) => {
+      console.log(res);
     });
+    await sleep(3000);
     if (!res["data"]) {
       console.log(fs + "请求完成" + all_data.length);
       break;
@@ -182,6 +192,7 @@ export async function get_target_http_data(持仓JSON, fs) {
       all_data.push(line_dict);
     });
     if (res_data?.length < pz) {
+      console.log(fs + "请求完成" + all_data.length);
       break;
     }
   }
@@ -202,7 +213,7 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(get_target_http_data(持仓JSON, fs));
-        }, idx * 100);
+        }, idx * 2000);
       });
     });
   await Promise.all(promiseList)
@@ -229,6 +240,7 @@ export async function get_http_data(持仓JSON, 正股代码List) {
       组合: combo_list.some((item) => item.includes(el["期权名称"])),
     };
   });
+  console.log("[all_data, combo_list]", [all_data, combo_list]);
   return [all_data, combo_list];
 }
 

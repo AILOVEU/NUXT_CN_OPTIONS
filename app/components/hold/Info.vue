@@ -1,7 +1,10 @@
 <template>
+  <div v-if="props.row._split" style="background-color: black">
+    &nbsp;
+  </div>
   <div
-    v-if="!props.row?._current && 最新价"
-    class="p-[2px] h-[64px] flex flex-col justify-center relative"
+    v-else-if="!props.row?._current && 最新价"
+    class="p-[2px] w-[200px] h-[64px] flex flex-col justify-center relative px-[6px] mx-auto"
     :style="style"
   >
     <HoldTag :持仓="持仓" v-if="持仓" />
@@ -31,7 +34,7 @@
             size="small"
             effect="plain"
           >
-            {{盈亏 > 0 ? '盈' : '亏'}} {{ 盈亏 }}
+            {{ 盈亏 > 0 ? "盈" : "亏" }} {{ 盈亏 }}
           </el-tag>
         </div>
       </div>
@@ -47,7 +50,7 @@ import DiffTag from "~/components/tag/DiffTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 
 import { UNIT } from "~/data";
-import { getColorSplitHander,toPrice } from "~//utils";
+import { getColorSplitHander, toPrice } from "~//utils";
 import HoldTag from "../tag/HoldTag.vue";
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date"]);

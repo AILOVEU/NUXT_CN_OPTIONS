@@ -22,7 +22,7 @@ export default defineNuxtConfig({
   echarts: {
     renderer: ["canvas"],
     charts: [
-      'SankeyChart',
+      "SankeyChart",
       "LineChart",
       "BarChart",
       "MapChart",
@@ -58,5 +58,35 @@ export default defineNuxtConfig({
   // compatibilityDate: '2025-07-15',
 
   devtools: { enabled: false },
+  // 构建优化
+  // vite: {
+  //   build: {
+  //     chunkSizeWarningLimit: 1000, // 提高 chunk 大小警告限制
+  //     rollupOptions: {
+  //       output: {
+  //         manualChunks: {
+  //           "vue-vendor": ["vue", "vue-router", "pinia"],
+  //           "ui-vendor": ["@nuxt/ui", "some-ui-library"],
+  //         },
+  //       },
+  //     },
+  //   },
+  // }, 
+  // 路由优化
+  // routeRules: {
+  //   // 为静态路由启用预渲染
+  //   '/': { prerender: true },
+  //   '/hold': { prerender: true }
+  // },
+  
+  // 减少自动导入（如果项目很大）
+  // imports: {
+  //   autoImport: true // 开发环境关闭自动导入
+  // },
+  // plugins: [],
+  // sourcemap: false, // 禁用 sourcemap
+  // css: {
+  //   devSourcemap: false // 禁用 CSS sourcemap
+  // }
   // css: ['~/styles/index.css']
 });
