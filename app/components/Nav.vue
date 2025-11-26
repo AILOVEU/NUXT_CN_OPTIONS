@@ -38,6 +38,10 @@ const navList = [
     href: "/spread",
     name: "价差",
   },
+  {
+    href: '/calendar',
+    name: '日历'
+  }
 ];
 const activePath = computed(() => {
   const path = route.path;

@@ -12,6 +12,7 @@ export default defineNuxtConfig({
       ],
     },
   },
+  debug: true,
   typescript: {
     typeCheck: false, // 禁用类型检查（仅用于验证）
     strict: false,    // 关闭严格模式（减少类型校验开销）
@@ -71,36 +72,13 @@ export default defineNuxtConfig({
   // future: { compatibilityVersion: 4 },
   // compatibilityDate: '2025-07-15',
 
-  devtools: { enabled: false },
-  // 构建优化
-  // vite: {
-  //   build: {
-  //     chunkSizeWarningLimit: 1000, // 提高 chunk 大小警告限制
-  //     rollupOptions: {
-  //       output: {
-  //         manualChunks: {
-  //           "vue-vendor": ["vue", "vue-router", "pinia"],
-  //           "ui-vendor": ["@nuxt/ui", "some-ui-library"],
-  //         },
-  //       },
-  //     },
-  //   },
-  // },
-  // 路由优化
-  // routeRules: {
-  //   // 为静态路由启用预渲染
-  //   '/': { prerender: true },
-  //   '/hold': { prerender: true }
-  // },
-
-  // 减少自动导入（如果项目很大）
-  // imports: {
-  //   autoImport: true // 开发环境关闭自动导入
-  // },
-  // plugins: [],
-  // sourcemap: false, // 禁用 sourcemap
-  // css: {
-  //   devSourcemap: false // 禁用 CSS sourcemap
-  // }
-  // css: ['~/styles/index.css']
+  devtools: { enabled: true },
+  vite: {
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 1000
+      }
+    }
+  }
 });

@@ -10,6 +10,7 @@
     </el-affix>
     <FilterInfo :all_data="all_data" />
   </div>
+  
 </template>
 <script setup>
 import { stock_code_map } from "~/data";
