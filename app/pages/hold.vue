@@ -34,16 +34,17 @@
         ref="tableRef"
       >
         <el-table-column
-          v-for="{ label, type, width } in tableData.columns"
+          v-for="{ label, type } in tableData.columns"
           :key="type + label"
           :prop="type + label"
-          :width="width"
           align="center"
-          :minWidth="label === '期权' ? '65px' : '180px'"
+          :width="label === '期权' ? '100px' : '220px'"
         >
           <template #header>
             <div v-if="type" class="leading-[1.2]">
-              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+              <div class="leading-[1.2]">
+                {{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}
+              </div>
               <div class="leading-[1.2]">
                 ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
               </div>
@@ -128,8 +129,11 @@ function handleStockCodeChange() {
 const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
+    if (el["_持仓"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
+    if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0 )
+      return false;
     if (el._current || el._split) return true;
     return (
       el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] &&

@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    δ {{ props.Delta?.toFixed(3) }}
+   Delta {{ props.Delta?.toFixed(3) }}
   </el-tag>
 </template>
 <script setup>

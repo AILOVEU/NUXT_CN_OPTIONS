@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  compatibilityDate: "2025-11-26",
   app: {
     head: {
       link: [
@@ -10,6 +11,19 @@ export default defineNuxtConfig({
         }, // 指定 favicon 路径
       ],
     },
+  },
+  typescript: {
+    typeCheck: false, // 禁用类型检查（仅用于验证）
+    strict: false,    // 关闭严格模式（减少类型校验开销）
+  },
+  nitro: {
+    preset: "node-server",
+    minify: false, // 开发时关闭压缩
+  },
+  vite: {
+    build: {
+      minify: false
+    }
   },
   modules: [
     "@nuxtjs/tailwindcss",
@@ -71,14 +85,14 @@ export default defineNuxtConfig({
   //       },
   //     },
   //   },
-  // }, 
+  // },
   // 路由优化
   // routeRules: {
   //   // 为静态路由启用预渲染
   //   '/': { prerender: true },
   //   '/hold': { prerender: true }
   // },
-  
+
   // 减少自动导入（如果项目很大）
   // imports: {
   //   autoImport: true // 开发环境关闭自动导入

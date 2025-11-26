@@ -32,6 +32,9 @@ function handleData(dataList, 正股代码List) {
         .replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
+      if(call_item?.['持仓'] || put_item?.['持仓']){
+        data['_持仓'] = true
+      }
       [
         ...Object.keys(item),
         "成本价",
@@ -45,6 +48,7 @@ function handleData(dataList, 正股代码List) {
         data["P" + 实际月份 + key] = put_item?.[key];
       });
     });
+
     // Center字段
     data["期权"] = item["期权名称"].replace("购", "@").replace(到期月份, "");
     data["月份"] = month_list;

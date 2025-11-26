@@ -127,7 +127,7 @@ function sleep(time) {
 }
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 50;
+  const pz = 20;
   let all_data = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -155,7 +155,7 @@ export async function get_target_http_data(持仓JSON, fs) {
     }).catch((res) => {
       console.log(res);
     });
-    await sleep(3000);
+    await sleep(100);
     if (!res["data"]) {
       console.log(fs + "请求完成" + all_data.length);
       break;
