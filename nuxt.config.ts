@@ -13,18 +13,14 @@ export default defineNuxtConfig({
     },
   },
   debug: true,
-  typescript: {
-    typeCheck: false, // 禁用类型检查（仅用于验证）
-    strict: false,    // 关闭严格模式（减少类型校验开销）
-  },
   nitro: {
     preset: "node-server",
     minify: false, // 开发时关闭压缩
   },
   vite: {
     build: {
-      minify: false
-    }
+      minify: false,
+    },
   },
   modules: [
     "@nuxtjs/tailwindcss",
@@ -77,8 +73,8 @@ export default defineNuxtConfig({
     server: {
       watch: {
         usePolling: true,
-        interval: 1000
-      }
-    }
-  }
+        interval: 1000,
+      },
+    },
+  },
 });
