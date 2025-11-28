@@ -1,20 +1,8 @@
 import { stock_sort_map } from "~/data";
 import { get_http_data } from "./";
+import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
-function get_fist_季度月份(dataList) {
-  const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
-  month_list.sort();
-  let month_index = 0;
-  for (let _index = 0; _index < month_list.length; _index++) {
-    const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
-    if (["03月", "06月", "09月", "12月"].includes(day)) {
-      month_index = _index;
-      break;
-    }
-  }
-  return [month_list, month_index];
-}
-function handleData(dataList, 正股代码List) {
+function handleHoldData(dataList, 正股代码List) {
   const [month_list, month_index] = get_fist_季度月份(dataList);
   let all_data = [];
   let 正股价格_dict = {};
@@ -74,5 +62,5 @@ function handleData(dataList, 正股代码List) {
 }
 export async function queryHold(正股代码List, useCatch) {
   const [all_data, combo_list] = await get_http_data(正股代码List, useCatch);
-  return handleData(all_data, 正股代码List);
+  return handleHoldData(all_data, 正股代码List);
 }

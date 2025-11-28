@@ -1,7 +1,7 @@
 import { stock_sort_map } from "~/data";
 import { get_http_data } from "./";
 
-function handleData(dataList) {
+function handleTData(dataList) {
   let all_data = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
@@ -58,5 +58,5 @@ function handleData(dataList) {
 }
 export async function queryT(正股代码, useCatch) {
   const [all_data, combo_list] = await get_http_data(正股代码, useCatch);
-  return handleData(all_data);
+  return handleTData(all_data);
 }

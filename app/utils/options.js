@@ -247,3 +247,18 @@ export async function get_http_data(正股代码List, useCatch = true) {
   console.log("[all_data, combo_list]", [all_data, combo_list]);
   return [all_data, combo_list];
 }
+
+
+export function get_fist_季度月份(dataList) {
+    const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
+    month_list.sort();
+    let month_index = 0;
+    for (let _index = 0; _index < month_list.length; _index++) {
+      const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
+      if (["03月", "06月", "09月", "12月"].includes(day)) {
+        month_index = _index;
+        break;
+      }
+    }
+    return [month_list, month_index];
+  }
