@@ -1,15 +1,12 @@
-// 获取持仓json
+// 获取期权数据json
 import csvtojson from "csvtojson";
-import iconvLite from "iconv-lite";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
-const csvPath = isDeno ? "../public/持仓.csv" : "./public/持仓.csv";
-export async function get_持仓JSON() {
+const csvPath = isDeno ? "../public/data.csv" : "./public/data.csv";
+export async function get_dataJSON() {
   return new Promise((resolve) => {
     try {
-      const converterStream = fs
-        .createReadStream(csvPath)
-        .pipe(iconvLite.decodeStream("gbk"));
+      const converterStream = fs.createReadStream(csvPath);
       csvtojson()
         .fromStream(converterStream)
         .then((res) => {
@@ -22,7 +19,7 @@ export async function get_持仓JSON() {
   });
 }
 export default eventHandler(async (event) => {
-  const 持仓JSON = await get_持仓JSON();
-  if (!持仓JSON?.length) return [];
-  return 持仓JSON;
+  const dataJSON = await get_dataJSON();
+  if (!dataJSON?.length) return [];
+  return dataJSON;
 });

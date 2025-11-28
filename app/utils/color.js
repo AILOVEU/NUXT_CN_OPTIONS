@@ -14,7 +14,7 @@ function hexToRgb(hex) {
 }
 
 // 计算渐变过渡色
-export function gradient(startColor, endColor,percent) {
+export function gradient(startColor, endColor, percent) {
   let step = 100;
   // 将 hex 转换为rgb
   let sColor = hexToRgb(startColor);
@@ -41,6 +41,6 @@ export function gradient(startColor, endColor,percent) {
   if (index < 0) index = 0;
   return gradientColorArr[index];
 }
-export function gradientHandler(percent) { 
-  return 
+export function gradientHandler(percent) {
+  return;
 }

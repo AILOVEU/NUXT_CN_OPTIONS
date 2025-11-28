@@ -27,19 +27,10 @@ function handleData(dataList) {
     month_list.forEach((month) => {
       let 实际月份 = dayjs(month, "YYYYMMDD").format("M月");
       let call_期权名称 = item["期权名称"].replace(到期月份, 实际月份);
-      let put_期权名称 = item["期权名称"]
-        .replace(到期月份, 实际月份)
-        .replace("购", "沽");
+      let put_期权名称 = item["期权名称"].replace(到期月份, 实际月份).replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
-      [
-        ...Object.keys(item),
-        "成本价",
-        "单日损耗",
-        "时间价值",
-        "内在价值",
-        "组合",
-      ].forEach((key) => {
+      [...Object.keys(item), "成本价", "单日损耗", "时间价值", "内在价值", "组合"].forEach((key) => {
         // if (["期权名称"].includes(key)) return;
         data["C" + 实际月份 + key] = call_item?.[key];
         data["P" + 实际月份 + key] = put_item?.[key];
@@ -55,26 +46,6 @@ function handleData(dataList) {
     正股价格_dict[data["正股代码"]] = data["正股价格"];
     all_data.push(data);
   });
-  // const 正股List = Array.from(new Set(all_data.map((el) => el.正股)));
-  // const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
-  // const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
-  // 行权价List.sort();
-  // 正股List.forEach((正股) => {
-  //   到期日List.forEach((到期日) => {
-  //     all_data.push({
-  //       _current: true,
-  //       正股,
-  //       到期日,
-  //       行权价: 正股价格_dict[正股],
-  //     });
-  //     all_data.push({
-  //       _split: true,
-  //       正股,
-  //       到期日,
-  //       行权价: 行权价List[行权价List.length - 1],
-  //     });
-  //   });
-  // });
 
   all_data.sort(function (a, b) {
     if (a["正股代码"] === b["正股代码"]) {
@@ -87,7 +58,7 @@ function handleData(dataList) {
   });
   return all_data;
 }
-export async function querySpread(持仓JSON, 正股代码) {
-  const [all_data, combo_list] = await get_http_data(持仓JSON, 正股代码);
+export async function querySpread(正股代码, useCatch) {
+  const [all_data, combo_list] = await get_http_data(正股代码, useCatch);
   return [handleData(all_data), combo_list, all_data];
 }

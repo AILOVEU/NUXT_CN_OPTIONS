@@ -1,20 +1,21 @@
 <template>
-  <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
-    <div
-      :class="{ active: activePath === item.href }"
-      v-for="item in navList"
-      @click="() => handleClick(item.href)"
-      class="cursor-pointer"
-    >
-      {{ item.name }}
+  <el-affix :offset="0">
+    <div class="flex justify-between text-[12px] mb-[12px]">
+      <el-button @click="handleQuery" class="flex-1" type="primary"> 刷新 </el-button>
+      <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
+        <div :class="{ active: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
+          {{ item.name }}
+        </div>
+      </div>
     </div>
-  </div>
+  </el-affix>
 </template>
 
 <script setup>
-// const prefix = process.env.NUXT_APP_BASE_URL
-//   ? "/" + process.env.NUXT_APP_BASE_URL
-//   : "";
+import { get_http_data } from "~/utils";
+import { stock_code_map } from "~/data";
+import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+const { setGlobalLoading } = useGlobalLoading();
 const route = useRoute();
 const router = useRouter();
 const navList = [
@@ -39,9 +40,9 @@ const navList = [
     name: "价差",
   },
   {
-    href: '/calendar',
-    name: '日历'
-  }
+    href: "/calendar",
+    name: "日历",
+  },
 ];
 const activePath = computed(() => {
   const path = route.path;
@@ -50,6 +51,16 @@ const activePath = computed(() => {
 });
 function handleClick(href) {
   router.push(href);
+}
+
+function handleQuery() {
+  // setGlobalLoading(true);
+  // setTimeout(() => {
+  //   setGlobalLoading(false);
+  // }, 1000);
+  get_http_data(Object.keys(stock_code_map), false).finally(() => {
+    setGlobalLoading(false);
+  });
 }
 </script>
 <style scoped>

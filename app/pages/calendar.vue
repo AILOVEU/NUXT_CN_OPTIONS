@@ -1,14 +1,6 @@
 <template>
   <div v-loading="loading" class="max-md:w-[140%]">
-    <el-affix :offset="0">
-      <div class="flex justify-between text-[12px] mb-[12px]">
-        <el-button @click="handleQuery" class="flex-1" type="primary">
-          刷新
-        </el-button>
-        <Nav />
-      </div>
-    </el-affix>
-
+    <Nav />
     <el-affix :offset="32">
       <div class="grid grid-cols-7 bg-white w-full">
         <div class="text-center">星期一</div>
@@ -21,11 +13,7 @@
       </div>
     </el-affix>
     <div class="grid grid-cols-7 mt-[32px]">
-      <div
-        v-for="item in days"
-        class="border-[1px] border-[black] h-[80px] flex items-center justify-center flex-col"
-        :style="getStyle(item)"
-      >
+      <div v-for="item in days" class="border-[1px] border-[black] h-[80px] flex items-center justify-center flex-col" :style="getStyle(item)">
         <div class="text-[12px]">{{ item.showText }}</div>
         <div v-if="item.holidayName">{{ item.holidayName }}</div>
         <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
@@ -99,36 +87,22 @@ const HOLIDAY = [
   "2026-10-06",
   "2026-10-07",
 ];
-const WORKDAY = [
-  "2026-01-04",
-  "2026-02-14",
-  "2026-02-28",
-  "2026-05-09",
-  "2026-09-20",
-  "2026-10-10",
-];
+const WORKDAY = ["2026-01-04", "2026-02-14", "2026-02-28", "2026-05-09", "2026-09-20", "2026-10-10"];
 
 const days = ref(
-  getDatesBetween(
-    getLastMondayOfPreviousMonth(),
-    dayjs("2026-12-31", "YYYY-MM-DD")
-  ).map((el) => {
+  getDatesBetween(getLastMondayOfPreviousMonth(), dayjs("2026-12-31", "YYYY-MM-DD")).map((el) => {
     const day = dayjs(el, "YYYY-MM-DD");
     let showText = day.format("DD");
     if (day.format("DD") === "01") {
       showText = day.format("YYYY-MM-DD");
     }
     const weekday = dayjs(el, "YYYY-MM-DD").day();
-    const isHoliday =
-      HOLIDAY.includes(el) ||
-      ([6, 0].includes(weekday) && !WORKDAY.includes(el));
+    const isHoliday = HOLIDAY.includes(el) || ([6, 0].includes(weekday) && !WORKDAY.includes(el));
     return {
       date: el,
       weekday,
       isFourthWednesday: isFourthWednesday(el),
-      isBirthday: ["04-26", "12-05", "07-11", "06-13"].includes(
-        dayjs(el, "YYYY-MM-DD").format("MM-DD")
-      ),
+      isBirthday: ["04-26", "12-05", "07-11", "06-13"].includes(dayjs(el, "YYYY-MM-DD").format("MM-DD")),
       isCurrent: el === dayjs().format("YYYY-MM-DD"),
       isHoliday,
       isWorkDay: WORKDAY.includes(el),

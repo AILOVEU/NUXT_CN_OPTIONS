@@ -1,43 +1,16 @@
 <template>
-  <div v-loading="tableData.loading" class="max-md:w-[140%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[140%]">
     <div>
-      <el-affix :offset="0">
-        <div class="flex justify-between text-[12px] mb-[12px]">
-          <el-button @click="handleQuery" class="flex-1" type="primary">
-            刷新
-          </el-button>
-          <Nav />
-        </div>
-      </el-affix>
+      <Nav />
+
       <div class="w-full pb-[12px]">
-        <TabSelect
-          :options="stockCodeOptions"
-          v-model="stockCode"
-          @click="handleStockCodeChange"
-        />
+        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
 
     <div class="mx-auto">
-      <el-table
-        :data="filteredTableData"
-        style="width: 100%"
-        size="small"
-        border
-        height="950px"
-        :highlight-current-row="false"
-        :row-style="getRowStyle"
-        :cell-style="getCellStyle"
-        ref="tableRef"
-      >
-        <el-table-column
-          v-for="{ label, width } in tableData.columns"
-          :key="label"
-          :prop="label"
-          :label="label"
-          :width="width"
-          align="center"
-        >
+      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="950px" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+        <el-table-column v-for="{ label, width } in tableData.columns" :key="label" :prop="label" :label="label" :width="width" align="center">
           <template #default="{ row }" v-if="label === '期权'">
             <Center :row="row" />
           </template>
@@ -70,10 +43,9 @@ import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
 import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
-import { useCopy } from "~/utils";
-function copy() {
-  useCopy(JSON.stringify(持仓JSON.value));
-}
+import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+const { globalLoading } = useGlobalLoading();
+
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
   let list = Object.keys(stock_show_name_map);
@@ -133,17 +105,13 @@ const tableData = reactive({
     },
   ],
 });
-const 持仓JSON = ref([]);
-// useFetch 生成静态文件
-useFetch("/api/queryHoldJson").then((res) => {
-  持仓JSON.value = res.data.value || [];
-});
 async function handleQuery() {
   tableData.loading = true;
-  const tData = await queryT(持仓JSON.value, [stockCode.value]);
+  const tData = await queryT([stockCode.value]);
   tableData.data = tData || [];
   tableData.loading = false;
 }
+handleQuery();
 function handleStockCodeChange() {
   tableRef.value.setScrollTop(0);
   setTimeout(() => {
@@ -158,23 +126,17 @@ const filteredTableData = computed(() => {
     if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
-    return (
-      el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] &&
-      el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1]
-    );
+    return el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] && el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1];
   });
 });
 
 function getCellStyle({ column, row }) {
   if (row?.["_current"]) return { backgroundColor: "#f5f7fa" };
   if (row?.["_split"]) return { backgroundColor: "black", color: "black" };
-  if (column?.["property"] === "期权")
-    return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
+  if (column?.["property"] === "期权") return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
 
-  if (column?.["property"]?.includes("C_") && row?.["C机会"])
-    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
-  if (column?.["property"]?.includes("P_") && row?.["P机会"])
-    return { backgroundColor: "rgba(190, 220, 190,0.5)" };
+  if (column?.["property"]?.includes("C_") && row?.["C机会"]) return { backgroundColor: "rgba(190, 220, 190,0.5)" };
+  if (column?.["property"]?.includes("P_") && row?.["P机会"]) return { backgroundColor: "rgba(190, 220, 190,0.5)" };
 
   // 红 | 绿
   // -------

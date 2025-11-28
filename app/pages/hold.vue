@@ -1,53 +1,21 @@
 <template>
-  <div v-loading="tableData.loading" class="max-md:w-[140%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[140%]">
     <!-- {{tableData.data}} -->
     <div>
-      <!-- 顶部 -->
-      <el-affix :offset="0">
-        <div class="flex justify-between text-[12px] mb-[12px]">
-          <el-button @click="handleQuery" class="flex-1" type="primary">
-            刷新
-          </el-button>
-          <Nav />
-        </div>
-      </el-affix>
+      <Nav />
 
       <div class="w-full pb-[12px]">
-        <TabSelect
-          :options="stockCodeOptions"
-          v-model="stockCode"
-          @click="handleStockCodeChange"
-        />
+        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
 
     <div class="w-full h-[calc(100vh-100px)]">
-      <el-table
-        :data="filteredTableData"
-        style="width: 100%"
-        size="small"
-        border
-        height="100%"
-        :highlight-current-row="false"
-        :row-style="getRowStyle"
-        :cell-style="getCellStyle"
-        ref="tableRef"
-      >
-        <el-table-column
-          v-for="{ label, type } in tableData.columns"
-          :key="type + label"
-          :prop="type + label"
-          align="center"
-          :width="label === '期权' ? '100px' : '220px'"
-        >
+      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
           <template #header>
             <div v-if="type" class="leading-[1.2]">
-              <div class="leading-[1.2]">
-                {{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}
-              </div>
-              <div class="leading-[1.2]">
-                ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
-              </div>
+              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+              <div class="leading-[1.2]">({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
             </div>
             <div v-else class="leading-[1.2]">
               {{ label }}
@@ -65,20 +33,13 @@
   </div>
 </template>
 <script setup>
-import {
-  stock_show_name_map,
-  stock_sort_map,
-  行权价_range_map,
-  deadline_list,
-} from "~/data";
+import { stock_show_name_map, stock_sort_map, 行权价_range_map, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
-import { useCopy } from "~/utils";
-function copy() {
-  useCopy(JSON.stringify(持仓JSON.value));
-}
+import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+const { globalLoading } = useGlobalLoading();
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
   let list = Object.keys(stock_show_name_map);
@@ -105,21 +66,13 @@ const tableData = reactive({
     ...deadline_list.map((el) => ({ type: "P", label: el })),
   ],
 });
-const 持仓JSON = ref([]);
-useFetch("/api/queryHoldJson").then((res) => {
-  持仓JSON.value = res.data.value || [];
-});
 async function handleQuery() {
   tableData.loading = true;
-  const holdData = await queryHold(
-    持仓JSON.value,
-    stockCode.value === "all"
-      ? Object.keys(stock_show_name_map)
-      : [stockCode.value]
-  );
+  const holdData = await queryHold(stockCode.value === "all" ? Object.keys(stock_show_name_map) : [stockCode.value]);
   tableData.data = holdData || [];
   tableData.loading = false;
 }
+handleQuery();
 function handleStockCodeChange() {
   tableRef.value.setScrollTop(0);
   setTimeout(() => {
@@ -132,19 +85,14 @@ const filteredTableData = computed(() => {
     if (el["_持仓"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
-    if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0 )
-      return false;
+    if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0) return false;
     if (el._current || el._split) return true;
-    return (
-      el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] &&
-      el["行权价"] * 1000 <= 行权价RangeDict[el["正股代码"]][1]
-    );
+    return el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] && el["行权价"] * 1000 <= 行权价RangeDict[el["正股代码"]][1];
   });
 });
 
 function getCellStyle({ column, row }) {
-  if (column?.["property"] === "期权")
-    return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
+  if (column?.["property"] === "期权") return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
   // if (column?.["property"]?.includes("C_") && row?.["C机会"])
   //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
   // if (column?.["property"]?.includes("P_") && row?.["P机会"])

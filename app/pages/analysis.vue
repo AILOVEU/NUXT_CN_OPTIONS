@@ -1,13 +1,6 @@
 <template>
-  <div v-loading="loading" class="max-md:w-[140%]">
-    <el-affix :offset="0">
-      <div class="flex justify-between text-[12px] mb-[12px]">
-        <el-button @click="handleQuery" class="flex-1" type="primary">
-          刷新
-        </el-button>
-        <Nav />
-      </div>
-    </el-affix>
+  <div v-loading="loading || globalLoading.value" class="max-md:w-[140%]">
+    <Nav />
     <Map />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px]">
       <Card header="资金分析">
@@ -35,25 +28,22 @@
 import { stock_code_map } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
-import { ElMessage } from "element-plus";
 import BarInfo from "~/components/analysis/BarInfo";
 import TimeInfo from "~/components/analysis/TimeInfo";
 import MoneyInfo from "~/components/analysis/MoneyInfo";
 import FilterInfo from "~/components/analysis/FilterInfo";
-import { useHttpStore } from "~/stores/useHttpStore.js";
+import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+const { globalLoading } = useGlobalLoading();
 const stockCodeList = Object.keys(stock_code_map);
-const 持仓JSON = ref([]);
-useFetch("/api/queryHoldJson").then((res) => {
-  持仓JSON.value = res.data.value || [];
-});
 const all_data = ref([]);
 const combo_list = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  const [data, list] = await get_http_data(持仓JSON.value, stockCodeList);
+  const [data, list] = await get_http_data(stockCodeList);
   combo_list.value = list;
   all_data.value = data;
   loading.value = false;
 }
+handleQuery();
 </script>

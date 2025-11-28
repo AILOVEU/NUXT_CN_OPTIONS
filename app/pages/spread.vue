@@ -1,88 +1,35 @@
 <template>
-  <div v-loading="tableData.loading" class="max-md:w-[140%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[140%]">
     <div>
-      <!-- 顶部 -->
-      <el-affix :offset="0">
-        <div class="flex justify-between text-[12px] mb-[12px]">
-          <el-button @click="handleQuery" class="flex-1" type="primary">
-            刷新
-          </el-button>
-          <Nav />
-        </div>
-      </el-affix>
+      <Nav />
 
       <div class="w-full pb-[12px]">
-        <TabSelect
-          :options="stockCodeOptions"
-          v-model="stockCode"
-          @click="handleStockCodeChange"
-        />
+        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
 
     <div>
-      <el-form
-        :model="formData"
-        label-width="auto"
-        style="max-width: 600px"
-        label-suffix=":"
-      >
+      <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
         <el-form-item label="到期日">
           <el-select v-model="formData.到期日List" multiple>
-            <el-option
-              v-for="date in deadline_list"
-              :key="date"
-              :label="date"
-              :value="date"
-            />
+            <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
           </el-select>
         </el-form-item>
         <el-form-item label="价差">
           <el-select v-model="formData.价差List" multiple>
-            <el-option
-              v-for="diff in diff_list"
-              :key="diff"
-              :label="diff"
-              :value="diff"
-            />
+            <el-option v-for="diff in diff_list" :key="diff" :label="diff" :value="diff" />
           </el-select>
         </el-form-item>
       </el-form>
     </div>
 
     <div class="w-full h-[calc(100vh-100px)]">
-      <el-table
-        :data="filteredTableData"
-        style="width: 100%"
-        size="small"
-        border
-        height="100%"
-        :highlight-current-row="false"
-        :row-style="getRowStyle"
-        :cell-style="getCellStyle"
-        ref="tableRef"
-      >
-        <el-table-column
-          v-for="{ label, type, width, diff } in columns"
-          :key="type + label + diff"
-          :prop="type + label + diff"
-          align="center"
-          width="150px"
-        >
+      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+        <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" width="150px">
           <template #header>
-            <div
-              v-if="type"
-              :style="
-                getHeaderStyle(
-                  diff,
-                  dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1
-                )
-              "
-            >
+            <div v-if="type" :style="getHeaderStyle(diff, dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1)">
               <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-              <div>
-                ({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})
-              </div>
+              <div>({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
               <div>{{ diff }}</div>
             </div>
             <div v-else>
@@ -93,14 +40,7 @@
             <Center :row="row" />
           </template>
           <template #default="{ row }" v-if="label !== '期权'">
-            <Info
-              :row="row"
-              :isCall="type === 'C'"
-              :date="label"
-              :tiledData="tableData.tiledData"
-              :combo_list="tableData.combo_list"
-              :diffValue="diff"
-            />
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :combo_list="tableData.combo_list" :diffValue="diff" />
           </template>
         </el-table-column>
       </el-table>
@@ -108,21 +48,15 @@
   </div>
 </template>
 <script setup>
-import {
-  stock_show_name_map,
-  stock_sort_map,
-  行权价_range_map,
-  deadline_list,
-} from "~/data";
+import { stock_show_name_map, stock_sort_map, 行权价_range_map, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Center from "~/components/spread/Center.vue";
 import Info from "~/components/spread/Info.vue";
 import { querySpread } from "~/utils/querySpread.js";
-import { useCopy, getColorSplitHander } from "~/utils";
-function copy() {
-  useCopy(JSON.stringify(持仓JSON.value));
-}
+import { getColorSplitHander } from "~/utils";
+import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+const { globalLoading } = useGlobalLoading();
 const diff_list = [100, 200, 250, 300, 400, 500];
 const formData = reactive({
   到期日List: [...deadline_list],
@@ -174,20 +108,15 @@ const tableData = reactive({
   tiledData: [],
   loading: false,
 });
-const 持仓JSON = ref([]);
-useFetch("/api/queryHoldJson").then((res) => {
-  持仓JSON.value = res.data.value || [];
-});
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await querySpread(持仓JSON.value, [
-    stockCode.value,
-  ]);
+  const [holdData, combo_list, tiledData] = await querySpread(持仓JSON.value, [stockCode.value]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
   tableData.combo_list = combo_list;
   tableData.loading = false;
 }
+handleQuery();
 function handleStockCodeChange() {
   tableRef.value.setScrollTop(0);
   setTimeout(() => {
@@ -200,16 +129,12 @@ const filteredTableData = computed(() => {
     if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
-    return (
-      el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] &&
-      el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1]
-    );
+    return el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] && el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1];
   });
 });
 
 function getCellStyle({ column, row }) {
-  if (column?.["property"] === "期权")
-    return { backgroundColor: "rgba(150,150,150,0.1)", fontWeight: "600" };
+  if (column?.["property"] === "期权") return { backgroundColor: "rgba(150,150,150,0.1)", fontWeight: "600" };
   // if (column?.["property"]?.includes("C_") && row?.["C机会"])
   //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
   // if (column?.["property"]?.includes("P_") && row?.["P机会"])
