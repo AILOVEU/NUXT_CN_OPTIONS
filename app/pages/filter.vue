@@ -16,7 +16,7 @@ const all_data = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  const [data] = await get_http_data(持仓JSON.value, stockCodeList);
+  const [data] = await get_http_data(stockCodeList);
   all_data.value = data;
   loading.value = false;
 }

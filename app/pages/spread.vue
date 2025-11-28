@@ -54,7 +54,7 @@ import _ from "lodash";
 import Center from "~/components/spread/Center.vue";
 import Info from "~/components/spread/Info.vue";
 import { querySpread } from "~/utils/querySpread.js";
-import { getColorSplitHander } from "~/utils";
+import { getColorSplitHander } from "~/utils/color";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
 const diff_list = [100, 200, 250, 300, 400, 500];
@@ -110,7 +110,7 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await querySpread(持仓JSON.value, [stockCode.value]);
+  const [holdData, combo_list, tiledData] = await querySpread([stockCode.value]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
   tableData.combo_list = combo_list;
