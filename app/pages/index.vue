@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[140%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[200%]">
     <div>
       <Nav />
 

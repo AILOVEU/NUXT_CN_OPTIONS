@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="max-md:w-[140%]">
+  <div v-loading="loading" class="max-md:w-[200%]">
     <Nav />
     <el-affix :offset="32">
       <div class="grid grid-cols-7 bg-white w-full">

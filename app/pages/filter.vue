@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading || globalLoading.value" class="max-md:w-[140%]">
+  <div v-loading="loading || globalLoading.value" class="max-md:w-[200%]">
     <Nav />
     <FilterInfo :all_data="all_data" />
   </div>
