@@ -80,10 +80,7 @@ export const stock_sort_map = {
   588000: 5,
   159915: 6,
 };
-export const stock_sorted_list = _.sortBy(
-  Object.keys(stock_sort_map),
-  (code) => stock_sort_map[code]
-);
+export const stock_sorted_list = _.sortBy(Object.keys(stock_sort_map), (code) => stock_sort_map[code]);
 export const 行权价_range_map = {
   510050: [3000, 3500],
   510300: [4500, 5500],
@@ -122,6 +119,7 @@ export const deadline_map = {
 export const UNIT = 10000;
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20251129", 26647],
     ["20251127", 25413],
     ["20251125", 27803],
     ["20251124", 31145],
