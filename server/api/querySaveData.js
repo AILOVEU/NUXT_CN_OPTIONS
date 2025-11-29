@@ -2,7 +2,7 @@ import fs from "node:fs";
 import { Parser } from "json2csv";
 const isDeno = process.env.NITRO_PRESET;
 let csvPath = isDeno ? "../public/data.csv" : "public/data.csv";
-csvPath = './data.csv'
+csvPath = './public/data.csv'
 export default eventHandler(async (event) => {
   const body = await readBody(event);
   const jsonObj = body.data;
