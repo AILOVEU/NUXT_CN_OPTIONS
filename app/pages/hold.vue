@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div class="w-full h-[calc(100vh-100px)]">
+    <div class="w-full h-[calc(100vh-80px)] mx-auto">
       <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
           <template #header>

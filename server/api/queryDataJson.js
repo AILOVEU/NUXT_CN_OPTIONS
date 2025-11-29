@@ -2,7 +2,7 @@
 import csvtojson from "csvtojson";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
-const csvPath = isDeno ? "../public/data.csv" : "./public/data.csv";
+const csvPath = isDeno ? "../public/data2.csv" : "./public/data2.csv";
 export async function get_dataJSON() {
   return new Promise((resolve) => {
     try {
@@ -11,6 +11,9 @@ export async function get_dataJSON() {
         .fromStream(converterStream)
         .then((res) => {
           resolve(res);
+        })
+        .catch(() => {
+          resolve([]);
         });
     } catch (e) {
       console.log("持仓解析错误");

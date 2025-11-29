@@ -7,13 +7,14 @@ const csvPath = isDeno ? "../public/持仓.csv" : "./public/持仓.csv";
 export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
-      const converterStream = fs
-        .createReadStream(csvPath)
-        .pipe(iconvLite.decodeStream("gbk"));
+      const converterStream = fs.createReadStream(csvPath).pipe(iconvLite.decodeStream("gbk"));
       csvtojson()
         .fromStream(converterStream)
         .then((res) => {
           resolve(res);
+        })
+        .catch(() => {
+          resolve([]);
         });
     } catch (e) {
       console.log("持仓解析错误");

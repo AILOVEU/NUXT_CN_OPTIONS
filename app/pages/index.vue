@@ -7,9 +7,8 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-
-    <div class="mx-auto">
-      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="950px" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+    <div class="mx-auto h-[calc(100vh-80px)]">
+      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, width } in tableData.columns" :key="label" :prop="label" :label="label" :width="width" align="center">
           <template #default="{ row }" v-if="label === '期权'">
             <Center :row="row" />

@@ -176,7 +176,11 @@ export async function get_http_data(正股代码List, useCatch = true) {
   // catch == false , 请求全量数据 , 点击按钮执行请求
   // catch == true , 请求本地数据 , 默认进来执行请求
   if (useCatch) {
-    _all_data = await $fetch("/api/queryDataJson");
+    try {
+      _all_data = await $fetch("/api/queryDataJson");
+    } catch (e) {
+      console.log("e", e);
+    }
   } else {
     const promiseList = ["m:10+c:510050", "m:10+c:510300", "m:10+c:510500", "m:10+c:588000", "m:12+c:159915", "m:12+c:159922"]
       .filter((el) => 正股代码List.some((code) => el.includes(code)))
@@ -248,17 +252,16 @@ export async function get_http_data(正股代码List, useCatch = true) {
   return [all_data, combo_list];
 }
 
-
 export function get_fist_季度月份(dataList) {
-    const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
-    month_list.sort();
-    let month_index = 0;
-    for (let _index = 0; _index < month_list.length; _index++) {
-      const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
-      if (["03月", "06月", "09月", "12月"].includes(day)) {
-        month_index = _index;
-        break;
-      }
+  const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
+  month_list.sort();
+  let month_index = 0;
+  for (let _index = 0; _index < month_list.length; _index++) {
+    const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
+    if (["03月", "06月", "09月", "12月"].includes(day)) {
+      month_index = _index;
+      break;
     }
-    return [month_list, month_index];
   }
+  return [month_list, month_index];
+}
