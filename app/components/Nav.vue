@@ -54,10 +54,7 @@ function handleClick(href) {
 }
 
 function handleQuery() {
-  // setGlobalLoading(true);
-  // setTimeout(() => {
-  //   setGlobalLoading(false);
-  // }, 1000);
+  setGlobalLoading(true);
   get_http_data(Object.keys(stock_code_map), false).finally(() => {
     setGlobalLoading(false);
   });
