@@ -9,26 +9,28 @@
       </div>
     </div>
 
-    <div class="w-full h-[calc(100vh-80px)] mx-auto">
-      <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
-          <template #header>
-            <div v-if="type" class="leading-[1.2]">
-              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-              <div class="leading-[1.2]">({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
-            </div>
-            <div v-else class="leading-[1.2]">
-              {{ label }}
-            </div>
-          </template>
-          <template #default="{ row }" v-if="label === '期权'">
-            <Center :row="row" />
-          </template>
-          <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" />
-          </template>
-        </el-table-column>
-      </el-table>
+    <div class="h-[calc(100vh-80px)] flex justify-center">
+      <div class="mx-auto">
+        <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+          <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
+            <template #header>
+              <div v-if="type" class="leading-[1.2]">
+                <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
+                <div class="leading-[1.2]">({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
+              </div>
+              <div v-else class="leading-[1.2]">
+                {{ label }}
+              </div>
+            </template>
+            <template #default="{ row }" v-if="label === '期权'">
+              <Center :row="row" />
+            </template>
+            <template #default="{ row }" v-if="label !== '期权'">
+              <Info :row="row" :isCall="type === 'C'" :date="label" />
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
   </div>
 </template>

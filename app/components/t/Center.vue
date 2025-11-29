@@ -2,15 +2,12 @@
   <div v-if="!props.row?._split && !props.row?._current" class="text-black">
     <div>{{ 正股 }}</div>
     <div>
-      {{ 到期日 }}{{ 行权价 }} (
-      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
-        {{ 溢价Str }}
-      </span>
-      )
+      {{ 到期日 }}{{ 行权价 }}
+      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }"> ({{ 溢价Str }}) </span>
     </div>
   </div>
   <div v-else>
-    {{ (行权价/1000).toFixed(3) }}
+    {{ (行权价 / 1000).toFixed(3) }}
   </div>
 </template>
 <script setup>

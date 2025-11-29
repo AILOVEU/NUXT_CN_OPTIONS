@@ -7,7 +7,7 @@
       <DiffTag :涨跌="涨跌" />
     </div>
 
-    <div class="flex justify-between whitespace-nowrap">
+    <div class="flex gap-[6px] justify-center whitespace-nowrap">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
       </div>
