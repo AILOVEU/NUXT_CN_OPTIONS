@@ -182,31 +182,35 @@ export async function get_http_data(正股代码List, useCatch = true) {
       console.log("e", e);
     }
   } else {
-    const promiseList = ["m:10+c:510050", "m:10+c:510300", "m:10+c:510500", "m:10+c:588000", "m:12+c:159915", "m:12+c:159922"]
-      .filter((el) => 正股代码List.some((code) => el.includes(code)))
-      .map((fs, idx) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(get_target_http_data(持仓JSON, fs));
-          }, idx * 2000);
-        });
-      });
-    await Promise.all(promiseList)
-      .then((list) => {
-        list.forEach((el) => {
-          _all_data.push(...el);
-        });
-        if (_all_data.length) {
-          $fetch("/api/querySaveData", {
-            method: "post",
-            body: { data: _all_data },
-          });
-        }
-      })
-      .catch((err) => {
-        ElMessage({ message: err, type: "error" });
-        console.log(err);
-      });
+    $fetch("/api/querySaveData", {
+      method: "post",
+      body: { data: _all_data },
+    });
+    // const promiseList = ["m:10+c:510050", "m:10+c:510300", "m:10+c:510500", "m:10+c:588000", "m:12+c:159915", "m:12+c:159922"]
+    //   .filter((el) => 正股代码List.some((code) => el.includes(code)))
+    //   .map((fs, idx) => {
+    //     return new Promise((resolve) => {
+    //       setTimeout(() => {
+    //         resolve(get_target_http_data(持仓JSON, fs));
+    //       }, idx * 2000);
+    //     });
+    //   });
+    // await Promise.all(promiseList)
+    //   .then((list) => {
+    //     list.forEach((el) => {
+    //       _all_data.push(...el);
+    //     });
+    //     if (_all_data.length) {
+    //       $fetch("/api/querySaveData", {
+    //         method: "post",
+    //         body: { data: _all_data },
+    //       });
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     ElMessage({ message: err, type: "error" });
+    //     console.log(err);
+    //   });
   }
   let all_data = [];
   _all_data.forEach((_) => {

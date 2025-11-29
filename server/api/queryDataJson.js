@@ -2,7 +2,7 @@
 import csvtojson from "csvtojson";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
-const csvPath = isDeno ? "../public/data2.csv" : "./public/data2.csv";
+const csvPath = isDeno ? "../public/data.csv" : "./public/data.csv";
 export async function get_dataJSON() {
   return new Promise((resolve) => {
     try {
