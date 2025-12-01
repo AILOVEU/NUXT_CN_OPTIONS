@@ -37,7 +37,7 @@
                 <div class="text-[10px]">{{ $index + 1 }}</div>
               </template>
             </el-table-column>
-            <el-table-column label="名称" prop="名称" #default="{ row }" width="170" sortable fixed="left">
+            <el-table-column label="名称" prop="名称" #default="{ row }" width="180" sortable fixed="left">
               <template v-if="Array.isArray(row['名称'])">
                 <div>{{ row["名称"][0] }}</div>
                 <div>{{ row["名称"][1] }}</div>
