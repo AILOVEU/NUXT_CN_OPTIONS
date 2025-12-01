@@ -72,6 +72,19 @@
             <el-input placeholder="最大值" v-model="formData.GammaRange[1]" />
           </el-col>
         </el-form-item>
+        <el-form-item label="溢价范围">
+          <el-col :span="11">
+            <span class="text-gray-500">最小值</span>
+            <el-input placeholder="最小值" v-model="formData.溢价Range[0]" />
+          </el-col>
+          <el-col :span="2" class="text-center">
+            <span class="text-gray-500">-</span>
+          </el-col>
+          <el-col :span="11">
+            <span class="text-gray-500">最大值</span>
+            <el-input placeholder="最大值" v-model="formData.溢价Range[1]" />
+          </el-col>
+        </el-form-item>
       </template>
     </el-form>
   </div>
@@ -86,11 +99,12 @@
         <template #header>
           {{ label }}
         </template>
-        <template #default="{ row }" v-if="label === '最新价'">
-          {{ toPrice(row[label]) }}
-        </template>
+
         <template #default="{ row }" v-if="label === '涨跌额'">
           {{ toPrice(row[label]) }}
+        </template>
+        <template #default="{ row }" v-else-if="label === '沽购'">
+          <CallPutTag :沽购="row[label]" />
         </template>
         <template #default="{ row }" v-else-if="label === '隐波'">
           <IvTag :隐波="row[label]" />
@@ -109,6 +123,8 @@
   </div>
 </template>
 <script setup>
+import IvTag from "~/components/tag/IvTag.vue";
+import CallPutTag from "~/components/tag/CallPutTag.vue";
 import { toPrice } from "~/utils";
 import { UNIT, deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
 const props = defineProps(["all_data"]);
@@ -117,6 +133,7 @@ const stockOptions = stock_sorted_list.map((el) => ({
   value: el,
 }));
 const formData = reactive({
+  溢价Range: [-100, 15],
   最新价Range: [0, 最大建议买入价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
@@ -132,7 +149,7 @@ const tableColumns = [
     fixed: "left",
   },
   {
-    label: "最新价",
+    label: "一手价",
   },
   {
     label: "涨跌额",
@@ -191,7 +208,7 @@ const filteredTableData = computed(() => {
     });
   return filtered
     .filter((el) => {
-      return el["最新价"] * UNIT <= formData.最新价Range[1] && el["最新价"] * UNIT >= formData.最新价Range[0];
+      return el["一手价"] <= formData.最新价Range[1] && el["一手价"] >= formData.最新价Range[0];
     })
     .filter((el) => {
       return Math.abs(el["Delta"]) <= formData.DeltaRange[1] && Math.abs(el["Delta"]) >= formData.DeltaRange[0];
@@ -201,6 +218,9 @@ const filteredTableData = computed(() => {
     })
     .filter((el) => {
       return Math.abs(el["Gamma"]) <= formData.GammaRange[1] && Math.abs(el["Gamma"]) >= formData.GammaRange[0];
-    });
+    })
+    .filter((el)=> {
+      return el["溢价率"] <= formData.溢价Range[1] && el["溢价率"] >= formData.溢价Range[0];
+    })
 });
 </script>
