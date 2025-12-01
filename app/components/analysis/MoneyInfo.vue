@@ -2,9 +2,7 @@
   <div class="w-full">
     <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%" />
   </div>
-  <div class="mx-auto text-center text-[18px] font-semibold">
-    资金分布(总盈亏金额：{{ 总盈亏金额 }})
-  </div>
+  <div class="mx-auto text-center text-[18px] font-semibold">资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
   <div class="w-full">
     <VChart :option="盈亏概览Option" style="height: 400px; width: 100%" />
   </div>
@@ -25,38 +23,20 @@ const 持仓金额 = computed(() => {
   return value;
 });
 const 盈亏金额 = computed(() => {
-  return (
-    持仓金额.value +
-    money.占用保证金 +
-    money.场内现金 -
-    money.贷款 -
-    money.基础金额
-  );
+  return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.基础金额;
 });
 
 const 总盈亏金额 = computed(() => {
-  return 盈亏金额.value + money.已提现金额 + money.期转股金额;
+  return 盈亏金额.value + money.已提现金额;
 });
 const 盈亏概览Option = computed(() => {
-  const 贷款位置 =
-    持仓金额.value + money.场内现金 + money.占用保证金 - money.贷款;
+  const 贷款位置 = 持仓金额.value + money.场内现金 + money.占用保证金 - money.贷款;
   return {
-    // title: {
-    //   text: `资金分布(总盈亏金额：${总盈亏金额.value})`,
-    //   left: "center",
-    //   padding: 20,
-    //   position: "center",
-    //   // textStyle: {
-    //   //     fontSize: 17,
-    //   //     fontWeight: "bolder",
-    //   //     color: "#333"
-    //   // },
-    // },
     yAxis: [
       {
         inverse: true,
         type: "category",
-        data: ["持仓", "现金", "保证金", "贷款", "盈亏", "期转股", "提现"],
+        data: ["持仓", "现金", "保证金", "贷款", "盈亏", "提现"],
       },
     ],
     xAxis: [
@@ -101,7 +81,7 @@ const 盈亏概览Option = computed(() => {
                 color: "green",
               },
               name: "当前资金",
-              xAxis: 贷款位置 + money.期转股金额 + money.已提现金额,
+              xAxis: 贷款位置 + money.已提现金额,
               label: {
                 show: true,
                 position: "start",
@@ -136,8 +116,7 @@ const 盈亏概览Option = computed(() => {
           持仓金额.value + money.场内现金, // 保证金位置
           贷款位置, // 贷款位置
           贷款位置 > money.基础金额 ? money.基础金额 : 贷款位置, // 盈亏位置
-          贷款位置, // 期转股位置
-          贷款位置 + money.期转股金额,
+          贷款位置,
         ],
       },
       ...[
@@ -188,13 +167,6 @@ const 盈亏概览Option = computed(() => {
               value: Math.abs(money.基础金额 - 贷款位置),
               itemStyle: {
                 color: money.基础金额 > 贷款位置 ? "#91cc75" : "#ea5404",
-              },
-            },
-            {
-              name: "期转股",
-              value: money.期转股金额,
-              itemStyle: {
-                color: "orange",
               },
             },
             {

@@ -1,29 +1,14 @@
 <template>
   <div>
-    <el-form
-      :model="formData"
-      label-width="auto"
-      style="max-width: 600px"
-      label-suffix=":"
-    >
+    <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
       <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple>
-          <el-option
-            v-for="item in stockOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="到期日">
         <el-select v-model="formData.到期日List" multiple>
-          <el-option
-            v-for="date in deadline_list"
-            :key="date"
-            :label="date"
-            :value="date"
-          />
+          <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
         </el-select>
       </el-form-item>
       <el-form-item label="过滤持有">
@@ -90,24 +75,14 @@
       </template>
     </el-form>
   </div>
-  <div class="w-full h-[calc(100vh-400px)]">
-    <el-table
-      :data="filteredTableData"
-      style="width: 100%"
-      size="small"
-      border
-      height="100%"
-      :highlight-current-row="false"
-      ref="tableRef"
-    >
-      <el-table-column
-        v-for="{ label, width } in tableColumns"
-        :key="label"
-        :prop="label"
-        :width="width"
-        align="center"
-        sortable
-      >
+  <div class="w-full min-h-[calc(100vh-400px)] mb-[100px]">
+    <el-table :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
+      <el-table-column label="序" width="40" align="center" fixed="left">
+        <template #default="{ $index }">
+          <div class="text-[10px]">{{ $index + 1 }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column v-for="{ label, width, fixed } in tableColumns" :key="label" :prop="label" :width="width" :minWidth="100" align="center" sortable :fixed="fixed">
         <template #header>
           {{ label }}
         </template>
@@ -134,16 +109,8 @@
   </div>
 </template>
 <script setup>
-import dayjs from "dayjs";
 import { toPrice } from "~/utils";
-import {
-  UNIT,
-  deadline_list,
-  stock_sorted_list,
-  stock_code_map,
-  最大建议买入价,
-} from "~/data";
-import IvTag from "~/components/tag/IvTag.vue";
+import { UNIT, deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
 const props = defineProps(["all_data"]);
 const stockOptions = stock_sorted_list.map((el) => ({
   label: stock_code_map[el],
@@ -160,7 +127,9 @@ const formData = reactive({
 });
 const tableColumns = [
   {
+    width: "170px",
     label: "期权名称",
+    fixed: "left",
   },
   {
     label: "最新价",
@@ -222,28 +191,16 @@ const filteredTableData = computed(() => {
     });
   return filtered
     .filter((el) => {
-      return (
-        el["最新价"] * UNIT <= formData.最新价Range[1] &&
-        el["最新价"] * UNIT >= formData.最新价Range[0]
-      );
+      return el["最新价"] * UNIT <= formData.最新价Range[1] && el["最新价"] * UNIT >= formData.最新价Range[0];
     })
     .filter((el) => {
-      return (
-        Math.abs(el["Delta"]) <= formData.DeltaRange[1] &&
-        Math.abs(el["Delta"]) >= formData.DeltaRange[0]
-      );
+      return Math.abs(el["Delta"]) <= formData.DeltaRange[1] && Math.abs(el["Delta"]) >= formData.DeltaRange[0];
     })
     .filter((el) => {
-      return (
-        el["隐波"] <= formData.隐波Range[1] &&
-        el["隐波"] >= formData.隐波Range[0]
-      );
+      return el["隐波"] <= formData.隐波Range[1] && el["隐波"] >= formData.隐波Range[0];
     })
     .filter((el) => {
-      return (
-        Math.abs(el["Gamma"]) <= formData.GammaRange[1] &&
-        Math.abs(el["Gamma"]) >= formData.GammaRange[0]
-      );
+      return Math.abs(el["Gamma"]) <= formData.GammaRange[1] && Math.abs(el["Gamma"]) >= formData.GammaRange[0];
     });
 });
 </script>

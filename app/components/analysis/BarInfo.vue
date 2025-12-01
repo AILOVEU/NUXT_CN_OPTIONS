@@ -28,7 +28,7 @@
       </el-form-item>
     </el-form>
   </div>
-  <div class="grid grid-cols-2 max-md:grid-cols-1">
+  <div class="grid grid-cols-2">
     <VChart
       :option="deltaOption"
       style="height: 300px; width: 100%; margin: auto"
