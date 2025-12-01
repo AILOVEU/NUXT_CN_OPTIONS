@@ -9,8 +9,8 @@
       </div>
     </div>
 
-    <div class="h-[calc(100vh-80px)] flex justify-center">
-      <div class="mx-auto">
+    <div class="h-[calc(100%-80px)] flex justify-center">
+      <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
             <template #header>
