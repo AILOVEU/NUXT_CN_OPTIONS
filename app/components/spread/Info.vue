@@ -16,8 +16,8 @@
         <div class="mx-auto">
           {{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;{{ spread期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
-        <div class="mx-auto">δ {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
-        <div class="mx-auto">Iv {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
+        <div class="mx-auto">Delta {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
+        <div class="mx-auto">隐波 {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
       </div>
       <div class="mx-auto w-full mt-[3px] flex gap-[4px] items-center justify-around">
         <div>
