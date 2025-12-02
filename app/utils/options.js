@@ -111,7 +111,7 @@ export function toPrice(val) {
   return toFloor(val * UNIT);
 }
 // 保留一位小数
-export function toPercent1(val) {
+export function toPercent_1(val) {
   return toFloor(val * 1000) / 10;
 }
 function sleep(time) {

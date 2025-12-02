@@ -33,7 +33,7 @@ export function useCopy(text) {
 
 export function generateRandomString(length) {
   var result = "";
-  var characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+  var characters = "abcdefghijklmnopqrstuvwxyz01234567890123456789012345678901234567890123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));

@@ -99,7 +99,7 @@
         <div>
           {{ props.row.value }}
         </div>
-        <div v-if="!props.row._custom">({{ toPercent1(props.row.value / 持仓总价) }}%)</div>
+        <div v-if="!props.row._custom">({{ toPercent_1(props.row.value / 持仓总价) }}%)</div>
         <DiffTag v-if="!props.row._custom" :涨跌="props.row.涨跌" />
       </div>
     </el-table-column>
@@ -108,7 +108,7 @@
 
 <script setup>
 import { UNIT, deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
-import { toFixed, toPrice, toPercent1 } from "~/utils";
+import { toFixed, toPrice, toPercent_1 } from "~/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
@@ -202,7 +202,7 @@ const richTableData = computed(() => {
           时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
           到期天数: 权利期权Item["到期天数"],
           总价,
-          总价占比: toPercent1(总价 / 组合期权持仓.value.时间收益组合Value),
+          总价占比: toPercent_1(总价 / 组合期权持仓.value.时间收益组合Value),
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
           到期日: 权利期权Item["到期日"],
@@ -228,7 +228,7 @@ const richTableData = computed(() => {
           总盈亏,
           涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
           单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
-          总价占比: toPercent1(总价 / 持仓总价.value),
+          总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
           到期日: 权利期权Item["到期日"],
@@ -254,7 +254,7 @@ const richTableData = computed(() => {
           总盈亏,
           涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
           单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
-          总价占比: toPercent1(总价 / 持仓总价.value),
+          总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
           到期日: 权利期权Item["到期日"],
@@ -280,7 +280,7 @@ const richTableData = computed(() => {
           单手涨跌: toPrice(涨跌额),
           总价,
           总盈亏,
-          总价占比: toPercent1(总价 / 持仓总价.value),
+          总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码,
           沽购,
           到期日,
