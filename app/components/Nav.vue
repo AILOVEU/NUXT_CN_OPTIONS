@@ -57,6 +57,7 @@ function handleQuery() {
   setGlobalLoading(true);
   get_http_data(Object.keys(stock_code_map), false).finally(() => {
     setGlobalLoading(false);
+    window.location.reload()
   });
 }
 </script>

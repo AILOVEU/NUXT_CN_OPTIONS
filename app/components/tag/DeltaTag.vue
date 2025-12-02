@@ -10,7 +10,7 @@ const effect = computed(() => {
   const absDelta = Math.abs(props.Delta);
   if(absDelta > 0.75) return 'plain'
   if(absDelta >= 0.35 && absDelta <=0.75) return 'light'
-  if(absDelta >= 0.25 && absDelta <=0.35) return 'dark'
+  if(absDelta >= 0.25 && absDelta <=0.35) return 'light'
   return 'plain'
 });
 const type = computed(() => {

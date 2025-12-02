@@ -126,7 +126,8 @@
 import IvTag from "~/components/tag/IvTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
 import { toPrice } from "~/utils";
-import { UNIT, deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
+import { deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
+import _ from "lodash";
 const props = defineProps(["all_data"]);
 const stockOptions = stock_sorted_list.map((el) => ({
   label: stock_code_map[el],
@@ -192,7 +193,7 @@ const tableColumns = [
   },
 ];
 const filteredTableData = computed(() => {
-  const filtered =
+  let filtered =
     props.all_data
       ?.filter((el) => {
         return formData.正股List.includes(el["正股代码"]);
@@ -206,7 +207,7 @@ const filteredTableData = computed(() => {
       if (formData.过滤持有 === "义务") return el["持仓"] < 0;
       if (formData.过滤持有 === "持有") return el["持仓"];
     });
-  return filtered
+  filtered = filtered
     .filter((el) => {
       return el["一手价"] <= formData.最新价Range[1] && el["一手价"] >= formData.最新价Range[0];
     })
@@ -219,8 +220,12 @@ const filteredTableData = computed(() => {
     .filter((el) => {
       return Math.abs(el["Gamma"]) <= formData.GammaRange[1] && Math.abs(el["Gamma"]) >= formData.GammaRange[0];
     })
-    .filter((el)=> {
+    .filter((el) => {
       return el["溢价率"] <= formData.溢价Range[1] && el["溢价率"] >= formData.溢价Range[0];
-    })
+    });
+  // 越大越好：Gamma、Delta（Gamma不会骗人）
+  // 越小越好：一手价、隐波（价格是隐波的反应）
+  filtered = _.sortBy(filtered, (row) => Math.abs(row["一手价"] / (row["Gamme"] * row["Delta"])));
+  return filtered;
 });
 </script>

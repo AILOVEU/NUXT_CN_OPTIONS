@@ -2,9 +2,8 @@ import _ from "lodash";
 export const 金额 = {
   基础金额: 50000,
   入金金额: 50000,
-  场内现金: 21,
-  占用保证金: 1300,
-  期转股金额: 0,
+  场内现金: 200,
+  占用保证金: 1100,
   贷款: 0,
   已提现金额: 37067, // 期转现，金额详见<期货期权激励>
 };
@@ -83,7 +82,7 @@ export const stock_sort_map = {
 export const stock_sorted_list = _.sortBy(Object.keys(stock_sort_map), (code) => stock_sort_map[code]);
 export const 行权价_range_map = {
   510050: [3000, 3500],
-  510300: [4500, 5500],
+  510300: [4500, 5000],
   510500: [6000, 8000],
   588000: [1200, 1600],
   159922: [2700, 3200],
@@ -119,6 +118,7 @@ export const deadline_map = {
 export const UNIT = 10000;
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20251202", 26315],
     ["20251201", 27178],
     ["20251129", 26647],
     ["20251127", 25413],
