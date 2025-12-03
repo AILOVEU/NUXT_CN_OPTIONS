@@ -11,10 +11,27 @@ export function is_机会(line_dict) {
   return true;
 }
 
+function isTimeBetweenNoonMarketClosed() {
+  const now = dayjs();
+  const startTime = dayjs().hour(11).minute(30).second(0);
+  const endTime = dayjs().hour(13).minute(0).second(0);
+
+  return now.isAfter(startTime) && now.isBefore(endTime);
+}
+
+function isTimeAfterMarketClosed() {
+  const now = dayjs();
+  const startTime = dayjs().hour(15).minute(0).second(0);
+  return now.isAfter(startTime);
+}
+
 export function get_最新价(row) {
   let { 最新价, 卖一, 买一 } = row;
   if (!卖一 || !买一) return 最新价;
-  if (最新价 === "-" || !最新价 || 最新价 > 卖一 || 最新价 < 买一) return Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
+  const 中间价 = Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
+  if (最新价 === "-" || !最新价) return 中间价;
+  if (isTimeBetweenNoonMarketClosed() || isTimeAfterMarketClosed()) return 最新价;
+  if (最新价 > 卖一 || 最新价 < 买一) return 中间价;
   return 最新价;
 }
 

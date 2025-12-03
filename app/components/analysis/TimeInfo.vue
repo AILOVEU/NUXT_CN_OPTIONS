@@ -82,6 +82,15 @@
               </template>
             </el-table-column>
             <el-table-column label="到期天数" prop="到期天数" width="120" sortable />
+            <el-table-column label="Gamma" #default="{ row }" prop="实值" width="120" sortable>
+              <template v-if="Array.isArray(row['Gamma'])">
+                <div>{{ row["Gamma"][0] }}</div>
+                <div>{{ row["Gamma"][1] }}</div>
+              </template>
+              <template v-else>
+                {{ row["Gamma"] }}
+              </template>
+            </el-table-column>
             <el-table-column label="当日总涨跌" prop="涨跌" width="120" sortable />
             <el-table-column label="持仓" prop="持仓" />
             <el-table-column label="单手涨跌" prop="单手涨跌" width="120" sortable />
@@ -226,6 +235,7 @@ const richTableData = computed(() => {
           到期天数: 权利期权Item["到期天数"],
           总价,
           总盈亏,
+          Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
           涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
           单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
           总价占比: toPercent_1(总价 / 持仓总价.value),
@@ -252,6 +262,7 @@ const richTableData = computed(() => {
           到期天数: 权利期权Item["到期天数"],
           总价,
           总盈亏,
+          Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
           涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
           单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
           总价占比: toPercent_1(总价 / 持仓总价.value),
@@ -266,7 +277,7 @@ const richTableData = computed(() => {
       title: "单腿期权(占用时间价值)",
       value: 单腿期权持仓.value.value,
       涨跌: 单腿期权持仓.value.涨跌,
-      children: 单腿期权持仓.value.list.map(({ 成本价, 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值, 到期天数, 到期日, 正股代码, 沽购 }) => {
+      children: 单腿期权持仓.value.list.map(({ Gamma, 成本价, 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值, 到期天数, 到期日, 正股代码, 沽购 }) => {
         const 总价 = toPrice(最新价 * 持仓);
         const 总盈亏 = toPrice((最新价 - 成本价) * 持仓);
         return {
@@ -277,6 +288,7 @@ const richTableData = computed(() => {
           时间: 时间价值,
           到期天数,
           涨跌: toPrice(涨跌额 * 持仓),
+          Gamma,
           单手涨跌: toPrice(涨跌额),
           总价,
           总盈亏,
