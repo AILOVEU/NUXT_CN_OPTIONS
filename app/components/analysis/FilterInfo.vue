@@ -1,91 +1,93 @@
 <template>
   <div>
     <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
-      <el-form-item label="正股">
-        <el-select v-model="formData.正股List" multiple>
-          <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="到期日">
-        <el-select v-model="formData.到期日List" multiple>
-          <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="过滤持有">
-        <el-radio-group v-model="formData.过滤持有">
-          <el-radio :value="'权利'">仅权利</el-radio>
-          <el-radio :value="'义务'">仅义务</el-radio>
-          <el-radio :value="'持有'">持有</el-radio>
-          <el-radio :value="false">不过滤</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <template v-if="!formData.过滤持有">
-        <el-form-item label="最新价范围">
-          <el-col :span="11">
-            <span class="text-gray-500">最小值</span>
-            <el-input placeholder="最小值" v-model="formData.最新价Range[0]" />
-          </el-col>
-          <el-col :span="2" class="text-center">
-            <span class="text-gray-500">-</span>
-          </el-col>
-          <el-col :span="11">
-            <span class="text-gray-500">最大值</span>
-            <el-input placeholder="最大值" v-model="formData.最新价Range[1]" />
-          </el-col>
+      <div>
+        <el-form-item label="正股">
+          <el-select v-model="formData.正股List" multiple>
+            <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="Delta范围">
-          <el-col :span="11">
-            <span class="text-gray-500">最小值</span>
-            <el-input placeholder="最小值" v-model="formData.DeltaRange[0]" />
-          </el-col>
-          <el-col :span="2" class="text-center">
-            <span class="text-gray-500">-</span>
-          </el-col>
-          <el-col :span="11">
-            <span class="text-gray-500">最大值</span>
-            <el-input placeholder="最大值" v-model="formData.DeltaRange[1]" />
-          </el-col>
+        <el-form-item label="到期日">
+          <el-select v-model="formData.到期日List" multiple>
+            <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="隐波范围">
-          <el-col :span="11">
-            <span class="text-gray-500">最小值</span>
-            <el-input placeholder="最小值" v-model="formData.隐波Range[0]" />
-          </el-col>
-          <el-col :span="2" class="text-center">
-            <span class="text-gray-500">-</span>
-          </el-col>
-          <el-col :span="11">
-            <span class="text-gray-500">最大值</span>
-            <el-input placeholder="最大值" v-model="formData.隐波Range[1]" />
-          </el-col>
+        <el-form-item label="过滤持有">
+          <el-radio-group v-model="formData.过滤持有">
+            <el-radio :value="'权利'">仅权利</el-radio>
+            <el-radio :value="'义务'">仅义务</el-radio>
+            <el-radio :value="'持有'">持有</el-radio>
+            <el-radio :value="false">不过滤</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="Gamma范围">
-          <el-col :span="11">
-            <span class="text-gray-500">最小值</span>
-            <el-input placeholder="最小值" v-model="formData.GammaRange[0]" />
-          </el-col>
-          <el-col :span="2" class="text-center">
-            <span class="text-gray-500">-</span>
-          </el-col>
-          <el-col :span="11">
-            <span class="text-gray-500">最大值</span>
-            <el-input placeholder="最大值" v-model="formData.GammaRange[1]" />
-          </el-col>
-        </el-form-item>
-        <el-form-item label="溢价范围">
-          <el-col :span="11">
-            <span class="text-gray-500">最小值</span>
-            <el-input placeholder="最小值" v-model="formData.溢价Range[0]" />
-          </el-col>
-          <el-col :span="2" class="text-center">
-            <span class="text-gray-500">-</span>
-          </el-col>
-          <el-col :span="11">
-            <span class="text-gray-500">最大值</span>
-            <el-input placeholder="最大值" v-model="formData.溢价Range[1]" />
-          </el-col>
-        </el-form-item>
-      </template>
+        <template v-if="!formData.过滤持有">
+          <el-form-item label="最新价范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.最新价Range[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.最新价Range[1]" />
+            </el-col>
+          </el-form-item>
+          <el-form-item label="Delta范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.DeltaRange[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.DeltaRange[1]" />
+            </el-col>
+          </el-form-item>
+          <el-form-item label="隐波范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.隐波Range[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.隐波Range[1]" />
+            </el-col>
+          </el-form-item>
+          <el-form-item label="Gamma范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.GammaRange[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.GammaRange[1]" />
+            </el-col>
+          </el-form-item>
+          <el-form-item label="溢价范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.溢价Range[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.溢价Range[1]" />
+            </el-col>
+          </el-form-item>
+        </template>
+      </div>
     </el-form>
   </div>
   <div class="w-full flex">
@@ -250,5 +252,11 @@ const filteredTableData = computed(() => {
 .active {
   color: white;
   background-color: #409eff;
+}
+::v-deep(.el-form-item){
+  margin-bottom: 6px;
+}
+::v-deep(.el-radio-group){
+  justify-content: flex-start;
 }
 </style>
