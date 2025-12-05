@@ -101,10 +101,6 @@ const filteredTableData = computed(() => {
 
 function getCellStyle({ column, row }) {
   if (column?.["property"] === "期权") return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
-  // if (column?.["property"]?.includes("C_") && row?.["C机会"])
-  //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
-  // if (column?.["property"]?.includes("P_") && row?.["P机会"])
-  //   return { backgroundColor: "rgba(190, 220, 190,0.5)" };
   // 红 | 绿
   // -------
   // 绿 | 红

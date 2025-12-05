@@ -2,14 +2,6 @@ import { UNIT, fields_dict, stock_code_map, 金额 } from "~/data";
 import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
-export function is_机会(line_dict) {
-  const { 最新价, 隐波, 到期天数, 溢价率 } = line_dict;
-  if (到期天数 < 15) return false;
-  if (溢价率 > 10) return false;
-  if (最新价 > 0.06) return false;
-  if (隐波 > 25) return false;
-  return true;
-}
 
 function isTimeBetweenNoonMarketClosed() {
   const now = dayjs();
@@ -250,7 +242,6 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["时间价值"] = Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * UNIT) / UNIT;
 
     line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
-    line_dict["机会"] = is_机会(line_dict);
     line_dict["成本价"] = get_成本价(line_dict, 持仓JSON);
     line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(line_dict["正股"]);
 
