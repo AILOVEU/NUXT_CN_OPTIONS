@@ -36,13 +36,13 @@ import DeltaTag from "~/components/tag/DeltaTag.vue";
 import IvTag from "~/components/tag/IvTag.vue";
 import PriceTag from "~/components/tag/PriceTag.vue";
 import DiffTag from "~/components/tag/DiffTag.vue";
-import GammaTag from '~/components/tag/GammaTag.vue';
+import GammaTag from "~/components/tag/GammaTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import { toPrice } from "~/utils";
 import HoldTag from "../tag/HoldTag.vue";
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date"]);
+const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYYMMDD").format("M月");
@@ -50,6 +50,9 @@ const prefixKey = computed(() => {
 });
 const 正股代码 = computed(() => {
   return props.row["正股代码"];
+});
+const 到期日 = computed(() => {
+  return props.row[prefixKey.value + "到期日"];
 });
 const 隐波 = computed(() => {
   return props.row[prefixKey.value + "隐波"];
@@ -61,7 +64,7 @@ const Delta = computed(() => {
   return props.row[prefixKey.value + "Delta"];
 });
 const 溢价 = computed(() => {
-  return props.row[prefixKey.value + "溢价"];
+  return props.row[prefixKey.value + "溢价率"];
 });
 const 持仓 = computed(() => {
   return props.row[prefixKey.value + "持仓"];
@@ -94,18 +97,55 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
-  if (持仓.value > 0)
-    return {
-      border: "2px solid red",
-      backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
-    };
-  if (持仓.value < 0) {
-    return {
-      border: "2px solid green",
-      backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
-    };
-  }
+  if (props.mode === "hold") {
+    if (持仓.value > 0)
+      return {
+        border: "2px solid red",
+        backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
+      };
+    if (持仓.value < 0) {
+      return {
+        border: "2px solid green",
+        backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
+      };
+    }
+  } else if (props.mode === "chance") {
+    let isChance = true;
+    const formData = props.formData;
 
+    if (formData.过滤持有) {
+      if (formData.过滤持有 === "权利" && 持仓.value <= 0) {
+        isChance = false;
+      }
+      if (formData.过滤持有 === "义务" && 持仓.value >= 0) {
+        isChance = false;
+      }
+      if (formData.过滤持有 === "持有" && !持仓.value) {
+        isChance = false;
+      }
+    }
+    if (溢价.value < formData.溢价Range[0] || 溢价.value > formData.溢价Range[1]) {
+      isChance = false;
+    }
+    if (最新价.value < formData.最新价Range[0] || 最新价.value > formData.最新价Range[1]) {
+      isChance = false;
+    }
+    if (Math.abs(Delta.value) < formData.DeltaRange[0] || Math.abs(Delta.value) > formData.DeltaRange[1]) {
+      isChance = false;
+    }
+    if (Math.abs(Gamma.value) < formData.GammaRange[0] || Math.abs(Gamma.value) > formData.GammaRange[1]) {
+      isChance = false;
+    }
+    if (!formData.到期日List.includes(到期日.value)) {
+      isChance = false;
+    }
+    if (isChance) {
+      return {
+        // border: "2px solid green",
+        backgroundColor: "#b5e6f1",
+      };
+    }
+  }
   return {};
 });
 </script>

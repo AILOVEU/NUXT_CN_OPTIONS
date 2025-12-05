@@ -2,7 +2,6 @@
   <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[200%]">
     <div>
       <Nav />
-
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
@@ -40,7 +39,7 @@
             <Center :row="row" />
           </template>
           <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :combo_list="tableData.combo_list" :diffValue="diff" />
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :combo_list="tableData.combo_list" :diffValue="diff" :mode="mode" />
           </template>
         </el-table-column>
       </el-table>

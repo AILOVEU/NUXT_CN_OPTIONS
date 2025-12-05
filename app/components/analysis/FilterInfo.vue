@@ -88,7 +88,21 @@
       </template>
     </el-form>
   </div>
-  <div class="w-full min-h-[calc(100vh-400px)] mb-[100px]">
+  <div class="w-full flex">
+    <div
+      class="flex-1 border-[1px] leading-1 text-center mx-[10px]"
+      v-for="item in [
+        { label: '列表', value: 'list' },
+        { label: 'T型', value: 't' },
+      ]"
+      :class="{ active: item.value === showType }"
+      @click="showType = item.value"
+    >
+      {{ item.label }}
+    </div>
+  </div>
+
+  <div v-if="showType === 'list'" class="w-full min-h-[calc(100vh-400px)] mb-[100px]">
     <el-table :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
       <el-table-column label="序" width="40" align="center" fixed="left">
         <template #default="{ $index }">
@@ -121,14 +135,17 @@
       </el-table-column>
     </el-table>
   </div>
+  <Hold v-else-if="showType === 't'" mode="chance" :formData="formData" />
 </template>
 <script setup>
 import IvTag from "~/components/tag/IvTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
 import { toPrice } from "~/utils";
+import Hold from "~/pages/hold.vue";
 import { deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
+const showType = ref("list");
 const stockOptions = stock_sorted_list.map((el) => ({
   label: stock_code_map[el],
   value: el,
@@ -229,3 +246,9 @@ const filteredTableData = computed(() => {
   return filtered;
 });
 </script>
+<style scoped>
+.active {
+  color: white;
+  background-color: #409eff;
+}
+</style>

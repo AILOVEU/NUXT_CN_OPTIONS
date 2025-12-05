@@ -1,9 +1,8 @@
 <template>
   <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[200%]">
     <!-- {{tableData.data}} -->
-    <div>
-      <Nav />
-
+    <div >
+      <Nav v-if="mode === 'hold'"/>
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
@@ -26,7 +25,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :formData="props.formData" :mode="mode"/>
             </template>
           </el-table-column>
         </el-table>
@@ -42,6 +41,13 @@ import Info from "~/components/hold/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
+
+const props = defineProps(["mode",'formData']);
+
+const mode = computed(() => {
+  return props.mode || "hold";
+});
+
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
   let list = Object.keys(stock_show_name_map);
