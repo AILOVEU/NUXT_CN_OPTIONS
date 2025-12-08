@@ -1,8 +1,6 @@
 import dayjs from "dayjs";
-import { generateRandomString } from "~/utils/utils";
 export default eventHandler(async (event) => {
-  let cookie = `fullscreengg=1; fullscreengg2=1; qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=85waxIoBYEnN5gxMGZI2a5727; st_si=56304214774557; st_asi=delete; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1764572853092; gviem=-QpcsDjocpPdoWOXH3f_e7a18; gviem_create_time=1764572853093; st_pvi=54843293934490; st_sp=2025-12-01%2015%3A07%3A32; st_inirUrl=; st_sn=2; st_psi=20251201150809369-113200301321-3043073337`;
-  cookie = `fullscreengg=1; fullscreengg2=1; qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_si=55141986021532; st_pvi=25287597613092; st_sp=2025-12-08%2012%3A58%3A02; st_inirUrl=; st_sn=1; st_psi=20251208125802224-113200301321-6961358187; st_asi=delete; st_nvi=A5-1yKkAz2pbLm_ZVyQA242dc; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1765169882499; gviem=CCNz9V6yMyUGEdTI_weCGd2b2; gviem_create_time=1765169882499`;
+  let cookie = `fullscreengg=1; fullscreengg2=1; st_nvi=vNy6-RplM4MLU1rw5TuPzd4c0; qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_si=95302204113320; st_pvi=37467460773597; st_sp=2025-12-08%2017%3A51%3A25; st_inirUrl=; st_sn=1; st_psi=20251208175125872-113200301321-6857771890; st_asi=delete`;
   const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
     method: "get",
     params: getQuery(event),

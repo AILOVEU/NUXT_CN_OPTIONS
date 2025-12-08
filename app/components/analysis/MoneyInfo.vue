@@ -11,6 +11,7 @@
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { UNIT, 盈亏曲线数据 } from "~/data";
 import _ from "lodash";
+import dayjs from 'dayjs';
 const props = defineProps(["all_data", "combo_list"]);
 const { money } = useMoneyStore();
 const 持仓金额 = computed(() => {
@@ -50,7 +51,8 @@ const 盈亏概览Option = computed(() => {
       formatter: function (params) {
         const target = params[1];
         const { name, value, marker } = target;
-        return `${marker}${name} ${value}`;
+        const week = dayjs(name,'YYYY-MM-DD').week()
+        return `${marker}${name}\n${week} ${value}`;
       },
     },
     series: [
