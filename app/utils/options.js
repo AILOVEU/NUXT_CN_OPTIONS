@@ -181,8 +181,8 @@ export async function get_target_http_data(持仓JSON, fs) {
 export async function get_http_data(正股代码List, useCatch = true) {
   console.log("正股代码List", 正股代码List);
   let _all_data = [];
-  // let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
-  let 持仓JSON = await $fetch("/api/queryHoldJson");
+  let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
+  // let 持仓JSON = await $fetch("/api/queryHoldJsonByHuidian");
   // catch == false , 请求全量数据 , 点击按钮执行请求
   // catch == true , 请求本地数据 , 默认进来执行请求
   if (useCatch) {

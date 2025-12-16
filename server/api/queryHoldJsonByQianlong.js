@@ -2,7 +2,7 @@
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
 import fs from "node:fs";
-import path from 'path'
+import path from "path";
 const isDeno = process.env.NITRO_PRESET;
 // const csvPath = isDeno ? "../public/持仓.txt" : "./public/持仓.txt";
 export async function get_持仓JSON() {
@@ -10,10 +10,22 @@ export async function get_持仓JSON() {
   return new Promise((resolve) => {
     try {
       const converterStream = fs.createReadStream(csvPath).pipe(iconvLite.decodeStream("gbk"));
-      csvtojson()
+      csvtojson({ output: "line" })
         .fromStream(converterStream)
         .then((res) => {
-          resolve([{ res }]);
+          resolve(
+            res
+              .map((el) => {
+                let list = el.replaceAll(" ", "").split("\t");
+                return list;
+              })
+              .map((el) => ({
+                名称: el[2],
+                持仓: +el[5], // 正值
+                持仓类别: el[4] === '权利' ? '权利仓' : '义务仓', // 义务仓、权利仓
+                开仓均价: +el[7]
+              }))
+          );
         })
         .catch(() => {
           resolve([]);
