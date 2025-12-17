@@ -79,9 +79,6 @@ const 持仓 = computed(() => {
 const 一手价 = computed(() => {
   return props.row[prefixKey.value + "一手价"];
 });
-const 昨收 = computed(() => {
-  return toPrice(props.row[prefixKey.value + "昨收"]);
-});
 const 一手涨跌价 = computed(() => {
   return props.row[prefixKey.value + '一手涨跌价']
 });
