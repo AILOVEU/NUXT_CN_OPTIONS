@@ -30,6 +30,7 @@ export function get_最新价(row) {
 export function get_持仓(持仓JSON, line_dict) {
   let targetList = 持仓JSON.filter((item) => item["名称"] === line_dict["期权名称"]);
   if (!targetList.length) return 0;
+  console.log('targetList',targetList)
   let 持仓 = 0;
   targetList.forEach((item) => {
     let item持仓 = +item["持仓"];
@@ -51,7 +52,7 @@ export function get_option_实值(el) {
 export function get_stock_code(name) {
   let code;
   Object.keys(stock_code_map).forEach((key) => {
-    if (stock_code_map[key] === name) {
+    if (name.includes(stock_code_map[key])) {
       code = key;
     }
   });
