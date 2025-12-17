@@ -1,13 +1,17 @@
 <template>
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
-  <div v-else-if="!props.row?._current && 最新价" class="p-[2px] w-[200px] h-[90px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 最新价" class="p-[2px] h-[90px] max-md:h-[155px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
     <HoldTag :持仓="持仓" v-if="持仓" />
-    <div class="whitespace-nowrap">
-      <PriceTag :最新价="最新价" />
-      <DiffTag :涨跌="涨跌" />
+    <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
+      <div class="whitespace-nowrap">
+        <PriceTag :最新价="最新价" />
+      </div>
+      <div class="whitespace-nowrap">
+        <DiffTag :涨跌="涨跌" />
+      </div>
     </div>
 
-    <div class="flex gap-[6px] justify-center whitespace-nowrap">
+    <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
       </div>
@@ -19,7 +23,7 @@
       <GammaTag :Gamma="Gamma" />
     </div>
     <div v-if="持仓">
-      <div class="flex justify-between whitespace-nowrap">
+      <div class="flex justify-between whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <el-tag type="info" size="small" effect="plain"> 仓 {{ 仓位 }} ({{ 仓位占比.toFixed(2) }}%) </el-tag>
         </div>
@@ -41,6 +45,9 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import { toPrice } from "~/utils";
 import HoldTag from "../tag/HoldTag.vue";
+import { useMediaQuery } from "@vueuse/core";
+const isMobile = useMediaQuery('(max-width: 768px)')
+console.log('isMobile',isMobile)
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
@@ -97,14 +104,17 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
+  const width = isMobile.value ? "120px" : "200px";
   if (props.mode === "hold") {
     if (持仓.value > 0)
       return {
+        width,
         border: "2px solid red",
         backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
       };
     if (持仓.value < 0) {
       return {
+        width,
         border: "2px solid green",
         backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
       };
@@ -141,11 +151,12 @@ const style = computed(() => {
     }
     if (isChance) {
       return {
+        width,
         // border: "2px solid green",
         backgroundColor: "#b5e6f1",
       };
     }
   }
-  return {};
+  return {width};
 });
 </script>

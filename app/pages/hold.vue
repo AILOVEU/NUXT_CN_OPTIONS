@@ -1,17 +1,17 @@
 <template>
   <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[200%]">
     <!-- {{tableData.data}} -->
-    <div >
-      <Nav v-if="mode === 'hold'"/>
+    <div>
+      <Nav v-if="mode === 'hold'" />
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
 
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(200vh-120px)] flex justify-center">
+    <div class="h-[calc(100vh-80px)] max-md:h-[calc(300vh-120px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="label === '期权' ? '100px' : '220px'">
+          <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
             <template #header>
               <div v-if="type" class="leading-[1.2]">
                 <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
@@ -25,7 +25,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :formData="props.formData" :mode="mode"/>
+              <Info :row="row" :isCall="type === 'C'" :date="label" :formData="props.formData" :mode="mode" />
             </template>
           </el-table-column>
         </el-table>
@@ -40,9 +40,13 @@ import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
+import { useMediaQuery } from "@vueuse/core";
+
+const isMobile = useMediaQuery("(max-width: 768px)");
+
 const { globalLoading } = useGlobalLoading();
 
-const props = defineProps(["mode",'formData']);
+const props = defineProps(["mode", "formData"]);
 
 const mode = computed(() => {
   return props.mode || "hold";
@@ -74,6 +78,12 @@ const tableData = reactive({
     ...deadline_list.map((el) => ({ type: "P", label: el })),
   ],
 });
+function getColumnWidth(label) {
+  if (isMobile.value) {
+    return label === "期权" ? "100px" : "120px";
+  }
+  return label === "期权" ? "100px" : "220px";
+}
 async function handleQuery() {
   tableData.loading = true;
   const holdData = await queryHold(stockCode.value === "all" ? Object.keys(stock_show_name_map) : [stockCode.value]);
@@ -90,7 +100,7 @@ function handleStockCodeChange() {
 const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["_持仓"]) return true;
+    if (el["_持仓"] && mode.value === "hold") return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
     if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0) return false;
