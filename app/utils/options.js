@@ -247,6 +247,10 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["成本价"] = get_成本价(line_dict, 持仓JSON);
     line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(line_dict["正股"]);
 
+    line_dict["一手买一价"] = toPrice(line_dict["买一"]);
+    line_dict["一手卖一价"] = toPrice(line_dict["卖一"]);
+
+
     line_dict["一手价"] = toPrice(line_dict["最新价"]);
     line_dict["一手涨跌价"] = toPrice(line_dict["涨跌额"]);
     line_dict["一手成本价"] = line_dict["成本价"] ? toPrice(line_dict["成本价"]) : undefined;

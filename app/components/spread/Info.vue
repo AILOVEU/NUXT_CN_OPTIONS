@@ -70,7 +70,7 @@ const show = computed(() => {
   if (is50Multiple(current期权Item.value["行权价"] * 1000) && is50Multiple(spread期权Item.value["行权价"] * 1000)) {
     return false;
   }
-  if (spread期权Item.value["最新价"] < 0.01) {
+  if (spread期权Item.value["一手价"] < 100) {
     return false;
   }
   if (current期权Item.value["行权价"] * 1000 < 5000 && props.diffValue === 250) return false;

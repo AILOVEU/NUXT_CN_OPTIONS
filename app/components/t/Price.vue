@@ -9,28 +9,26 @@
       <div class="w-full text-center border-b-[1px]">{{ 差价 }}</div>
 
       <div class="w-full text-center">
-        <PriceTag :最新价="最新价" />
+        <PriceTag :一手价="一手价" />
       </div>
     </div>
     <div class="p-[12px]">{{ 卖一 }}</div>
   </div>
 </template>
 <script setup>
-import { UNIT } from "~/data";
-import { toPrice } from "~/utils";
 import PriceTag from "~/components/tag/PriceTag.vue";
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
 });
-const 最新价 = computed(() => {
-  return toPrice(props.row[callOrPut.value + "最新价"]);
+const 一手价 = computed(() => {
+  return props.row[callOrPut.value + "一手价"];
 });
 const 买一 = computed(() => {
-  return toPrice(props.row[callOrPut.value + "买一"]);
+  return props.row[callOrPut.value + "一手买一价"];
 });
 const 卖一 = computed(() => {
-  return toPrice(props.row[callOrPut.value + "卖一"]);
+  return props.row[callOrPut.value + "一手卖一价"];
 });
 const 差价 = computed(() => {
   if (!买一.value || !卖一.value) return "";

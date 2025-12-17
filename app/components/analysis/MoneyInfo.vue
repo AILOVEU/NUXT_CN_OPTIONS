@@ -19,7 +19,7 @@ const 持仓金额 = computed(() => {
   props.all_data
     .filter((el) => el["持仓"])
     .forEach((el) => {
-      value += el["持仓"] * el["最新价"] * UNIT;
+      value += el["持仓"] * el['一手价'];
     });
   return value;
 });

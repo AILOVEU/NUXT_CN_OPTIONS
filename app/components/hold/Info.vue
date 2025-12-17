@@ -1,13 +1,13 @@
 <template>
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
-  <div v-else-if="!props.row?._current && 最新价" class="p-[2px] h-[90px] max-md:h-[155px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[90px] max-md:h-[155px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
     <HoldTag :持仓="持仓" v-if="持仓" />
     <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <PriceTag :最新价="最新价" />
+        <PriceTag :一手价="一手价" />
       </div>
       <div class="whitespace-nowrap">
-        <DiffTag :涨跌="涨跌" />
+        <DiffTag :涨跌="一手涨跌价" />
       </div>
     </div>
 
@@ -76,24 +76,24 @@ const 溢价 = computed(() => {
 const 持仓 = computed(() => {
   return props.row[prefixKey.value + "持仓"];
 });
-const 最新价 = computed(() => {
-  return toPrice(props.row[prefixKey.value + "最新价"]);
+const 一手价 = computed(() => {
+  return props.row[prefixKey.value + "一手价"];
 });
 const 昨收 = computed(() => {
   return toPrice(props.row[prefixKey.value + "昨收"]);
 });
-const 涨跌 = computed(() => {
-  return 最新价.value - 昨收.value;
+const 一手涨跌价 = computed(() => {
+  return props.row[prefixKey.value + '一手涨跌价']
 });
 const 成本价 = computed(() => {
   return toPrice(props.row[prefixKey.value + "成本价"]);
 });
 const 盈亏 = computed(() => {
-  return (最新价.value - 成本价.value) * 持仓.value;
+  return (一手价.value - 成本价.value) * 持仓.value;
 });
 
 const 仓位 = computed(() => {
-  return 持仓.value * 最新价.value;
+  return 持仓.value * 一手价.value;
 });
 
 const 仓位占比 = computed(() => {
@@ -137,7 +137,7 @@ const style = computed(() => {
     if (溢价.value < formData.溢价Range[0] || 溢价.value > formData.溢价Range[1]) {
       isChance = false;
     }
-    if (最新价.value < formData.最新价Range[0] || 最新价.value > formData.最新价Range[1]) {
+    if (一手价.value < formData.最新价Range[0] || 一手价.value > formData.最新价Range[1]) {
       isChance = false;
     }
     if (Math.abs(Delta.value) < formData.DeltaRange[0] || Math.abs(Delta.value) > formData.DeltaRange[1]) {
