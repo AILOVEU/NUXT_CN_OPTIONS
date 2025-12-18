@@ -258,7 +258,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["一手价"] = toPrice(line_dict["最新价"], line_dict["合约单位"]);
     line_dict["一手昨收价"] = toPrice(line_dict["昨收"], line_dict["合约单位"]);
 
-    line_dict["一手涨跌价"] = toPrice(line_dict["涨跌额"]);
+    line_dict["一手涨跌价"] = toPrice(line_dict["涨跌额"], line_dict["合约单位"]);
     line_dict["一手成本价"] = line_dict["成本价"] ? toPrice(line_dict["成本价"], line_dict["合约单位"]) : undefined;
     line_dict["一手时间价"] = toPrice(line_dict["时间价值"], line_dict["合约单位"]);
     line_dict["一手内在价"] = toPrice(line_dict["内在价值"], line_dict["合约单位"]);
