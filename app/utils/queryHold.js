@@ -38,12 +38,17 @@ function handleHoldData(dataList, 正股代码List) {
     正股价格_dict[data["正股代码"]] = data["正股价格"];
     all_data.push(data);
   });
-  if (正股代码List.length > 1) {
+  if (正股代码List.length > 0) {
     const 正股代码List = Array.from(new Set(all_data.map((el) => el.正股代码)));
     // const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
     const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
     行权价List.sort();
     正股代码List.forEach((正股代码) => {
+      all_data.push({
+        _current: true,
+        正股代码,
+        行权价: 正股价格_dict[正股代码],
+      });
       all_data.push({
         _split: true,
         正股代码,

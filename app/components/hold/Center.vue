@@ -15,7 +15,7 @@
       )
     </div>
   </div>
-  <div v-else>
+  <div v-else class="bg-[#e5effe]">
     {{ (行权价 / 1000).toFixed(3) }}
   </div>
 </template>

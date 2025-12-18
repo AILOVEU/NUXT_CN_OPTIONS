@@ -101,10 +101,10 @@ const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["_持仓"] && mode.value === "hold") return true;
+    if (el._current || el._split) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
     if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0) return false;
-    if (el._current || el._split) return true;
     return el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] && el["行权价"] * 1000 <= 行权价RangeDict[el["正股代码"]][1];
   });
 });
