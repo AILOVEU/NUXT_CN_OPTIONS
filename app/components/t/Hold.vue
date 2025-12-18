@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center max-w-[200px] mx-auto">
       <div>
         <div><el-tag type="info" size="small">最新</el-tag>{{ 一手价 }}</div>
-        <div><el-tag type="info" size="small">成本</el-tag>{{ 成本价 }}</div>
+        <div><el-tag type="info" size="small">成本</el-tag>{{ 一手成本价 }}</div>
       </div>
       <div class="px-[3px]">*{{ 持仓 }}</div>
       <div>
@@ -25,8 +25,6 @@
   </div>
 </template>
 <script setup>
-import { UNIT } from "~/data";
-import { toPrice } from "~/utils";
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
   return props.isCall ? "C" : "P";
@@ -34,14 +32,14 @@ const callOrPut = computed(() => {
 const 一手价 = computed(() => {
   return props.row[callOrPut.value + "一手价"];
 });
-const 成本价 = computed(() => {
-  return toPrice(props.row[callOrPut.value + "成本价"]);
+const 一手成本价 = computed(() => {
+  return props.row[callOrPut.value + "一手成本价"];
 });
 const 持仓 = computed(() => {
   return props.row[callOrPut.value + "持仓"];
 });
 const 盈亏 = computed(() => {
-  return (一手价.value - 成本价.value) * 持仓.value;
+  return (一手价.value - 一手成本价.value) * 持仓.value;
 });
 
 const 持仓Str = computed(() => {

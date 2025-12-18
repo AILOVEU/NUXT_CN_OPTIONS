@@ -1,4 +1,4 @@
-import { UNIT, fields_dict, stock_code_map, 金额 } from "~/data";
+import { fields_dict, stock_code_map, 金额 } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -47,7 +47,7 @@ export function get_持仓(持仓JSON, line_dict) {
 export function get_option_实值(el) {
   const isCall = el["期权名称"].includes("购");
   const 实值 = isCall ? el["正股价格"] - el["行权价"] : el["行权价"] - el["正股价格"];
-  return 实值 > 0 ? Math.floor(实值 * UNIT) / UNIT : 0;
+  return 实值 > 0 ? Math.floor(实值 * el["合约单位"]) / el["合约单位"] : 0;
 }
 
 export function get_stock_code(name) {
@@ -118,8 +118,8 @@ export function toFixed(value, number = 0) {
 export function toFloor(val) {
   return Math.floor(val);
 }
-export function toPrice(val) {
-  return toFloor(val * UNIT);
+export function toPrice(val, 合约单位) {
+  return toFloor(val * 合约单位);
 }
 // 保留一位小数
 export function toPercent_1(val) {
@@ -234,6 +234,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     NUMBER_TYPE_KEYS.forEach((key) => {
       line_dict[key] = line_dict[key] ? +line_dict[key] : line_dict[key];
     });
+    line_dict["合约单位"] = 10000;
     line_dict["Delta"] = formatDecimal(line_dict["Delta"], 3);
     line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
 
@@ -241,26 +242,29 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["到期日"] = line_dict["到期日"] + "";
     line_dict["到期天数"] = dayjs(line_dict["到期日"], "YYYYMMDD").diff(dayjs(), "days") + 1;
     line_dict["到期月份"] = dayjs(line_dict["到期日"], "YYYYMMDD").format("MM月");
-    line_dict["单日损耗"] = Math.floor((10 * line_dict["Theta"] * UNIT) / 365) / 10;
+    line_dict["单日损耗"] = Math.floor((10 * line_dict["Theta"] * line_dict["合约单位"]) / 365) / 10;
     line_dict["最新价"] = get_最新价(line_dict);
     line_dict["涨跌额"] = line_dict["最新价"] - line_dict["昨收"];
     line_dict["内在价值"] = get_option_实值(line_dict);
-    line_dict["时间价值"] = Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * UNIT) / UNIT;
+    line_dict["时间价值"] = Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * line_dict["合约单位"]) / line_dict["合约单位"];
 
     line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
     line_dict["成本价"] = get_成本价(line_dict, 持仓JSON);
     line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(line_dict["正股"]);
 
-    line_dict["一手买一价"] = toPrice(line_dict["买一"]);
-    line_dict["一手卖一价"] = toPrice(line_dict["卖一"]);
+    line_dict["一手买一价"] = toPrice(line_dict["买一"], line_dict["合约单位"]);
+    line_dict["一手卖一价"] = toPrice(line_dict["卖一"], line_dict["合约单位"]);
 
-    line_dict["一手价"] = toPrice(line_dict["最新价"]);
-    line_dict["一手昨收价"] = toPrice(line_dict["昨收"]);
+    line_dict["一手价"] = toPrice(line_dict["最新价"], line_dict["合约单位"]);
+    line_dict["一手昨收价"] = toPrice(line_dict["昨收"], line_dict["合约单位"]);
 
     line_dict["一手涨跌价"] = toPrice(line_dict["涨跌额"]);
-    line_dict["一手成本价"] = line_dict["成本价"] ? toPrice(line_dict["成本价"]) : undefined;
-    line_dict["一手时间价"] = toPrice(line_dict["时间价值"]);
-    line_dict["一手内在价"] = toPrice(line_dict["内在价值"]);
+    line_dict["一手成本价"] = line_dict["成本价"] ? toPrice(line_dict["成本价"], line_dict["合约单位"]) : undefined;
+    line_dict["一手时间价"] = toPrice(line_dict["时间价值"], line_dict["合约单位"]);
+    line_dict["一手内在价"] = toPrice(line_dict["内在价值"], line_dict["合约单位"]);
+
+    line_dict["代替正股价"] = line_dict["Delta"] * line_dict["正股价格"] * line_dict["合约单位"];
+
     all_data.push(line_dict);
   });
   all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));

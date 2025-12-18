@@ -1,60 +1,27 @@
 <template>
   <div>
-    <el-form
-      :model="formData"
-      label-width="auto"
-      style="max-width: 600px"
-      label-suffix=":"
-    >
+    <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
       <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple>
-          <el-option
-            v-for="item in stockOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="到期日">
         <el-select v-model="formData.到期日List" multiple>
-          <el-option
-            v-for="date in deadline_list"
-            :key="date"
-            :label="date"
-            :value="date"
-          />
+          <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
         </el-select>
       </el-form-item>
     </el-form>
   </div>
   <div class="grid grid-cols-2">
-    <VChart
-      :option="deltaOption"
-      style="height: 300px; width: 100%; margin: auto"
-    />
-    <VChart
-      :option="代替正股Option"
-      style="height: 300px; width: 100%; margin: auto"
-    />
-    <VChart
-      :option="gammaOption"
-      style="height: 300px; width: 100%; margin: auto"
-    />
-    <VChart
-      :option="单日损耗Option"
-      style="height: 300px; width: 100%; margin: auto"
-    />
+    <VChart :option="deltaOption" style="height: 300px; width: 100%; margin: auto" />
+    <VChart :option="代替正股Option" style="height: 300px; width: 100%; margin: auto" />
+    <VChart :option="gammaOption" style="height: 300px; width: 100%; margin: auto" />
+    <VChart :option="单日损耗Option" style="height: 300px; width: 100%; margin: auto" />
   </div>
 </template>
 <script setup>
-import {
-  UNIT,
-  stock_code_map,
-  deadline_list,
-  stock_color_map,
-  stock_sorted_list,
-} from "~/data";
+import { stock_code_map, deadline_list, stock_color_map, stock_sorted_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
 const stockOptions = stock_sorted_list.map((el) => ({
@@ -116,9 +83,7 @@ const filteredData = computed(() => {
 const deltaOption = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) =>
-    Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
-  );
+  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_delta(codeOptions);
@@ -133,9 +98,7 @@ const deltaOption = computed(() => {
 const 代替正股Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) =>
-    Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
-  );
+  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_代替正股(codeOptions);
@@ -150,9 +113,7 @@ const 代替正股Option = computed(() => {
 const gammaOption = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) =>
-    Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
-  );
+  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_gamma(codeOptions);
@@ -167,9 +128,7 @@ const gammaOption = computed(() => {
 const 单日损耗Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) =>
-    Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el)
-  );
+  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_单日损耗(codeOptions);
@@ -191,7 +150,7 @@ function get_list_all_delta(list) {
 function get_list_all_代替正股(list) {
   let sum = 0;
   list.forEach((el) => {
-    sum += el["持仓"] * el["Delta"] * el["正股价格"] * UNIT;
+    sum += el["持仓"] * el["代替正股价"];
   });
   return Math.floor(sum);
 }

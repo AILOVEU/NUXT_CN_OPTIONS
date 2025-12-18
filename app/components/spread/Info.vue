@@ -21,11 +21,11 @@
       </div>
       <div class="mx-auto w-full mt-[3px] flex gap-[4px] items-center justify-around">
         <div>
-          {{ toPrice(current期权Item?.["卖一"]) }}
+          {{ current期权Item?.["一手卖一价"] }}
         </div>
         <DiffPriceTag :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
         <div>
-          {{ toPrice(spread期权Item?.["买一"]) }}
+          {{ spread期权Item?.["一手买一价"] }}
         </div>
       </div>
     </div>
@@ -33,7 +33,6 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import { toPrice } from "~//utils";
 import DiffPriceTag from "~/components/tag/DiffPriceTag.vue";
 
 const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "combo_list"]);

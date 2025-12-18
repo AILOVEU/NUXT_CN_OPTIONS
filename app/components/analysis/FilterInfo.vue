@@ -116,8 +116,8 @@
           {{ label }}
         </template>
 
-        <template #default="{ row }" v-if="label === '涨跌额'">
-          {{ toPrice(row[label]) }}
+        <template #default="{ row }" v-if="label === '一手涨跌价'">
+          {{ row["一手涨跌价"] }}
         </template>
         <template #default="{ row }" v-else-if="label === '沽购'">
           <CallPutTag :沽购="row[label]" />
@@ -142,7 +142,6 @@
 <script setup>
 import IvTag from "~/components/tag/IvTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
-import { toPrice } from "~/utils";
 import Hold from "~/pages/hold.vue";
 import { deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
 import _ from "lodash";
@@ -172,7 +171,7 @@ const tableColumns = [
     label: "一手价",
   },
   {
-    label: "涨跌额",
+    label: "一手涨跌价",
   },
   {
     label: "Delta",
@@ -253,10 +252,10 @@ const filteredTableData = computed(() => {
   color: white;
   background-color: #409eff;
 }
-::v-deep(.el-form-item){
+::v-deep(.el-form-item) {
   margin-bottom: 6px;
 }
-::v-deep(.el-radio-group){
+::v-deep(.el-radio-group) {
   justify-content: flex-start;
 }
 </style>

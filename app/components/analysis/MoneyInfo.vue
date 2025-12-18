@@ -9,7 +9,7 @@
 </template>
 <script setup>
 import { useMoneyStore } from "~/stores/useMoneyStore";
-import { UNIT, 盈亏曲线数据 } from "~/data";
+import { 盈亏曲线数据 } from "~/data";
 import _ from "lodash";
 import dayjs from 'dayjs';
 const props = defineProps(["all_data", "combo_list"]);

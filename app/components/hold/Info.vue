@@ -43,7 +43,6 @@ import DiffTag from "~/components/tag/DiffTag.vue";
 import GammaTag from "~/components/tag/GammaTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
-import { toPrice } from "~/utils";
 import HoldTag from "../tag/HoldTag.vue";
 import { useMediaQuery } from "@vueuse/core";
 const isMobile = useMediaQuery('(max-width: 768px)')
@@ -82,11 +81,11 @@ const 一手价 = computed(() => {
 const 一手涨跌价 = computed(() => {
   return props.row[prefixKey.value + '一手涨跌价']
 });
-const 成本价 = computed(() => {
-  return toPrice(props.row[prefixKey.value + "成本价"]);
+const 一手成本价 = computed(() => {
+  return props.row[prefixKey.value + "一手成本价"];
 });
 const 盈亏 = computed(() => {
-  return (一手价.value - 成本价.value) * 持仓.value;
+  return (一手价.value - 一手成本价.value) * 持仓.value;
 });
 
 const 仓位 = computed(() => {
