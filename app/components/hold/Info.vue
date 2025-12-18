@@ -2,10 +2,17 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[175px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[205px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
     <HoldTag :持仓="持仓" v-if="持仓" />
-    <div class="text-[black] mb-[3px]">打和点:&nbsp;{{ 打和点 }}</div>
-    <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+      <div class="whitespace-nowrap">
+        <el-tag type="info" size="small" effect="plain"> 打和 {{ 打和点 }} </el-tag>
+      </div>
+      <div class="whitespace-nowrap">
+        <PremiumTag :溢价率="溢价" />
+      </div>
+    </div>
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
         <PriceTag :一手价="一手价" />
       </div>
@@ -14,7 +21,7 @@
       </div>
     </div>
 
-    <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
         <IvTag :隐波="隐波" :正股="正股代码" />
       </div>
@@ -22,7 +29,7 @@
         <DeltaTag :Delta="Delta" :正股="正股代码" />
       </div>
     </div>
-    <div class="flex gap-[6px] justify-center whitespace-nowrap">
+    <div class="flex gap-[2px] justify-center whitespace-nowrap">
       <GammaTag :Gamma="Gamma" />
     </div>
     <div v-if="持仓">
@@ -44,6 +51,7 @@ import IvTag from "~/components/tag/IvTag.vue";
 import PriceTag from "~/components/tag/PriceTag.vue";
 import DiffTag from "~/components/tag/DiffTag.vue";
 import GammaTag from "~/components/tag/GammaTag.vue";
+import PremiumTag from "~/components/tag/PremiumTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import HoldTag from "../tag/HoldTag.vue";
