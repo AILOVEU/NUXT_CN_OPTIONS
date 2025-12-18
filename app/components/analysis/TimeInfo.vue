@@ -60,55 +60,23 @@
 
             <el-table-column label="盈亏" align="center">
               <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" sortable>
-                <template v-if="Array.isArray(row['一手价'])">
-                  <div class="flex gap-[12px] items-center justify-between">
-                    <div>{{ row["一手价"][0] - row["一手价"][1] }}</div>
-                    <div class="text-[#dcdada]">
-                      <div>{{ row["一手价"][0] }}</div>
-                      <div>{{ row["一手价"][1] }}</div>
-                    </div>
-                  </div>
-                </template>
-                <template v-else>
-                  {{ row["一手价"] }}
-                </template>
+                <CombinTableCell :value="row['一手价']" :showDiff="true" />
               </el-table-column>
 
               <el-table-column label="一手成本价" minWidth="120" #default="{ row }" prop="一手成本价" sortable>
-                <template v-if="Array.isArray(row['一手成本价'])">
-                  <div class="flex gap-[12px] items-center justify-between">
-                    <div>{{ row["一手成本价"][0] - row["一手成本价"][1] }}</div>
-                    <div class="text-[#dcdada]">
-                      <div>{{ row["一手成本价"][0] }}</div>
-                      <div>{{ row["一手成本价"][1] }}</div>
-                    </div>
-                  </div>
-                </template>
-                <template v-else>
-                  {{ row["一手成本价"] }}
-                </template>
+                <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
               </el-table-column>
+              <el-table-column label="一手盈亏" prop="一手盈亏" minWidth="120" sortable />
+
               <el-table-column label="总盈亏" prop="总盈亏" minWidth="120" sortable />
             </el-table-column>
 
             <el-table-column label="价格构成" align="center">
-              <el-table-column label="时间" #default="{ row }" prop="一手时间价" sortable>
-                <template v-if="Array.isArray(row['一手时间价'])">
-                  <div>{{ row["一手时间价"][0] }}</div>
-                  <div>{{ row["一手时间价"][1] }}</div>
-                </template>
-                <template v-else>
-                  {{ row["一手时间价"] }}
-                </template>
+              <el-table-column label="时间" #default="{ row }" minWidth="140" prop="一手时间价" sortable>
+                <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
               </el-table-column>
-              <el-table-column label="实值" #default="{ row }" prop="一手内在价" sortable>
-                <template v-if="Array.isArray(row['一手内在价'])">
-                  <div>{{ row["一手内在价"][0] }}</div>
-                  <div>{{ row["一手内在价"][1] }}</div>
-                </template>
-                <template v-else>
-                  {{ row["一手内在价"] }}
-                </template>
+              <el-table-column label="实值" #default="{ row }" minWidth="140" prop="一手内在价" sortable>
+                <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
               </el-table-column>
             </el-table-column>
 
@@ -119,13 +87,10 @@
 
             <el-table-column label="参数" align="center">
               <el-table-column label="Gamma" #default="{ row }" prop="Gamma" width="120" sortable>
-                <template v-if="Array.isArray(row['Gamma'])">
-                  <div>{{ row["Gamma"][0] }}</div>
-                  <div>{{ row["Gamma"][1] }}</div>
-                </template>
-                <template v-else>
-                  {{ row["Gamma"] }}
-                </template>
+                <CombinTableCell :value="row['Gamma']" :showDiff="true" />
+              </el-table-column>
+              <el-table-column label="Delta" #default="{ row }" prop="Delta" width="120" sortable>
+                <CombinTableCell :value="row['Delta']" :showDiff="true" />
               </el-table-column>
             </el-table-column>
 
@@ -270,11 +235,13 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间收益组合涨跌,
       children: 组合期权持仓.value.时间收益组合List.map(([权利期权Item, 义务期权Item, 组合持仓]) => {
         const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
-        const 总盈亏 = (权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"])) * 组合持仓;
+        const 一手盈亏 = 权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"]);
+        const 总盈亏 = 一手盈亏 * 组合持仓;
         const 今日单手涨跌 = 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"];
         return {
           isCombo: true,
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
+          Delta: [权利期权Item["Delta"], 义务期权Item["Delta"]],
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
           到期日: 权利期权Item["到期日"],
@@ -294,6 +261,7 @@ const richTableData = computed(() => {
           总价,
           总价占比: toPercent_1(总价 / 持仓总价.value),
           总盈亏,
+          一手盈亏,
         };
       }),
     },
@@ -304,11 +272,10 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间损耗组合涨跌,
       children: 组合期权持仓.value.时间损耗组合List.map(([权利期权Item, 义务期权Item, 组合持仓]) => {
         const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
-        const 总盈亏 = (权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"])) * 组合持仓;
+        const 一手盈亏 = 权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"]);
+        const 总盈亏 = 一手盈亏 * 组合持仓;
         const 今日单手涨跌 = 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"];
         return {
-          总价,
-          总盈亏,
           isCombo: true,
           期权名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
           持仓: 组合持仓,
@@ -317,6 +284,7 @@ const richTableData = computed(() => {
           到期日: 权利期权Item["到期日"],
           到期天数: 权利期权Item["到期天数"],
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
+          Delta: [权利期权Item["Delta"], 义务期权Item["Delta"]],
 
           一手价: [权利期权Item["一手价"], 义务期权Item["一手价"]],
           一手成本价: [权利期权Item["一手成本价"], 义务期权Item["一手成本价"]],
@@ -325,6 +293,10 @@ const richTableData = computed(() => {
 
           今日总涨跌: 今日单手涨跌 * 组合持仓,
           今日单手涨跌,
+
+          总盈亏,
+          一手盈亏,
+          总价,
           总价占比: toPercent_1(总价 / 持仓总价.value),
         };
       }),
@@ -338,7 +310,8 @@ const richTableData = computed(() => {
       children: 单腿期权持仓.value.list.map((期权) => {
         const 持仓 = 期权["持仓"];
         const 总价 = 期权["一手价"] * 持仓;
-        const 总盈亏 = (期权["一手价"] - 期权["一手成本价"]) * 持仓;
+        const 一手盈亏 = 期权["一手价"] - 期权["一手成本价"];
+        const 总盈亏 = 一手盈亏 * 持仓;
         return {
           期权名称: 期权["期权名称"],
           持仓,
@@ -348,9 +321,12 @@ const richTableData = computed(() => {
           一手时间价: 期权["一手时间价"],
           到期天数: 期权["到期天数"],
           Gamma: 期权["Gamma"],
+          Delta: 期权["Delta"],
+
           今日总涨跌: 期权["一手涨跌价"] * 持仓,
           今日单手涨跌: 期权["一手涨跌价"],
           总价,
+          一手盈亏,
           总盈亏,
           总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码: 期权["正股代码"],

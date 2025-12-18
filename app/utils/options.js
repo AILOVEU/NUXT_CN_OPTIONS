@@ -1,5 +1,6 @@
 import { UNIT, fields_dict, stock_code_map, 金额 } from "~/data";
 import dayjs from "dayjs";
+import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 
@@ -30,7 +31,7 @@ export function get_最新价(row) {
 export function get_持仓(持仓JSON, line_dict) {
   let targetList = 持仓JSON.filter((item) => item["名称"] === line_dict["期权名称"]);
   if (!targetList.length) return 0;
-  console.log('targetList',targetList)
+  console.log("targetList", targetList);
   let 持仓 = 0;
   targetList.forEach((item) => {
     let item持仓 = +item["持仓"];
@@ -233,6 +234,9 @@ export async function get_http_data(正股代码List, useCatch = true) {
     NUMBER_TYPE_KEYS.forEach((key) => {
       line_dict[key] = line_dict[key] ? +line_dict[key] : line_dict[key];
     });
+    line_dict["Delta"] = formatDecimal(line_dict["Delta"], 3);
+    line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
+
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
     line_dict["到期日"] = line_dict["到期日"] + "";
     line_dict["到期天数"] = dayjs(line_dict["到期日"], "YYYYMMDD").diff(dayjs(), "days") + 1;
@@ -249,7 +253,6 @@ export async function get_http_data(正股代码List, useCatch = true) {
 
     line_dict["一手买一价"] = toPrice(line_dict["买一"]);
     line_dict["一手卖一价"] = toPrice(line_dict["卖一"]);
-
 
     line_dict["一手价"] = toPrice(line_dict["最新价"]);
     line_dict["一手昨收价"] = toPrice(line_dict["昨收"]);

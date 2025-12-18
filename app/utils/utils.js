@@ -40,3 +40,17 @@ export function generateRandomString(length) {
   }
   return result;
 }
+
+export function formatDecimal(num, toFixed = 2) {
+  // 先将数字转为字符串
+  const str = num.toString();
+
+  // 判断是否为小数（包含小数点）
+  if (str.includes(".")) {
+    // 保留两位小数（四舍五入）
+    return parseFloat(num).toFixed(toFixed);
+  }
+
+  // 如果是整数，直接返回
+  return num;
+}
