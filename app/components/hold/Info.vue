@@ -134,7 +134,7 @@ const style = computed(() => {
     if (溢价.value < formData.溢价Range[0] || 溢价.value > formData.溢价Range[1]) {
       isChance = false;
     }
-    if (一手价.value < formData.最新价Range[0] || 一手价.value > formData.最新价Range[1]) {
+    if (一手价.value < formData.一手价Range[0] || 一手价.value > formData.一手价Range[1]) {
       isChance = false;
     }
     if (Math.abs(Delta.value) < formData.DeltaRange[0] || Math.abs(Delta.value) > formData.DeltaRange[1]) {

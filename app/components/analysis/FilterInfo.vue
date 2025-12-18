@@ -21,17 +21,17 @@
           </el-radio-group>
         </el-form-item>
         <template v-if="!formData.过滤持有">
-          <el-form-item label="最新价范围">
+          <el-form-item label="一手价范围">
             <el-col :span="11">
               <span class="text-gray-500">最小值</span>
-              <el-input placeholder="最小值" v-model="formData.最新价Range[0]" />
+              <el-input placeholder="最小值" v-model="formData.一手价Range[0]" />
             </el-col>
             <el-col :span="2" class="text-center">
               <span class="text-gray-500">-</span>
             </el-col>
             <el-col :span="11">
               <span class="text-gray-500">最大值</span>
-              <el-input placeholder="最大值" v-model="formData.最新价Range[1]" />
+              <el-input placeholder="最大值" v-model="formData.一手价Range[1]" />
             </el-col>
           </el-form-item>
           <el-form-item label="Delta范围">
@@ -154,7 +154,7 @@ const stockOptions = stock_sorted_list.map((el) => ({
 }));
 const formData = reactive({
   溢价Range: [-100, 15],
-  最新价Range: [0, 最大建议买入价],
+  一手价Range: [0, 最大建议买入价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
   GammaRange: [0.5, 9999],
@@ -228,7 +228,7 @@ const filteredTableData = computed(() => {
     });
   filtered = filtered
     .filter((el) => {
-      return el["一手价"] <= formData.最新价Range[1] && el["一手价"] >= formData.最新价Range[0];
+      return el["一手价"] <= formData.一手价Range[1] && el["一手价"] >= formData.一手价Range[0];
     })
     .filter((el) => {
       return Math.abs(el["Delta"]) <= formData.DeltaRange[1] && Math.abs(el["Delta"]) >= formData.DeltaRange[0];

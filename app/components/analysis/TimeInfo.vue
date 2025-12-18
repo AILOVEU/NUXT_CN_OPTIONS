@@ -37,13 +37,13 @@
                 <div class="text-[10px]">{{ $index + 1 }}</div>
               </template>
             </el-table-column>
-            <el-table-column label="名称" prop="名称" #default="{ row }" width="180" sortable fixed="left">
-              <template v-if="Array.isArray(row['名称'])">
-                <div>{{ row["名称"][0] }}</div>
-                <div>{{ row["名称"][1] }}</div>
+            <el-table-column label="期权名称" prop="期权名称" #default="{ row }" width="180" sortable fixed="left">
+              <template v-if="Array.isArray(row['期权名称'])">
+                <div>{{ row["期权名称"][0] }}</div>
+                <div>{{ row["期权名称"][1] }}</div>
               </template>
               <template v-else>
-                {{ row["名称"] }}
+                {{ row["期权名称"] }}
               </template>
             </el-table-column>
             <el-table-column label="沽购" #default="{ row }" prop="沽购" sortable>
@@ -54,35 +54,35 @@
             </el-table-column>
             <el-table-column label="持仓" prop="持仓" sortable />
             <el-table-column label="总盈亏" prop="总盈亏" width="120" sortable />
-            <el-table-column label="最新价" width="120" #default="{ row }" prop="最新价" sortable>
-              <template v-if="Array.isArray(row['最新价'])">
-                <div>{{ toPrice(row["最新价"][0]) }}</div>
-                <div>{{ toPrice(row["最新价"][1]) }}</div>
+            <el-table-column label="一手价" width="120" #default="{ row }" prop="一手价" sortable>
+              <template v-if="Array.isArray(row['一手价'])">
+                <div>{{ row["一手价"][0] }}</div>
+                <div>{{ row["一手价"][1] }}</div>
               </template>
               <template v-else>
-                {{ toPrice(row["最新价"]) }}
+                {{ row["一手价"] }}
               </template>
             </el-table-column>
-            <el-table-column label="时间" #default="{ row }" prop="时间" sortable>
-              <template v-if="Array.isArray(row['时间'])">
-                <div>{{ toPrice(row["时间"][0]) }}</div>
-                <div>{{ toPrice(row["时间"][1]) }}</div>
+            <el-table-column label="时间" #default="{ row }" prop="一手时间价" sortable>
+              <template v-if="Array.isArray(row['一手时间价'])">
+                <div>{{ row["一手时间价"][0] }}</div>
+                <div>{{ row["一手时间价"][1] }}</div>
               </template>
               <template v-else>
-                {{ toPrice(row["时间"]) }}
+                {{ row["一手时间价"] }}
               </template>
             </el-table-column>
-            <el-table-column label="实值" #default="{ row }" prop="实值" sortable>
-              <template v-if="Array.isArray(row['实值'])">
-                <div>{{ toPrice(row["实值"][0]) }}</div>
-                <div>{{ toPrice(row["实值"][1]) }}</div>
+            <el-table-column label="实值" #default="{ row }" prop="一手内在价" sortable>
+              <template v-if="Array.isArray(row['一手内在价'])">
+                <div>{{ row["一手内在价"][0] }}</div>
+                <div>{{ row["一手内在价"][1] }}</div>
               </template>
               <template v-else>
-                {{ toPrice(row["实值"]) }}
+                {{ row["一手内在价"] }}
               </template>
             </el-table-column>
             <el-table-column label="到期天数" prop="到期天数" width="120" sortable />
-            <el-table-column label="Gamma" #default="{ row }" prop="实值" width="120" sortable>
+            <el-table-column label="Gamma" #default="{ row }" prop="Gamma" width="120" sortable>
               <template v-if="Array.isArray(row['Gamma'])">
                 <div>{{ row["Gamma"][0] }}</div>
                 <div>{{ row["Gamma"][1] }}</div>
@@ -116,8 +116,8 @@
 </template>
 
 <script setup>
-import { UNIT, deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
-import { toFixed, toPrice, toPercent_1 } from "~/utils";
+import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
+import { toFixed, toPercent_1 } from "~/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
@@ -141,22 +141,23 @@ const 组合期权持仓 = computed(() => {
 
   const 时间收益组合List = [];
   const 时间损耗组合List = [];
+
   props.combo_list.forEach((el) => {
-    const [权利Option, 义务Option, 组合持仓] = el;
-    const 权利期权Item = props.all_data.find((el) => el["期权名称"] === 权利Option);
-    const 义务期权Item = props.all_data.find((el) => el["期权名称"] === 义务Option);
+    const [权利Name, 义务Name, 组合持仓] = el;
+    const 权利期权Item = props.all_data.find((el) => el["期权名称"] === 权利Name);
+    const 义务期权Item = props.all_data.find((el) => el["期权名称"] === 义务Name);
     // 时间收益
-    if (权利期权Item["内在价值"] && 权利期权Item["时间价值"] < 义务期权Item["时间价值"]) {
+    if (权利期权Item["内在价值"] && 权利期权Item["一手时间价"] < 义务期权Item["一手时间价"]) {
       时间收益组合List.push([权利期权Item, 义务期权Item, 组合持仓]);
-      时间收益组合Value += (义务期权Item["时间价值"] - 权利期权Item["时间价值"]) * UNIT * 组合持仓;
-      时间收益组合持仓Value += (权利期权Item["最新价"] - 义务期权Item["最新价"]) * UNIT * 组合持仓;
-      时间收益组合涨跌 += (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * UNIT * 组合持仓;
+      时间收益组合Value += (义务期权Item["一手时间价"] - 权利期权Item["一手时间价"]) * 组合持仓;
+      时间收益组合持仓Value += (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+      时间收益组合涨跌 += (权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"]) * 组合持仓;
     }
     // 时间损耗
     else {
       时间损耗组合List.push([权利期权Item, 义务期权Item, 组合持仓]);
-      时间损耗组合Value += (权利期权Item["最新价"] - 义务期权Item["最新价"]) * UNIT * 组合持仓;
-      时间损耗组合涨跌 += (权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * UNIT * 组合持仓;
+      时间损耗组合Value += (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+      时间损耗组合涨跌 += (权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"]) * 组合持仓;
     }
   });
   return {
@@ -172,12 +173,12 @@ const 组合期权持仓 = computed(() => {
 
 const 单腿期权持仓 = computed(() => {
   let 持仓List = props.all_data?.filter((el) => el["持仓"]).map((el) => ({ ...el }));
-  props.combo_list.forEach(([权利Option, 义务Option, 组合持仓]) => {
+  props.combo_list.forEach(([权利Name, 义务Name, 组合持仓]) => {
     for (let i = 0; i < 持仓List.length; i++) {
-      if (持仓List[i]["期权名称"] === 权利Option) {
+      if (持仓List[i]["期权名称"] === 权利Name) {
         持仓List[i]["持仓"] -= 组合持仓;
       }
-      if (持仓List[i]["期权名称"] === 义务Option) {
+      if (持仓List[i]["期权名称"] === 义务Name) {
         持仓List[i]["持仓"] += 组合持仓;
       }
     }
@@ -187,28 +188,31 @@ const 单腿期权持仓 = computed(() => {
   持仓List = _.sortBy(持仓List, ["正股代码", "到期日", "行权价"]);
   let value = 0;
   持仓List.forEach((el) => {
-    value += el["最新价"] * UNIT * el["持仓"];
-    涨跌 += el["涨跌额"] * UNIT * el["持仓"];
+    value += el["一手价"] * el["持仓"];
+    涨跌 += el["一手涨跌价"] * el["持仓"];
   });
   return { list: 持仓List, value: Math.floor(value), 涨跌: Math.floor(涨跌) };
 });
+
 const 持仓总价 = computed(() => {
   return 组合期权持仓.value.时间收益组合持仓Value + 组合期权持仓.value.时间损耗组合Value + 单腿期权持仓.value.value || 1;
 });
+
 const richTableData = computed(() => {
   return [
+    // 组合待收益
     {
       _custom: true,
       title: "组合时间价值待收益",
       value: 组合期权持仓.value.时间收益组合Value,
       children: 组合期权持仓.value.时间收益组合List.map(([权利期权Item, 义务期权Item, 组合持仓]) => {
-        const 总价 = toPrice((义务期权Item["时间价值"] - 权利期权Item["时间价值"]) * 组合持仓);
+        const 总价 = (义务期权Item["一手时间价"] - 权利期权Item["一手时间价"]) * 组合持仓;
         return {
-          名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
+          期权名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
           持仓: 组合持仓,
-          最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
-          实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
-          时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+          一手价: [权利期权Item["一手价"], 义务期权Item["一手价"]],
+          一手内在价: [权利期权Item["一手内在价"], 义务期权Item["一手内在价"]],
+          一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
           到期天数: 权利期权Item["到期天数"],
           总价,
           总价占比: toPercent_1(总价 / 组合期权持仓.value.时间收益组合Value),
@@ -218,26 +222,27 @@ const richTableData = computed(() => {
         };
       }),
     },
+    // 组合实值
     {
       title: "组合占用资金(无时间损耗)",
       value: 组合期权持仓.value.时间收益组合持仓Value,
       涨跌: 组合期权持仓.value.时间收益组合涨跌,
       children: 组合期权持仓.value.时间收益组合List.map(([权利期权Item, 义务期权Item, 组合持仓]) => {
-        const 总价 = toPrice((权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓);
-        const 总盈亏 = toPrice((权利期权Item["最新价"] - 权利期权Item["成本价"] - (义务期权Item["最新价"] - 义务期权Item["成本价"])) * 组合持仓);
+        const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+        const 总盈亏 = (权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"])) * 组合持仓;
         return {
           isCombo: true,
-          名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
+          期权名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
           持仓: 组合持仓,
-          最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
-          实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
-          时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+          一手价: [权利期权Item["一手价"], 义务期权Item["一手价"]],
+          一手内在价: [权利期权Item["一手内在价"], 义务期权Item["一手内在价"]],
+          一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
           到期天数: 权利期权Item["到期天数"],
           总价,
           总盈亏,
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
-          涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
-          单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
+          涨跌: (权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"]) * 组合持仓,
+          单手涨跌: 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"],
           总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
@@ -245,26 +250,27 @@ const richTableData = computed(() => {
         };
       }),
     },
+    // 组合虚值
     {
       title: "组合期权持仓(占用时间价值)",
       value: 组合期权持仓.value.时间损耗组合Value,
       涨跌: 组合期权持仓.value.时间损耗组合涨跌,
       children: 组合期权持仓.value.时间损耗组合List.map(([权利期权Item, 义务期权Item, 组合持仓]) => {
-        const 总价 = toPrice((权利期权Item["最新价"] - 义务期权Item["最新价"]) * 组合持仓);
-        const 总盈亏 = toPrice((权利期权Item["最新价"] - 权利期权Item["成本价"] - (义务期权Item["最新价"] - 义务期权Item["成本价"])) * 组合持仓);
+        const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+        const 总盈亏 = (权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"])) * 组合持仓;
         return {
           isCombo: true,
-          名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
+          期权名称: [权利期权Item["期权名称"], 义务期权Item["期权名称"]],
           持仓: 组合持仓,
-          最新价: [权利期权Item["最新价"], 义务期权Item["最新价"]],
-          实值: [权利期权Item["内在价值"], 义务期权Item["内在价值"]],
-          时间: [权利期权Item["时间价值"], 义务期权Item["时间价值"]],
+          一手价: [权利期权Item["一手价"], 义务期权Item["一手价"]],
+          一手内在价: [权利期权Item["一手内在价"], 义务期权Item["一手内在价"]],
+          一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
           到期天数: 权利期权Item["到期天数"],
           总价,
           总盈亏,
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
-          涨跌: toPrice((权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]) * 组合持仓),
-          单手涨跌: toPrice(权利期权Item["涨跌额"] - 义务期权Item["涨跌额"]),
+          涨跌: (权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"]) * 组合持仓,
+          单手涨跌: 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"],
           总价占比: toPercent_1(总价 / 持仓总价.value),
           正股代码: 权利期权Item["正股代码"],
           沽购: 权利期权Item["沽购"],
@@ -272,35 +278,38 @@ const richTableData = computed(() => {
         };
       }),
     },
+    // 单腿
     {
       showChart: true,
       title: "单腿期权(占用时间价值)",
       value: 单腿期权持仓.value.value,
       涨跌: 单腿期权持仓.value.涨跌,
-      children: 单腿期权持仓.value.list.map(({ Gamma, 成本价, 期权名称, 最新价, 涨跌额, 持仓, 内在价值, 时间价值, 到期天数, 到期日, 正股代码, 沽购 }) => {
-        const 总价 = toPrice(最新价 * 持仓);
-        const 总盈亏 = toPrice((最新价 - 成本价) * 持仓);
+      children: 单腿期权持仓.value.list.map((期权) => {
+        const 持仓 = 期权["持仓"];
+        const 总价 = 期权["一手价"] * 持仓;
+        const 总盈亏 = (期权["一手价"] - 期权["一手成本价"]) * 持仓;
         return {
-          名称: 期权名称,
-          持仓: 持仓,
-          最新价,
-          实值: 内在价值,
-          时间: 时间价值,
-          到期天数,
-          涨跌: toPrice(涨跌额 * 持仓),
-          Gamma,
-          单手涨跌: toPrice(涨跌额),
+          期权名称: 期权["期权名称"],
+          持仓,
+          一手价: 期权["一手价"],
+          一手内在价: 期权["一手内在价"],
+          一手时间价: 期权["一手时间价"],
+          到期天数: 期权["到期天数"],
+          涨跌: 期权["一手涨跌价"] * 持仓,
+          Gamma: 期权["Gamma"],
+          单手涨跌: 期权["一手涨跌价"],
           总价,
           总盈亏,
           总价占比: toPercent_1(总价 / 持仓总价.value),
-          正股代码,
-          沽购,
-          到期日,
+          正股代码: 期权["正股代码"],
+          沽购: 期权["沽购"],
+          到期日: 期权["到期日"],
         };
       }),
     },
   ];
 });
+
 function getPercentColor(val) {
   if (val > 50) return "#f56c6c";
   if (val > 25) return "#e6a23c";
@@ -403,7 +412,7 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
           if (总和标识 === "盈") list = list.filter((el) => el[展示字段] > 0);
           if (总和标识 === "亏") list = list.filter((el) => el[展示字段] < 0);
           list = _.sortBy(list, (el) => -el[展示字段]);
-          str += list.map((el) => `<div style="display:flex;justify-content: space-between;column-gap: 10px;height: 20px;"><div>${el[展示字段]}</div><div>${el["名称"]}</div></div>`).join("");
+          str += list.map((el) => `<div style="display:flex;justify-content: space-between;column-gap: 10px;height: 20px;"><div>${el[展示字段]}</div><div>${el["期权名称"]}</div></div>`).join("");
           if (str) str += "<br /><br />";
           return `${str}${data.name}<br />${亏损符号 * value}`;
         }
@@ -451,6 +460,7 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
     ],
   };
 }
+
 const 持仓分布Option = computed(() => {
   const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
   let 沽购to正股Map = {};
