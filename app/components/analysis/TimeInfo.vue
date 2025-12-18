@@ -10,17 +10,17 @@
   <div>
     <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
       <el-form-item label="正股">
-        <el-select v-model="formData.正股List" multiple>
+        <el-select v-model="formData.正股List" multiple clearable>
           <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="到期日">
-        <el-select v-model="formData.到期日List" multiple>
+        <el-select v-model="formData.到期日List" multiple clearable>
           <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
         </el-select>
       </el-form-item>
       <el-form-item label="沽购">
-        <el-select v-model="formData.沽购List" multiple>
+        <el-select v-model="formData.沽购List" multiple clearable>
           <el-option v-for="call in ['沽', '购']" :key="call" :label="call" :value="call" />
         </el-select>
       </el-form-item>
@@ -38,13 +38,7 @@
               </template>
             </el-table-column>
             <el-table-column label="期权名称" prop="期权名称" #default="{ row }" minWidth="200" sortable fixed="left">
-              <template v-if="Array.isArray(row['期权名称'])">
-                <div>{{ row["期权名称"][0] }}</div>
-                <div>{{ row["期权名称"][1] }}</div>
-              </template>
-              <template v-else>
-                {{ row["期权名称"] }}
-              </template>
+              <CombinTableCell :value="row['期权名称']" :showDiff="false" />
             </el-table-column>
             <el-table-column label="信息" align="center">
               <el-table-column label="正股" #default="{ row }" prop="正股代码" minWidth="140" sortable>
@@ -55,9 +49,7 @@
               </el-table-column>
               <el-table-column label="到期天数" prop="到期天数" minWidth="120" sortable />
             </el-table-column>
-
             <el-table-column label="持仓" prop="持仓" minWidth="80" sortable />
-
             <el-table-column label="盈亏" align="center">
               <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />

@@ -248,6 +248,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["内在价值"] = get_option_实值(line_dict);
     line_dict["时间价值"] = Math.floor((line_dict["最新价"] - line_dict["内在价值"]) * line_dict["合约单位"]) / line_dict["合约单位"];
 
+    line_dict["打和点"] = formatDecimal(line_dict["行权价"] + (line_dict["沽购"] === "购" ? 1 : -1) * line_dict["最新价"], 4);
     line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
     line_dict["成本价"] = get_成本价(line_dict, 持仓JSON);
     line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(line_dict["正股"]);
@@ -264,7 +265,6 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["一手内在价"] = toPrice(line_dict["内在价值"], line_dict["合约单位"]);
 
     line_dict["代替正股价"] = line_dict["Delta"] * line_dict["正股价格"] * line_dict["合约单位"];
-
     all_data.push(line_dict);
   });
   all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));

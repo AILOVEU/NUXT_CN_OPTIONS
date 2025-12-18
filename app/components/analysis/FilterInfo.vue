@@ -3,13 +3,18 @@
     <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
       <div>
         <el-form-item label="正股">
-          <el-select v-model="formData.正股List" multiple>
+          <el-select v-model="formData.正股List" multiple allowClear clearable>
             <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="到期日">
+        <el-form-item label="到期日" clearable>
           <el-select v-model="formData.到期日List" multiple>
             <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="沽购" clearable>
+          <el-select v-model="formData.沽购List" multiple>
+            <el-option v-for="call in ['沽', '购']" :key="call" :label="call" :value="call" />
           </el-select>
         </el-form-item>
         <el-form-item label="过滤持有">
@@ -106,35 +111,33 @@
 
   <div v-if="showType === 'list'" class="w-full min-h-[calc(100vh-400px)] mb-[100px]">
     <el-table :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
-      <el-table-column label="序" width="40" align="center" fixed="left">
-        <template #default="{ $index }">
-          <div class="text-[10px]">{{ $index + 1 }}</div>
-        </template>
+      <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
+        <div class="text-[10px]">{{ $index + 1 }}</div>
       </el-table-column>
-      <el-table-column v-for="{ label, width, fixed } in tableColumns" :key="label" :prop="label" :width="width" :minWidth="100" align="center" sortable :fixed="fixed">
-        <template #header>
-          {{ label }}
-        </template>
-
-        <template #default="{ row }" v-if="label === '一手涨跌价'">
-          {{ row["一手涨跌价"] }}
-        </template>
-        <template #default="{ row }" v-else-if="label === '沽购'">
-          <CallPutTag :沽购="row[label]" />
-        </template>
-        <template #default="{ row }" v-else-if="label === '隐波'">
-          <IvTag :隐波="row[label]" />
-        </template>
-        <template #default="{ row }" v-else-if="label === '组合'">
-          {{ row["组合"] ? "是" : "" }}
-        </template>
-        <template #default="{ row }" v-else-if="label === '持仓'">
-          {{ row["持仓"] || "" }}
-        </template>
-        <template #default="{ row }" v-else>
-          {{ row[label] }}
-        </template>
+      <el-table-column label="期权名称" prop="期权名称" minWidth="150" sortable />
+      <el-table-column label="一手价" prop="一手价" minWidth="100" sortable />
+      <el-table-column label="一手涨跌价" prop="一手涨跌价" minWidth="100" sortable />
+      <el-table-column label="打和点" prop="打和点" minWidth="100" sortable />
+      <el-table-column label="Delta" prop="Delta" minWidth="100" sortable />
+      <el-table-column #default="{ row }" label="隐波" prop="隐波" minWidth="100" sortable>
+        <IvTag :隐波="row['隐波']" />
       </el-table-column>
+      <el-table-column label="Gamma" prop="Gamma" minWidth="100" sortable />
+      <el-table-column #default="{ row }" label="持仓" prop="持仓" minWidth="100" sortable>
+        {{ row["持仓"] || "" }}
+      </el-table-column>
+      <el-table-column label="杠杆" prop="杠杆" minWidth="100" sortable />
+      <el-table-column label="溢价率" prop="溢价率" minWidth="100" sortable />
+      <el-table-column #default="{ row }" label="沽购" prop="沽购" minWidth="100" sortable>
+        <CallPutTag :沽购="row['沽购']" />
+      </el-table-column>
+      <el-table-column #default="{ row }" label="组合" prop="组合" minWidth="100" sortable>
+        {{ row["组合"] ? "是" : "" }}
+      </el-table-column>
+      <el-table-column label="行权价" prop="行权价" minWidth="100" sortable />
+      <el-table-column label="正股" prop="正股" minWidth="100" sortable />
+      <el-table-column label="正股价格" prop="正股价格" minWidth="100" sortable />
+      <el-table-column label="到期天数" prop="到期天数" minWidth="100" sortable />
     </el-table>
   </div>
   <Hold v-else-if="showType === 't'" mode="chance" :formData="formData" />
@@ -159,60 +162,18 @@ const formData = reactive({
   GammaRange: [0.5, 9999],
   正股List: [...stock_sorted_list],
   到期日List: [...deadline_list].filter((el, index) => index),
+  沽购List: ["沽", "购"],
   过滤持有: false,
 });
-const tableColumns = [
-  {
-    width: "170px",
-    label: "期权名称",
-    fixed: "left",
-  },
-  {
-    label: "一手价",
-  },
-  {
-    label: "一手涨跌价",
-  },
-  {
-    label: "Delta",
-  },
-  {
-    label: "隐波",
-  },
-  {
-    label: "Gamma",
-  },
-  {
-    label: "持仓",
-  },
-  {
-    label: "杠杆",
-  },
-  {
-    label: "溢价率",
-  },
-  {
-    label: "沽购",
-  },
-  {
-    label: "组合",
-  },
-  {
-    label: "行权价",
-  },
-  {
-    label: "正股",
-  },
-  {
-    label: "正股价格",
-  },
-  {
-    label: "到期天数",
-  },
-];
 const filteredTableData = computed(() => {
   let filtered =
     props.all_data
+      ?.filter((el) => {
+        return !el["期权名称"].includes("A");
+      })
+      ?.filter((el) => {
+        return formData.沽购List.includes(el["沽购"]);
+      })
       ?.filter((el) => {
         return formData.正股List.includes(el["正股代码"]);
       })
