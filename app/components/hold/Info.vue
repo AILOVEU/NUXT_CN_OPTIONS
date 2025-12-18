@@ -1,7 +1,8 @@
 <template>
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[90px] max-md:h-[155px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[175px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
     <HoldTag :持仓="持仓" v-if="持仓" />
+    <div class="text-[#909399] mb-[3px]">打和点:&nbsp;{{ 打和点 }}</div>
     <div class="flex gap-[6px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
         <PriceTag :一手价="一手价" />
@@ -45,8 +46,8 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import HoldTag from "../tag/HoldTag.vue";
 import { useMediaQuery } from "@vueuse/core";
-const isMobile = useMediaQuery('(max-width: 768px)')
-console.log('isMobile',isMobile)
+const isMobile = useMediaQuery("(max-width: 768px)");
+console.log("isMobile", isMobile);
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
@@ -78,8 +79,11 @@ const 持仓 = computed(() => {
 const 一手价 = computed(() => {
   return props.row[prefixKey.value + "一手价"];
 });
+const 打和点 = computed(() => {
+  return props.row[prefixKey.value + "打和点"];
+});
 const 一手涨跌价 = computed(() => {
-  return props.row[prefixKey.value + '一手涨跌价']
+  return props.row[prefixKey.value + "一手涨跌价"];
 });
 const 一手成本价 = computed(() => {
   return props.row[prefixKey.value + "一手成本价"];
@@ -153,6 +157,6 @@ const style = computed(() => {
       };
     }
   }
-  return {width};
+  return { width };
 });
 </script>
