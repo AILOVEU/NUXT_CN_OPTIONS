@@ -35,7 +35,7 @@
     <div v-if="持仓">
       <div class="flex justify-between whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small" effect="plain"> 仓 {{ 仓位 }} ({{ 仓位占比.toFixed(2) }}%) </el-tag>
+          <el-tag type="info" size="small" effect="plain"> 仓 {{ 仓位 }} ({{ formatDecimal(仓位占比, 2) }}%) </el-tag>
         </div>
         <div class="whitespace-nowrap">
           <el-tag :type="盈亏 > 0 ? 'danger' : 'success'" size="small" effect="plain"> {{ 盈亏 > 0 ? "盈" : "亏" }} {{ 盈亏 }} </el-tag>
@@ -56,6 +56,8 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import HoldTag from "../tag/HoldTag.vue";
 import { useMediaQuery } from "@vueuse/core";
+import { formatDecimal } from "~/utils/utils";
+
 const isMobile = useMediaQuery("(max-width: 768px)");
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);

@@ -1,21 +1,23 @@
 <template>
   <div v-if="!props.row?._split && !props.row?._current" class="text-black">
-    <div>{{ 正股 }}</div>
+    <div>{{ 正股名称 }}</div>
     <div>
-      {{ 到期日 }}{{ 行权价 }}
-      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }"> ({{ 溢价Str }}) </span>
+      {{ 到期日 }}{{ 行权价 * 1000 }}
+      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }"> ({{ formatDecimal(溢价, 2) }}%) </span>
     </div>
   </div>
   <div v-else>
-    {{ (行权价 / 1000).toFixed(3) }}
+    {{ formatDecimal(行权价, 3) }}
   </div>
 </template>
 <script setup>
 import dayjs from "dayjs";
 import { stock_show_name_map, deadline_map } from "~/data";
+import { formatDecimal } from "~/utils/utils";
+
 const props = defineProps(["row"]);
 
-const 正股 = computed(() => {
+const 正股名称 = computed(() => {
   return stock_show_name_map[props.row["正股代码"]];
 });
 const 到期日 = computed(() => {
@@ -23,16 +25,14 @@ const 到期日 = computed(() => {
   return deadline_map[month];
 });
 const 行权价 = computed(() => {
-  return props.row["行权价"] * 1000;
+  return props.row["行权价"];
 });
 
 const 正股价格 = computed(() => {
-  return props.row["正股价格"] * 1000;
+  return props.row["正股价格"];
 });
+
 const 溢价 = computed(() => {
   return (100 * (行权价.value - 正股价格.value)) / 正股价格.value;
-});
-const 溢价Str = computed(() => {
-  return 溢价.value.toFixed(2) + "%";
 });
 </script>

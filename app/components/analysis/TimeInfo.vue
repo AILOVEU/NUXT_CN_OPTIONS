@@ -111,7 +111,8 @@
 
 <script setup>
 import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
-import { toFixed, toPercent_1 } from "~/utils";
+import { toPercent_1 } from "~/utils";
+import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
@@ -468,7 +469,7 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
           },
           formatter: function (params) {
             const { value, data } = params;
-            return `{a|${data.name}}  {b|${亏损符号 * value}} {c|(${toFixed((100 * value) / sumValue, 1)}%)}`;
+            return `{a|${data.name}}  {b|${亏损符号 * value}} {c|(${formatDecimal((100 * value) / sumValue, 1)}%)}`;
           },
         },
         links: [...sourceToTargetList, ...totalData],

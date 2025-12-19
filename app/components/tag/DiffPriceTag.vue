@@ -5,7 +5,6 @@
 </template>
 <script setup>
 import { 最大建议买入价 } from "~/data";
-import { toFixed } from "~/utils";
 const props = defineProps(["正股代码", "diffValue", "current期权Item", "spread期权Item"]);
 const 一手价 = computed(() => {
   return props.current期权Item?.["一手卖一价"] - props.spread期权Item?.["一手买一价"];

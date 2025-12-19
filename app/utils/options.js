@@ -111,10 +111,6 @@ export function 构建组合(all_data) {
   return 组合List;
 }
 
-export function toFixed(value, number = 0) {
-  return parseFloat(value.toFixed(number));
-}
-
 export function toFloor(val) {
   return Math.floor(val);
 }
@@ -237,6 +233,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["合约单位"] = 10000;
     line_dict["Delta"] = formatDecimal(line_dict["Delta"], 3);
     line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
+    line_dict["杠杆"] = formatDecimal(line_dict["杠杆"], 1);
 
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
     line_dict["到期日"] = line_dict["到期日"] + "";
