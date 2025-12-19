@@ -80,9 +80,9 @@ const tableData = reactive({
 });
 function getColumnWidth(label) {
   if (isMobile.value) {
-    return label === "期权" ? "100px" : "120px";
+    return label === "期权" ? "80px" : "120px";
   }
-  return label === "期权" ? "100px" : "220px";
+  return label === "期权" ? "80px" : "155px";
 }
 async function handleQuery() {
   tableData.loading = true;

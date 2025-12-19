@@ -28,4 +28,7 @@ useHead({
 // .el-tag__content{
 //   color: black;
 // }
+.el-tag--small {
+  padding: 0 2px !important;
+}
 </style>
