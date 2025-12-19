@@ -14,7 +14,7 @@
     <div v-if="spread期权Item && show">
       <div class="text-[gray]">
         <div class="mx-auto">
-          {{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;{{ spread期权Item?.["行权价"] * 1000 }}&nbsp;&nbsp;&nbsp;&nbsp;
+          {{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         <div class="mx-auto">Delta {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
         <div class="mx-auto">隐波 {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
@@ -47,11 +47,14 @@ const 期权名称 = computed(() => {
 const 行权价 = computed(() => {
   return props.row["行权价"];
 });
+const 千行权价 = computed(() => {
+  return props.row["千行权价"];
+});
 
 const spread期权名称 = computed(() => {
   const diff = props.isCall ? props.diffValue : -props.diffValue;
-  const spread行权价 = 行权价.value * 1000 + diff;
-  return 期权名称.value?.replace(行权价.value * 1000 + "", spread行权价 + "");
+  const spread千行权价 = 千行权价.value  + diff;
+  return 期权名称.value?.replace(千行权价.value + "", spread千行权价 + "");
 });
 
 const spread期权Item = computed(() => {
@@ -66,13 +69,13 @@ function is50Multiple(val) {
   return val % 100 === 50;
 }
 const show = computed(() => {
-  if (is50Multiple(current期权Item.value["行权价"] * 1000) && is50Multiple(spread期权Item.value["行权价"] * 1000)) {
+  if (is50Multiple(current期权Item.value["千行权价"]) && is50Multiple(spread期权Item.value["千行权价"])) {
     return false;
   }
   if (spread期权Item.value["一手价"] < 100) {
     return false;
   }
-  if (current期权Item.value["行权价"] * 1000 < 5000 && props.diffValue === 250) return false;
+  if (current期权Item.value["千行权价"] < 5000 && props.diffValue === 250) return false;
   return true;
 });
 

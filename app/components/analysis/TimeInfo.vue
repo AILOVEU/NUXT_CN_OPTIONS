@@ -102,7 +102,7 @@
         <div>
           {{ props.row.value }}
         </div>
-        <div v-if="!props.row._custom">({{ toPercent_1(props.row.value / 持仓总价) }}%)</div>
+        <div v-if="!props.row._custom">({{ formatDecimal((100 * props.row.value) / 持仓总价, 1) }}%)</div>
         <DiffTag v-if="!props.row._custom" :涨跌="props.row.涨跌" />
       </div>
     </el-table-column>
@@ -111,7 +111,6 @@
 
 <script setup>
 import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
-import { toPercent_1 } from "~/utils";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
@@ -217,7 +216,7 @@ const richTableData = computed(() => {
           一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
 
           总价,
-          总价占比: toPercent_1(总价 / 组合期权持仓.value.时间收益组合Value),
+          总价占比: formatDecimal((100 * 总价) / 组合期权持仓.value.时间收益组合Value, 1),
         };
       }),
     },
@@ -252,7 +251,7 @@ const richTableData = computed(() => {
           今日单手涨跌,
 
           总价,
-          总价占比: toPercent_1(总价 / 持仓总价.value),
+          总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
           总盈亏,
           一手盈亏,
         };
@@ -290,7 +289,7 @@ const richTableData = computed(() => {
           总盈亏,
           一手盈亏,
           总价,
-          总价占比: toPercent_1(总价 / 持仓总价.value),
+          总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
         };
       }),
     },
@@ -321,7 +320,7 @@ const richTableData = computed(() => {
           总价,
           一手盈亏,
           总盈亏,
-          总价占比: toPercent_1(总价 / 持仓总价.value),
+          总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
           正股代码: 期权["正股代码"],
           沽购: 期权["沽购"],
           到期日: 期权["到期日"],

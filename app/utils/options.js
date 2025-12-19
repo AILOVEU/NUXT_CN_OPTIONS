@@ -81,7 +81,7 @@ export function 构建组合(all_data) {
     义务仓List.forEach((el) => {
       const 义务Option = el["期权名称"];
       const isCall = 义务Option.includes("购");
-      const 义务行权价 = el["行权价"] * 1000;
+      const 义务行权价 = el["千行权价"];
       let 权利行权价 = 义务行权价 + (isCall ? -50 : 50);
       let 权利Option = 义务Option.replace(义务行权价, 权利行权价);
       let loopCount2 = 0;
@@ -116,10 +116,6 @@ export function toFloor(val) {
 }
 export function toPrice(val, 合约单位) {
   return toFloor(val * 合约单位);
-}
-// 保留一位小数
-export function toPercent_1(val) {
-  return toFloor(val * 1000) / 10;
 }
 function sleep(time) {
   return new Promise((resolve) => {
@@ -234,6 +230,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["Delta"] = formatDecimal(line_dict["Delta"], 3);
     line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
     line_dict["杠杆"] = formatDecimal(line_dict["杠杆"], 1);
+    line_dict["千行权价"] = line_dict["行权价"] * 1000;
 
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
     line_dict["到期日"] = line_dict["到期日"] + "";

@@ -130,7 +130,7 @@ const filteredTableData = computed(() => {
     if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
-    return el["行权价"] * 1000 >= 行权价RangeDict[stockCode.value][0] && el["行权价"] * 1000 <= 行权价RangeDict[stockCode.value][1];
+    return el["千行权价"] >= 行权价RangeDict[stockCode.value][0] && el["千行权价"] <= 行权价RangeDict[stockCode.value][1];
   });
 });
 

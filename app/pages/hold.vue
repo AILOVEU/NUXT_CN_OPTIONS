@@ -104,23 +104,24 @@ const filteredTableData = computed(() => {
     if (el._current || el._split) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
-    if (el["行权价"] * 1000 < 5000 && (el["行权价"] * 1000) % 100 !== 0) return false;
-    return el["行权价"] * 1000 >= 行权价RangeDict[el["正股代码"]][0] && el["行权价"] * 1000 <= 行权价RangeDict[el["正股代码"]][1];
+    if (el["千行权价"] < 5000 && (el["千行权价"]) % 100 !== 0) return false;
+    return el["千行权价"] >= 行权价RangeDict[el["正股代码"]][0] && el["千行权价"] <= 行权价RangeDict[el["正股代码"]][1];
   });
 });
 
 function getCellStyle({ column, row }) {
-  if (column?.["property"] === "期权") return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
+  if (row["_split"] || row["_current"]) return {};
+  if (column?.["property"] === "期权") return { backgroundColor: "#CBDCEB", fontWeight: "600", border: "1px solid white" };
   // 红 | 绿
   // -------
   // 绿 | 红
-  // const 实值style = { backgroundColor: "rgb(255, 220, 220)" };
-  // const 虚值style = { backgroundColor: "rgb(190, 220, 190)" };
-  // if (row["行权价"] > row["正股价格"]) {
-  //   return column?.["property"]?.includes("C_") ? 虚值style : 实值style;
-  // } else {
-  //   return column?.["property"]?.includes("C_") ? 实值style : 虚值style;
-  // }
+  const 实值style = { border: "3px solid rgb(255, 220, 220)" };
+  const 虚值style = { border: "3px solid rgb(190, 220, 190)" };
+  if (row["行权价"] > row["正股价格"]) {
+    return column?.["property"]?.includes("C") ? 虚值style : 实值style;
+  } else {
+    return column?.["property"]?.includes("C") ? 实值style : 虚值style;
+  }
   return { backgroundColor: "white" };
 }
 function getRowStyle({ row }) {

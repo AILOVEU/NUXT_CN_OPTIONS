@@ -1,9 +1,9 @@
 <template>
   <div v-if="props.row._split" class="bg-[black]">&nbsp;</div>
-  <div v-else-if="!props.row?._current" class="bg-[#e5effe]">
+  <div v-else-if="!props.row?._current">
     <div>{{ 正股 }}</div>
     <div>
-      {{ 行权价 * 1000 }}
+      {{ 千行权价 }}
     </div>
     <div>
       (
@@ -13,7 +13,7 @@
       )
     </div>
   </div>
-  <div v-else class="bg-[#e5effe]">
+  <div v-else class="h-[24px] leading-[24px] text-[18px]">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>
@@ -27,6 +27,10 @@ const 正股 = computed(() => {
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];
+});
+
+const 千行权价 = computed(() => {
+  return props.row["千行权价"];
 });
 
 const 正股价格 = computed(() => {

@@ -2,7 +2,7 @@
   <div v-if="!props.row?._split && !props.row?._current" class="text-black">
     <div>{{ 正股名称 }}</div>
     <div>
-      {{ 到期日 }}{{ 行权价 * 1000 }}
+      {{ 到期日 }}{{ 千行权价 }}
       <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }"> ({{ formatDecimal(溢价, 2) }}%) </span>
     </div>
   </div>
@@ -26,6 +26,9 @@ const 到期日 = computed(() => {
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];
+});
+const 千行权价 = computed(() => {
+  return props.row["千行权价"];
 });
 
 const 正股价格 = computed(() => {

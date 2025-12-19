@@ -2,7 +2,7 @@
   <div v-if="!props.row?._current">
     <div>{{ 正股名称 }}</div>
     <div>
-      {{ 行权价 * 1000 }}
+      {{ 千行权价 }}
     </div>
     <div>
       (
@@ -25,6 +25,9 @@ const 正股名称 = computed(() => {
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];
+});
+const 千行权价 = computed(() => {
+  return props.row["千行权价"];
 });
 
 const 正股价格 = computed(() => {
