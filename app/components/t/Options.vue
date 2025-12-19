@@ -1,11 +1,12 @@
 <template>
-  <div v-if="!props.row?._split && !props.row?._current" class="px-[4px]">
-    <div>
-      <el-progress :percentage="(100 * 持仓量) / 150000">
-        <div class="text-[12px]">{{ 持仓量 }}</div>
-      </el-progress>
+  <div v-if="!props.row?._split && !props.row?._current" class="px-[4px] w-full">
+    <el-progress :percentage="(100 * 持仓量) / 150000" :text-inside="true">
+      <div></div>
+    </el-progress>
+    <div class="flex justify-between mt-[3px] px-[5px]">
+      <div class="text-[12px]">{{ 持仓量 }}</div>
+      <div class="text-left" :style="{ color: 日增 > 0 ? 'red' : 'green' }">{{ 日增 }}</div>
     </div>
-    <div :style="{ color: 日增 > 0 ? 'red' : 'green' }">{{ 日增 }}</div>
   </div>
 </template>
 <script setup>

@@ -4,15 +4,15 @@
     :style="{ flexDirection: props.isCall ? 'row' : 'row-reverse' }"
     v-if="!props.row?._split && !props.row?._current"
   >
-    <div class="p-[12px]">{{ 买一 }}</div>
+    <div class="p-[3px]">{{ 买一 }}</div>
     <div class="w-[55px] flex flex-col items-center">
-      <div class="w-full text-center border-b-[1px]">{{ 差价 }}</div>
+      <div class="w-full text-center border-b-[1px]">差:{{ 差价 }}</div>
 
       <div class="w-full text-center">
         <PriceTag :一手价="一手价" />
       </div>
     </div>
-    <div class="p-[12px]">{{ 卖一 }}</div>
+    <div class="p-[3px]">{{ 卖一 }}</div>
   </div>
 </template>
 <script setup>

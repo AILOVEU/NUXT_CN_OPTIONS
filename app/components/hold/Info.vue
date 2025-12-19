@@ -2,10 +2,10 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[205px] flex flex-col justify-center relative px-[6px] mx-auto" :style="style">
-    <RoundDiffTag :涨跌="一手涨跌价" />
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[205px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <HoldTag :持仓="持仓" v-if="持仓" />
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col mt-[5px]">
+    <RoundDiffTag :涨跌="一手涨跌价" />
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col mt-[12px]">
       <div class="whitespace-nowrap">
         <PriceTag :一手价="一手价" />
       </div>

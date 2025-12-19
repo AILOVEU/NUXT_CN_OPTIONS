@@ -10,26 +10,17 @@
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(200vh-120px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column v-for="{ label, width } in tableData.columns" :key="label" :prop="label" :label="label" :width="width" align="center">
-            <template #default="{ row }" v-if="label === '期权'">
-              <Center :row="row" />
-            </template>
-            <template #default="{ row }" v-if="label.includes('_价格')">
-              <Price :row="row" :isCall="label.includes('C')" />
-            </template>
-            <template #default="{ row }" v-if="label.includes('_信息')">
-              <Info :row="row" :isCall="label.includes('C')" />
-            </template>
-            <template #default="{ row }" v-if="label.includes('_合约')">
-              <Options :row="row" :isCall="label.includes('C')" />
-            </template>
-            <template #default="{ row }" v-if="label.includes('_价值')">
-              <Time :row="row" :isCall="label.includes('C')" />
-            </template>
-            <template #default="{ row }" v-if="label.includes('_持仓')">
-              <Hold :row="row" :isCall="label.includes('C')" />
-            </template>
-          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约"><Options :row="row" :isCall="true" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="C_价值" prop="C_价值"><Time :row="row" :isCall="true" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息"><Info :row="row" :isCall="true" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓"><Hold :row="row" :isCall="true" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格"><Price :row="row" :isCall="true" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="期权" prop="期权"><Center :row="row" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格"><Price :row="row" :isCall="false" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓"><Hold :row="row" :isCall="false" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息"><Info :row="row" :isCall="false" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_价值" prop="P_价值"><Time :row="row" :isCall="false" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_合约" prop="P_合约"><Options :row="row" :isCall="false" /></el-table-column>
         </el-table>
       </div>
     </div>
@@ -73,7 +64,7 @@ const tableData = reactive({
     },
     {
       label: "C_信息",
-      width: "180px",
+      width: "160px",
     },
     {
       label: "C_持仓",
@@ -97,7 +88,7 @@ const tableData = reactive({
     },
     {
       label: "P_信息",
-      width: "180px",
+      width: "160px",
     },
     {
       label: "P_价值",
