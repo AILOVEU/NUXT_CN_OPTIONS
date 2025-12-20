@@ -82,7 +82,7 @@ function getColumnWidth(label) {
   if (isMobile.value) {
     return label === "期权" ? "80px" : "120px";
   }
-  return label === "期权" ? "80px" : "157px";
+  return label === "期权" ? "80px" : "161px";
 }
 async function handleQuery() {
   tableData.loading = true;

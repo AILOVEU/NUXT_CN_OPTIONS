@@ -11,7 +11,7 @@
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { 盈亏曲线数据 } from "~/data";
 import _ from "lodash";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 const props = defineProps(["all_data", "combo_list"]);
 const { money } = useMoneyStore();
 const 持仓金额 = computed(() => {
@@ -19,7 +19,7 @@ const 持仓金额 = computed(() => {
   props.all_data
     .filter((el) => el["持仓"])
     .forEach((el) => {
-      value += el["持仓"] * el['一手价'];
+      value += el["持仓"] * el["一手价"];
     });
   return value;
 });
@@ -51,8 +51,7 @@ const 盈亏概览Option = computed(() => {
       formatter: function (params) {
         const target = params[1];
         const { name, value, marker } = target;
-        const week = dayjs(name,'YYYY-MM-DD').week()
-        return `${marker}${name}\n${week} ${value}`;
+        return `${marker}${name}\n${value}`;
       },
     },
     series: [
@@ -197,10 +196,16 @@ const 盈亏曲线Option = computed(() => {
     //   right: '10'
     // },
     tooltip: {
+      show: true,
       trigger: "axis",
-      // position: function (pt) {
-      //   return [pt[0], "10%"];
-      // },
+      formatter: function (params) {
+        console.log(params);
+        const target = params[0];
+        const { name, value, marker } = target;
+        const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        const weekNumb = dayjs(name, "YYYYMMDD").day();
+        return `${marker}${name} ${weekdays[weekNumb]}<br />${value}`;
+      },
     },
     backgroundColor: "#fefefe",
     title: {

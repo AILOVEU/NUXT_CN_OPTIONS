@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    Gamma {{ props.Gamma }}
+    Gamma {{ props.Gamma.toFixed(3) }}
   </el-tag>
 </template>
 <script setup>

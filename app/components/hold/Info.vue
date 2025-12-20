@@ -2,10 +2,17 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[110px] max-md:h-[205px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
-    <HoldTag :持仓="持仓" v-if="持仓" />
-    <RoundDiffTag :涨跌="一手涨跌价" />
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col mt-[12px]">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[130px] max-md:h-[195px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+    <div v-if="持仓" class="absolute top-[2px] left-[2px] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">
+      {{ 持仓 }}
+    </div>
+    <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
+      {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:
+      {{ 一手涨跌价 > 0 ? "↑ " + 一手涨跌价 : "↓ " + Math.abs(一手涨跌价) }}
+    </div>
+    <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ 一手内在价 }}</div>
+    <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ 一手时间价 }}</div>
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
         <PriceTag :一手价="一手价" />
       </div>
@@ -58,10 +65,10 @@ import PremiumTag from "~/components/tag/PremiumTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import HoldTag from "../tag/HoldTag.vue";
-import { useMediaQuery } from "@vueuse/core";
+// import { useMediaQuery } from "@vueuse/core";
 import { formatDecimal } from "~/utils/utils";
 
-const isMobile = useMediaQuery("(max-width: 768px)");
+// const isMobile = useMediaQuery("(max-width: 768px)");
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
@@ -93,6 +100,12 @@ const 持仓 = computed(() => {
 const 一手价 = computed(() => {
   return props.row[prefixKey.value + "一手价"];
 });
+const 一手时间价 = computed(() => {
+  return props.row[prefixKey.value + "一手时间价"];
+});
+const 一手内在价 = computed(() => {
+  return props.row[prefixKey.value + "一手内在价"];
+});
 const 打和点 = computed(() => {
   return props.row[prefixKey.value + "打和点"];
 });
@@ -118,19 +131,19 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
-  const width = isMobile.value ? "120px" : "150px";
+  // const width = isMobile.value ? "120px" : "154px";
   if (props.mode === "hold") {
     if (持仓.value > 0)
       return {
-        width,
-        border: "2px solid red",
-        backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
+        // width,
+        border: "4px solid red",
+        // backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
       };
     if (持仓.value < 0) {
       return {
-        width,
-        border: "2px solid green",
-        backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
+        // width,
+        border: "4px solid green",
+        // backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
       };
     }
   } else if (props.mode === "chance") {
@@ -165,12 +178,13 @@ const style = computed(() => {
     }
     if (isChance) {
       return {
-        width,
+        // width,
         // border: "2px solid green",
         backgroundColor: "#b5e6f1",
       };
     }
   }
-  return { width };
+  return {}
+  // return { width };
 });
 </script>

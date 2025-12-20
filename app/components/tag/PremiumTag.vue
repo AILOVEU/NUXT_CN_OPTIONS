@@ -1,5 +1,5 @@
 <template>
-  <el-tag :type="type" :effect="effect" size="small"> 溢 {{ props.溢价率 }}% </el-tag>
+  <el-tag :type="type" :effect="effect" size="small"> 溢 {{ props.溢价率.toFixed(2) }}% </el-tag>
 </template>
 <script setup>
 import { stock_show_name_map } from "~/data";
