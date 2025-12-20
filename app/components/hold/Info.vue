@@ -2,7 +2,7 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[130px] max-md:h-[195px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] max-md:h-[215px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">
       {{ 持仓 }}
     </div>
@@ -17,17 +17,18 @@
         <PriceTag :一手价="一手价" />
       </div>
       <div class="whitespace-nowrap">
-        <el-tag type="info" size="small" effect="plain"> 打和 {{ 打和点 }} </el-tag>
-      </div>
-
-      <!-- <div class="whitespace-nowrap">
-        <DiffTag :涨跌="一手涨跌价" />
-      </div> -->
-    </div>
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
-      <div class="whitespace-nowrap">
         <PremiumTag :溢价率="溢价" />
       </div>
+    </div>
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
+      <div class="whitespace-nowrap">
+        <el-tag type="info" size="small" effect="plain"> 打和 {{ 打和点 }} </el-tag>
+      </div>
+      <div class="whitespace-nowrap">
+        <LeverageTag :杠杆="杠杆" />
+      </div>
+    </div>
+    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
         <GammaTag :Gamma="Gamma" />
       </div>
@@ -61,6 +62,7 @@ import PriceTag from "~/components/tag/PriceTag.vue";
 import DiffTag from "~/components/tag/DiffTag.vue";
 import RoundDiffTag from "~/components/tag/RoundDiffTag.vue";
 import GammaTag from "~/components/tag/GammaTag.vue";
+import LeverageTag from "~/components/tag/LeverageTag.vue";
 import PremiumTag from "~/components/tag/PremiumTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
@@ -93,6 +95,9 @@ const Delta = computed(() => {
 });
 const 溢价 = computed(() => {
   return props.row[prefixKey.value + "溢价率"];
+});
+const 杠杆 = computed(() => {
+  return props.row[prefixKey.value + "杠杆"];
 });
 const 持仓 = computed(() => {
   return props.row[prefixKey.value + "持仓"];
@@ -184,7 +189,7 @@ const style = computed(() => {
       };
     }
   }
-  return {}
+  return {};
   // return { width };
 });
 </script>

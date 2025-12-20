@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    隐波 {{ props.隐波.toFixed(1) }}
+    <div class="font-[400]"> 隐波 {{ props.隐波.toFixed(1) }}</div>
   </el-tag>
 </template>
 <script setup>
