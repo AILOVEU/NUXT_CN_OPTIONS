@@ -1,5 +1,6 @@
 <template>
-  <div v-if="!props.row?._current">
+  <div v-if="props.row._split" class="bg-[black]">&nbsp;</div>
+  <div v-else-if="!props.row?._current">
     <div>{{ 正股名称 }}</div>
     <div>
       {{ 千行权价 }}
@@ -10,7 +11,7 @@
       )
     </div>
   </div>
-  <div v-else>
+  <div v-else class="h-[24px] leading-[24px] text-[18px]">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>

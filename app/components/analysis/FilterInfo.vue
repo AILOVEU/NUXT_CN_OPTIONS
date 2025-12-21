@@ -186,7 +186,7 @@ const formData = reactive({
   隐波Range: [0, 23],
   GammaRange: [0.5, 9999],
   正股List: [...stock_sorted_list],
-  到期日List: [...deadline_list].filter((el, index) => index),
+  到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
   过滤持有: false,
 });

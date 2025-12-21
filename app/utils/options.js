@@ -18,12 +18,20 @@ function isTimeAfterMarketClosed() {
   return now.isAfter(startTime);
 }
 
+function isTimeNotWorkDay(){
+  // const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+  // const weekNumb = dayjs(name, "YYYYMMDD").day();
+  const now = dayjs();
+  const weekday = now.day();
+  return [0,6].includes(weekday)
+}
+
 export function get_最新价(row) {
   let { 最新价, 卖一, 买一 } = row;
   if (!卖一 || !买一) return 最新价;
   const 中间价 = Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
   if (最新价 === "-" || !最新价) return 中间价;
-  if (isTimeBetweenNoonMarketClosed() || isTimeAfterMarketClosed()) return 最新价;
+  if (isTimeBetweenNoonMarketClosed() || isTimeAfterMarketClosed() || isTimeNotWorkDay()) return 最新价;
   if (最新价 > 卖一 || 最新价 < 买一) return 中间价;
   return 最新价;
 }
