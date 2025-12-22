@@ -134,7 +134,7 @@ function sleep(time) {
 }
 export async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 60;
+  const pz = 80;
   let all_data = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -192,6 +192,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
       _all_data = await $fetch("/api/queryDataJson");
     } catch (e) {
       console.log("e", e);
+      _all_data = []
     }
   } else {
     // $fetch("/api/querySaveData", {

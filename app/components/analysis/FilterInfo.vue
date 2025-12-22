@@ -128,7 +128,7 @@
       </el-table-column>
 
       <el-table-column label="溢价信息" align="center">
-        <el-table-column label="打和点" prop="打和点" minWidth="100" sortable align="left">
+        <el-table-column #default="{ row }" label="打和点" prop="打和点" minWidth="100" sortable align="left">
           {{ row["打和点"].toFixed(4) }}
         </el-table-column>
 

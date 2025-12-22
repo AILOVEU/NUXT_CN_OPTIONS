@@ -50,6 +50,16 @@
               <el-table-column label="到期天数" prop="到期天数" minWidth="120" sortable />
             </el-table-column>
             <el-table-column label="持仓" prop="持仓" minWidth="80" sortable />
+
+            <el-table-column label="价格构成" align="center">
+              <el-table-column label="时间" #default="{ row }" minWidth="140" prop="一手时间价" sortable>
+                <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
+              </el-table-column>
+              <el-table-column label="实值" #default="{ row }" minWidth="140" prop="一手内在价" sortable>
+                <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
+              </el-table-column>
+            </el-table-column>
+            
             <el-table-column label="盈亏" align="center">
               <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />
@@ -61,15 +71,6 @@
               <el-table-column label="一手盈亏" prop="一手盈亏" minWidth="120" sortable />
 
               <el-table-column label="总盈亏" prop="总盈亏" minWidth="120" sortable />
-            </el-table-column>
-
-            <el-table-column label="价格构成" align="center">
-              <el-table-column label="时间" #default="{ row }" minWidth="140" prop="一手时间价" sortable>
-                <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
-              </el-table-column>
-              <el-table-column label="实值" #default="{ row }" minWidth="140" prop="一手内在价" sortable>
-                <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
-              </el-table-column>
             </el-table-column>
 
             <el-table-column label="今日盈亏" align="center">

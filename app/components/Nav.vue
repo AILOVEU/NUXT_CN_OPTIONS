@@ -55,10 +55,15 @@ function handleClick(href) {
 
 function handleQuery() {
   setGlobalLoading(true);
-  get_http_data(Object.keys(stock_code_map), false).finally(() => {
-    setGlobalLoading(false);
-    window.location.reload()
-  });
+  get_http_data(Object.keys(stock_code_map), false)
+    .then(([all_data]) => {
+      if (all_data.length) {
+        window.location.reload();
+      }
+    })
+    .finally(() => {
+      setGlobalLoading(false);
+    });
 }
 </script>
 <style scoped>
