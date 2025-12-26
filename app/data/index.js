@@ -66,11 +66,12 @@ export const stock_sort_map = {
   510050: 1,
   510300: 2,
 
-  510500: 3,
-  159922: 4,
+  159922: 3,
 
   588000: 5,
   159915: 6,
+
+  510500: 7,
 };
 export const stock_sorted_list = _.sortBy(Object.keys(stock_sort_map), (code) => stock_sort_map[code]);
 export const 行权价_range_map = {
@@ -79,7 +80,7 @@ export const 行权价_range_map = {
   510500: [6500, 8000],
   588000: [1200, 1600],
   159922: [2700, 3200],
-  159915: [2800, 3500],
+  159915: [3000, 3500],
 };
 export const deadline_list = [
   // "20250924",

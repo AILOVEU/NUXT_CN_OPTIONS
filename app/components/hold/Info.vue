@@ -3,8 +3,9 @@
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
   <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
-    <div v-if="持仓" class="absolute top-[2px] left-[2px] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">
-      {{ 持仓 }}
+    <div v-if="持仓" class="absolute top-[2px] left-[2px] flex items-center gap-[3px]">
+      <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
+      <div class="whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
     </div>
     <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
       {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:
@@ -46,9 +47,6 @@
       <div class="flex justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 2) }}%)</el-tag>
-        </div>
-        <div class="whitespace-nowrap">
-          <el-tag :type="盈亏 > 0 ? 'danger' : 'success'" size="small" effect="plain">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</el-tag>
         </div>
       </div>
     </div>
