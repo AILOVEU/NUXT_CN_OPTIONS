@@ -2,7 +2,7 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] max-md:h-[215px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">
       {{ 持仓 }}
     </div>
