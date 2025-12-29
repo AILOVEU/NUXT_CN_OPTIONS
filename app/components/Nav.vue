@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { get_http_data } from "~/options";
+import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { setGlobalLoading } = useGlobalLoading();
