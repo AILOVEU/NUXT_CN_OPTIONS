@@ -88,6 +88,6 @@ export function formatNumberToWan(num) {
     return `${signStr}${wanInteger}万`;
   } else {
     // 非整万数：符号 + 万级整数 + 万 + 个级部分
-    return `${signStr}${wanInteger}万${gePart}`;
+    return `${signStr}${wanInteger}万 ${gePart}`;
   }
 }
