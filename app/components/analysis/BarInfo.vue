@@ -21,6 +21,7 @@
   </div>
 </template>
 <script setup>
+import { formatNumberToWan } from "~/utils/utils";
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
@@ -35,8 +36,11 @@ const formData = reactive({
 });
 
 const props = defineProps(["all_data"]);
-function getBarOps({ stockCodeList, name, dataList }) {
+function getBarOps({ stockCodeList, name, dataList, title }) {
   return {
+    title: {
+      text: title,
+    },
     backgroundColor: "#fefefe",
     tooltip: {
       trigger: "axis",
@@ -45,6 +49,16 @@ function getBarOps({ stockCodeList, name, dataList }) {
         crossStyle: {
           color: "#999",
         },
+      },
+      formatter: function (params) {
+        // 标题取第一个item的name（x轴名称）
+        let result = `${params[0].name}<br/>`;
+        // 遍历所有系列
+        params.forEach((item) => {
+          const formatted = formatNumberToWan(item.value);
+          result += `${item.seriesName}：${formatted}<br/>`;
+        });
+        return result;
       },
     },
     xAxis: [
@@ -59,11 +73,9 @@ function getBarOps({ stockCodeList, name, dataList }) {
         },
       },
     ],
-    yAxis: [
-      {
-        name,
-      },
-    ],
+    yAxis: {
+      type: "value",
+    },
     series: {
       type: "bar",
       name,
@@ -91,6 +103,7 @@ const deltaOption = computed(() => {
   return getBarOps({
     stockCodeList,
     name: "Delta",
+    title: "Delta",
     dataList,
   });
 });
@@ -99,13 +112,17 @@ const 代替正股Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let 代替正股Sum = 0;
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
-    return get_list_all_代替正股(codeOptions);
+    let val = get_list_all_代替正股(codeOptions);
+    代替正股Sum += val;
+    return val;
   });
   return getBarOps({
     stockCodeList,
     name: "代替正股",
+    title: `代替正股 ( ${formatNumberToWan(代替正股Sum)} ) `,
     dataList,
   });
 });
@@ -121,6 +138,7 @@ const gammaOption = computed(() => {
   return getBarOps({
     stockCodeList,
     name: "Gamma",
+    title: "Gamma",
     dataList,
   });
 });
@@ -129,13 +147,18 @@ const 单日损耗Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
   const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let 单日损耗Sum = 0;
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
-    return get_list_all_单日损耗(codeOptions);
+    let val = get_list_all_单日损耗(codeOptions);
+    单日损耗Sum += val;
+    return val;
   });
+  console.log(`单日损耗 (${(单日损耗Sum)}) `)
   return getBarOps({
     stockCodeList,
     name: "单日损耗",
+    title: `单日损耗 ( ${formatNumberToWan(单日损耗Sum)} ) `,
     dataList,
   });
 });

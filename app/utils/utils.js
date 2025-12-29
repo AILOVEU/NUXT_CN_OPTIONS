@@ -61,30 +61,33 @@ export function formatDecimal(num, toFixed = 2) {
  * @returns {string} 格式化后的字符串
  */
 export function formatNumberToWan(num) {
-  // 1. 预处理：转为纯数字字符串，过滤所有非数字字符
-  const pureNumStr = String(num).replace(/\D/g, "");
-
-  // 处理空值、全0的特殊情况
-  if (!pureNumStr) return "";
-  if (pureNumStr === "0") return "0";
-
-  // 2. 拆分万位部分和万位后的4位（核心：从数字右侧数4位拆分）
-  const wanSplitIndex = pureNumStr.length - 4;
-  const wanPart = wanSplitIndex > 0 ? pureNumStr.slice(0, wanSplitIndex) : ""; // 万位左侧部分
-  const afterWanRaw = pureNumStr.slice(wanSplitIndex); // 万位右侧的原始4位
-
-  // 3. 处理万后数字：去除前导0（如0678→678，5678→5678，0008→8）
-  const afterWan = afterWanRaw.replace(/^0+/, "");
-
-  // 4. 拼接最终结果（处理万后无数字的情况，如12340000→1234万）
-  let result = "";
-  if (wanPart) {
-    result += `${wanPart}万`;
-  }
-  if (afterWan) {
-    result += afterWan;
+  // 1. 转换为数字并校验有效性
+  const targetNum = Number(num);
+  if (isNaN(targetNum)) {
+    throw new Error("输入参数必须是有效的数字或数字字符串");
   }
 
-  // 兜底：若结果为空（理论上不会触发，仅防极端情况）
-  return result || "0";
+  // 2. 绝对值小于10000，直接返回原数字字符串
+  const absNum = Math.abs(targetNum);
+  if (absNum < 10000) {
+    return String(targetNum);
+  }
+
+  // 3. 提取符号位（区分正负，正数为空字符串，负数为"-"）
+  const signStr = targetNum < 0 ? "-" : "";
+  // 取绝对值进行后续拆分计算，避免负号干扰
+  const positiveNum = absNum;
+
+  // 4. 拆分万级部分和个级部分
+  const wanInteger = Math.floor(positiveNum / 10000); // 万级整数（如 10000 → 1，12345678.9 → 1234）
+  const gePart = positiveNum % 10000; // 个级部分（如 10000 → 0，12345678.9 → 5678.9）
+
+  // 5. 判断是否为整万数，分别拼接结果
+  if (gePart === 0) {
+    // 整万数：符号 + 万级整数 + 万
+    return `${signStr}${wanInteger}万`;
+  } else {
+    // 非整万数：符号 + 万级整数 + 万 + 个级部分
+    return `${signStr}${wanInteger}万${gePart}`;
+  }
 }
