@@ -19,7 +19,7 @@
       align="center"
       #default="{ row }"
     >
-      <div class="text-[10px]">{{ row["期权月份"].includes(month) ? "✔" : "" }}</div>
+      <div class="text-[10px]">{{ row["期权月份"]?.includes(month) ? "✔" : "" }}</div>
     </el-table-column>
   </el-table>
 </template>
