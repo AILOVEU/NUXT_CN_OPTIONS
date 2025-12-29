@@ -21,16 +21,16 @@
   </div>
 </template>
 <script setup>
-import { stock_code_map, deadline_list, stock_color_map, stock_sorted_list } from "~/data";
+import { OPTIONS_MAP, deadline_list, stock_color_map } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-const stockOptions = stock_sorted_list.map((el) => ({
-  label: stock_code_map[el],
-  value: el,
+const stockOptions = OPTIONS_MAP.map((el) => ({
+  label: el.name,
+  value: el.code,
 }));
 
 const formData = reactive({
-  正股List: [...stock_sorted_list],
+  正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
 });
 
@@ -50,7 +50,7 @@ function getBarOps({ stockCodeList, name, dataList }) {
     xAxis: [
       {
         type: "category",
-        data: stockCodeList.map((code) => stock_code_map[code]),
+        data: stockCodeList.map((code) => OPTIONS_MAP.find((el) => el.code === code).name),
         axisPointer: {
           type: "shadow",
         },
@@ -83,7 +83,7 @@ const filteredData = computed(() => {
 const deltaOption = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_delta(codeOptions);
@@ -98,7 +98,7 @@ const deltaOption = computed(() => {
 const 代替正股Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_代替正股(codeOptions);
@@ -113,7 +113,7 @@ const 代替正股Option = computed(() => {
 const gammaOption = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_gamma(codeOptions);
@@ -128,7 +128,7 @@ const gammaOption = computed(() => {
 const 单日损耗Option = computed(() => {
   let all_data = filteredData.value;
   if (!all_data?.length) return {};
-  const stockCodeList = stock_sorted_list.filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     return get_list_all_单日损耗(codeOptions);

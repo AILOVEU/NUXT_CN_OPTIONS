@@ -1,4 +1,4 @@
-import { fields_dict, stock_code_map, 金额 } from "~/data";
+import { fields_dict, OPTIONS_MAP, 金额 } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -18,12 +18,12 @@ function isTimeAfterMarketClosed() {
   return now.isAfter(startTime);
 }
 
-function isTimeNotWorkDay(){
+function isTimeNotWorkDay() {
   // const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
   // const weekNumb = dayjs(name, "YYYYMMDD").day();
   const now = dayjs();
   const weekday = now.day();
-  return [0,6].includes(weekday)
+  return [0, 6].includes(weekday);
 }
 
 export function get_最新价(row) {
@@ -60,9 +60,9 @@ export function get_option_实值(el) {
 
 export function get_stock_code(name) {
   let code;
-  Object.keys(stock_code_map).forEach((key) => {
-    if (name.includes(stock_code_map[key])) {
-      code = key;
+  OPTIONS_MAP.forEach((el) => {
+    if (name.includes(el.name)) {
+      code = el.code;
     }
   });
   return code;
@@ -192,7 +192,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
       _all_data = await $fetch("/api/queryDataJson");
     } catch (e) {
       console.log("e", e);
-      _all_data = []
+      _all_data = [];
     }
   } else {
     // $fetch("/api/querySaveData", {

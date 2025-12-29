@@ -34,19 +34,15 @@ import Options from "~/components/t/Options.vue";
 import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
-import { stock_show_name_map, stock_sort_map, 行权价_range_map } from "~/data";
+import { OPTIONS_MAP, 行权价_range_map } from "~/data";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
 
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
-  let list = Object.keys(stock_show_name_map);
-  list.sort(function (a, b) {
-    return stock_sort_map[a] - stock_sort_map[b];
-  });
-  return list.map((code) => ({
-    value: code,
-    label: stock_show_name_map[code],
+  return OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.showName,
   }));
 });
 const stockCode = ref(stockCodeOptions.value[0].value);

@@ -1,4 +1,4 @@
-import { fields_dict, stock_code_map, 金额 } from "~/data";
+import { fields_dict, 金额 } from "~/data";
 import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";

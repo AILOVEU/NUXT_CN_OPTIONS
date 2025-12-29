@@ -1,4 +1,4 @@
-import { stock_sort_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./";
 
 function handleTData(dataList) {
@@ -52,7 +52,9 @@ function handleTData(dataList) {
       }
       return a["到期日"] - b["到期日"];
     }
-    return stock_sort_map[b["正股代码"]] - stock_sort_map[a["正股代码"]];
+    const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["正股代码"]);
+    const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
+    return aSort - bSort;
   });
   return all_data;
 }

@@ -13,7 +13,7 @@
 
 <script setup>
 import { get_http_data } from "~/utils";
-import { stock_code_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { setGlobalLoading } = useGlobalLoading();
 const route = useRoute();
@@ -55,7 +55,10 @@ function handleClick(href) {
 
 function handleQuery() {
   setGlobalLoading(true);
-  get_http_data(Object.keys(stock_code_map), false)
+  get_http_data(
+    OPTIONS_MAP.map((el) => el.code),
+    false
+  )
     .then(([all_data]) => {
       if (all_data.length) {
         window.location.reload();

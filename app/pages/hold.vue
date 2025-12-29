@@ -34,7 +34,7 @@
   </div>
 </template>
 <script setup>
-import { stock_show_name_map, stock_sort_map, 行权价_range_map, deadline_list } from "~/data";
+import { OPTIONS_MAP, 行权价_range_map, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
@@ -54,13 +54,9 @@ const mode = computed(() => {
 
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
-  let list = Object.keys(stock_show_name_map);
-  list.sort(function (a, b) {
-    return stock_sort_map[a] - stock_sort_map[b];
-  });
-  let ops = list.map((code) => ({
-    value: code,
-    label: stock_show_name_map[code],
+  let ops = OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.showName,
   }));
   return [...ops, { value: "all", label: "全" }];
 });
@@ -86,7 +82,7 @@ function getColumnWidth(label) {
 }
 async function handleQuery() {
   tableData.loading = true;
-  const holdData = await queryHold(stockCode.value === "all" ? Object.keys(stock_show_name_map) : [stockCode.value]);
+  const holdData = await queryHold(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = holdData || [];
   tableData.loading = false;
 }
@@ -104,7 +100,7 @@ const filteredTableData = computed(() => {
     if (el._current || el._split) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
-    if (el["千行权价"] < 5000 && (el["千行权价"]) % 100 !== 0) return false;
+    if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
     return el["千行权价"] >= 行权价RangeDict[el["正股代码"]][0] && el["千行权价"] <= 行权价RangeDict[el["正股代码"]][1];
   });
 });

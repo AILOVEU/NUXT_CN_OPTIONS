@@ -59,7 +59,7 @@
                 <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
               </el-table-column>
             </el-table-column>
-            
+
             <el-table-column label="盈亏" align="center">
               <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />
@@ -111,18 +111,18 @@
 </template>
 
 <script setup>
-import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, stock_sorted_list, stock_show_name_map } from "~/data";
+import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, OPTIONS_MAP, stock_show_name_map } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
 import DiffTag from "~/components/tag/DiffTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
-const stockOptions = stock_sorted_list.map((el) => ({
-  label: stock_code_map[el],
-  value: el,
+const stockOptions = OPTIONS_MAP.map((el) => ({
+  label: el.name,
+  value: el.code,
 }));
 const formData = reactive({
-  正股List: [...stock_sorted_list],
+  正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
 });
@@ -377,7 +377,7 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
   });
   dataList = [...Array.from(new Set(dataList)), 总和标识];
   const dataListSort = [
-    ..._.flattenDeep(stock_sorted_list.map((code) => [stock_code_map[code], stock_code_map[code] + "[组合]"])),
+    ..._.flattenDeep(OPTIONS_MAP.map((el) => [stock_code_map[el.code], stock_code_map[el.code] + "[组合]"])),
     "购",
     "购 ",
     "沽",

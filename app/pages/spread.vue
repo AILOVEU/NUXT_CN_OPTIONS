@@ -48,7 +48,7 @@
   </div>
 </template>
 <script setup>
-import { stock_show_name_map, stock_sort_map, 行权价_range_map, deadline_list } from "~/data";
+import { stock_show_name_map, OPTIONS_MAP, 行权价_range_map, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Center from "~/components/spread/Center.vue";
@@ -68,13 +68,9 @@ const formData = reactive({
 
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
-  let list = Object.keys(stock_show_name_map);
-  list.sort(function (a, b) {
-    return stock_sort_map[a] - stock_sort_map[b];
-  });
-  return list.map((code) => ({
-    value: code,
-    label: stock_show_name_map[code],
+  return OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.showName,
   }));
 });
 const stockCode = ref(stockCodeOptions.value[0].value);

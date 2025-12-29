@@ -1,4 +1,4 @@
-import { stock_sort_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./";
 import dayjs from "dayjs";
 import { get_fist_季度月份 } from "./options";
@@ -59,7 +59,9 @@ function handleSpreadData(dataList, 正股代码List) {
     if (a["正股代码"] === b["正股代码"]) {
       return a["行权价"] - b["行权价"];
     }
-    return stock_sort_map[a["正股代码"]] - stock_sort_map[b["正股代码"]];
+    const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["正股代码"]);
+    const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
+    return aSort - bSort;
   });
 
   return all_data;

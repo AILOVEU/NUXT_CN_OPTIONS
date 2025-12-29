@@ -171,13 +171,13 @@ import LeverageTag from "~/components/tag/LeverageTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
 import PremiumTag from "~/components/tag/PremiumTag.vue";
 import Hold from "~/pages/hold.vue";
-import { deadline_list, stock_sorted_list, stock_code_map, 最大建议买入价 } from "~/data";
+import { deadline_list, OPTIONS_MAP, 最大建议买入价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
 const showType = ref("list");
-const stockOptions = stock_sorted_list.map((el) => ({
-  label: stock_code_map[el],
-  value: el,
+const stockOptions = OPTIONS_MAP.map((el) => ({
+  label: el.name,
+  value: el.code,
 }));
 const formData = reactive({
   溢价Range: [-100, 15],
@@ -185,7 +185,7 @@ const formData = reactive({
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
   GammaRange: [0.5, 9999],
-  正股List: [...stock_sorted_list],
+  正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
   过滤持有: false,

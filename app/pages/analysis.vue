@@ -24,7 +24,7 @@
   </div>
 </template>
 <script setup>
-import { stock_code_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils";
 import _ from "lodash";
 import BarInfo from "~/components/analysis/BarInfo";
@@ -33,13 +33,12 @@ import MoneyInfo from "~/components/analysis/MoneyInfo";
 import FilterInfo from "~/components/analysis/FilterInfo";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
-const stockCodeList = Object.keys(stock_code_map);
 const all_data = ref([]);
 const combo_list = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  const [data, list] = await get_http_data(stockCodeList);
+  const [data, list] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   combo_list.value = list;
   all_data.value = data;
   loading.value = false;
