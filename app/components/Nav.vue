@@ -40,6 +40,10 @@ const navList = [
     name: "价差",
   },
   {
+    href: "/futures",
+    name: "期货",
+  },
+  {
     href: "/calendar",
     name: "日历",
   },
