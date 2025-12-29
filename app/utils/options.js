@@ -119,11 +119,8 @@ export function 构建组合(all_data) {
   return 组合List;
 }
 
-export function toFloor(val) {
-  return Math.floor(val);
-}
 export function toPrice(val, 合约单位) {
-  return toFloor(val * 合约单位);
+  return Math.floor(val * 合约单位);
 }
 function sleep(time) {
   return new Promise((resolve) => {

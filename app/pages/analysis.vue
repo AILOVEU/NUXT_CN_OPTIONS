@@ -25,7 +25,7 @@
 </template>
 <script setup>
 import { OPTIONS_MAP } from "~/data";
-import { get_http_data } from "~/utils";
+import { get_http_data } from "~/options";
 import _ from "lodash";
 import BarInfo from "~/components/analysis/BarInfo";
 import TimeInfo from "~/components/analysis/TimeInfo";

@@ -1,5 +1,5 @@
 import { OPTIONS_MAP } from "~/data";
-import { get_http_data } from "./";
+import { get_http_data } from "./options";
 import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
 function handleHoldData(dataList, 正股代码List) {

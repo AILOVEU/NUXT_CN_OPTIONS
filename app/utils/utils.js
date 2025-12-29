@@ -54,3 +54,37 @@ export function formatDecimal(num, toFixed = 2) {
   // 如果是整数，直接返回
   return num;
 }
+
+/**
+ * 数字格式化为「X万XXXX」格式（万后数字自动去除前导0）
+ * @param {number|string} num - 输入的正整数（数字/字符串类型均可）
+ * @returns {string} 格式化后的字符串
+ */
+export function formatNumberToWan(num) {
+  // 1. 预处理：转为纯数字字符串，过滤所有非数字字符
+  const pureNumStr = String(num).replace(/\D/g, "");
+
+  // 处理空值、全0的特殊情况
+  if (!pureNumStr) return "";
+  if (pureNumStr === "0") return "0";
+
+  // 2. 拆分万位部分和万位后的4位（核心：从数字右侧数4位拆分）
+  const wanSplitIndex = pureNumStr.length - 4;
+  const wanPart = wanSplitIndex > 0 ? pureNumStr.slice(0, wanSplitIndex) : ""; // 万位左侧部分
+  const afterWanRaw = pureNumStr.slice(wanSplitIndex); // 万位右侧的原始4位
+
+  // 3. 处理万后数字：去除前导0（如0678→678，5678→5678，0008→8）
+  const afterWan = afterWanRaw.replace(/^0+/, "");
+
+  // 4. 拼接最终结果（处理万后无数字的情况，如12340000→1234万）
+  let result = "";
+  if (wanPart) {
+    result += `${wanPart}万`;
+  }
+  if (afterWan) {
+    result += afterWan;
+  }
+
+  // 兜底：若结果为空（理论上不会触发，仅防极端情况）
+  return result || "0";
+}

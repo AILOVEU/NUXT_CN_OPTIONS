@@ -1,5 +1,5 @@
 import { OPTIONS_MAP } from "~/data";
-import { get_http_data } from "./";
+import { get_http_data } from "./options";
 
 function handleTData(dataList) {
   let all_data = [];
