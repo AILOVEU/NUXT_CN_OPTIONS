@@ -8,6 +8,5 @@
   </el-tag>
 </template>
 <script setup>
-import { stock_show_name_map } from "~/data";
 const props = defineProps(["杠杆", "正股代码"]);
 </script>

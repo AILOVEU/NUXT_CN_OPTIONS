@@ -13,13 +13,13 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import { stock_show_name_map, deadline_map } from "~/data";
+import { OPTIONS_MAP, deadline_map } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 
 const props = defineProps(["row"]);
 
 const 正股名称 = computed(() => {
-  return stock_show_name_map[props.row["正股代码"]];
+  return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"]).name;
 });
 const 到期日 = computed(() => {
   const month = dayjs(props.row["到期日"] + "", "YYYYMMDD").format("MM");

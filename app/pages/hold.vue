@@ -34,7 +34,7 @@
   </div>
 </template>
 <script setup>
-import { OPTIONS_MAP, 行权价_range_map, deadline_list } from "~/data";
+import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "~/components/hold/Center.vue";
 import Info from "~/components/hold/Info.vue";
@@ -93,7 +93,6 @@ function handleStockCodeChange() {
     handleQuery();
   });
 }
-const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["_持仓"] && mode.value === "hold") return true;
@@ -101,7 +100,8 @@ const filteredTableData = computed(() => {
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["期权"]?.includes("A")) return false;
     if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
-    return el["千行权价"] >= 行权价RangeDict[el["正股代码"]][0] && el["千行权价"] <= 行权价RangeDict[el["正股代码"]][1];
+    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
+    return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
 

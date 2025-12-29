@@ -48,7 +48,7 @@
   </div>
 </template>
 <script setup>
-import { stock_show_name_map, OPTIONS_MAP, 行权价_range_map, deadline_list } from "~/data";
+import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Center from "~/components/spread/Center.vue";
@@ -131,13 +131,13 @@ function handleStockCodeChange() {
     handleQuery();
   });
 }
-const 行权价RangeDict = reactive({ ...行权价_range_map });
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["正股代码"] !== stockCode.value) return false;
     if (el._current || el._split) return true;
     if (el["期权"]?.includes("A")) return false;
-    return el["千行权价"] >= 行权价RangeDict[stockCode.value][0] && el["千行权价"] <= 行权价RangeDict[stockCode.value][1];
+    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === stockCode.value).行权价Range;
+    return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
 

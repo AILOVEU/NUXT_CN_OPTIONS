@@ -34,7 +34,7 @@ import Options from "~/components/t/Options.vue";
 import Time from "~/components/t/Time.vue";
 import Hold from "~/components/t/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
-import { OPTIONS_MAP, 行权价_range_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
 
@@ -109,15 +109,14 @@ function handleStockCodeChange() {
     handleQuery();
   });
 }
-const 行权价RangeDict = reactive({ ...行权价_range_map });
-
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["正股代码"] !== stockCode.value) return false;
     if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
-    return el["千行权价"] >= 行权价RangeDict[stockCode.value][0] && el["千行权价"] <= 行权价RangeDict[stockCode.value][1];
+    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === stockCode.value).行权价Range;
+    return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
 

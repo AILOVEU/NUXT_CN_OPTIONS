@@ -4,7 +4,6 @@
   </el-tag>
 </template>
 <script setup>
-import { stock_show_name_map } from "~/data";
 const props = defineProps(["Delta", "正股代码"]);
 const effect = computed(() => {
   const absDelta = Math.abs(props.Delta);

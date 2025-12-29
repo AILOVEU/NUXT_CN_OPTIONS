@@ -2,7 +2,6 @@
   <el-tag :type="type" :effect="effect" size="small"> 溢 {{ props.溢价率.toFixed(2) }}% </el-tag>
 </template>
 <script setup>
-import { stock_show_name_map } from "~/data";
 const props = defineProps(["溢价率", "正股代码"]);
 const effect = computed(() => {
   const 溢价率 = props.溢价率;

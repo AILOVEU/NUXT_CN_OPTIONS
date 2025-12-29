@@ -42,7 +42,7 @@
             </el-table-column>
             <el-table-column label="信息" align="center">
               <el-table-column label="正股" #default="{ row }" prop="正股代码" minWidth="140" sortable>
-                {{ stock_show_name_map[row["正股代码"]] }}
+                {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
               </el-table-column>
               <el-table-column label="沽购" #default="{ row }" prop="沽购" minWidth="80" sortable>
                 <CallPutTag :沽购="row['沽购']" />
@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { deadline_list, stock_code_map, deadline_color_list, stock_color_map, OPTIONS_MAP, stock_show_name_map } from "~/data";
+import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
@@ -360,11 +360,9 @@ function getSankeyLegenColorMap({ 总和标识 }) {
   deadline_list.forEach((el, index) => {
     colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
   });
-  Object.keys(stock_color_map).forEach((stock_code) => {
-    const key = stock_code_map[stock_code];
-    const color = stock_color_map[stock_code];
-    colorMap[key] = color;
-    colorMap[key + "[组合]"] = color;
+  OPTIONS_MAP.forEach((el) => {
+    colorMap[el.name] = el.color;
+    colorMap[el.name + "[组合]"] = el.color;
   });
   return colorMap;
 }
@@ -377,7 +375,7 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
   });
   dataList = [...Array.from(new Set(dataList)), 总和标识];
   const dataListSort = [
-    ..._.flattenDeep(OPTIONS_MAP.map((el) => [stock_code_map[el.code], stock_code_map[el.code] + "[组合]"])),
+    ..._.flattenDeep(OPTIONS_MAP.map((el) => [el.name, el.name + "[组合]"])),
     "购",
     "购 ",
     "沽",
@@ -486,16 +484,16 @@ const 持仓分布Option = computed(() => {
   const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
   let 沽购to正股Map = {};
   ["沽", "购"].forEach((type) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["沽购"] === type) {
+        if (el["正股代码"] === item.code && el["沽购"] === type) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + type;
+          const key = 组合Str + item.code + type;
           沽购to正股Map[key] = {
             // list: [...(沽购to正股Map[key]?.list || []),el],
             source: type,
-            target: stock_code_map[stock_code] + 组合Str,
-            stock_code,
+            target: item.name + 组合Str,
+            stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (el?.总价 || 0),
           };
         }
@@ -519,14 +517,14 @@ const 持仓分布Option = computed(() => {
   });
   let 正股to到日期Map = {};
   deadline_list.forEach((date) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["到期日"] === date) {
+        if (el["正股代码"] === item.code && el["到期日"] === date) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + date;
+          const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
-            stock_code,
-            source: stock_code_map[stock_code] + 组合Str,
+            stock_code: item.code,
+            source: item.name + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.总价 || 0),
           };
@@ -552,15 +550,15 @@ const 盈利分布Option = computed(() => {
   const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
   let 沽购to正股Map = {};
   ["沽", "购"].forEach((type) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["沽购"] === type && el?.今日总涨跌 > 0) {
+        if (el["正股代码"] === item.code && el["沽购"] === type && el?.今日总涨跌 > 0) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + type;
+          const key = 组合Str + item.code + type;
           沽购to正股Map[key] = {
             source: type,
-            target: stock_code_map[stock_code] + 组合Str,
-            stock_code,
+            target: item.name + 组合Str,
+            stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
         }
@@ -584,14 +582,14 @@ const 盈利分布Option = computed(() => {
   });
   let 正股to到日期Map = {};
   deadline_list.forEach((date) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["到期日"] === date && el?.今日总涨跌 > 0) {
+        if (el["正股代码"] === item.code && el["到期日"] === date && el?.今日总涨跌 > 0) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + date;
+          const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
-            stock_code,
-            source: stock_code_map[stock_code] + 组合Str,
+            stock_code: item.code,
+            source: item.name + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
@@ -616,15 +614,15 @@ const 亏损分布Option = computed(() => {
   const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
   let 沽购to正股Map = {};
   ["沽", "购"].forEach((type) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["沽购"] === type && el?.今日总涨跌 < 0) {
+        if (el["正股代码"] === item.code && el["沽购"] === type && el?.今日总涨跌 < 0) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + type;
+          const key = 组合Str + item.code + type;
           沽购to正股Map[key] = {
             source: type,
-            target: stock_code_map[stock_code] + 组合Str,
-            stock_code,
+            target: item.name + 组合Str,
+            stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };
         }
@@ -648,14 +646,14 @@ const 亏损分布Option = computed(() => {
   });
   let 正股to到日期Map = {};
   deadline_list.forEach((date) => {
-    Object.keys(stock_code_map).forEach((stock_code) => {
+    OPTIONS_MAP.forEach((item) => {
       单腿期权TableData.forEach((el) => {
-        if (el["正股代码"] === stock_code && el["到期日"] === date && el?.今日总涨跌 < 0) {
+        if (el["正股代码"] === item.code && el["到期日"] === date && el?.今日总涨跌 < 0) {
           const 组合Str = el["isCombo"] ? "[组合]" : "";
-          const key = 组合Str + stock_code + date;
+          const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
-            stock_code,
-            source: stock_code_map[stock_code] + 组合Str,
+            stock_code: item.code,
+            source: item.name + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };

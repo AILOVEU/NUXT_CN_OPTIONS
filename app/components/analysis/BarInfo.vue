@@ -21,7 +21,7 @@
   </div>
 </template>
 <script setup>
-import { OPTIONS_MAP, deadline_list, stock_color_map } from "~/data";
+import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
 const stockOptions = OPTIONS_MAP.map((el) => ({

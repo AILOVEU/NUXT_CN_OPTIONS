@@ -4,7 +4,6 @@
   </el-tag>
 </template>
 <script setup>
-import { stock_show_name_map } from "~/data";
 const props = defineProps(["一手价", "正股代码"]);
 const type = computed(() => {
   const 一手价 = props.一手价;

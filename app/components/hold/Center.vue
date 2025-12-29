@@ -18,12 +18,12 @@
   </div>
 </template>
 <script setup>
-import { stock_show_name_map } from "~/data";
+import { OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 const props = defineProps(["row"]);
 
 const 正股 = computed(() => {
-  return stock_show_name_map[props.row["正股代码"]];
+  return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"])?.name;
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];
