@@ -196,7 +196,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     //   method: "post",
     //   body: { data: _all_data },
     // });
-    const promiseList = ["m:10+c:510050", "m:10+c:510300", "m:10+c:510500", "m:10+c:588000", "m:12+c:159915", "m:12+c:159922"]
+    const promiseList = OPTIONS_MAP.map((el) => el.fs)
       .filter((el) => 正股代码List.some((code) => el.includes(code)))
       .map((fs, idx) => {
         return new Promise((resolve) => {

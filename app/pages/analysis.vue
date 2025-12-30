@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading || globalLoading.value" class="max-md:w-[200%]">
+  <div v-loading="loading || globalLoading.value" class="max-md:w-[250%]">
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px]">
       <Card header="资金分析">

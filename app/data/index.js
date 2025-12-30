@@ -38,7 +38,6 @@ export const fields_dict = {
   f333: "正股", // XD上证50ETF
   f334: "正股价格", // 3.025
 };
-
 export const OPTIONS_MAP = [
   {
     code: "510050",
@@ -46,6 +45,7 @@ export const OPTIONS_MAP = [
     color: "#73c0de",
     showName: "50ETF🧊",
     行权价Range: [3000, 3500],
+    fs: "m:10+c:510050",
   },
   {
     code: "510300",
@@ -53,6 +53,7 @@ export const OPTIONS_MAP = [
     color: "#91cc75",
     showName: "300ETF🍆",
     行权价Range: [4500, 5000],
+    fs: "m:10+c:510300",
   },
   {
     code: "159922",
@@ -60,6 +61,7 @@ export const OPTIONS_MAP = [
     color: "#fc8452",
     showName: "深500🥟",
     行权价Range: [2700, 3200],
+    fs: "m:12+c:159922",
   },
   {
     code: "588000",
@@ -67,6 +69,7 @@ export const OPTIONS_MAP = [
     color: "#9a60b4",
     showName: "科50ETF🥕",
     行权价Range: [1200, 1600],
+    fs: "m:10+c:588000",
   },
   {
     code: "159915",
@@ -74,6 +77,7 @@ export const OPTIONS_MAP = [
     color: "#ea7ccc",
     showName: "创业板🦑",
     行权价Range: [3000, 3500],
+    fs: "m:12+c:159915",
   },
   {
     code: "510500",
@@ -81,16 +85,9 @@ export const OPTIONS_MAP = [
     color: "#fac858",
     showName: "500ETF🥟",
     行权价Range: [6500, 8000],
+    fs: "m:10+c:510500",
   },
 ];
-export const 行权价_range_map = {
-  510050: [3000, 3500],
-  510300: [4500, 5000],
-  510500: [6500, 8000],
-  588000: [1200, 1600],
-  159922: [2700, 3200],
-  159915: [3000, 3500],
-};
 export const deadline_list = [
   // "20250924",
   // "20251022",

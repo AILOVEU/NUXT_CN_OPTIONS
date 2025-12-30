@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
+    <el-form :model="formData" label-width="auto" label-suffix=":">
       <div>
         <el-form-item label="正股">
           <el-select v-model="formData.正股List" multiple allowClear clearable>
