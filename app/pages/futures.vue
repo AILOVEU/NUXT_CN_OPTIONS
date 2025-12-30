@@ -30,7 +30,12 @@
     <el-table-column label="比例" prop="比例" width="100" align="center" #default="{ row }" sortable>
       <div class="text-[10px]">{{ row["比例"] }}</div>
     </el-table-column>
-
+    <el-table-column label="平值价格" prop="平值价格" width="100" align="center" #default="{ row }" sortable>
+      <div class="text-[10px]">{{ row["平值价格"] }}</div>
+    </el-table-column>
+    <el-table-column label="平值价格百分比" prop="平值价格百分比" width="100" align="center" #default="{ row }" sortable>
+      <div class="text-[10px]">{{ row["平值价格百分比"] }}%</div>
+    </el-table-column>
     <el-table-column label="平值一手价" prop="平值一手价" width="100" align="center" #default="{ row }" sortable>
       <div class="text-[10px]">{{ row["平值一手价"] }}</div>
     </el-table-column>
@@ -46,12 +51,14 @@ import IvTag from "~/components/tag/IvTag";
 
 const filteredTableData = computed(() => {
   return futuresTableData.map((row) => {
-    let 平值一手价 = row["比例"] * row["平值价格"] || 0;
-    let 涨停平值一手盈利价 = Math.floor(0.1 * row["期货价格"] * row["比例"] * 0.5) || 0;
+    let 平值一手价 = row["比例"] * row["平值价格"];
+    let 涨停平值一手盈利价 = Math.floor(0.1 * row["期货价格"] * row["比例"] * 0.5);
+    let 平值价格百分比 = Math.floor((10000 * row["平值价格"]) / row["期货价格"]) / 100;
     return {
       ...row,
       平值一手价,
       涨停平值一手盈利价,
+      平值价格百分比,
     };
   });
 });
