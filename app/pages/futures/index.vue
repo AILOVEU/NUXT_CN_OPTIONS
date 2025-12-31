@@ -1,5 +1,5 @@
 <template>
-  <div class="max-md:w-[250%]">
+  <div class="max-md:w-[250%]" v-loading="tableData.loading">
     <Nav />
     <el-button @click="handleGetFutures">获取所有期货数据</el-button>
     <el-table :data="tableData.data" style="width: 100%" size="small" border>
@@ -52,7 +52,7 @@
   </div>
 </template>
 <script setup>
-import { computed, ref } from "vue";
+import { computed, reactive } from "vue";
 import { futuresTableData } from "~/data/futures";
 import { get_all_http_data } from "~/utils/futures";
 import _ from "lodash";
@@ -69,15 +69,21 @@ const filteredTableData = computed(() => {
     };
   });
 });
-const tableData = ref({
+const tableData = reactive({
   columns: [],
   data: [],
+  loading: false,
 });
 async function handleGetFutures() {
-  let res = await get_all_http_data();
-  tableData.value.data = res;
-  tableData.value.columns = Object.keys(res[0]);
-  // console.log(JSON.stringify(res));
+  tableData.loading = true;
+  get_all_http_data()
+    .then((res) => {
+      tableData.data = res;
+      tableData.columns = Object.keys(res[0]);
+    })
+    .finally(() => {
+      tableData.loading = false;
+    });
 }
 function getRowStyle({ row }) {
   return row.isPass

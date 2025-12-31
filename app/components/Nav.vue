@@ -20,7 +20,7 @@ const route = useRoute();
 const router = useRouter();
 const navList = [
   {
-    href: "/",
+    href: "/t",
     name: "T型",
   },
   {
