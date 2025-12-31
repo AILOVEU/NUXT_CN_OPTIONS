@@ -95,7 +95,7 @@
       </div>
     </el-form>
   </div>
-  <div class="w-full flex">
+  <div class="w-full flex mb-[12px]">
     <div
       class="flex-1 border-[1px] leading-1 text-center mx-[10px]"
       v-for="item in [
