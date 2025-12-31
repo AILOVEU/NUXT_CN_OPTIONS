@@ -122,7 +122,7 @@
       <el-table-column label="基本信息" align="center">
         <el-table-column #default="{ row }" label="正股" prop="正股" minWidth="100" sortable align="left" />
         <el-table-column #default="{ row }" label="沽购" prop="沽购" minWidth="100" sortable align="left">
-          <CallPutTag :沽购="row['沽购']" />
+          <TagCallPut :沽购="row['沽购']" />
         </el-table-column>
         <el-table-column label="到期天数" prop="到期天数" minWidth="100" sortable align="left" />
       </el-table-column>
@@ -134,20 +134,20 @@
 
         <el-table-column label="正股价格" prop="正股价格" minWidth="100" sortable align="left" />
         <el-table-column label="行权价" prop="千行权价" minWidth="100" sortable align="left" />
-        <el-table-column #default="{ row }" label="溢价率" prop="溢价率" minWidth="100" sortable align="left"> <PremiumTag :溢价率="row['溢价率']" /> </el-table-column>
-        <el-table-column #default="{ row }" label="杠杆" prop="杠杆" minWidth="100" sortable align="left"><LeverageTag :杠杆="row['杠杆']" /> </el-table-column>
+        <el-table-column #default="{ row }" label="溢价率" prop="溢价率" minWidth="100" sortable align="left"> <TagPremium :溢价率="row['溢价率']" /> </el-table-column>
+        <el-table-column #default="{ row }" label="杠杆" prop="杠杆" minWidth="100" sortable align="left"><TagLeverage :杠杆="row['杠杆']" /> </el-table-column>
       </el-table-column>
 
       <el-table-column label="期权信息" align="center">
         <el-table-column #default="{ row }" label="隐波" prop="隐波" minWidth="100" sortable align="left">
-          <IvTag :隐波="row['隐波']" />
+          <TagIv :隐波="row['隐波']" />
         </el-table-column>
         <el-table-column #default="{ row }" label="Delta" prop="Delta" minWidth="100" sortable align="left">
-          <DeltaTag :Delta="row['Delta']" />
+          <TagDelta :Delta="row['Delta']" />
         </el-table-column>
 
         <el-table-column #default="{ row }" label="Gamma" prop="Gamma" minWidth="100" sortable align="left">
-          <GammaTag :Gamma="row['Gamma']" />
+          <TagGamma :Gamma="row['Gamma']" />
         </el-table-column>
       </el-table-column>
 
@@ -164,12 +164,6 @@
   <Hold v-else-if="showType === 't'" mode="chance" :formData="formData" />
 </template>
 <script setup>
-import IvTag from "~/components/tag/IvTag.vue";
-import DeltaTag from "~/components/tag/DeltaTag.vue";
-import GammaTag from "~/components/tag/GammaTag.vue";
-import LeverageTag from "~/components/tag/LeverageTag.vue";
-import CallPutTag from "~/components/tag/CallPutTag.vue";
-import PremiumTag from "~/components/tag/PremiumTag.vue";
 import Hold from "~/pages/hold/index.vue";
 import { deadline_list, OPTIONS_MAP, 最大建议买入价 } from "~/data";
 import _ from "lodash";

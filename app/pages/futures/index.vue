@@ -28,7 +28,7 @@
         <div class="text-[10px]">{{ row["交易所"] }}</div>
       </el-table-column>
       <el-table-column label="隐波" prop="隐波" width="100" align="center" #default="{ row }" sortable>
-        <IvTag :隐波="row['隐波'] || 99" />
+        <TagIv :隐波="row['隐波'] || 99" />
       </el-table-column>
       <el-table-column label="期货价格" prop="期货价格" width="100" align="center" #default="{ row }" sortable>
         <div class="text-[10px]">{{ row["期货价格"] }}</div>
@@ -54,7 +54,6 @@
 <script setup>
 import { computed, ref } from "vue";
 import { futuresTableData } from "~/data/futures";
-import IvTag from "~/components/tag/IvTag";
 import { get_all_http_data } from "~/utils/futures";
 import _ from "lodash";
 const filteredTableData = computed(() => {

@@ -45,7 +45,7 @@
                 {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
               </el-table-column>
               <el-table-column label="沽购" #default="{ row }" prop="沽购" minWidth="80" sortable>
-                <CallPutTag :沽购="row['沽购']" />
+                <TagCallPut :沽购="row['沽购']" />
               </el-table-column>
               <el-table-column label="到期天数" prop="到期天数" minWidth="120" sortable />
             </el-table-column>
@@ -104,7 +104,7 @@
           {{ props.row.value }}
         </div>
         <div v-if="!props.row._custom">({{ formatDecimal((100 * props.row.value) / 持仓总价, 1) }}%)</div>
-        <DiffTag v-if="!props.row._custom" :涨跌="props.row.涨跌" />
+        <TagDiff v-if="!props.row._custom" :涨跌="props.row.涨跌" />
       </div>
     </el-table-column>
   </el-table>
@@ -115,8 +115,6 @@ import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
-import DiffTag from "~/components/tag/DiffTag.vue";
-import CallPutTag from "~/components/tag/CallPutTag.vue";
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,

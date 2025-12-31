@@ -12,10 +12,10 @@
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ 一手时间价 }}</div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
-        <PriceTag :一手价="一手价" />
+        <TagPrice :一手价="一手价" />
       </div>
       <div class="whitespace-nowrap">
-        <PremiumTag :溢价率="溢价" />
+        <TagPremium :溢价率="溢价" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
@@ -23,27 +23,27 @@
         <el-tag type="info" size="small" effect="plain"> 打和 {{ 打和点 }} </el-tag>
       </div>
       <div class="whitespace-nowrap">
-        <LeverageTag :杠杆="杠杆" />
+        <TagLeverage :杠杆="杠杆" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <GammaTag :Gamma="Gamma" />
+        <TagGamma :Gamma="Gamma" />
       </div>
     </div>
 
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <IvTag :隐波="隐波" :正股="正股代码" />
+        <TagIv :隐波="隐波" :正股="正股代码" />
       </div>
       <div class="whitespace-nowrap">
-        <DeltaTag :Delta="Delta" :正股="正股代码" />
+        <TagDelta :Delta="Delta" :正股="正股代码" />
       </div>
     </div>
     <div v-if="持仓">
       <div class="flex justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
-          <CostPriceTag :一手成本价="一手成本价" />
+          <TagCostPrice :一手成本价="一手成本价" />
         </div>
         <div class="whitespace-nowrap">
           <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 2) }}%)</el-tag>
@@ -54,18 +54,8 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import DeltaTag from "~/components/tag/DeltaTag.vue";
-import IvTag from "~/components/tag/IvTag.vue";
-import PriceTag from "~/components/tag/PriceTag.vue";
-import DiffTag from "~/components/tag/DiffTag.vue";
-import RoundDiffTag from "~/components/tag/RoundDiffTag.vue";
-import GammaTag from "~/components/tag/GammaTag.vue";
-import LeverageTag from "~/components/tag/LeverageTag.vue";
-import PremiumTag from "~/components/tag/PremiumTag.vue";
-import CostPriceTag from "~/components/tag/CostPriceTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
-import HoldTag from "~/components/tag/HoldTag.vue";
 // import { useMediaQuery } from "@vueuse/core";
 import { formatDecimal } from "~/utils/utils";
 

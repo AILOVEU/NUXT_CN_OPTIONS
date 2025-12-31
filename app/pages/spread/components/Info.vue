@@ -12,12 +12,10 @@
     <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">买:{{ current期权Item?.["一手卖一价"] }}</div>
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">卖:{{ spread期权Item?.["一手买一价"] }}</div>
     <div class="mx-auto w-full flex gap-[4px] items-center justify-around">
-      <DiffPriceTag :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
+      <TagDiffPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
     </div>
     <div class="text-[gray] mb-[5px]">
-      <div class="mx-auto">
-        {{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;
-      </div>
+      <div class="mx-auto">{{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
       <div class="mx-auto">Delta {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
       <div class="mx-auto">隐波 {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
     </div>
@@ -25,7 +23,6 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import DiffPriceTag from "~/components/tag/DiffPriceTag.vue";
 
 const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "combo_list"]);
 const prefixKey = computed(() => {

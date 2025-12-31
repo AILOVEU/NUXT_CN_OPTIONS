@@ -4,24 +4,20 @@
     v-if="!props.row?._split && !props.row?._current"
   >
     <div>
-      <IvTag :隐波="隐波" :正股代码="正股代码" />
+      <TagIv :隐波="隐波" :正股代码="正股代码" />
     </div>
     <div>
-      <DeltaTag :Delta="Delta" :正股代码="正股代码" />
+      <TagDelta :Delta="Delta" :正股代码="正股代码" />
     </div>
     <div>
-      <PremiumTag :溢价率="溢价率" :正股代码="正股代码" />
+      <TagPremium :溢价率="溢价率" :正股代码="正股代码" />
     </div>
     <div>
-      <LeverageTag :杠杆="杠杆" :正股代码="正股代码" />
+      <TagLeverage :杠杆="杠杆" :正股代码="正股代码" />
     </div>
   </div>
 </template>
 <script setup>
-import DeltaTag from "~/components/tag/DeltaTag.vue";
-import IvTag from "~/components/tag/IvTag.vue";
-import PremiumTag from "~/components/tag/PremiumTag.vue";
-import LeverageTag from "~/components/tag/LeverageTag.vue";
 
 const props = defineProps(["row", "isCall"]);
 const callOrPut = computed(() => {
