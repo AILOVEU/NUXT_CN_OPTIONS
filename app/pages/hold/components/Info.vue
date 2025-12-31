@@ -7,9 +7,7 @@
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
     </div>
-    <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
-      {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}
-    </div>
+    <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
     <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ 一手内在价 }}</div>
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ 一手时间价 }}</div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
@@ -45,6 +43,9 @@
     <div v-if="持仓">
       <div class="flex justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
+          <CostPriceTag :一手成本价="一手成本价" />
+        </div>
+        <div class="whitespace-nowrap">
           <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 2) }}%)</el-tag>
         </div>
       </div>
@@ -61,6 +62,7 @@ import RoundDiffTag from "~/components/tag/RoundDiffTag.vue";
 import GammaTag from "~/components/tag/GammaTag.vue";
 import LeverageTag from "~/components/tag/LeverageTag.vue";
 import PremiumTag from "~/components/tag/PremiumTag.vue";
+import CostPriceTag from "~/components/tag/CostPriceTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import HoldTag from "~/components/tag/HoldTag.vue";
