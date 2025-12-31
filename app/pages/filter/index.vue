@@ -8,7 +8,7 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
-import FilterInfo from "~/components/analysis/FilterInfo";
+import FilterInfo from "./components/FilterInfo";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
 const all_data = ref([]);

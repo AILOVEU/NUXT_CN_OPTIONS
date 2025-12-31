@@ -63,7 +63,7 @@ import LeverageTag from "~/components/tag/LeverageTag.vue";
 import PremiumTag from "~/components/tag/PremiumTag.vue";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
-import HoldTag from "../tag/HoldTag.vue";
+import HoldTag from "~/components/tag/HoldTag.vue";
 // import { useMediaQuery } from "@vueuse/core";
 import { formatDecimal } from "~/utils/utils";
 

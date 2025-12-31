@@ -170,7 +170,7 @@ import GammaTag from "~/components/tag/GammaTag.vue";
 import LeverageTag from "~/components/tag/LeverageTag.vue";
 import CallPutTag from "~/components/tag/CallPutTag.vue";
 import PremiumTag from "~/components/tag/PremiumTag.vue";
-import Hold from "~/pages/hold.vue";
+import Hold from "~/pages/hold/index.vue";
 import { deadline_list, OPTIONS_MAP, 最大建议买入价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);

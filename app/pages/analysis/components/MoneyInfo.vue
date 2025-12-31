@@ -184,6 +184,23 @@ const 盈亏概览Option = computed(() => {
   };
 });
 const 盈亏曲线Option = computed(() => {
+  // 2. 数据预处理：识别每个月的第一个存在的日期（核心步骤）
+  const monthFirstDateMap = new Map(); // 存储「年月标识」->「当月首个日期」
+  const firstDateSet = new Set(); // 存储所有当月首个日期，用于快速判断
+  盈亏曲线数据.forEach((item) => {
+    const { name } = item;
+    // 拆分日期为 年、月（统一格式，避免格式不一致导致判断错误）
+    const yearMonthKey = dayjs(name, "YYYYMMDD").format("YYYY-MM"); // 唯一标识：年-月
+
+    // 若该年月未记录首个日期，则存入并标记
+    if (!monthFirstDateMap.has(yearMonthKey)) {
+      monthFirstDateMap.set(yearMonthKey, name);
+      firstDateSet.add(name); // 加入快速查询集合
+    }
+  });
+  const xAxisDateData = 盈亏曲线数据.map((item) => item.name);
+  const seriesValueData = 盈亏曲线数据.map((item) => item.value);
+  console.log("firstDateSet", firstDateSet);
   return {
     // toolbox: {
     //   feature: {
@@ -213,7 +230,7 @@ const 盈亏曲线Option = computed(() => {
     },
     xAxis: {
       type: "category",
-      data: 盈亏曲线数据.map((el) => el.name),
+      data: xAxisDateData,
     },
     yAxis: {
       type: "value",
@@ -224,8 +241,20 @@ const 盈亏曲线Option = computed(() => {
           show: false,
           // position: "insideTop",
         },
-        data: 盈亏曲线数据.map((el) => el.value),
+        data: seriesValueData,
         type: "line",
+        itemStyle: {
+          color: function (params) {
+            // params.dataIndex：当前数据点的索引
+            const currentDate = xAxisDateData[params.dataIndex];
+            // 判断当前日期是否是当月首个有效日期
+            if (firstDateSet.has(currentDate)) {
+              return "#ff0000"; // 红色：当月首个日期
+            } else {
+              return "#0066ff"; // 蓝色：其他日期
+            }
+          },
+        },
         markPoint: {
           data: [
             {

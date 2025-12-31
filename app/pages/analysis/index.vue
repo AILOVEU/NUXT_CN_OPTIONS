@@ -11,15 +11,6 @@
       <Card header="持仓分析">
         <BarInfo :all_data="all_data" />
       </Card>
-      <!-- <Card header="气泡图分析">
-        <BubbleInfo :all_data="all_data" />
-      </Card> -->
-      <!-- <Card header="持仓占比分析">
-        <PercentInfo :all_data="all_data" />
-      </Card> -->
-      <Card header="筛选">
-        <FilterInfo :all_data="all_data" />
-      </Card>
     </div>
   </div>
 </template>
@@ -27,10 +18,9 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
-import BarInfo from "~/components/analysis/BarInfo";
-import TimeInfo from "~/components/analysis/TimeInfo";
-import MoneyInfo from "~/components/analysis/MoneyInfo";
-import FilterInfo from "~/components/analysis/FilterInfo";
+import BarInfo from "./components/BarInfo";
+import TimeInfo from "./components/TimeInfo";
+import MoneyInfo from "./components/MoneyInfo";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 const { globalLoading } = useGlobalLoading();
 const all_data = ref([]);

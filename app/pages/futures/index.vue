@@ -1,7 +1,20 @@
 <template>
   <div class="max-md:w-[250%]">
     <Nav />
-    <el-table :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" :row-style="getRowStyle" ref="tableRef">
+    <el-button @click="handleGetFutures">获取所有期货数据</el-button>
+    <el-table :data="tableData.data" style="width: 100%" size="small" border>
+      <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
+        <div class="text-[10px]">{{ $index + 1 }}</div>
+      </el-table-column>
+      <el-table-column :key="name" v-for="name in ['市场', '期货名称', '持仓量', '成交额', '成交量', '最新价', '涨跌额', '涨跌幅']" :label="name" :prop="name" width="120" align="center" #default="{ row }" sortable>
+        <div class="text-[10px]">{{ row[name] }}</div>
+      </el-table-column>
+      <el-table-column :key="month" v-for="month in ['602', '603', '604', '605', '606', '607', '608', '609', '610', '611', '612']" :label="'2' + month" width="50" align="center" #default="{ row }">
+        <div class="text-[10px] w-full h-full" :style="{ backgroundColor: row['月份List']?.some((el) => el.includes(month)) ? '#AED6CF' : '' }">&nbsp;</div>
+      </el-table-column>
+    </el-table>
+
+    <el-table v-if="false" :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" :row-style="getRowStyle" ref="tableRef">
       <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
         <div class="text-[10px]">{{ $index + 1 }}</div>
       </el-table-column>
@@ -14,15 +27,6 @@
       <el-table-column label="交易所" width="100" align="center" #default="{ row }">
         <div class="text-[10px]">{{ row["交易所"] }}</div>
       </el-table-column>
-      <!-- <el-table-column
-      v-for="month in ['202602', '202603', '202604', '202605', '202606', '202607', '202608', '202609', '202610', '202611', '202612']"
-      :label="month"
-      width="50"
-      align="center"
-      #default="{ row }"
-    >
-      <div class="text-[10px] w-full h-full" :style="{ backgroundColor: row['期权月份']?.includes(month) ? '#AED6CF' : '' }">&nbsp;</div>
-    </el-table-column> -->
       <el-table-column label="隐波" prop="隐波" width="100" align="center" #default="{ row }" sortable>
         <IvTag :隐波="row['隐波'] || 99" />
       </el-table-column>
@@ -48,10 +52,11 @@
   </div>
 </template>
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { futuresTableData } from "~/data/futures";
 import IvTag from "~/components/tag/IvTag";
-
+import { get_all_http_data } from "~/utils/futures";
+import _ from "lodash";
 const filteredTableData = computed(() => {
   return futuresTableData.map((row) => {
     let 平值一手价 = row["比例"] * row["平值价格"];
@@ -65,6 +70,16 @@ const filteredTableData = computed(() => {
     };
   });
 });
+const tableData = ref({
+  columns: [],
+  data: [],
+});
+async function handleGetFutures() {
+  let res = await get_all_http_data();
+  tableData.value.data = res;
+  tableData.value.columns = Object.keys(res[0]);
+  // console.log(JSON.stringify(res));
+}
 function getRowStyle({ row }) {
   return row.isPass
     ? {

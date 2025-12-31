@@ -36,8 +36,8 @@
 <script setup>
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
-import Center from "~/components/hold/Center.vue";
-import Info from "~/components/hold/Info.vue";
+import Center from "./components/Center.vue";
+import Info from "./components/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
 import { useMediaQuery } from "@vueuse/core";

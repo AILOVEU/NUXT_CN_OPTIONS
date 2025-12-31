@@ -27,12 +27,12 @@
   </div>
 </template>
 <script setup>
-import Center from "~/components/t/Center.vue";
-import Price from "~/components/t/Price.vue";
-import Info from "~/components/t/Info.vue";
-import Options from "~/components/t/Options.vue";
-import Time from "~/components/t/Time.vue";
-import Hold from "~/components/t/Hold.vue";
+import Center from "./components/Center.vue";
+import Price from "./components/Price.vue";
+import Info from "./components/Info.vue";
+import Options from "./components/Options.vue";
+import Time from "./components/Time.vue";
+import Hold from "./components/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";

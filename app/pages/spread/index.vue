@@ -51,8 +51,8 @@
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-import Center from "~/components/spread/Center.vue";
-import Info from "~/components/spread/Info.vue";
+import Center from "./components/Center.vue";
+import Info from "./components/Info.vue";
 import { querySpread } from "~/utils/querySpread.js";
 import { getColorSplitHander } from "~/utils/color";
 import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
