@@ -1,6 +1,9 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    价:{{ 一手价 }}
+    <div>价:{{ 一手价 }}</div>
+  </el-tag>
+  <el-tag :type="type" size="small" :effect="effect">
+    <div>目标:{{ props.diffValue * 10 }}</div>
   </el-tag>
 </template>
 <script setup>

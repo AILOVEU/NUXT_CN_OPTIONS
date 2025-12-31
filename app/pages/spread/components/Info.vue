@@ -1,8 +1,8 @@
 <template>
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
-  <div v-else-if="spread期权Item && show" class="p-[2px] h-[125px] flex flex-col justify-center relative px-[4px] mx-auto">
-    <div class="absolute top-0 left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[1px]" v-if="组合持仓">
+  <div v-else-if="spread期权Item && show" class="p-[2px] h-[125px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+    <div class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[1px]" v-if="组合持仓">
       <div class="bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]">
         {{ 组合持仓 }}
       </div>
@@ -15,6 +15,7 @@
 
     <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">买:{{ current期权Item?.["一手卖一价"] }}</div>
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">卖:{{ spread期权Item?.["一手买一价"] }}</div>
+
     <div class="mx-auto w-full flex gap-[4px] items-center justify-around">
       <TagDiffPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
     </div>
@@ -93,5 +94,14 @@ const 组合盈亏 = computed(() => {
   const current期权盈亏 = current期权Item.value["一手价"] - current期权Item.value["一手成本价"];
   const spread期权盈亏 = spread期权Item.value["一手价"] - spread期权Item.value["一手成本价"];
   return (current期权盈亏 - spread期权盈亏) * 组合持仓.value;
+});
+
+const style = computed(() => {
+  if (组合持仓.value) {
+    return {
+      border: "4px solid red",
+    };
+  }
+  return {};
 });
 </script>
