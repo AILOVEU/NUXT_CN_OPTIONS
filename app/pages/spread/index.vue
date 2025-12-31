@@ -22,7 +22,7 @@
       </el-form>
     </div>
     <div class="flex justify-center">
-      <div class="mx-auto h-[calc(100vh-200px)] max-md:h-[calc(255vh-200px)] w-[100vh]">
+      <div class="mx-auto h-[calc(100vh-200px)] max-md:h-[calc(255vh-200px)] w-[255vw]">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
             <template #header>
