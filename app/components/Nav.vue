@@ -20,12 +20,12 @@ const route = useRoute();
 const router = useRouter();
 const navList = [
   {
-    href: "/t",
-    name: "T型",
-  },
-  {
     href: "/hold",
     name: "持仓",
+  },
+  {
+    href: "/t",
+    name: "T型",
   },
   {
     href: "/analysis",

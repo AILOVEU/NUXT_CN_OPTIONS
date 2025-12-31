@@ -15,7 +15,7 @@
           <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息"><Info :row="row" :isCall="true" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓"><Hold :row="row" :isCall="true" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格"><Price :row="row" :isCall="true" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="期权" prop="期权"><Center :row="row" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="80" label="期权" prop="期权"><Center :row="row" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格"><Price :row="row" :isCall="false" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓"><Hold :row="row" :isCall="false" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息"><Info :row="row" :isCall="false" /></el-table-column>
@@ -49,52 +49,6 @@ const stockCode = ref(stockCodeOptions.value[0].value);
 const tableData = reactive({
   data: [],
   loading: false,
-  columns: [
-    {
-      label: "C_合约",
-      width: "150px",
-    },
-    {
-      label: "C_价值",
-      width: "120px",
-    },
-    {
-      label: "C_信息",
-      width: "160px",
-    },
-    {
-      label: "C_持仓",
-      width: "180px",
-    },
-    {
-      label: "C_价格",
-      width: "160px",
-    },
-    {
-      label: "期权",
-      width: "100px",
-    },
-    {
-      label: "P_价格",
-      width: "160px",
-    },
-    {
-      label: "P_持仓",
-      width: "180px",
-    },
-    {
-      label: "P_信息",
-      width: "160px",
-    },
-    {
-      label: "P_价值",
-      width: "120px",
-    },
-    {
-      label: "P_合约",
-      width: "150px",
-    },
-  ],
 });
 async function handleQuery() {
   tableData.loading = true;
@@ -123,8 +77,7 @@ const filteredTableData = computed(() => {
 function getCellStyle({ column, row }) {
   if (row?.["_current"]) return { backgroundColor: "#f5f7fa" };
   if (row?.["_split"]) return { backgroundColor: "black", color: "black" };
-  if (column?.["property"] === "期权") return { backgroundColor: "rgba(255,255,255,0.01)", fontWeight: "600" };
-
+  if (column?.["property"] === "期权") return { backgroundColor: "#CBDCEB", fontWeight: "600", border: "1px solid white" };
   // 红 | 绿
   // -------
   // 绿 | 红
