@@ -1,5 +1,5 @@
 <template>
-  <div class="max-md:w-[250%]" v-loading="tableData.loading">
+  <div class="max-md:w-[255%]" v-loading="tableData.loading">
     <Nav />
     <el-button @click="handleGetFutures">获取所有期货数据</el-button>
     <el-table :data="tableData.data" style="width: 100%" size="small" border>

@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[200%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[255%]">
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
@@ -8,7 +8,7 @@
     </div>
 
     <div>
-      <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
+      <el-form :model="formData" label-width="auto" label-suffix=":">
         <el-form-item label="到期日">
           <el-select v-model="formData.到期日List" multiple>
             <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
@@ -22,7 +22,7 @@
       </el-form>
     </div>
     <div class="flex justify-center">
-      <div class="mx-auto h-[calc(100vh-100px)]">
+      <div class="mx-auto h-[calc(100vh-200px)] max-md:h-[calc(255vh-200px)] w-[100vh]">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
             <template #header>
@@ -68,10 +68,11 @@ const formData = reactive({
 
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
-  return OPTIONS_MAP.map((el) => ({
+  let ops = OPTIONS_MAP.map((el) => ({
     value: el.code,
     label: el.showName,
   }));
+  return [...ops, { value: "all", label: "全" }];
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
 const columns = computed(() => {
@@ -118,7 +119,7 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await querySpread([stockCode.value]);
+  const [holdData, combo_list, tiledData] = await querySpread(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
   tableData.combo_list = combo_list;
@@ -133,10 +134,10 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["正股代码"] !== stockCode.value) return false;
+    // if (el["正股代码"] !== stockCode.value) return false;
     if (el._current || el._split) return true;
     if (el["期权"]?.includes("A")) return false;
-    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === stockCode.value).行权价Range;
+    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });

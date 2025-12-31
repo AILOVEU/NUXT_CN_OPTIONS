@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[250%]">
+  <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[255%]">
     <div>
       <Nav />
 
@@ -7,7 +7,7 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(250vh-120px)] flex justify-center">
+    <div class="h-[calc(100vh-80px)] max-md:h-[calc(255vh-120px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约"><Options :row="row" :isCall="true" /></el-table-column>
@@ -40,10 +40,11 @@ const { globalLoading } = useGlobalLoading();
 
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
-  return OPTIONS_MAP.map((el) => ({
+  let ops = OPTIONS_MAP.map((el) => ({
     value: el.code,
     label: el.showName,
   }));
+  return [...ops, { value: "all", label: "全" }];
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
 const tableData = reactive({
@@ -52,7 +53,7 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const tData = await queryT([stockCode.value]);
+  const tData = await queryT(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = tData || [];
   tableData.loading = false;
 }
@@ -65,11 +66,11 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["正股代码"] !== stockCode.value) return false;
+    // if (el["正股代码"] !== stockCode.value) return false;
     if (el["C持仓"] || el["P持仓"]) return true;
     if (el["期权"]?.includes("A")) return false;
     if (el._current || el._split) return true;
-    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === stockCode.value).行权价Range;
+    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
