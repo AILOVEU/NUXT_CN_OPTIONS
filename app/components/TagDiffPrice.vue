@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    {{ 一手价 }}
+    价:{{ 一手价 }}
   </el-tag>
 </template>
 <script setup>
