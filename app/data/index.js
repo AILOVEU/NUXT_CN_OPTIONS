@@ -66,7 +66,7 @@ export const OPTIONS_MAP = [
   },
   {
     code: "159922",
-    name: "深-中证500", // 中文名无关，特殊处理了
+    name: "深500", // 中文名无关，特殊处理了
     color: "#fc8452",
     showName: "深500🐯",
     行权价Range: [2700, 3200],

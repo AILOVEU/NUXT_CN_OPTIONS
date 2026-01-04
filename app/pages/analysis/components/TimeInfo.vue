@@ -359,8 +359,8 @@ function getSankeyLegenColorMap({ 总和标识 }) {
     colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
   });
   OPTIONS_MAP.forEach((el) => {
-    colorMap[el.name] = el.color;
-    colorMap[el.name + "[组合]"] = el.color;
+    colorMap[el.code] = el.color;
+    colorMap[el.code + "[组合]"] = el.color;
   });
   return colorMap;
 }
@@ -372,7 +372,7 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
     dataList.push(el.target);
   });
   dataList = [...Array.from(new Set(dataList)), 总和标识];
-  const dataListSort = [..._.flattenDeep(OPTIONS_MAP.map((el) => [el.name, el.name + "[组合]"])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")), 总和标识];
+  const dataListSort = [..._.flattenDeep(OPTIONS_MAP.map((el) => [el.code, el.code + "[组合]"])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")), 总和标识];
   dataList = dataListSort.filter((el) => dataList.includes(el));
   return dataList;
 }
@@ -383,7 +383,7 @@ function getSpaceBetween3Div($1, $2, $3) {
   return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;">
             <div style="display:flex;align-items: center;">
               <div style='width: 50px;'>${$1}</div>
-              <div style='border: 1px solid #89bbdf;padding: 2px;color: #89bbdf;border-radius: 3px;width: 50px;text-align: right;'>${$2}</div>  
+              <div style='border: 1px solid #89bbdf;padding: 2px;color: #89bbdf;border-radius: 3px;width: 50px;text-align: right;'>${$2}</div>
             </div>
             <div>${$3}</div>
           </div>`;
@@ -419,40 +419,32 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
       trigger: "item",
       triggerOn: "mousemove|click",
       formatter: (params) => {
-        console.log("params", params);
+        // console.log("params", params);
         const { dataType, data, value } = params;
         let list = [];
         let targetName = "";
         let listStr = "";
         let targetValue = 亏损符号 * value;
+        let 展示字段 = 总和标识 === "持" ? "总价" : "今日总涨跌";
+        let sumValue = 0;
+
         if (dataType === "node") {
-          targetName = data.name;
-          let type = data.name.replace(" ", "");
-          let 展示字段 = 总和标识 === "持" ? "总价" : "今日总涨跌";
-          // 沽购列
-          if (["沽", "购"].some((type) => data.name.includes(type))) {
-            list = 所有持仓期权TableData.filter((el) => el["沽购"] === type);
-          }
-          // 月份列
-          if (data.name.includes("月")) {
-            list = 所有持仓期权TableData.filter((el) => dayjs(el["到期日"], "YYYYMMDD").format("M月") === data.name);
-          }
-          // 合计列
-          if (["持", "盈", "亏"].includes(data.name)) {
-            list = 所有持仓期权TableData;
-          }
+          targetName = getStockCodeName(data.name);
+          list = getFilterDataByDataName(data.name, 所有持仓期权TableData);
           if (总和标识 === "盈") list = list.filter((el) => el[展示字段] >= 0);
           if (总和标识 === "亏") list = list.filter((el) => el[展示字段] < 0);
-          let sumValue = 0;
-          list.forEach((el) => (sumValue += el[展示字段]));
-          list = _.sortBy(list, (el) => -Math.abs(el[展示字段]));
-          listStr += list.map((el) => `${getSpaceBetween3Div(el[展示字段], formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%", el["期权名称"])}`).join("");
-          if (listStr) listStr += "<br />";
+        } else if (dataType === "edge") {
+          targetName = `${getStockCodeName(data.source)} > ${getStockCodeName(data.target)}`;
+          let tList = getFilterDataByDataName(data.source, 所有持仓期权TableData);
+          list = getFilterDataByDataName(data.target, tList);
+          console.log("list", list);
         }
-        if (dataType === "edge") {
-          targetName = `${data.source} > ${data.target}`;
-        }
-        return dataType === "node" ? `${listStr}${getSpaceBetween2Div(targetName, targetValue)}` : `${targetName}<br />${targetValue}`;
+
+        list.forEach((el) => (sumValue += el[展示字段]));
+        list = _.sortBy(list, (el) => -Math.abs(el[展示字段]));
+        listStr += list.map((el) => `${getSpaceBetween3Div(el[展示字段], formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%", el["期权名称"])}`).join("");
+        if (listStr) listStr += "<br />";
+        return dataType === "node" ? `${listStr}${getSpaceBetween2Div(targetName, targetValue)}` : `${listStr}${targetName}<br />${targetValue}`;
       },
     },
     grid: {
@@ -491,7 +483,8 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
           },
           formatter: function (params) {
             const { value, data } = params;
-            return `{a|${data.name}}  {b|${亏损符号 * value}} {c|(${formatDecimal((100 * value) / sumValue, 1)}%)}`;
+            let targetName = getStockCodeName(data.name);
+            return `{a|${targetName}}  {b|${亏损符号 * value}} {c|(${formatDecimal((100 * value) / sumValue, 1)}%)}`;
           },
         },
         links: [...sourceToTargetList, ...totalData],
@@ -502,6 +495,42 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
       },
     ],
   };
+}
+
+function getFilterDataByDataName(dataName, tableData) {
+  let list = [];
+  let type = dataName.replace(" ", "");
+  // 沽购列
+  if (["沽", "购"].some((type) => dataName.includes(type))) {
+    list = tableData.filter((el) => el["沽购"] === type);
+  }
+  // 月份列
+  else if (dataName.includes("月")) {
+    list = tableData.filter((el) => dayjs(el["到期日"], "YYYYMMDD").format("M月") === dataName);
+  }
+  // 合计列
+  else if (["持", "盈", "亏"].includes(dataName)) {
+    list = tableData;
+  }
+  // 正股
+  else {
+    const stockCode = OPTIONS_MAP.find((el) => el.code === dataName.replace("[组合]", ""))?.code;
+    const isCombo = dataName.includes("[组合]");
+    list = tableData.filter((el) => el["正股代码"] === stockCode && !!el["isCombo"] === isCombo);
+  }
+  return list;
+}
+
+function getStockCodeName(name) {
+  let targetName = name;
+  if (targetName.includes("[组合]")) {
+    const target = OPTIONS_MAP.find((el) => el.code === targetName.replace("[组合]", ""));
+    if (target) targetName = target.name + "[组合]";
+  } else {
+    const target = OPTIONS_MAP.find((el) => el.code === targetName);
+    if (target) targetName = target.name;
+  }
+  return targetName;
 }
 
 const 持仓分布Option = computed(() => {
@@ -516,7 +545,7 @@ const 持仓分布Option = computed(() => {
           沽购to正股Map[key] = {
             // list: [...(沽购to正股Map[key]?.list || []),el],
             source: type,
-            target: item.name + 组合Str,
+            target: item.code + 组合Str,
             stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (el?.总价 || 0),
           };
@@ -548,7 +577,7 @@ const 持仓分布Option = computed(() => {
           const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
             stock_code: item.code,
-            source: item.name + 组合Str,
+            source: item.code + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.总价 || 0),
           };
@@ -581,7 +610,7 @@ const 盈利分布Option = computed(() => {
           const key = 组合Str + item.code + type;
           沽购to正股Map[key] = {
             source: type,
-            target: item.name + 组合Str,
+            target: item.code + 组合Str,
             stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
@@ -613,7 +642,7 @@ const 盈利分布Option = computed(() => {
           const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
             stock_code: item.code,
-            source: item.name + 组合Str,
+            source: item.code + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
@@ -645,7 +674,7 @@ const 亏损分布Option = computed(() => {
           const key = 组合Str + item.code + type;
           沽购to正股Map[key] = {
             source: type,
-            target: item.name + 组合Str,
+            target: item.code + 组合Str,
             stock_code: item.code,
             value: (沽购to正股Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };
@@ -677,7 +706,7 @@ const 亏损分布Option = computed(() => {
           const key = 组合Str + item.code + date;
           正股to到日期Map[key] = {
             stock_code: item.code,
-            source: item.name + 组合Str,
+            source: item.code + 组合Str,
             target: dayjs(date, "YYYYMMDD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };
