@@ -79,6 +79,21 @@ const 盈亏概览Option = computed(() => {
             },
             {
               lineStyle: {
+                color: "red",
+              },
+              name: "第一目标",
+              xAxis: money.第一目标,
+              label: {
+                show: false,
+                position: "start",
+                formatter: (params) => {
+                  const { name, value } = params;
+                  return `${name}\n${value}`;
+                },
+              },
+            },
+            {
+              lineStyle: {
                 color: "green",
               },
               name: "当前资金",

@@ -56,10 +56,8 @@
 import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
-// import { useMediaQuery } from "@vueuse/core";
 import { formatDecimal } from "~/utils/utils";
 
-// const isMobile = useMediaQuery("(max-width: 768px)");
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
@@ -125,7 +123,6 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
-  // const width = isMobile.value ? "120px" : "154px";
   if (props.mode === "hold") {
     if (持仓.value > 0)
       return {

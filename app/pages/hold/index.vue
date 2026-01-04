@@ -39,12 +39,8 @@ import dayjs from "dayjs";
 import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import { queryHold } from "~/utils/queryHold.js";
-import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
-import { useMediaQuery } from "@vueuse/core";
-
-const isMobile = useMediaQuery("(max-width: 768px)");
-
-const { globalLoading } = useGlobalLoading();
+import { useGlobal } from "~/stores/useGlobal.js";
+const { globalLoading, isMobile } = useGlobal();
 
 const props = defineProps(["mode", "formData"]);
 

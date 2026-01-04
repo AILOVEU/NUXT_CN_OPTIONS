@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading || globalLoading.value" class="max-md:w-[255%]">
     <Nav />
-    <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px]">
+    <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
       <Card header="资金分析">
         <MoneyInfo :all_data="all_data" :combo_list="combo_list" />
       </Card>
@@ -21,8 +21,8 @@ import _ from "lodash";
 import BarInfo from "./components/BarInfo";
 import TimeInfo from "./components/TimeInfo";
 import MoneyInfo from "./components/MoneyInfo";
-import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
-const { globalLoading } = useGlobalLoading();
+import { useGlobal } from "~/stores/useGlobal.js";
+const { globalLoading } = useGlobal();
 const all_data = ref([]);
 const combo_list = ref([]);
 const loading = ref(false);

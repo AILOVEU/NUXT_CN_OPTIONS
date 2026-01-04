@@ -26,7 +26,7 @@ function isTimeNotWorkDay() {
   return [0, 6].includes(weekday);
 }
 
-export function get_最新价(row) {
+function get_最新价(row) {
   let { 最新价, 卖一, 买一 } = row;
   if (!卖一 || !买一) return 最新价;
   const 中间价 = Math.round(((卖一 + 买一) / 2) * 10000) / 10000;
@@ -36,7 +36,7 @@ export function get_最新价(row) {
   return 最新价;
 }
 
-export function get_持仓(持仓JSON, line_dict) {
+function get_持仓(持仓JSON, line_dict) {
   let targetList = 持仓JSON.filter((item) => item["名称"] === line_dict["期权名称"]);
   if (!targetList.length) return 0;
   console.log("targetList", targetList);
@@ -52,13 +52,13 @@ export function get_持仓(持仓JSON, line_dict) {
   // return target["持仓类别"] === "义务仓" ? -持仓 : 持仓;
 }
 
-export function get_option_实值(el) {
+function get_option_实值(el) {
   const isCall = el["期权名称"].includes("购");
   const 实值 = isCall ? el["正股价格"] - el["行权价"] : el["行权价"] - el["正股价格"];
   return 实值 > 0 ? Math.floor(实值 * el["合约单位"]) / el["合约单位"] : 0;
 }
 
-export function get_stock_code(name) {
+function get_stock_code(name) {
   let code;
   OPTIONS_MAP.forEach((el) => {
     if (name.includes(el.name)) {
@@ -68,12 +68,17 @@ export function get_stock_code(name) {
   return code;
 }
 
-export function get_成本价(line_dict, 持仓JSON) {
+function get_成本价(line_dict, 持仓JSON) {
   let 成本价 = 持仓JSON.find((item) => item["名称"] === line_dict["期权名称"])?.开仓均价 || undefined;
   成本价 = 成本价 ? +成本价 : undefined;
   return 成本价;
 }
-
+function get组合名称(权利Item, 义务Item) {
+  const 正股名称 = 权利Item["正股名称"];
+  const 行权价Name = `${权利Item["千行权价"]}-${义务Item["千行权价"]}`;
+  const 到期月 = dayjs(权利Item["到期日"], "YYYYMMDD").format("M月");
+  return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
+}
 export function 构建组合(all_data) {
   const { set保证金 } = useMoneyStore();
   const 持仓List = all_data.filter((el) => el["持仓"]);
@@ -87,26 +92,27 @@ export function 构建组合(all_data) {
   while (义务仓List.length && loopCount < 100) {
     loopCount += 1;
     义务仓List.forEach((el) => {
-      const 义务Option = el["期权名称"];
-      const isCall = 义务Option.includes("购");
+      const 义务Name = el["期权名称"];
+      const isCall = 义务Name.includes("购");
       const 义务行权价 = el["千行权价"];
       let 权利行权价 = 义务行权价 + (isCall ? -50 : 50);
-      let 权利Option = 义务Option.replace(义务行权价, 权利行权价);
+      let 权利Name = 义务Name.replace(义务行权价, 权利行权价);
       let loopCount2 = 0;
-      while (loopCount2 < 100 && 权利行权价 > 50 && (!持仓Map[权利Option]?.持仓 || 持仓Map[权利Option]?.持仓 < 0)) {
+      while (loopCount2 < 100 && 权利行权价 > 50 && (!持仓Map[权利Name]?.持仓 || 持仓Map[权利Name]?.持仓 < 0)) {
         loopCount2 += 1;
         权利行权价 = 权利行权价 + (isCall ? -50 : 50);
-        权利Option = 义务Option.replace(义务行权价, 权利行权价);
+        权利Name = 义务Name.replace(义务行权价, 权利行权价);
       }
       if (loopCount2 > 99) {
         return;
       }
-      const min持仓 = Math.min(Math.abs(持仓Map[权利Option].持仓), Math.abs(持仓Map[义务Option].持仓));
-      组合List.push([权利Option, 义务Option, min持仓]);
-      持仓Map[权利Option].持仓 = 持仓Map[权利Option].持仓 - min持仓;
-      持仓Map[义务Option].持仓 = 持仓Map[义务Option].持仓 + min持仓;
-      if (!持仓Map[义务Option].持仓) {
-        义务仓List = 义务仓List.filter((el) => el["期权名称"] !== 义务Option);
+      const min持仓 = Math.min(Math.abs(持仓Map[权利Name].持仓), Math.abs(持仓Map[义务Name].持仓));
+      const 组合名称 = get组合名称(持仓Map[权利Name], 持仓Map[义务Name]);
+      组合List.push([权利Name, 义务Name, min持仓, 组合名称]);
+      持仓Map[权利Name].持仓 = 持仓Map[权利Name].持仓 - min持仓;
+      持仓Map[义务Name].持仓 = 持仓Map[义务Name].持仓 + min持仓;
+      if (!持仓Map[义务Name].持仓) {
+        义务仓List = 义务仓List.filter((el) => el["期权名称"] !== 义务Name);
       }
     });
   }
@@ -252,7 +258,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["持仓"] = get_持仓(持仓JSON, line_dict);
     line_dict["成本价"] = get_成本价(line_dict, 持仓JSON);
     line_dict["正股代码"] = line_dict["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(line_dict["正股"]);
-
+    line_dict["正股名称"] = OPTIONS_MAP.find((el) => el.code === line_dict["正股代码"])?.name;
     line_dict["一手买一价"] = toPrice(line_dict["买一"], line_dict["合约单位"]);
     line_dict["一手卖一价"] = toPrice(line_dict["卖一"], line_dict["合约单位"]);
 

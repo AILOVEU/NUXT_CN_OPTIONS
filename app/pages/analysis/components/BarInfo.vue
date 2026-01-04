@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="formData" label-width="auto" style="max-width: 600px" label-suffix=":">
+    <el-form :model="formData" label-width="auto" label-suffix=":">
       <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple>
           <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -154,7 +154,7 @@ const 单日损耗Option = computed(() => {
     单日损耗Sum += val;
     return val;
   });
-  console.log(`单日损耗 (${(单日损耗Sum)}) `)
+  console.log(`单日损耗 (${单日损耗Sum}) `);
   return getBarOps({
     stockCodeList,
     name: "单日损耗",

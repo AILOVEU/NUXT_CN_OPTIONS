@@ -35,9 +35,8 @@ import Time from "./components/Time.vue";
 import Hold from "./components/Hold.vue";
 import { queryT } from "~/utils/queryT.js";
 import { OPTIONS_MAP } from "~/data";
-import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
-const { globalLoading } = useGlobalLoading();
-
+import { useGlobal } from "~/stores/useGlobal.js";
+const { globalLoading } = useGlobal();
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({

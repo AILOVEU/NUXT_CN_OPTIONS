@@ -55,11 +55,9 @@ import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import { querySpread } from "~/utils/querySpread.js";
 import { getColorSplitHander } from "~/utils/color";
-import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
-import { useMediaQuery } from "@vueuse/core";
+import { useGlobal } from "~/stores/useGlobal.js";
 
-const isMobile = useMediaQuery("(max-width: 768px)");
-const { globalLoading } = useGlobalLoading();
+const { globalLoading, isMobile } = useGlobal();
 const diff_list = [100, 200, 250, 300, 400, 500];
 const formData = reactive({
   到期日List: [...deadline_list],

@@ -9,8 +9,8 @@ import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
 import FilterInfo from "./components/FilterInfo";
-import { useGlobalLoading } from "~/stores/useGlobalLoading.js";
-const { globalLoading } = useGlobalLoading();
+import { useGlobal } from "~/stores/useGlobal.js";
+const { globalLoading } = useGlobal();
 const all_data = ref([]);
 const loading = ref(false);
 async function handleQuery() {
