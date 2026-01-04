@@ -379,7 +379,7 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
 function getSpaceBetween2Div($1, $2) {
   return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;"><div>${$1}</div><div>${$2}</div></div>`;
 }
-function getSpaceBetween3Div($1, $2, $3, $4) {
+function getSpaceBetween4Div($1, $2, $3, $4) {
   return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;">
             <div style="display:flex;align-items: center;">
               <div style='width: 50px;'>${$1}</div>
@@ -448,7 +448,7 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
         listStr += list
           .map(
             (el) =>
-              `${getSpaceBetween3Div(
+              `${getSpaceBetween4Div(
                 //
                 el[展示字段],
                 // 百分比
