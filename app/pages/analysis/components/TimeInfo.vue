@@ -379,13 +379,16 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
 function getSpaceBetween2Div($1, $2) {
   return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;"><div>${$1}</div><div>${$2}</div></div>`;
 }
-function getSpaceBetween3Div($1, $2, $3) {
+function getSpaceBetween3Div($1, $2, $3, $4) {
   return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;">
             <div style="display:flex;align-items: center;">
               <div style='width: 50px;'>${$1}</div>
               <div style='border: 1px solid #89bbdf;padding: 2px;color: #89bbdf;border-radius: 3px;width: 50px;text-align: right;'>${$2}</div>
             </div>
-            <div>${$3}</div>
+            <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
+              <div>${$3}</div>  
+              <div style='color: #89bbdf;border-radius: 3px;width: 30px;text-align: right;'>${$4}</div>  
+            </div>
           </div>`;
 }
 function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 总和标识 = "持" }) {
@@ -442,7 +445,20 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
 
         list.forEach((el) => (sumValue += el[展示字段]));
         list = _.sortBy(list, (el) => -Math.abs(el[展示字段]));
-        listStr += list.map((el) => `${getSpaceBetween3Div(el[展示字段], formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%", el["期权名称"])}`).join("");
+        listStr += list
+          .map(
+            (el) =>
+              `${getSpaceBetween3Div(
+                //
+                el[展示字段],
+                // 百分比
+                formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%",
+                // 名称
+                el["期权名称"],
+                el["持仓"]
+              )}`
+          )
+          .join("");
         if (listStr) listStr += "<br />";
         return dataType === "node" ? `${listStr}${getSpaceBetween2Div(targetName, targetValue)}` : `${listStr}${targetName}<br />${targetValue}`;
       },
