@@ -377,17 +377,17 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
   return dataList;
 }
 function getSpaceBetween2Div($1, $2) {
-  return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;"><div>${$1}</div><div>${$2}</div></div>`;
+  return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;"><div>${$1}</div><div>${$2}</div></div>`;
 }
 function getSpaceBetween4Div($1, $2, $3, $4) {
-  return `<div style="display:flex;justify-content: space-between;column-gap: 30px;height: 20px;">
+  return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
             <div style="display:flex;align-items: center;">
-              <div style='width: 50px;'>${$1}</div>
-              <div style='border: 1px solid #89bbdf;padding: 2px;color: #89bbdf;border-radius: 3px;width: 50px;text-align: right;'>${$2}</div>
+              <div style='width: 70px;'>${$1}</div>
+              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 70px;text-align: right;'>${$2}</div>
             </div>
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
               <div>${$3}</div>  
-              <div style='color: #89bbdf;border-radius: 3px;width: 30px;text-align: right;'>${$4}</div>  
+              <div style='color: #409eff;border-radius: 3px;width: 30px;text-align: right;'>${$4}</div>  
             </div>
           </div>`;
 }

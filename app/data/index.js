@@ -61,7 +61,7 @@ export const OPTIONS_MAP = [
     name: "中证500ETF",
     color: "#fac858",
     showName: "沪500🦁",
-    行权价Range: [6500, 8000],
+    行权价Range: [7000, 8000],
     fs: "m:10+c:510500",
   },
   {
