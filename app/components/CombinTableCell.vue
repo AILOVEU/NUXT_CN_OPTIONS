@@ -1,28 +1,33 @@
 <template>
   <template v-if="Array.isArray(props.value)">
     <div class="flex gap-[12px] items-center justify-between" v-if="props.showDiff">
-      <div>{{ diffValue }}</div>
+      <div>{{ format(diffValue) }}</div>
       <div class="text-[#dcdada]">
-        <div>{{ props.value[0] }}</div>
-        <div>{{ props.value[1] }}</div>
+        <div>{{ format(props.value[0]) }}</div>
+        <div>{{ format(props.value[1]) }}</div>
       </div>
     </div>
 
     <div v-else>
       <div>
-        <div>{{ props.value[0] }}</div>
-        <div>{{ props.value[1] }}</div>
+        <div>{{ format(props.value[0]) }}</div>
+        <div>{{ format(props.value[1]) }}</div>
       </div>
     </div>
   </template>
   <template v-else>
-    {{ props.value }}
+    {{ format(props.value) }}
   </template>
 </template>
 
 <script setup>
 import { formatDecimal } from "~/utils/utils";
-const props = defineProps(["value", "showDiff"]);
+const props = defineProps(["value", "showDiff", "format"]);
+
+const format = computed(() => {
+  if (props.format) return props.format;
+  return (val) => val;
+});
 
 const diffValue = computed(() => {
   if (Array.isArray(props.value)) {

@@ -39,48 +39,48 @@
               <el-table-column label="沽购" #default="{ row }" prop="沽购" minWidth="80" sortable>
                 <TagCallPut :沽购="row['沽购']" />
               </el-table-column>
-              <el-table-column label="到期天数" prop="到期天数" minWidth="120" sortable />
+              <el-table-column label="到期天数" prop="到期天数" align="right" minWidth="120" sortable />
             </el-table-column>
-            <el-table-column label="持仓" prop="持仓" minWidth="80" sortable />
+            <el-table-column label="持仓" prop="持仓" align="right" minWidth="80" sortable />
 
             <el-table-column label="价格构成" align="center">
-              <el-table-column label="时间" #default="{ row }" minWidth="140" prop="一手时间价" sortable>
+              <el-table-column label="时间" #default="{ row }" align="right" minWidth="140" prop="一手时间价" sortable>
                 <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
               </el-table-column>
-              <el-table-column label="实值" #default="{ row }" minWidth="140" prop="一手内在价" sortable>
+              <el-table-column label="实值" #default="{ row }" align="right" minWidth="140" prop="一手内在价" sortable>
                 <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
               </el-table-column>
             </el-table-column>
 
             <el-table-column label="盈亏" align="center">
-              <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" sortable>
+              <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" align="right" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />
               </el-table-column>
 
-              <el-table-column label="一手成本价" minWidth="120" #default="{ row }" prop="一手成本价" sortable>
+              <el-table-column label="一手成本价" minWidth="120" #default="{ row }" align="right" prop="一手成本价" sortable>
                 <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
               </el-table-column>
-              <el-table-column label="一手盈亏" prop="一手盈亏" minWidth="120" sortable />
+              <el-table-column label="一手盈亏" prop="一手盈亏" align="right" minWidth="120" sortable />
 
-              <el-table-column label="总盈亏" prop="总盈亏" minWidth="120" sortable />
+              <el-table-column label="总盈亏" prop="总盈亏" align="right" minWidth="120" sortable />
             </el-table-column>
 
             <el-table-column label="今日盈亏" align="center">
-              <el-table-column label="今日总涨跌" prop="今日总涨跌" minWidth="120" sortable />
-              <el-table-column label="今日单手涨跌" prop="今日单手涨跌" minWidth="140" sortable />
+              <el-table-column label="今日总涨跌" align="right" prop="今日总涨跌" minWidth="120" sortable />
+              <el-table-column label="今日单手涨跌" align="right" prop="今日单手涨跌" minWidth="140" sortable />
             </el-table-column>
 
             <el-table-column label="希腊字母" align="center">
-              <el-table-column label="Gamma" #default="{ row }" prop="Gamma" width="120" sortable>
-                <CombinTableCell :value="row['Gamma']" :showDiff="true" />
+              <el-table-column label="Gamma" #default="{ row }" prop="Gamma" align="right" width="120" sortable>
+                <CombinTableCell :value="row['Gamma']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
               </el-table-column>
-              <el-table-column label="Delta" #default="{ row }" prop="Delta" width="120" sortable>
-                <CombinTableCell :value="row['Delta']" :showDiff="true" />
+              <el-table-column label="Delta" #default="{ row }" prop="Delta" align="right" width="120" sortable>
+                <CombinTableCell :value="row['Delta']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
               </el-table-column>
             </el-table-column>
 
             <el-table-column label="仓位" align="center">
-              <el-table-column label="总价" prop="总价" minWidth="120" sortable />
+              <el-table-column label="总价" prop="总价" align="right" minWidth="120" sortable />
               <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="200">
                 <el-progress :percentage="row['总价占比']" :color="getPercentColor(row['总价占比'])" />
               </el-table-column>
@@ -387,7 +387,7 @@ function getSpaceBetween4Div($1, $2, $3, $4) {
             </div>
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
               <div>${$3}</div>  
-              <div style='color: #409eff;border-radius: 3px;width: 30px;text-align: right;'>${$4}</div>  
+              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>  
             </div>
           </div>`;
 }

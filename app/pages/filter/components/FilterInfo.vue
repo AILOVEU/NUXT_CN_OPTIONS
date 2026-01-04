@@ -109,57 +109,59 @@
     </div>
   </div>
 
-  <div v-if="showType === 'list'" class="w-full min-h-[calc(100vh-400px)] mb-[100px]">
-    <el-table :data="filteredTableData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
-      <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
-        <div class="text-[10px]">{{ $index + 1 }}</div>
-      </el-table-column>
-      <el-table-column label="期权名称" prop="期权名称" minWidth="150" sortable align="left" fixed="left" />
-
-      <el-table-column #default="{ row }" label="一手价" prop="一手价" minWidth="100" sortable align="left" />
-      <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" minWidth="100" sortable align="left" />
-
-      <el-table-column label="基本信息" align="center">
-        <el-table-column #default="{ row }" label="正股" prop="正股" minWidth="100" sortable align="left" />
-        <el-table-column #default="{ row }" label="沽购" prop="沽购" minWidth="100" sortable align="left">
-          <TagCallPut :沽购="row['沽购']" />
+  <div v-if="showType === 'list'" class="h-[calc(100vh-168px)] max-md:h-[calc(200vh-300px)] mb-[100px] flex justify-center">
+    <div class="mx-auto overflow-x-auto">
+      <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
+        <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
+          <div class="text-[10px]">{{ $index + 1 }}</div>
         </el-table-column>
-        <el-table-column label="到期天数" prop="到期天数" minWidth="100" sortable align="left" />
-      </el-table-column>
+        <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
 
-      <el-table-column label="溢价信息" align="center">
-        <el-table-column #default="{ row }" label="打和点" prop="打和点" minWidth="100" sortable align="left">
-          {{ row["打和点"].toFixed(4) }}
+        <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
+        <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="90" sortable align="right" />
+
+        <el-table-column label="基本信息" align="center">
+          <el-table-column #default="{ row }" label="正股" prop="正股" width="90" sortable align="right" />
+          <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
+            <TagCallPut :沽购="row['沽购']" />
+          </el-table-column>
+          <el-table-column label="到期天数" prop="到期天数" width="80" sortable align="right" />
         </el-table-column>
 
-        <el-table-column label="正股价格" prop="正股价格" minWidth="100" sortable align="left" />
-        <el-table-column label="行权价" prop="千行权价" minWidth="100" sortable align="left" />
-        <el-table-column #default="{ row }" label="溢价率" prop="溢价率" minWidth="100" sortable align="left"> <TagPremium :溢价率="row['溢价率']" /> </el-table-column>
-        <el-table-column #default="{ row }" label="杠杆" prop="杠杆" minWidth="100" sortable align="left"><TagLeverage :杠杆="row['杠杆']" /> </el-table-column>
-      </el-table-column>
+        <el-table-column label="溢价信息" align="center">
+          <el-table-column #default="{ row }" label="打和点" prop="打和点" width="70" sortable align="right">
+            {{ row["打和点"].toFixed(4) }}
+          </el-table-column>
 
-      <el-table-column label="期权信息" align="center">
-        <el-table-column #default="{ row }" label="隐波" prop="隐波" minWidth="100" sortable align="left">
-          <TagIv :隐波="row['隐波']" />
-        </el-table-column>
-        <el-table-column #default="{ row }" label="Delta" prop="Delta" minWidth="100" sortable align="left">
-          <TagDelta :Delta="row['Delta']" />
+          <el-table-column label="正股价格" prop="正股价格" width="80" sortable align="right" />
+          <el-table-column label="行权价" prop="千行权价" width="80" sortable align="right" />
+          <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="75" sortable align="right"> <TagPremium :溢价率="row['溢价率']" /> </el-table-column>
+          <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="75" sortable align="right"><TagLeverage :杠杆="row['杠杆']" /> </el-table-column>
         </el-table-column>
 
-        <el-table-column #default="{ row }" label="Gamma" prop="Gamma" minWidth="100" sortable align="left">
-          <TagGamma :Gamma="row['Gamma']" />
-        </el-table-column>
-      </el-table-column>
+        <el-table-column label="希腊字母" align="center">
+          <el-table-column #default="{ row }" label="隐波" prop="隐波" width="75" sortable align="right">
+            <TagIv :隐波="row['隐波']" />
+          </el-table-column>
+          <el-table-column #default="{ row }" label="Delta" prop="Delta" width="85" sortable align="right">
+            <TagDelta :Delta="row['Delta']" />
+          </el-table-column>
 
-      <el-table-column label="持仓信息" align="center">
-        <el-table-column #default="{ row }" label="持仓" prop="持仓" minWidth="100" sortable align="left">
-          {{ row["持仓"] || "" }}
+          <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
+            <TagGamma :Gamma="row['Gamma']" />
+          </el-table-column>
         </el-table-column>
-        <el-table-column #default="{ row }" label="组合" prop="组合" minWidth="100" sortable align="left">
-          {{ row["组合"] ? "是" : "" }}
+
+        <el-table-column label="持仓信息" align="center">
+          <el-table-column #default="{ row }" label="持仓" prop="持仓" width="60" sortable align="right">
+            {{ row["持仓"] || "" }}
+          </el-table-column>
+          <el-table-column #default="{ row }" label="组合" prop="组合" width="60" sortable align="left">
+            {{ row["组合"] ? "是" : "" }}
+          </el-table-column>
         </el-table-column>
-      </el-table-column>
-    </el-table>
+      </el-table>
+    </div>
   </div>
   <Hold v-else-if="showType === 't'" mode="chance" :formData="formData" />
 </template>
