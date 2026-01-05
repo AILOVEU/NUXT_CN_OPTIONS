@@ -243,6 +243,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
     line_dict["杠杆"] = formatDecimal(line_dict["杠杆"], 1);
     line_dict["千行权价"] = line_dict["行权价"] * 1000;
+    line_dict["is旧期权"] = line_dict["期权名称"].includes('A') && !line_dict["期权名称"].includes('A500');
 
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
     line_dict["到期日"] = line_dict["到期日"] + "";

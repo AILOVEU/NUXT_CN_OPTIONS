@@ -67,7 +67,7 @@ const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["C持仓"] || el["P持仓"]) return true;
-    if (el["期权"]?.includes("A")) return false;
+    if (el["is旧期权"]) return false;
     if (el._current || el._split) return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];

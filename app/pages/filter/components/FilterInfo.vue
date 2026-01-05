@@ -190,7 +190,7 @@ const filteredTableData = computed(() => {
   let filtered =
     props.all_data
       ?.filter((el) => {
-        return !el["期权名称"].includes("A");
+        return !el["is旧期权"];
       })
       ?.filter((el) => {
         return formData.沽购List.includes(el["沽购"]);
