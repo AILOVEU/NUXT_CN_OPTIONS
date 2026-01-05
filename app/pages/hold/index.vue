@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '255%' : '100%' }">
+  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '350%' : '100%' }">
     <!-- {{tableData.data}} -->
     <div>
       <Nav v-if="mode === 'hold'" />
@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(255vh-85px)] flex justify-center">
+    <div class="h-[calc(100vh-80px)] max-md:h-[calc(350vh-85px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
