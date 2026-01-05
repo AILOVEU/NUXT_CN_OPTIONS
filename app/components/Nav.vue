@@ -1,7 +1,7 @@
 <template>
   <el-affix :offset="0">
     <div class="flex justify-between text-[12px] mb-[12px]">
-      <el-button @click="handleQuery" class="flex-1" type="primary"> 刷新 </el-button>
+      <el-button @click="handleQuery" class="flex-1" type="primary" :disabled="isMobile"> 刷新 </el-button>
       <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
         <div :class="{ active: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
           {{ item.name }}
@@ -15,7 +15,7 @@
 import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
-const { setGlobalLoading } = useGlobal();
+const { setGlobalLoading, isMobile } = useGlobal();
 const route = useRoute();
 const router = useRouter();
 const navList = [
