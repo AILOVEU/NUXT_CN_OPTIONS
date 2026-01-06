@@ -154,7 +154,7 @@ const 单日损耗Option = computed(() => {
     单日损耗Sum += val;
     return val;
   });
-  console.log(`单日损耗 (${单日损耗Sum}) `);
+  单日损耗Sum = 单日损耗Sum.toFixed(0);
   return getBarOps({
     stockCodeList,
     name: "单日损耗",
