@@ -1,5 +1,8 @@
 <template>
-  <VChart :option="options" style="height: 5400px; width: 200vw; margin: auto" />
+  <div class="max-md:w-[1000%]">
+    <Nav />
+    <VChart :option="options" style="height: 5000px; width: 7000px; margin: auto" />
+  </div>
 </template>
 
 <script setup>
@@ -11,7 +14,7 @@ const { setGlobalLoading, isMobile } = useGlobal();
 const fundData = ref([{}]);
 
 const options = ref({});
-const LENG = 19;
+const LENG = 10;
 const BEND = 2025;
 function getFilterFundData(index) {
   const yearMonthList = [];
@@ -23,7 +26,7 @@ function getFilterFundData(index) {
   console.log("yearMonthList", yearMonthList);
   return fundData.value?.filter((el) => el.trade_date.startsWith(yearMonthList[index]));
 }
-const fund_code = "510300";
+const fund_code = "510500";
 onMounted(async () => {
   fundData.value = await $fetch("/api/queryFundDataJson", {
     method: "get",

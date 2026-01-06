@@ -44,6 +44,10 @@ const navList = [
     name: "期货",
   },
   {
+    href: "/fund",
+    name: "ETF",
+  },
+  {
     href: "/calendar",
     name: "日历",
   },
