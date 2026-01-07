@@ -1,3 +1,4 @@
+# 将ETF的日线图保存成csv或图片
 import akshare as ak
 import adata
 import mplfinance as mpf

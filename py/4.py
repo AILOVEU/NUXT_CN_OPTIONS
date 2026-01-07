@@ -1,3 +1,4 @@
+# 融资余额数据
 import adata
 df = adata.sentiment.securities_margin(start_date='2022-01-01')
 df.to_csv(f'融资余额数据.csv')
