@@ -1,7 +1,7 @@
 <template>
-  <div class="max-md:w-[1000%]">
+  <div class="max-md:w-[100%]">
     <Nav />
-    <VChart :option="options" style="height: 5000px; width: 7000px; margin: auto" />
+    <VChart :option="options" style="height: 2400px; width: 2400px; margin: auto" />
   </div>
 </template>
 
@@ -11,38 +11,39 @@ import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { setGlobalLoading, isMobile } = useGlobal();
 
-const fundData = ref([{}]);
+const vixsData = ref([{}]);
 
 const options = ref({});
 const LENG = 10;
 const BEND = 2025;
-function getFilterFundData(index) {
+function getFilterVixsData(index) {
   const yearMonthList = [];
   for (let i = BEND - LENG + 1; i <= BEND; i++) {
     for (let j = 1; j <= 12; j++) {
-      yearMonthList.push(`${i}-${j < 10 ? "0" + j : j}-`);
+      yearMonthList.push(`${i}/${j}/`);
     }
   }
   console.log("yearMonthList", yearMonthList);
-  return fundData.value?.filter((el) => el.trade_date.startsWith(yearMonthList[index]));
+  return vixsData.value?.filter((el) => el.date.startsWith(yearMonthList[index]));
 }
-const fund_code = "510300";
+const stock_code = "510500";
 onMounted(async () => {
-  fundData.value = await $fetch("/api/queryFundDataJson", {
-    method: "get",
-    params: {
-      fundCode: fund_code,
+  vixsData.value = await $fetch("/api/queryVixsDataJson", {
+    method: "post",
+    body: {
+      codeList: [stock_code],
     },
   });
+  vixsData.value = vixsData.value.filter((el) => el.code === stock_code);
   options.value = {
     xAxis: {
-      data: fundData.value.map((el) => el.trade_date),
+      data: vixsData.value.map((el) => el.date),
     },
     yAxis: {},
     series: [
       {
         type: "candlestick",
-        data: fundData.value.map((el) => [el.open, el.close, el.low, el.high]),
+        data: vixsData.value.map((el) => [el.open, el.close, el.low, el.high]),
       },
     ],
   };
@@ -85,7 +86,7 @@ onMounted(async () => {
       xAxisArr.push({
         gridIndex: index,
         type: "category",
-        data: getFilterFundData(index).map((el) => el.trade_date), // 每个小柱状图的x轴分类
+        data: getFilterVixsData(index).map((el) => el.date), // 每个小柱状图的x轴分类
         // axisLabel: { fontSize: 8 }, // 缩小标签字体适配小网格
         // axisLine: { lineStyle: { width: 0.5 } }, // 细化轴线
       });
@@ -107,7 +108,7 @@ onMounted(async () => {
         type: "candlestick",
         xAxisIndex: index,
         yAxisIndex: index,
-        data: getFilterFundData(index).map((el) => [el.open, el.close, el.low, el.high]),
+        data: getFilterVixsData(index).map((el) => [el.open, el.close, el.low, el.high]),
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
         barWidth: "60%", // 柱状图宽度占网格x轴的60%
       });
@@ -118,7 +119,7 @@ onMounted(async () => {
 
   options.value = {
     title: {
-      text: fund_code,
+      text: stock_code,
       left: "center",
       top: 10,
     },
