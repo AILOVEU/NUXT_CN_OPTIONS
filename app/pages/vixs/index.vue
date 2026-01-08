@@ -1,6 +1,11 @@
 <template>
   <div class="max-md:w-[100%]">
-    <Nav />
+    <div>
+      <Nav />
+      <div class="w-full pb-[12px]">
+        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
+      </div>
+    </div>
     <VChart :option="options" style="height: 2400px; width: 2400px; margin: auto" />
   </div>
 </template>
@@ -9,6 +14,7 @@
 import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
+import _ from "lodash";
 const { setGlobalLoading, isMobile } = useGlobal();
 
 const vixsData = ref([{}]);
@@ -17,24 +23,41 @@ const options = ref({});
 const LENG = 10;
 const BEND = 2025;
 function getFilterVixsData(index) {
-  const yearMonthList = [];
+  let yearMonthList = [];
   for (let i = BEND - LENG + 1; i <= BEND; i++) {
     for (let j = 1; j <= 12; j++) {
       yearMonthList.push(`${i}/${j}/`);
     }
   }
+  yearMonthList = _.reverse(yearMonthList);
   console.log("yearMonthList", yearMonthList);
   return vixsData.value?.filter((el) => el.date.startsWith(yearMonthList[index]));
 }
-const stock_code = "510500";
-onMounted(async () => {
+
+function handleStockCodeChange() {
+  // tableRef.value.setScrollTop(0);
+  setTimeout(() => {
+    handleQuery();
+  });
+}
+
+const stockCodeOptions = computed(() => {
+  let ops = OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.showName,
+  }));
+  return [...ops, { value: "all", label: "全" }];
+});
+const stockCode = ref(stockCodeOptions.value[0].value);
+
+async function handleQuery() {
   vixsData.value = await $fetch("/api/queryVixsDataJson", {
     method: "post",
     body: {
-      codeList: [stock_code],
+      codeList: [stockCode.value],
     },
   });
-  vixsData.value = vixsData.value.filter((el) => el.code === stock_code);
+  vixsData.value = vixsData.value.filter((el) => el.code === stockCode.value);
   options.value = {
     xAxis: {
       data: vixsData.value.map((el) => el.date),
@@ -119,7 +142,7 @@ onMounted(async () => {
 
   options.value = {
     title: {
-      text: stock_code,
+      text: stockCode.value,
       left: "center",
       top: 10,
     },
@@ -133,6 +156,7 @@ onMounted(async () => {
     yAxis: yAxisArr,
     series: seriesArr,
   };
-});
+}
+handleQuery();
 </script>
 <style scoped></style>
