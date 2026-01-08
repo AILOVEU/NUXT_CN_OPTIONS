@@ -1,6 +1,7 @@
 // 获取期权数据json
 import csvtojson from "csvtojson";
 import fs from "node:fs";
+import dayjs from "dayjs";
 const isDeno = process.env.NITRO_PRESET;
 export async function get_fundDataJSON() {
   function getPath() {
@@ -33,7 +34,7 @@ export default eventHandler(async (event) => {
     const validList = dataJSON
       .filter((el) => el[code + "_high"])
       .map((el) => ({
-        date: el["date"],
+        date: dayjs(el["date"], "YYYY/M/D").format("YYYY-MM-DD"),
         code: code,
         open: el[code + "_open"],
         high: el[code + "_high"],
