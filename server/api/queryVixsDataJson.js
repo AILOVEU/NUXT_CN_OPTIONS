@@ -2,6 +2,7 @@
 import csvtojson from "csvtojson";
 import fs from "node:fs";
 import dayjs from "dayjs";
+import { formatDecimal } from "~/utils/utils";
 const isDeno = process.env.NITRO_PRESET;
 export async function get_fundDataJSON() {
   function getPath() {
@@ -36,10 +37,10 @@ export default eventHandler(async (event) => {
       .map((el) => ({
         date: dayjs(el["date"], "YYYY/M/D").format("YYYY-MM-DD"),
         code: code,
-        open: el[code + "_open"],
-        high: el[code + "_high"],
-        low: el[code + "_low"],
-        close: el[code + "_close"],
+        open: formatDecimal(el[code + "_open"], 2),
+        high: formatDecimal(el[code + "_high"], 2),
+        low: formatDecimal(el[code + "_low"], 2),
+        close: formatDecimal(el[code + "_close"], 2),
       }));
     res.push(...validList);
   });

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full flex">
     <div
-      class="flex-1 border-[1px] leading-1 text-center mx-[10px]"
+      class="flex-1 border-[1px] leading-1 text-center mx-[10px] cursor-pointer"
       v-for="item in props.options"
       :class="{ active: item.value === modelValue }"
       @click="modelValue = item.value"

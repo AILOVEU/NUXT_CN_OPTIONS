@@ -6,9 +6,8 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <div class="w-full overflow-x-auto">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 400 + 'px', width: '100vw', margin: 'auto' }" />
-    </div>
+    <!-- {{ options }} -->
+    <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 300 + 'px', width: '2400px', margin: 'auto' }" />
   </div>
 </template>
 
@@ -39,10 +38,7 @@ const stockCodeOptions = computed(() => {
     value: el.code,
     label: el.showName,
   }));
-  return [
-    ...ops,
-    // { value: "all", label: "全" }
-  ];
+  return [...ops, { value: "all", label: "全" }];
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
 const highlightDates = [
@@ -250,13 +246,13 @@ async function handleQuery() {
 
   let monthLen = Array.from(new Set(vixsData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
   // 配置基础参数
-  const colNum = 4; // 列数
-  rowNum.value = Math.floor(monthLen / 3 / colNum) + 1; // 行数
+  const colNum = 12; // 列数
+  rowNum.value = Math.floor(monthLen / colNum) + 1; // 行数
   setTimeout(() => {
     echartRef.value.resize();
   });
   const gap = 1; // 网格间距（百分比）
-  const padding = 0.5; // 整体内边距（百分比）
+  const padding = 1; // 整体内边距（百分比）
 
   // 动态生成5×12的grid数组
   const gridArr = [];
@@ -274,22 +270,18 @@ async function handleQuery() {
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
       let index = row * colNum + col;
-      if (row * colNum * 3 + col + 1 > vixsData.value.length) continue;
+      if (index + 1 > vixsData.value.length) continue;
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
       const yearStr = BEND - row;
-      const monthVal = col * 3 + 1;
-      function getZeroNumber(month) {
-        return month < 10 ? "0" + month : month;
-      }
-      const curYearMonthStrList = [`${yearStr}-${getZeroNumber(monthVal)}-`, `${yearStr}-${getZeroNumber(monthVal + 1)}-`, `${yearStr}-${getZeroNumber(monthVal + 2)}-`];
+      const monthStr = col + 1;
+      const curYearMonthStr = `${yearStr}-${monthStr < 10 ? "0" + monthStr : monthStr}-`;
       // 获取当月日期列表
-      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[2], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
-      let filteredData = vixsData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr))); // 获取20xx年xx月的数据
+      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStr, "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStr, "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
+      let filteredData = vixsData.value?.filter((el) => el.date.startsWith(curYearMonthStr)); // 获取20xx年xx月的数据
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
       // 获取当月第第四个周三
-      const monthFourthWednesdayList = curYearMonthStrList.map((curYearMonthStr) => getFourthWednesdayOfMonth(curYearMonthStr + "01"));
-      // const curMonthFourthWednesday = getFourthWednesdayOfMonth(curYearMonthStr + "01");
+      const curMonthFourthWednesday = getFourthWednesdayOfMonth(curYearMonthStr + "01");
       const xAxisData = filteredData.map((el) => el.date);
       const seriesData = filteredData.map((el) => [el.open, el.close, el.low, el.high]);
       gridArr.push({
@@ -310,8 +302,6 @@ async function handleQuery() {
       yAxisArr.push({
         gridIndex: index,
         type: "value",
-        min: 0,
-        max: 100,
       });
 
       // 4. 生成当前grid对应的柱状图series（随机模拟数据）
@@ -335,10 +325,12 @@ async function handleQuery() {
             type: "dashed", // 实线
           },
           // 标记线数据：定位到2024-05-09的垂直标记线
-          data: monthFourthWednesdayList.map((curMonthFourthWednesday) => ({
-            name: curMonthFourthWednesday,
-            xAxis: curMonthFourthWednesday,
-          })),
+          data: [
+            {
+              name: curMonthFourthWednesday,
+              xAxis: curMonthFourthWednesday,
+            },
+          ],
         },
       });
     }
