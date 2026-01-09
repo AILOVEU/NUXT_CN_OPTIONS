@@ -6,7 +6,7 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    {{ options }}
+    <!-- {{ options }} -->
     <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 300 + 'px', width: '2400px', margin: 'auto' }" />
   </div>
 </template>
@@ -26,7 +26,7 @@ const options = ref({});
 const LENG = 10;
 const BEND = 2025;
 const rowNum = ref(1);
-function getYearMonth() {
+function getYearMonthList() {
   let yearMonthList = [];
   for (let i = BEND; i >= BEND - LENG + 1; i--) {
     for (let j = 1; j <= 12; j++) {
@@ -34,10 +34,6 @@ function getYearMonth() {
     }
   }
   return yearMonthList;
-}
-function getFilterVixsData(index) {
-  const yearMonthList = getYearMonth();
-  return vixsData.value?.filter((el) => el.date.startsWith(yearMonthList[index]));
 }
 
 function handleStockCodeChange() {
@@ -259,7 +255,6 @@ async function handleQuery() {
   vixsData.value = vixsData.value.filter((el) => el.code === stockCode.value);
 
   let monthLen = Array.from(new Set(vixsData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
-  console.log("monthLen", monthLen);
   // 配置基础参数
   const colNum = 12; // 列数
   rowNum.value = Math.floor(monthLen / colNum) + 1; // 行数
@@ -281,20 +276,23 @@ async function handleQuery() {
   // 计算每个网格的宽度和高度（扣除间距和内边距）
   const gridWidth = (100 - 2 * padding - (colNum - 1) * gap) / colNum;
   const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
-
+  const yearMonthList = getYearMonthList();
   // 循环生成每行每列的配置
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
       let index = row * colNum + col;
-      // 1. 计算当前grid的位置
+      if (index + 1 > vixsData.value.length) continue;
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
-      const curYearMonthList = getDatesBetween(dayjs(getYearMonth()[index], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(getYearMonth()[index], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
-      console.log("curYearMonthList", curYearMonthList);
-      let filteredData = getFilterVixsData(index); // 获取20xx年xx月的数据
-      filteredData = curYearMonthList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
-      // const fourthWednesday = getFourthWednesdayOfMonth(getYearMonth()[index] + "01");
-      // if (!filteredData.some((el) => el.date === fourthWednesday)) continue;
+      const curYearMonthStr = yearMonthList[index];
+      // 获取当月日期列表
+      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStr, "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStr, "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
+      let filteredData = vixsData.value?.filter((el) => el.date.startsWith(curYearMonthStr)); // 获取20xx年xx月的数据
+      filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
+      // 获取当月第第四个周三
+      const curMonthFourthWednesday = getFourthWednesdayOfMonth(curYearMonthStr + "01");
+      const xAxisData = filteredData.map((el) => el.date);
+      const seriesData = filteredData.map((el) => [el.open, el.close, el.low, el.high]);
       gridArr.push({
         left: `${left}%`,
         top: `${top}%`,
@@ -306,7 +304,7 @@ async function handleQuery() {
       xAxisArr.push({
         gridIndex: index,
         type: "category",
-        data: filteredData.map((el) => el.date), // 每个小柱状图的x轴分类
+        data: xAxisData, // 每个小柱状图的x轴分类
       });
 
       // 3. 生成当前grid对应的y轴
@@ -321,28 +319,28 @@ async function handleQuery() {
         type: "candlestick",
         xAxisIndex: index,
         yAxisIndex: index,
-        data: filteredData.map((el) => [el.open, el.close, el.low, el.high]),
+        data: seriesData,
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
         barWidth: "60%", // 柱状图宽度占网格x轴的60%
-        // markLine: {
-        //   symbol: "none",
-        //   label: {
-        //     show: false,
-        //   },
-        //   // 标记线整体样式
-        //   lineStyle: {
-        //     color: "#FF0000", // 红色高亮
-        //     width: 1, // 线宽
-        //     type: "dashed", // 实线
-        //   },
-        //   // 标记线数据：定位到2024-05-09的垂直标记线
-        //   data: [
-        //     {
-        //       name: fourthWednesday,
-        //       xAxis: fourthWednesday,
-        //     },
-        //   ],
-        // },
+        markLine: {
+          symbol: "none",
+          label: {
+            show: false,
+          },
+          // 标记线整体样式
+          lineStyle: {
+            color: "#FF0000", // 红色高亮
+            width: 1, // 线宽
+            type: "dashed", // 实线
+          },
+          // 标记线数据：定位到2024-05-09的垂直标记线
+          data: [
+            {
+              name: curMonthFourthWednesday,
+              xAxis: curMonthFourthWednesday,
+            },
+          ],
+        },
       });
     }
   }
