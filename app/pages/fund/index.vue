@@ -6,7 +6,9 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 300 + 'px', width: '2400px', margin: 'auto' }" />
+    <div class="w-full overflow-x-auto">
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 400 + 'px', width: '200vw', margin: 'auto' }" />
+    </div>
   </div>
 </template>
 
@@ -15,6 +17,7 @@ import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
+import { getFourthWednesdayOfMonth, getDatesBetween } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({
@@ -27,17 +30,7 @@ const fundData = ref([{}]);
 const echartRef = ref();
 const options = ref({});
 const rowNum = ref(1);
-const LENG = 10;
 const BEND = 2025;
-function getFilterFundData(index) {
-  const yearMonthList = [];
-  for (let i = BEND; i >= BEND - LENG + 1; i--) {
-    for (let j = 1; j <= 12; j++) {
-      yearMonthList.push(`${i}-${j < 10 ? "0" + j : j}-`);
-    }
-  }
-  return fundData.value?.filter((el) => el.date.startsWith(yearMonthList[index]));
-}
 const stockCode = ref(stockCodeOptions.value[0].value);
 
 onMounted(async () => {
@@ -54,13 +47,13 @@ async function handleQuery() {
 
   let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
   console.log("monthLen", monthLen);
-  const colNum = 12; // 列数
-  rowNum.value = Math.floor(monthLen / colNum) + 1; // 行数
+  const colNum = 4; // 列数
+  rowNum.value = Math.floor(monthLen / 3 / colNum) + 1; // 行数
   setTimeout(() => {
-    echartRef.value.resize();
+    echartRef.value?.resize();
   });
   const gap = 1; // 网格间距（百分比）
-  const padding = 2; // 整体内边距（百分比）
+  const padding = 0.5; // 整体内边距（百分比）
 
   // 动态生成5×12的grid数组
   const gridArr = [];
@@ -71,6 +64,7 @@ async function handleQuery() {
   // 动态生成series数组（60个柱状图）
   const seriesArr = [];
 
+  const graphicArr = [];
   // 计算每个网格的宽度和高度（扣除间距和内边距）
   const gridWidth = (100 - 2 * padding - (colNum - 1) * gap) / colNum;
   const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
@@ -78,13 +72,26 @@ async function handleQuery() {
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
       let index = row * colNum + col;
-      if (index + 1 > fundData.value.length) continue;
-      const filterFundData = getFilterFundData(index);
+      if (row * colNum * 3 + col + 1 > fundData.value.length) continue;
+      const yearStr = BEND - row;
+      const monthVal = col * 3 + 1;
+      function getZeroNumber(month) {
+        return month < 10 ? "0" + month : month;
+      }
+      const curYearMonthStrList = [`${yearStr}-${getZeroNumber(monthVal)}-`, `${yearStr}-${getZeroNumber(monthVal + 1)}-`, `${yearStr}-${getZeroNumber(monthVal + 2)}-`];
+      // 获取当月日期列表
+      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[2], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
+
+      let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr))); // 获取20xx年xx月的数据
+      filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
       // console.log("filterFundData", filterFundData);
-      const xAxisData = filterFundData.map((el) => el.date);
-      const seriesData = filterFundData.map((el) => [el.open, el.close, el.low, el.high]);
+      const xAxisData = filteredData.map((el) => el.date);
+      const seriesData = filteredData.map((el) => [el.open, el.close, el.low, el.high]);
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
+
+      const graphicLeft = left + gridWidth / 4;
+      const graphicTop = top + gridHeight / 2;
       gridArr.push({
         left: `${left}%`,
         top: `${top}%`,
@@ -102,12 +109,13 @@ async function handleQuery() {
       yAxisArr.push({
         gridIndex: index,
         type: "value",
-        // min: 1, // Y轴最小值固定为0
-        // max: 3.2, // Y轴最大值固定为100
+        interval: 0.5,
+        // min: 0, // Y轴最小值固定为0
+        // max: 3.5, // Y轴最大值固定为100
       });
-
+      const 季度List = ["一季度", "二季度", "三季度", "四季度"];
       seriesArr.push({
-        name: `图表${index + 1}`,
+        name: `${stockCode.value}_${yearStr}_${季度List[col]}`,
         type: "candlestick",
         xAxisIndex: index,
         yAxisIndex: index,
@@ -115,10 +123,31 @@ async function handleQuery() {
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
         barWidth: "60%", // 柱状图宽度占网格x轴的60%
       });
+
+      graphicArr.push({
+        type: "text", // 元素类型：文本
+        // 定位：绑定 grid 区域（关键，实现精准对齐）
+        left: `${graphicLeft}%`,
+        top: `${graphicTop}%`,
+        // width: `${gridWidth}%`,
+        // height: `${gridHeight}%`,
+        // 文本样式配置
+        style: {
+          text: `${stockCode.value} - ${yearStr}${季度List[col]}`, // grid 标题内容
+          fontSize: 40, // 字体大小
+          fontWeight: "bold", // 字体加粗
+          fill: "rgba('233,233,233,0.1')", // 字体颜色
+          textAlign: "left", // 文本对齐方式（与 left 配合）
+        },
+        // 可选：响应式配置（窗口 resize 时自动调整）
+        responsive: true,
+      });
     }
   }
 
   options.value = {
+    // 2. 核心：graphic 组件配置 grid 专属标题
+    graphic: graphicArr,
     title: {
       text: stockCode.value,
       left: "center",

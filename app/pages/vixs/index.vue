@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-x-auto">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 400 + 'px', width: '100vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 400 + 'px', width: '200vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -267,6 +267,7 @@ async function handleQuery() {
   // 动态生成series数组（60个柱状图）
   const seriesArr = [];
 
+  const graphicArr = [];
   // 计算每个网格的宽度和高度（扣除间距和内边距）
   const gridWidth = (100 - 2 * padding - (colNum - 1) * gap) / colNum;
   const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
@@ -277,6 +278,9 @@ async function handleQuery() {
       if (row * colNum * 3 + col + 1 > vixsData.value.length) continue;
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
+      const graphicLeft = left + gridWidth / 4;
+      const graphicTop = top + gridHeight / 3;
+
       const yearStr = BEND - row;
       const monthVal = col * 3 + 1;
       function getZeroNumber(month) {
@@ -313,6 +317,7 @@ async function handleQuery() {
         min: 0,
         max: 100,
       });
+      const 季度List = ["一季度", "二季度", "三季度", "四季度"];
 
       // 4. 生成当前grid对应的柱状图series（随机模拟数据）
       seriesArr.push({
@@ -322,7 +327,7 @@ async function handleQuery() {
         yAxisIndex: index,
         data: seriesData,
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
-        barWidth: "60%", // 柱状图宽度占网格x轴的60%
+        barWidth: "100%", // 柱状图宽度占网格x轴的60%
         markLine: {
           symbol: "none",
           label: {
@@ -341,10 +346,30 @@ async function handleQuery() {
           })),
         },
       });
+
+      graphicArr.push({
+        type: "text", // 元素类型：文本
+        // 定位：绑定 grid 区域（关键，实现精准对齐）
+        left: `${graphicLeft}%`,
+        top: `${graphicTop}%`,
+        // width: `${gridWidth}%`,
+        // height: `${gridHeight}%`,
+        // 文本样式配置
+        style: {
+          text: `${stockCode.value} - ${yearStr}${季度List[col]}`, // grid 标题内容
+          fontSize: 40, // 字体大小
+          fontWeight: "bold", // 字体加粗
+          fill: "rgba('233,233,233,0.1')", // 字体颜色
+          textAlign: "left", // 文本对齐方式（与 left 配合）
+        },
+        // 可选：响应式配置（窗口 resize 时自动调整）
+        responsive: true,
+      });
     }
   }
 
   options.value = {
+    graphic: graphicArr,
     title: {
       text: stockCode.value,
       left: "center",
