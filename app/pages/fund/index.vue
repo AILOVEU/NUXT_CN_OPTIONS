@@ -1,55 +1,64 @@
 <template>
-  <div class="max-md:w-[1000%]">
-    <Nav />
-    <VChart :option="options" style="height: 5000px; width: 7000px; margin: auto" />
+  <div class="max-md:w-[100%]">
+    <div>
+      <Nav />
+      <div class="w-full pb-[12px]">
+        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
+      </div>
+    </div>
+    <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 300 + 'px', width: '2400px', margin: 'auto' }" />
   </div>
 </template>
 
 <script setup>
 import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
+import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { setGlobalLoading, isMobile } = useGlobal();
-
+const stockCodeOptions = computed(() => {
+  let ops = OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.showName,
+  }));
+  return [...ops, { value: "all", label: "全" }];
+});
 const fundData = ref([{}]);
-
+const echartRef = ref();
 const options = ref({});
+const rowNum = ref(1);
 const LENG = 10;
 const BEND = 2025;
 function getFilterFundData(index) {
   const yearMonthList = [];
-  for (let i = BEND - LENG + 1; i <= BEND; i++) {
+  for (let i = BEND; i >= BEND - LENG + 1; i--) {
     for (let j = 1; j <= 12; j++) {
       yearMonthList.push(`${i}-${j < 10 ? "0" + j : j}-`);
     }
   }
-  console.log("yearMonthList", yearMonthList);
-  return fundData.value?.filter((el) => el.trade_date.startsWith(yearMonthList[index]));
+  return fundData.value?.filter((el) => el.date.startsWith(yearMonthList[index]));
 }
-const fund_code = "510300";
+const stockCode = ref(stockCodeOptions.value[0].value);
+
 onMounted(async () => {
+  handleQuery();
+});
+
+async function handleQuery() {
   fundData.value = await $fetch("/api/queryFundDataJson", {
     method: "get",
     params: {
-      fundCode: fund_code,
+      fundCode: stockCode.value,
     },
   });
-  options.value = {
-    xAxis: {
-      data: fundData.value.map((el) => el.trade_date),
-    },
-    yAxis: {},
-    series: [
-      {
-        type: "candlestick",
-        data: fundData.value.map((el) => [el.open, el.close, el.low, el.high]),
-      },
-    ],
-  };
 
-  // 配置基础参数
-  const rowNum = LENG; // 行数
+  let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
+  console.log("monthLen", monthLen);
   const colNum = 12; // 列数
+  rowNum.value = Math.floor(monthLen / colNum) + 1; // 行数
+  setTimeout(() => {
+    echartRef.value.resize();
+  });
   const gap = 1; // 网格间距（百分比）
   const padding = 2; // 整体内边距（百分比）
 
@@ -64,13 +73,16 @@ onMounted(async () => {
 
   // 计算每个网格的宽度和高度（扣除间距和内边距）
   const gridWidth = (100 - 2 * padding - (colNum - 1) * gap) / colNum;
-  const gridHeight = (100 - 2 * padding - (rowNum - 1) * gap) / rowNum;
+  const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
 
-  // 循环生成每行每列的配置
-  let index = 0; // 全局索引（0-59，对应60个图表）
-  for (let row = 0; row < rowNum; row++) {
+  for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
-      // 1. 计算当前grid的位置
+      let index = row * colNum + col;
+      if (index + 1 > fundData.value.length) continue;
+      const filterFundData = getFilterFundData(index);
+      // console.log("filterFundData", filterFundData);
+      const xAxisData = filterFundData.map((el) => el.date);
+      const seriesData = filterFundData.map((el) => [el.open, el.close, el.low, el.high]);
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
       gridArr.push({
@@ -78,51 +90,40 @@ onMounted(async () => {
         top: `${top}%`,
         width: `${gridWidth}%`,
         height: `${gridHeight}%`,
-        containLabel: true, // 确保坐标轴标签不超出grid
+        containLabel: true,
       });
 
-      // 2. 生成当前grid对应的x轴（简单分类数据）
       xAxisArr.push({
         gridIndex: index,
         type: "category",
-        data: getFilterFundData(index).map((el) => el.trade_date), // 每个小柱状图的x轴分类
-        // axisLabel: { fontSize: 8 }, // 缩小标签字体适配小网格
-        // axisLine: { lineStyle: { width: 0.5 } }, // 细化轴线
+        data: xAxisData,
       });
 
-      // 3. 生成当前grid对应的y轴
       yAxisArr.push({
         gridIndex: index,
         type: "value",
         // min: 1, // Y轴最小值固定为0
         // max: 3.2, // Y轴最大值固定为100
-        // axisLabel: { fontSize: 8 },
-        // axisLine: { lineStyle: { width: 0.5 } },
-        // splitLine: { lineStyle: { width: 0.5, color: "#eee" } }, // 细化分割线
       });
 
-      // 4. 生成当前grid对应的柱状图series（随机模拟数据）
       seriesArr.push({
         name: `图表${index + 1}`,
         type: "candlestick",
         xAxisIndex: index,
         yAxisIndex: index,
-        data: getFilterFundData(index).map((el) => [el.open, el.close, el.low, el.high]),
+        data: seriesData,
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
         barWidth: "60%", // 柱状图宽度占网格x轴的60%
       });
-
-      index++;
     }
   }
 
   options.value = {
     title: {
-      text: fund_code,
+      text: stockCode.value,
       left: "center",
       top: 10,
     },
-    // 提示框（鼠标悬浮显示数据）
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
@@ -132,6 +133,13 @@ onMounted(async () => {
     yAxis: yAxisArr,
     series: seriesArr,
   };
-});
+}
+
+function handleStockCodeChange() {
+  // tableRef.value.setScrollTop(0);
+  setTimeout(() => {
+    handleQuery();
+  });
+}
 </script>
 <style scoped></style>

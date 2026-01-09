@@ -23,18 +23,8 @@ const { setGlobalLoading, isMobile } = useGlobal();
 const vixsData = ref([{}]);
 const echartRef = ref();
 const options = ref({});
-const LENG = 10;
 const BEND = 2025;
 const rowNum = ref(1);
-function getYearMonthList() {
-  let yearMonthList = [];
-  for (let i = BEND; i >= BEND - LENG + 1; i--) {
-    for (let j = 1; j <= 12; j++) {
-      yearMonthList.push(`${i}-${j < 10 ? "0" + j : j}-`);
-    }
-  }
-  return yearMonthList;
-}
 
 function handleStockCodeChange() {
   // tableRef.value.setScrollTop(0);
@@ -276,7 +266,6 @@ async function handleQuery() {
   // 计算每个网格的宽度和高度（扣除间距和内边距）
   const gridWidth = (100 - 2 * padding - (colNum - 1) * gap) / colNum;
   const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
-  const yearMonthList = getYearMonthList();
   // 循环生成每行每列的配置
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
@@ -284,7 +273,9 @@ async function handleQuery() {
       if (index + 1 > vixsData.value.length) continue;
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
-      const curYearMonthStr = yearMonthList[index];
+      const yearStr = BEND - row;
+      const monthStr = col + 1;
+      const curYearMonthStr = `${yearStr}-${monthStr < 10 ? "0" + monthStr : monthStr}-`;
       // 获取当月日期列表
       const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStr, "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStr, "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
       let filteredData = vixsData.value?.filter((el) => el.date.startsWith(curYearMonthStr)); // 获取20xx年xx月的数据

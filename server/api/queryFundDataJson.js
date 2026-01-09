@@ -28,7 +28,7 @@ export default eventHandler(async (event) => {
   if (!dataJSON?.length) return [];
   return dataJSON.map((el) => ({
     fund_code: el.fund_code,
-    trade_date: el.trade_date,
+    date: el.trade_date,
     open: el.open,
     high: el.high,
     low: el.low,
