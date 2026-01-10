@@ -34,14 +34,25 @@ export default eventHandler(async (event) => {
   codeList.forEach((code) => {
     const validList = dataJSON
       .filter((el) => el[code + "_high"])
-      .map((el) => ({
-        date: dayjs(el["date"], "YYYY/M/D").format("YYYY-MM-DD"),
-        code: code,
-        open: formatDecimal(el[code + "_open"], 2),
-        high: formatDecimal(el[code + "_high"], 2),
-        low: formatDecimal(el[code + "_low"], 2),
-        close: formatDecimal(el[code + "_close"], 2),
-      }));
+      .map((el) => {
+        let close = el[code + "_close"];
+        let low = el[code + "_low"];
+        let open = el[code + "_open"];
+        let high = el[code + "_high"];
+        if (close > 100) close = 110;
+        if (low > 100) low = 100;
+        if (open > 100) open = 110;
+        if (high > 100) high = 110;
+        if (!close || isNaN(close) || close === "0") close = low;
+        return {
+          date: dayjs(el["date"], "YYYY/M/D").format("YYYY-MM-DD"),
+          code: code,
+          open: formatDecimal(open, 2),
+          high: formatDecimal(high, 2),
+          low: formatDecimal(low, 2),
+          close: formatDecimal(close, 2),
+        };
+      });
     res.push(...validList);
   });
   return res;

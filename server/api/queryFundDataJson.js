@@ -29,10 +29,10 @@ export default eventHandler(async (event) => {
   return dataJSON.map((el) => ({
     fund_code: el.fund_code,
     date: el.trade_date,
-    open: el.open,
-    high: el.high,
-    low: el.low,
-    close: el.close,
-    volumn: el.volumn,
+    open: +el.open,
+    high: +el.high,
+    low: +el.low,
+    close: +el.close,
+    volumn: +el.volumn,
   }));
 });

@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 25 + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30)  + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@ import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
-import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
+import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinPointFiveMultiple, getMaxPointFiveMultipleLessThan } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({
@@ -37,6 +37,26 @@ onMounted(async () => {
   handleQuery();
 });
 
+function getMax(list) {
+  if (!Array.isArray(list)) return 0;
+  let max = list[0]?.high || 0;
+  list.forEach((el) => {
+    if (el.high > max) {
+      max = el.high;
+    }
+  });
+  return max;
+}
+function getMin(list) {
+  if (!Array.isArray(list)) return 0;
+  let min = list[0]?.low || 0;
+  list.forEach((el) => {
+    if (el.low < min) {
+      min = el.low;
+    }
+  });
+  return isNaN(min) ? 0 : min;
+}
 async function handleQuery() {
   fundData.value = await $fetch("/api/queryFundDataJson", {
     method: "get",
@@ -81,7 +101,8 @@ async function handleQuery() {
       const curYearMonthStrList = [`${yearStr}-${getZeroNumber(monthVal)}-`, `${yearStr}-${getZeroNumber(monthVal + 1)}-`, `${yearStr}-${getZeroNumber(monthVal + 2)}-`];
       // 获取当月日期列表
       const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[2], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
-
+      const curYearFilteredData = fundData.value?.filter((el) => el.date.startsWith(yearStr + "-"));
+      console.log(index, curYearFilteredData);
       let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr))); // 获取20xx年xx月的数据
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
       // console.log("filterFundData", filterFundData);
@@ -105,13 +126,15 @@ async function handleQuery() {
         type: "category",
         data: xAxisData,
       });
+      console.log(index, "max", getMax(curYearFilteredData));
+      console.log(index, "min", getMin(curYearFilteredData));
 
       yAxisArr.push({
         gridIndex: index,
         type: "value",
         interval: 0.5,
-        // min: 0, // Y轴最小值固定为0
-        // max: 3.5, // Y轴最大值固定为100
+        min: getMaxPointFiveMultipleLessThan(getMin(curYearFilteredData)), // Y轴最小值固定为0
+        max: getMinPointFiveMultiple(getMax(curYearFilteredData)), // Y轴最大值固定为100
       });
       const 季度List = ["一季度", "二季度", "三季度", "四季度"];
       seriesArr.push({

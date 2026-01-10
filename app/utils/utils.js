@@ -165,10 +165,7 @@ export function getDatesBetween(startDate, endDate, format = "YYYY-MM-DD") {
 }
 
 export function resizeFontSize(res) {
-  let clientWidth =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
+  let clientWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   if (!clientWidth) return res;
   let fontSize = clientWidth / 375;
   return res * fontSize;
@@ -180,15 +177,42 @@ export function resizeFontSize(res) {
  * @returns {number|string} 结果（超出范围返回提示，否则返回10的倍数）
  */
 export function getMinTenMultiple(num) {
-  // 步骤1：校验输入范围
-  if (!(typeof num === 'number' && num >= 1 && num <= 100)) {
-      return "输入值不符合要求，请输入1~100之间的有效数字";
-  }
-  
   // 步骤2：核心逻辑：除以10 → 向上取整 → 乘以10
   const quotient = num / 10; // 输入值除以10
   const ceilQuotient = Math.ceil(quotient); // 对商向上取整
   const minTenMultiple = ceilQuotient * 10; // 还原为10的倍数
-  
+
   return minTenMultiple;
+}
+
+/**
+ * 获取比输入值小的最大10的倍数
+ * @param {number} num - 输入值（1~100，支持整数和小数）
+ * @returns {number|string} 结果（超出范围返回提示，否则返回10的倍数）
+ */
+export function getMaxTenMultipleLessThan(num) {
+  // 步骤2：核心逻辑：除以10 → 向下取整 → 乘以10
+  const quotient = num / 10; // 输入值除以10，转化为10的倍数刻度
+  const floorQuotient = Math.floor(quotient); // 对商向下取整，获取小于等于商的最大整数
+  const maxTenMultiple = floorQuotient * 10; // 还原为10的倍数，得到最终结果
+  
+  return maxTenMultiple;
+}
+
+export function getMinPointFiveMultiple(num) {
+  // 步骤2：核心逻辑：除以0.5 → 向上取整 → 乘以0.5
+  const quotient = num / 0.5; // 输入值除以0.5（等价于乘以2）
+  const ceilQuotient = Math.ceil(quotient); // 对商进行向上取整
+  const minPointFiveMultiple = ceilQuotient * 0.5; // 还原为0.5的倍数
+
+  return minPointFiveMultiple;
+}
+
+export function getMaxPointFiveMultipleLessThan(num) {
+  // 步骤2：核心逻辑：除以0.5 → 向下取整 → 乘以0.5
+  const quotient = num / 0.5; // 输入值除以0.5（等价于乘以2，转化为整数刻度判断）
+  const floorQuotient = Math.floor(quotient); // 对商进行向下取整，获取小于等于商的最大整数
+  const maxPointFiveMultiple = floorQuotient * 0.5; // 还原为0.5的倍数
+
+  return maxPointFiveMultiple;
 }
