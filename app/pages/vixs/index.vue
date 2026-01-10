@@ -357,7 +357,7 @@ async function handleQuery() {
         // height: `${gridHeight}%`,
         // 文本样式配置
         style: {
-          text: `${stockCode.value}  ${yearStr}${季度List[col]}`, // grid 标题内容
+          text: `${stockCode.value}  ${yearStr}年${季度List[col]}`, // grid 标题内容
           fontSize: isMobile ? 10 : 40, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
