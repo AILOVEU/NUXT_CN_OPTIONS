@@ -6,6 +6,7 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
+    {{ resizeFontSize(40) }}
     <div class="w-full overflow-auto h-[calc(100vh-180px)]">
       <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 25 + 'vh', width: '200vw', margin: 'auto' }" />
     </div>
