@@ -18,7 +18,7 @@ import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
+import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinTenMultiple } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const vixsData = ref([{}]);
 const echartRef = ref();
@@ -238,6 +238,15 @@ const highlightDates = [
   "2025-11-26",
   "2025-12-24",
 ];
+function getMax(list) {
+  let max = list[0][3] || 0;
+  list.forEach((el) => {
+    if (el[3] > max) {
+      max = el[3];
+    }
+  });
+  return max;
+}
 async function handleQuery() {
   vixsData.value = await $fetch("/api/queryVixsDataJson", {
     method: "post",
@@ -308,15 +317,13 @@ async function handleQuery() {
         type: "category",
         data: xAxisData, // 每个小柱状图的x轴分类
       });
-
       // 3. 生成当前grid对应的y轴
       yAxisArr.push({
         gridIndex: index,
         type: "value",
         interval: 10,
-
         min: 0,
-        max: 100,
+        max: getMax(seriesData) > 40 ? getMinTenMultiple(getMax(seriesData)) : 40,
       });
       const 季度List = ["一季度", "二季度", "三季度", "四季度"];
 
@@ -358,7 +365,7 @@ async function handleQuery() {
         // 文本样式配置
         style: {
           text: `${stockCode.value}  ${yearStr}年${季度List[col]}`, // grid 标题内容
-          fontSize: isMobile ? 10 : 40, // 字体大小
+          fontSize: isMobile ? 18 : 40, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
           textAlign: "left", // 文本对齐方式（与 left 配合）

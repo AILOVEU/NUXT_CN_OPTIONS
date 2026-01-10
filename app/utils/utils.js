@@ -173,3 +173,22 @@ export function resizeFontSize(res) {
   let fontSize = clientWidth / 375;
   return res * fontSize;
 }
+
+/**
+ * 获取比输入值大的最小10的倍数
+ * @param {number} num - 输入值（1~100，支持整数和小数）
+ * @returns {number|string} 结果（超出范围返回提示，否则返回10的倍数）
+ */
+export function getMinTenMultiple(num) {
+  // 步骤1：校验输入范围
+  if (!(typeof num === 'number' && num >= 1 && num <= 100)) {
+      return "输入值不符合要求，请输入1~100之间的有效数字";
+  }
+  
+  // 步骤2：核心逻辑：除以10 → 向上取整 → 乘以10
+  const quotient = num / 10; // 输入值除以10
+  const ceilQuotient = Math.ceil(quotient); // 对商向上取整
+  const minTenMultiple = ceilQuotient * 10; // 还原为10的倍数
+  
+  return minTenMultiple;
+}
