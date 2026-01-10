@@ -1,15 +1,13 @@
 <template>
-  <div class="max-md:w-[200%]">
-    {{ fontSize }}
-    {{ isMobile }}
+  <div class="max-md:w-[300%]">
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <div class="w-full overflow-auto h-[calc(300vh-180px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 25 + 'vh', width: '200vw', margin: 'auto' }" />
+    <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 25 + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -22,7 +20,6 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
-console.log(isMobile, "isMobile");
 const vixsData = ref([{}]);
 const echartRef = ref();
 const options = ref({});
@@ -241,9 +238,6 @@ const highlightDates = [
   "2025-11-26",
   "2025-12-24",
 ];
-const fontSize = computed(() => {
-  return isMobile ? 12 : 40;
-});
 async function handleQuery() {
   vixsData.value = await $fetch("/api/queryVixsDataJson", {
     method: "post",
@@ -364,7 +358,7 @@ async function handleQuery() {
         // 文本样式配置
         style: {
           text: `${stockCode.value}  ${yearStr}${季度List[col]}`, // grid 标题内容
-          fontSize: fontSize.value, // 字体大小
+          fontSize: isMobile ? 10 : 40, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
           textAlign: "left", // 文本对齐方式（与 left 配合）
@@ -378,7 +372,7 @@ async function handleQuery() {
   options.value = {
     graphic: graphicArr,
     title: {
-      text: stockCode.value,
+      // text: stockCode.value,
       left: "center",
       top: 10,
     },

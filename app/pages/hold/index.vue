@@ -71,7 +71,7 @@ const tableData = reactive({
   ],
 });
 function getColumnWidth(label) {
-  if (isMobile.value) {
+  if (isMobile) {
     return label === "期权" ? "80px" : "120px";
   }
   return label === "期权" ? "80px" : "161px";

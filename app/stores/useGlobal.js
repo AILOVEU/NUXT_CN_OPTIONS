@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
-// import { useMediaQuery } from "@vueuse/core";
-// import UAParser from "ua-parser-js";
-
-export const useGlobal = defineStore("global", () => {
-  const isMobile = ref(false);
+import { useMediaQuery } from "@vueuse/core";
+export const useGlobal = defineStore("globalLoading", () => {
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const globalLoading = reactive({ value: false });
   const mobileScale = ref(355);
@@ -12,8 +10,6 @@ export const useGlobal = defineStore("global", () => {
     console.log("val", val);
     globalLoading.value = val;
   }
-
-  isMobile.value = /Mobile|Android|iOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
 
   return { globalLoading, setGlobalLoading, mobileScale, isMobile };
 });
