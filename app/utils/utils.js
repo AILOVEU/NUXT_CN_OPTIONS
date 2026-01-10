@@ -163,3 +163,13 @@ export function getDatesBetween(startDate, endDate, format = "YYYY-MM-DD") {
 
   return dates;
 }
+
+export function resizeFontSize(res) {
+  let clientWidth =
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth;
+  if (!clientWidth) return res;
+  let fontSize = clientWidth / 375;
+  return res * fontSize;
+}

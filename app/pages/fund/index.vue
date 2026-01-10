@@ -1,5 +1,5 @@
 <template>
-  <div class="max-md:w-[100%]">
+  <div class="max-md:w-[200%]">
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
@@ -17,7 +17,7 @@ import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
-import { getFourthWednesdayOfMonth, getDatesBetween } from "~/utils/utils";
+import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({
@@ -121,7 +121,7 @@ async function handleQuery() {
         yAxisIndex: index,
         data: seriesData,
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
-        barWidth: "60%", // 柱状图宽度占网格x轴的60%
+        barWidth: "100%", // 柱状图宽度占网格x轴的60%
       });
 
       graphicArr.push({
@@ -133,8 +133,8 @@ async function handleQuery() {
         // height: `${gridHeight}%`,
         // 文本样式配置
         style: {
-          text: `${stockCode.value} - ${yearStr}${季度List[col]}`, // grid 标题内容
-          fontSize: 40, // 字体大小
+          text: `${stockCode.value}  ${yearStr}${季度List[col]}`, // grid 标题内容
+          fontSize: isMobile.value ? resizeFontSize(40) : 40, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
           textAlign: "left", // 文本对齐方式（与 left 配合）

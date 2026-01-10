@@ -1,5 +1,5 @@
 <template>
-  <div class="max-md:w-[100%]">
+  <div class="max-md:w-[200%]">
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
@@ -18,7 +18,7 @@ import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourthWednesdayOfMonth, getDatesBetween } from "~/utils/utils";
+import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 
 const vixsData = ref([{}]);
@@ -314,6 +314,8 @@ async function handleQuery() {
       yAxisArr.push({
         gridIndex: index,
         type: "value",
+        interval: 10,
+
         min: 0,
         max: 100,
       });
@@ -335,8 +337,8 @@ async function handleQuery() {
           },
           // 标记线整体样式
           lineStyle: {
-            color: "#FF0000", // 红色高亮
-            width: 1, // 线宽
+            color: "rgba(255,0,0,0.4)", // 红色高亮
+            width: 0.5, // 线宽
             type: "dashed", // 实线
           },
           // 标记线数据：定位到2024-05-09的垂直标记线
@@ -356,8 +358,8 @@ async function handleQuery() {
         // height: `${gridHeight}%`,
         // 文本样式配置
         style: {
-          text: `${stockCode.value} - ${yearStr}${季度List[col]}`, // grid 标题内容
-          fontSize: 40, // 字体大小
+          text: `${stockCode.value}  ${yearStr}${季度List[col]}`, // grid 标题内容
+          fontSize: isMobile.value ? resizeFontSize(40) : 40, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
           textAlign: "left", // 文本对齐方式（与 left 配合）
