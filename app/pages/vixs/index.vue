@@ -22,7 +22,7 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
-
+console.log(isMobile, "isMobile");
 const vixsData = ref([{}]);
 const echartRef = ref();
 const options = ref({});
@@ -242,7 +242,7 @@ const highlightDates = [
   "2025-12-24",
 ];
 const fontSize = computed(() => {
-  return isMobile.value ? 12 : 40;
+  return isMobile ? 12 : 40;
 });
 async function handleQuery() {
   vixsData.value = await $fetch("/api/queryVixsDataJson", {

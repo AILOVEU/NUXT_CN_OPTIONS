@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 // import { useMediaQuery } from "@vueuse/core";
 // import UAParser from "ua-parser-js";
 
-export const useGlobal = defineStore("globalLoading", () => {
+export const useGlobal = defineStore("global", () => {
   const isMobile = ref(false);
 
   const globalLoading = reactive({ value: false });
