@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30)  + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -57,13 +57,16 @@ function getMin(list) {
   });
   return isNaN(min) ? 0 : min;
 }
+let loading = ref(false);
 async function handleQuery() {
+  loading.value = true;
   fundData.value = await $fetch("/api/queryFundDataJson", {
     method: "get",
     params: {
       fundCode: stockCode.value,
     },
   });
+  loading.value = false;
 
   let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
   console.log("monthLen", monthLen);

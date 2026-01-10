@@ -256,13 +256,16 @@ function getMax(list) {
   });
   return max;
 }
+let loading = ref(false);
 async function handleQuery() {
+  loading.value = true;
   vixsData.value = await $fetch("/api/queryVixsDataJson", {
     method: "post",
     body: {
       codeList: [stockCode.value],
     },
   });
+  loading.value = false;
   vixsData.value = vixsData.value.filter((el) => el.code === stockCode.value);
 
   let monthLen = Array.from(new Set(vixsData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
