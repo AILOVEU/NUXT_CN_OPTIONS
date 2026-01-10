@@ -39,10 +39,10 @@ export default eventHandler(async (event) => {
         let low = el[code + "_low"];
         let open = el[code + "_open"];
         let high = el[code + "_high"];
-        if (close > 100) close = 110;
-        if (low > 100) low = 100;
-        if (open > 100) open = 110;
-        if (high > 100) high = 110;
+        if (close > 90) close = 100;
+        if (low > 90) low = 90;
+        if (open > 90) open = 100;
+        if (high > 90) high = 100;
         if (!close || isNaN(close) || close === "0") close = low;
         return {
           date: dayjs(el["date"], "YYYY/M/D").format("YYYY-MM-DD"),
