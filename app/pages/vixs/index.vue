@@ -239,6 +239,9 @@ const highlightDates = [
   "2025-11-26",
   "2025-12-24",
 ];
+const fontSize = computed(() => {
+  return isMobile.value ? 12 : 40;
+});
 async function handleQuery() {
   vixsData.value = await $fetch("/api/queryVixsDataJson", {
     method: "post",
@@ -359,7 +362,7 @@ async function handleQuery() {
         // 文本样式配置
         style: {
           text: `${stockCode.value}  ${yearStr}${季度List[col]}`, // grid 标题内容
-          fontSize: isMobile.value ? 12 : 20, // 字体大小
+          fontSize: fontSize.value, // 字体大小
           fontWeight: "bold", // 字体加粗
           fill: "rgba('233,233,233,0.1')", // 字体颜色
           textAlign: "left", // 文本对齐方式（与 left 配合）
