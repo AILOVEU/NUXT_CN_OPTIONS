@@ -1,6 +1,7 @@
 <template>
   <div class="max-md:w-[200%]">
     {{ fontSize }}
+    {{ isMobile }}
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
