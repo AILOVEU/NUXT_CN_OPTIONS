@@ -13,15 +13,7 @@ export const useGlobal = defineStore("globalLoading", () => {
     globalLoading.value = val;
   }
 
-  onMouted(() => {
-    // const userAgent = navigator.userAgent;
-    // const parser = new UAParser(userAgent);
-    // const deviceType = parser.getDevice().type;
-
-    // isMobile.value = deviceType === "mobile" || deviceType === "tablet";
-    isMobile.value = /Mobile|Android|iOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent)
-
-  });
+  isMobile.value = /Mobile|Android|iOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
 
   return { globalLoading, setGlobalLoading, mobileScale, isMobile };
 });
