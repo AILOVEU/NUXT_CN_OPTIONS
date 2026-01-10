@@ -1,5 +1,6 @@
 <template>
   <div class="max-md:w-[200%]">
+    {{ fontSize }}
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
