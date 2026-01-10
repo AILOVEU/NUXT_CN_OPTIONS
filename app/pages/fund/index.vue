@@ -1,12 +1,12 @@
 <template>
-  <div class="max-md:w-[100%]">
+  <div class="max-md:w-[300%]">
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <div class="w-full overflow-auto h-[calc(100vh-180px)]">
+    <div class="w-full overflow-auto h-[calc(300vh-180px)]">
       <VChart :option="options" ref="echartRef" :style="{ height: rowNum * 25 + 'vh', width: '200vw', margin: 'auto' }" />
     </div>
   </div>
