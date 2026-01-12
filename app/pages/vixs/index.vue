@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[30vh]">
-      <VChart :option="总览options" ref="echartRef" :style="{ height: '30vh', width: '100vw', margin: 'auto' }" />
+      <VChart :option="总览options" ref="echartRef" :style="{ height: '30vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
       <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />

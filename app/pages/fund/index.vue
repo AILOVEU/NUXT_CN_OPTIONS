@@ -26,9 +26,8 @@ const stockCodeOptions = computed(() => {
   }));
   return [...ops, { value: "all", label: "全" }];
 });
-const fundData = ref([{}]);
+const fundData = ref([]);
 const echartRef = ref();
-const options = ref({});
 const rowNum = ref(1);
 const BEND = 2025;
 const stockCode = ref(stockCodeOptions.value[0].value);
@@ -67,7 +66,17 @@ async function handleQuery() {
     },
   });
   loading.value = false;
+}
 
+function handleStockCodeChange() {
+  // tableRef.value.setScrollTop(0);
+  setTimeout(() => {
+    handleQuery();
+  });
+}
+
+const options = computed(() => {
+  if (!fundData.value?.length) return {};
   let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
   console.log("monthLen", monthLen);
   const colNum = 4; // 列数
@@ -171,7 +180,7 @@ async function handleQuery() {
     }
   }
 
-  options.value = {
+  return {
     // 2. 核心：graphic 组件配置 grid 专属标题
     graphic: graphicArr,
     title: {
@@ -188,13 +197,6 @@ async function handleQuery() {
     yAxis: yAxisArr,
     series: seriesArr,
   };
-}
-
-function handleStockCodeChange() {
-  // tableRef.value.setScrollTop(0);
-  setTimeout(() => {
-    handleQuery();
-  });
-}
+});
 </script>
 <style scoped></style>
