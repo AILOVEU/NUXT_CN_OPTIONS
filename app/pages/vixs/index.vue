@@ -21,7 +21,7 @@ import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinTenMultiple, getMaxTenMultipleLessThan, findFourthWednesdayInRange } from "~/utils/utils";
+import { get每月第四个周三, getDatesBetween, resizeFontSize, get比输入值大的最小十倍数, get比输入值小的最大十倍数, get范围内是第四个周三的日期List } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const vixsData = ref([]);
 const echartRef = ref();
@@ -46,7 +46,7 @@ const stockCodeOptions = computed(() => {
   ];
 });
 const stockCode = ref(stockCodeOptions.value[0].value);
-const highlightDates = findFourthWednesdayInRange("2000-01-01", "2025-12-31");
+const highlightDates = get范围内是第四个周三的日期List("2000-01-01", "2025-12-31");
 function getMin(list) {
   let min = list[0]?.low || 0;
   list.forEach((el) => {
@@ -124,8 +124,8 @@ const options = computed(() => {
       let filteredData = vixsData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr))); // 获取20xx年xx月的数据
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
       // 获取当月第第四个周三
-      const monthFourthWednesdayList = curYearMonthStrList.map((curYearMonthStr) => getFourthWednesdayOfMonth(curYearMonthStr + "01"));
-      // const curMonthFourthWednesday = getFourthWednesdayOfMonth(curYearMonthStr + "01");
+      const monthFourthWednesdayList = curYearMonthStrList.map((curYearMonthStr) => get每月第四个周三(curYearMonthStr + "01"));
+      // const curMonthFourthWednesday = get每月第四个周三(curYearMonthStr + "01");
       const xAxisData = filteredData.map((el) => el.date);
       const seriesData = filteredData.map((el) => [el.open, el.close, el.low, el.high]);
       gridArr.push({
@@ -142,13 +142,13 @@ const options = computed(() => {
         data: xAxisData, // 每个小柱状图的x轴分类
       });
       // 3. 生成当前grid对应的y轴
-      console.log(index, getMaxTenMultipleLessThan(getMin(curYearFilteredData)), getMinTenMultiple(getMax(curYearFilteredData)));
+      console.log(index, get比输入值小的最大十倍数(getMin(curYearFilteredData)), get比输入值大的最小十倍数(getMax(curYearFilteredData)));
       yAxisArr.push({
         gridIndex: index,
         type: "value",
         interval: 10,
-        min: getMaxTenMultipleLessThan(getMin(curYearFilteredData)),
-        max: getMinTenMultiple(getMax(curYearFilteredData)),
+        min: get比输入值小的最大十倍数(getMin(curYearFilteredData)),
+        max: get比输入值大的最小十倍数(getMax(curYearFilteredData)),
       });
       const 季度List = ["一季度", "二季度", "三季度", "四季度"];
 

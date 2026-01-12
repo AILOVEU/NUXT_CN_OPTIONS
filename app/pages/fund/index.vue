@@ -17,7 +17,7 @@ import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
-import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinPointFiveMultiple, getMaxPointFiveMultipleLessThan } from "~/utils/utils";
+import { get每月第四个周三, getDatesBetween, resizeFontSize, getMinPointFiveMultiple, getMaxPointFiveMultipleLessThan } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({

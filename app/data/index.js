@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { getValid行权日List } from "~/utils/utils";
+import { get有效行权日List } from "~/utils/utils";
 import dayjs from "dayjs";
 export const 金额 = {
   前一期基础金额: 50000,
@@ -92,7 +92,7 @@ export const OPTIONS_MAP = [
     fs: "m:12+c:159915",
   },
 ];
-export const deadline_list = getValid行权日List(dayjs().format("YYYY-MM-DD"));
+export const deadline_list = get有效行权日List(dayjs().format("YYYY-MM-DD"));
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {
   "01": "1月🧳",

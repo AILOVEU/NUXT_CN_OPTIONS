@@ -28,7 +28,7 @@
 <script setup>
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourthThursdayOfMonth, getFourthWednesdayOfMonth, getLastMondayOfPreviousMonth, getDatesBetween } from "~/utils/utils";
+import { get每月第四个周四, get每月第四个周三, get上个月最后一个周一, getDatesBetween } from "~/utils/utils";
 
 function getStyle(item) {
   const styleCfg = {};
@@ -89,7 +89,7 @@ const HOLIDAY = [
 const WORKDAY = ["2026-01-04", "2026-02-14", "2026-02-28", "2026-05-09", "2026-09-20", "2026-10-10"];
 
 const days = ref(
-  getDatesBetween(getLastMondayOfPreviousMonth(), dayjs("2026-12-31", "YYYY-MM-DD")).map((el) => {
+  getDatesBetween(get上个月最后一个周一(), dayjs("2026-12-31", "YYYY-MM-DD")).map((el) => {
     const day = dayjs(el, "YYYY-MM-DD");
     let showText = day.format("DD");
     if (day.format("DD") === "01") {
@@ -100,9 +100,9 @@ const days = ref(
     return {
       date: el,
       weekday,
-      isFourthWednesday: getFourthWednesdayOfMonth(el) === el,
-      isQuarterOptions: getFourthWednesdayOfMonth(el) === el && ["12", "03", "06", "09"].includes(dayjs(el, "YYYY-MM-DD").format("MM")),
-      isGeneratedNewQuarterOptions: getFourthThursdayOfMonth(el) === el && ["01", "04", "07", "10"].includes(dayjs(el, "YYYY-MM-DD").format("MM")),
+      isFourthWednesday: get每月第四个周三(el) === el,
+      isQuarterOptions: get每月第四个周三(el) === el && ["12", "03", "06", "09"].includes(dayjs(el, "YYYY-MM-DD").format("MM")),
+      isGeneratedNewQuarterOptions: get每月第四个周四(el) === el && ["01", "04", "07", "10"].includes(dayjs(el, "YYYY-MM-DD").format("MM")),
       isBirthday: ["04-26", "12-05", "07-11", "06-13"].includes(dayjs(el, "YYYY-MM-DD").format("MM-DD")),
       isCurrent: el === dayjs().format("YYYY-MM-DD"),
       isHoliday,
