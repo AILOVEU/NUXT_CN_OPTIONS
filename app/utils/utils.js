@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+
 export function useCopy(text) {
   function selectText(textbox, startIndex, stopIndex) {
     if (textbox.createTextRange) {
@@ -195,7 +196,7 @@ export function getMaxTenMultipleLessThan(num) {
   const quotient = num / 10; // 输入值除以10，转化为10的倍数刻度
   const floorQuotient = Math.floor(quotient); // 对商向下取整，获取小于等于商的最大整数
   const maxTenMultiple = floorQuotient * 10; // 还原为10的倍数，得到最终结果
-  
+
   return maxTenMultiple;
 }
 
@@ -207,7 +208,6 @@ export function getMinPointFiveMultiple(num) {
 
   return minPointFiveMultiple;
 }
-
 export function getMaxPointFiveMultipleLessThan(num) {
   // 步骤2：核心逻辑：除以0.5 → 向下取整 → 乘以0.5
   const quotient = num / 0.5; // 输入值除以0.5（等价于乘以2，转化为整数刻度判断）
@@ -215,4 +215,58 @@ export function getMaxPointFiveMultipleLessThan(num) {
   const maxPointFiveMultiple = floorQuotient * 0.5; // 还原为0.5的倍数
 
   return maxPointFiveMultiple;
+}
+
+/**
+ * 查找时间范围内所有当月第四个周三的日期
+ * @param {string|Date|dayjs.Dayjs} startTime - 开始时间（支持多种格式输入）
+ * @param {string|Date|dayjs.Dayjs} endTime - 结束时间（支持多种格式输入）
+ * @returns {string[]} 符合条件的日期数组（格式：YYYY-MM-DD）
+ */
+export function findFourthWednesdayInRange(startTime, endTime) {
+  // 1. 格式化输入时间为 dayjs 实例，统一处理（确保时间格式合法）
+  const start = dayjs(startTime, "YYYY-MM-DD");
+  const end = dayjs(endTime, "YYYY-MM-DD");
+
+  // 边界校验：如果开始时间晚于结束时间，返回空数组
+  if (start.isAfter(end)) {
+    console.warn("开始时间不能晚于结束时间");
+    return [];
+  }
+
+  // 2. 初始化结果数组和当前遍历日期（从开始时间所在月的月初开始，按月推进提升效率）
+  const result = [];
+  let currentDate = start.startOf("month"); // 定位到当前月第一天（核心功能支持）
+
+  // 3. 循环遍历，直到当前日期超过结束时间
+  while (currentDate.isSameOrBefore(end, "day")) {
+    // 4. 核心逻辑：无插件计算当月第四个周三
+    // 步骤1：获取当前月的总天数（核心功能：daysInMonth()）
+    const daysInCurrentMonth = currentDate.daysInMonth();
+    // 步骤2：遍历当前月的所有日期，筛选出所有周三，收集日期号
+    const wednesdaysInMonth = [];
+    for (let day = 1; day <= daysInCurrentMonth; day++) {
+      const date = currentDate.date(day);
+      // 核心功能：day() 方法返回星期几（0=周日，1=周一，...，3=周三，...，6=周六）
+      if (date.day() === 3) {
+        wednesdaysInMonth.push(day);
+      }
+    }
+
+    // 步骤3：获取当月第四个周三（数组索引为3，对应第4个元素）
+    const fourthWednesdayDay = wednesdaysInMonth[3];
+    if (fourthWednesdayDay) {
+      const fourthWednesday = currentDate.date(fourthWednesdayDay);
+      // 5. 无插件判断日期是否在输入范围内（仅使用核心 isAfter/isSame/isBefore）
+      const isInRange = !fourthWednesday.isBefore(start, "day") && !fourthWednesday.isAfter(end, "day");
+      if (isInRange) {
+        result.push(fourthWednesday.format("YYYY-MM-DD"));
+      }
+    }
+
+    // 6. 遍历下一个月（按月推进，避免无效循环，核心功能：add()）
+    currentDate = currentDate.add(1, "month");
+  }
+
+  return result;
 }
