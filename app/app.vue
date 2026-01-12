@@ -31,4 +31,18 @@ useHead({
 .el-tag--small {
   padding: 0 2px !important;
 }
+body {
+  // 滚动条样式
+  ::-webkit-scrollbar-thumb {
+    border-radius: 0;
+    background-color: rgba(204, 199, 199, 0.5);
+    transition: all 0.2s;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
 </style>

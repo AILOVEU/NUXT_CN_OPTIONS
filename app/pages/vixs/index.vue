@@ -6,8 +6,11 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
+    <div class="w-full overflow-auto h-[30vh]">
+      <VChart :option="总览options" ref="echartRef" :style="{ height: '30vh', width: '100vw', margin: 'auto' }" />
+    </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -20,9 +23,8 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import { getFourthWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinTenMultiple, getMaxTenMultipleLessThan } from "~/utils/utils";
 const { setGlobalLoading, isMobile } = useGlobal();
-const vixsData = ref([{}]);
+const vixsData = ref([]);
 const echartRef = ref();
-const options = ref({});
 const BEND = 2025;
 const rowNum = ref(1);
 
@@ -266,14 +268,16 @@ async function handleQuery() {
     },
   });
   loading.value = false;
-  vixsData.value = vixsData.value.filter((el) => el.code === stockCode.value);
-
+  vixsData.value = vixsData.value.filter((el) => el.code === stockCode.value).filter((el) => el.date);
+}
+const options = computed(() => {
+  if (!vixsData.value.length) return {};
   let monthLen = Array.from(new Set(vixsData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
   // 配置基础参数
   const colNum = 4; // 列数
   rowNum.value = Math.floor(monthLen / 3 / colNum) + 1; // 行数
   setTimeout(() => {
-    echartRef.value.resize();
+    echartRef.value?.resize();
   });
   const gap = 1; // 网格间距（百分比）
   const padding = 0.5; // 整体内边距（百分比）
@@ -390,7 +394,7 @@ async function handleQuery() {
     }
   }
 
-  options.value = {
+  return {
     graphic: graphicArr,
     title: {
       // text: stockCode.value,
@@ -407,7 +411,61 @@ async function handleQuery() {
     yAxis: yAxisArr,
     series: seriesArr,
   };
-}
+});
+const 总览options = computed(() => {
+  return {
+    // graphic: graphicArr,
+    title: {
+      // text: stockCode.value,
+      left: "center",
+      top: 10,
+    },
+    // 提示框（鼠标悬浮显示数据）
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+    },
+    // grid: gridArr,
+    xAxis: [
+      {
+        type: "category",
+        data: vixsData.value.map((el) => el.date), // 每个小柱状图的x轴分类
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+        interval: 10,
+      },
+    ],
+    series: [
+      {
+        // name: `图表${index + 1}`,
+        type: "candlestick",
+        data: vixsData.value.map((el) => [el.open, el.close, el.low, el.high]),
+        itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
+        barWidth: "100%", // 柱状图宽度占网格x轴的60%
+        // markLine: {
+        //   symbol: "none",
+        //   label: {
+        //     show: false,
+        //   },
+        //   // 标记线整体样式
+        //   lineStyle: {
+        //     color: "rgba(255,0,0,0.6)", // 红色高亮
+        //     width: 0.5, // 线宽
+        //     type: "dashed", // 实线
+        //   },
+        //   // 标记线数据：定位到2024-05-09的垂直标记线
+        //   data: monthFourthWednesdayList.map((curMonthFourthWednesday) => ({
+        //     name: curMonthFourthWednesday,
+        //     xAxis: curMonthFourthWednesday,
+        //   })),
+        // },
+      },
+    ],
+  };
+});
 handleQuery();
 </script>
 <style scoped></style>
