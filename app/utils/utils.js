@@ -270,3 +270,30 @@ export function findFourthWednesdayInRange(startTime, endTime) {
 
   return result;
 }
+
+export function getValid行权日List(dateStr) {
+  const date = dayjs(dateStr, "YYYY-MM-DD");
+  const validMonthList = [
+    [date.format("YYYY-01-01"), date.format("YYYY-02-01"), date.format("YYYY-03-01"), date.format("YYYY-06-01")],
+    [date.format("YYYY-02-01"), date.format("YYYY-03-01"), date.format("YYYY-06-01"), date.format("YYYY-09-01")],
+    [date.format("YYYY-03-01"), date.format("YYYY-04-01"), date.format("YYYY-06-01"), date.format("YYYY-09-01")],
+    [date.format("YYYY-04-01"), date.format("YYYY-05-01"), date.format("YYYY-06-01"), date.format("YYYY-09-01")],
+    [date.format("YYYY-05-01"), date.format("YYYY-06-01"), date.format("YYYY-09-01"), date.format("YYYY-12-01")],
+    [date.format("YYYY-06-01"), date.format("YYYY-07-01"), date.format("YYYY-09-01"), date.format("YYYY-12-01")],
+    [date.format("YYYY-07-01"), date.format("YYYY-08-01"), date.format("YYYY-09-01"), date.format("YYYY-12-01")],
+    [date.format("YYYY-08-01"), date.format("YYYY-09-01"), date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-03-01")],
+    [date.format("YYYY-09-01"), date.format("YYYY-10-01"), date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-03-01")],
+    [date.format("YYYY-10-01"), date.format("YYYY-11-01"), date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-03-01")],
+    [date.format("YYYY-11-01"), date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
+    [date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-01-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
+    [date.add(1, "years").format("YYYY-01-01"), date.add(1, "years").format("YYYY-02-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
+  ];
+  const curMonth行权日 = getFourthWednesdayOfMonth(dateStr);
+  console.log("curMonth行权日", curMonth行权日);
+
+  let monthIdx = +date.format("M") - 1;
+  if (dayjs(dateStr, "YYYY-MM-DD").isAfter(dayjs(curMonth行权日, "YYYY-MM-DD"))) {
+    monthIdx += 1;
+  }
+  return validMonthList[monthIdx].map((el) => getFourthWednesdayOfMonth(el));
+}
