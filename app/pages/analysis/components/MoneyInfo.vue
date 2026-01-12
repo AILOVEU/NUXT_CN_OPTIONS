@@ -24,7 +24,7 @@ const 持仓金额 = computed(() => {
   return value;
 });
 const 盈亏金额 = computed(() => {
-  return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.基础金额;
+  return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.前一期基础金额;
 });
 
 const 总盈亏金额 = computed(() => {

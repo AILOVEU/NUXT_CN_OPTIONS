@@ -299,7 +299,7 @@ async function handleQuery() {
       const left = padding + col * (gridWidth + gap);
       const top = padding + row * (gridHeight + gap);
       const graphicLeft = left + gridWidth / 4;
-      const graphicTop = top + gridHeight / 3;
+      const graphicTop = top + gridHeight / 5;
 
       const yearStr = BEND - row;
       const monthVal = col * 3 + 1;
