@@ -243,7 +243,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["Gamma"] = formatDecimal(line_dict["Gamma"], 3);
     line_dict["杠杆"] = formatDecimal(line_dict["杠杆"], 1);
     line_dict["千行权价"] = line_dict["行权价"] * 1000;
-    line_dict["is旧期权"] = line_dict["期权名称"].includes('A') && !line_dict["期权名称"].includes('A500');
+    line_dict["is旧期权"] = line_dict["期权名称"].includes("A") && !line_dict["期权名称"].includes("A500");
 
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
     line_dict["到期日"] = line_dict["到期日"] + "";
@@ -272,6 +272,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["一手内在价"] = toPrice(line_dict["内在价值"], line_dict["合约单位"]);
 
     line_dict["代替正股价"] = line_dict["Delta"] * line_dict["正股价格"] * line_dict["合约单位"];
+    // console.log("line_dict", line_dict);
     all_data.push(line_dict);
   });
   all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));

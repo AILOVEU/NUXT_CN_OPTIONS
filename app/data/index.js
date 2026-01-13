@@ -53,7 +53,7 @@ export const OPTIONS_MAP = [
   },
   {
     code: "510300",
-    name: "沪深300ETF",
+    name: "沪深300ETF华泰柏瑞",
     color: "#91cc75",
     showName: "300🍆",
     行权价Range: [4500, 5000],
@@ -85,14 +85,26 @@ export const OPTIONS_MAP = [
   },
   {
     code: "159915",
-    name: "创业板ETF",
+    name: "创业板ETF易方达",
     color: "#ea7ccc",
     showName: "创业板🦑",
     行权价Range: [3000, 3500],
     fs: "m:12+c:159915",
   },
 ];
-export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
+export const deadline_list = [
+  // "20250924",
+  // "20251022",
+  // "20251126",
+  // "20251224",
+  "20260128",
+  "20260225",
+  "20260325",
+  // "20260422",
+  // "20260527",
+  "20260624",
+];
+console.log("deadline_list", deadline_list);
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {
   "01": "1月🧳",
