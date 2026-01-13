@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { get有效行权日List } from "~/utils/utils";
+import { getValidExerciseDate } from "~/utils/utils";
 import dayjs from "dayjs";
 export const 金额 = {
   前一期基础金额: 50000,
@@ -92,7 +92,7 @@ export const OPTIONS_MAP = [
     fs: "m:12+c:159915",
   },
 ];
-export const deadline_list = get有效行权日List(dayjs().format("YYYY-MM-DD"));
+export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {
   "01": "1月🧳",
@@ -110,6 +110,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260113", 24078],
     ["20260112", 23642], // 1万重建
     ["20260109", 21537], // 清仓
     ["20260108", 26490],

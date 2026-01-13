@@ -94,15 +94,15 @@ export function formatNumberToWan(num) {
   }
 }
 // 获取指定日期所在月份的第四个星期四
-export function get每月第四个周四(dateStr) {
-  return dayjs(get每月第四个周三(dateStr), "YYYY-MM-DD").add(1, "days").format("YYYY-MM-DD");
+export function getFourThursdayOfMonth(dateStr) {
+  return dayjs(getFourWednesdayOfMonth(dateStr), "YYYY-MM-DD").add(1, "days").format("YYYY-MM-DD");
 }
 /**
  * 获取指定日期所在月份的第四个星期三
  * @param {string} dateStr - 输入日期，格式必须为'YYYY-MM-DD'
  * @returns {string} 该月份第四个星期三的日期，格式'YYYY-MM-DD'
  */
-export function get每月第四个周三(dateStr) {
+export function getFourWednesdayOfMonth(dateStr) {
   // 1. 解析输入日期为dayjs对象（验证格式有效性）
   const inputDate = dayjs(dateStr, "YYYY-MM-DD");
   if (!inputDate.isValid()) {
@@ -136,7 +136,7 @@ export function get每月第四个周三(dateStr) {
   return fourthWednesday;
 }
 
-export function get上个月最后一个周一() {
+export function getLastMondayOfPreMonth() {
   // 获取当前日期并设置为上个月的第一天
   const firstDayOfCurrentMonth = dayjs().startOf("month");
   const lastDayOfPreviousMonth = firstDayOfCurrentMonth.subtract(1, "day");
@@ -177,7 +177,7 @@ export function resizeFontSize(res) {
  * @param {number} num - 输入值（1~100，支持整数和小数）
  * @returns {number|string} 结果（超出范围返回提示，否则返回10的倍数）
  */
-export function get比输入值大的最小十倍数(num) {
+export function getMoreThanTen(num) {
   // 步骤2：核心逻辑：除以10 → 向上取整 → 乘以10
   const quotient = num / 10; // 输入值除以10
   const ceilQuotient = Math.ceil(quotient); // 对商向上取整
@@ -191,7 +191,7 @@ export function get比输入值大的最小十倍数(num) {
  * @param {number} num - 输入值（1~100，支持整数和小数）
  * @returns {number|string} 结果（超出范围返回提示，否则返回10的倍数）
  */
-export function get比输入值小的最大十倍数(num) {
+export function getLessThanTen(num) {
   // 步骤2：核心逻辑：除以10 → 向下取整 → 乘以10
   const quotient = num / 10; // 输入值除以10，转化为10的倍数刻度
   const floorQuotient = Math.floor(quotient); // 对商向下取整，获取小于等于商的最大整数
@@ -221,7 +221,7 @@ export function getMaxPointFiveMultipleLessThan(num) {
  * @param {string|Date|dayjs.Dayjs} endTime - 结束时间（支持多种格式输入）
  * @returns {string[]} 符合条件的日期数组（格式：YYYY-MM-DD）
  */
-export function get范围内是第四个周三的日期List(startTime, endTime) {
+export function getFourWednesdayInRange(startTime, endTime) {
   // 1. 格式化输入时间为 dayjs 实例，统一处理（确保时间格式合法）
   const start = dayjs(startTime, "YYYY-MM-DD");
   const end = dayjs(endTime, "YYYY-MM-DD");
@@ -269,7 +269,7 @@ export function get范围内是第四个周三的日期List(startTime, endTime) 
   return result;
 }
 
-export function get有效行权日List(dateStr) {
+export function getValidExerciseDate(dateStr) {
   const date = dayjs(dateStr, "YYYY-MM-DD");
   const validMonthList = [
     [date.format("YYYY-01-01"), date.format("YYYY-02-01"), date.format("YYYY-03-01"), date.format("YYYY-06-01")],
@@ -286,12 +286,12 @@ export function get有效行权日List(dateStr) {
     [date.format("YYYY-12-01"), date.add(1, "years").format("YYYY-01-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
     [date.add(1, "years").format("YYYY-01-01"), date.add(1, "years").format("YYYY-02-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
   ];
-  const curMonth行权日 = get每月第四个周三(dateStr);
+  const curMonth行权日 = getFourWednesdayOfMonth(dateStr);
   console.log("curMonth行权日", curMonth行权日);
 
   let monthIdx = +date.format("M") - 1;
   if (dayjs(dateStr, "YYYY-MM-DD").isAfter(dayjs(curMonth行权日, "YYYY-MM-DD"))) {
     monthIdx += 1;
   }
-  return validMonthList[monthIdx].map((el) => get每月第四个周三(el));
+  return validMonthList[monthIdx].map((el) => getFourWednesdayOfMonth(el));
 }
