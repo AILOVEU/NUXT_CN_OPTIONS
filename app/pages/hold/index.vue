@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '350%' : '100%' }">
+  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '255%' : '100%' }">
     <!-- {{tableData.data}} -->
     <div>
       <Nav v-if="mode === 'hold'" />
