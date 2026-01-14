@@ -7,7 +7,6 @@ export const useGlobal = defineStore("globalLoading", () => {
   const mobileScale = ref(355);
 
   function setGlobalLoading(val) {
-    console.log("val", val);
     globalLoading.value = val;
   }
 

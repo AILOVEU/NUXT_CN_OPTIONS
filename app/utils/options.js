@@ -218,7 +218,6 @@ function formatRecord(_all_data, 持仓JSON) {
     ].forEach((key) => {
       row[key] = row[key] ? +row[key] : row[key];
     });
-    console.log("row", { ...row });
     row["Delta"] = formatDecimal(row["Delta"], 3);
     row["Gamma"] = formatDecimal(row["Gamma"], 3);
     row["杠杆"] = formatDecimal(row["杠杆"], 1);

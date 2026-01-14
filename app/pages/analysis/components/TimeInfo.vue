@@ -422,7 +422,6 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
       trigger: "item",
       triggerOn: "mousemove|click",
       formatter: (params) => {
-        // console.log("params", params);
         const { dataType, data, value } = params;
         let list = [];
         let targetName = "";
@@ -440,7 +439,6 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
           targetName = `${getStockCodeName(data.source)} > ${getStockCodeName(data.target)}`;
           let tList = getFilterDataByDataName(data.source, 所有持仓期权TableData);
           list = getFilterDataByDataName(data.target, tList);
-          console.log("list", list);
         }
 
         list.forEach((el) => (sumValue += el[展示字段]));

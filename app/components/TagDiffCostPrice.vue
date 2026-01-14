@@ -14,7 +14,6 @@ const type = computed(() => {
   return "primary";
 });
 const effect = computed(() => {
-  console.log("props.current期权Item", props.current期权Item);
   if (一手成本价.value > 最大建议买入价) return "plain";
   if (一手成本价.value > props.diffValue * 5) return "plain";
   if (一手成本价.value >= props.diffValue * 3 && 一手成本价.value <= props.diffValue * 5) return "plain";

@@ -142,7 +142,6 @@ const options = computed(() => {
         data: xAxisData, // 每个小柱状图的x轴分类
       });
       // 3. 生成当前grid对应的y轴
-      console.log(index, getLessThanTen(getMin(curYearFilteredData)), getMoreThanTen(getMax(curYearFilteredData)));
       yAxisArr.push({
         gridIndex: index,
         type: "value",

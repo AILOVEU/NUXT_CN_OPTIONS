@@ -287,13 +287,9 @@ export function getValidExerciseDate(dateStr) {
     [date.add(1, "years").format("YYYY-01-01"), date.add(1, "years").format("YYYY-02-01"), date.add(1, "years").format("YYYY-03-01"), date.add(1, "years").format("YYYY-06-01")],
   ];
   const curMonth行权日 = getFourWednesdayOfMonth(dateStr);
-  console.log("curMonth行权日", curMonth行权日);
-
   let monthIdx = +date.format("M") - 1;
   if (dayjs(dateStr, "YYYY-MM-DD").isAfter(dayjs(curMonth行权日, "YYYY-MM-DD"))) {
     monthIdx += 1;
   }
   return validMonthList[monthIdx].map((el) => getFourWednesdayOfMonth(el));
 }
-
-console.log("getValidExerciseDate", getValidExerciseDate(dayjs().format("YYYY-MM-DD")));
