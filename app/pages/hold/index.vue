@@ -14,8 +14,8 @@
           <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
             <template #header>
               <div v-if="type" class="leading-[1.2]">
-                <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-                <div class="leading-[1.2]">({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
+                <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
+                <div class="leading-[1.2]">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
               </div>
               <div v-else class="leading-[1.2]">
                 {{ label }}

@@ -20,7 +20,7 @@ function isTimeAfterMarketClosed() {
 
 function isTimeNotWorkDay() {
   // const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-  // const weekNumb = dayjs(name, "YYYYMMDD").day();
+  // const weekNumb = dayjs(name, "YYYY-MM-DD").day();
   const now = dayjs();
   const weekday = now.day();
   return [0, 6].includes(weekday);
@@ -39,7 +39,6 @@ function get_最新价(row) {
 function get_持仓(持仓JSON, line_dict) {
   let targetList = 持仓JSON.filter((item) => item["名称"] === line_dict["期权名称"]);
   if (!targetList.length) return 0;
-  console.log("targetList", targetList);
   let 持仓 = 0;
   targetList.forEach((item) => {
     let item持仓 = +item["持仓"];
@@ -76,7 +75,7 @@ function get_成本价(line_dict, 持仓JSON) {
 function get组合名称(权利Item, 义务Item) {
   const 正股名称 = 权利Item["正股名称"];
   const 行权价Name = `${权利Item["千行权价"]}-${义务Item["千行权价"]}`;
-  const 到期月 = dayjs(权利Item["到期日"], "YYYYMMDD").format("M月");
+  const 到期月 = dayjs(权利Item["到期日"], "YYYY-MM-DD").format("M月");
   return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
 }
 export function 构建组合(all_data) {
@@ -246,9 +245,9 @@ export async function get_http_data(正股代码List, useCatch = true) {
     line_dict["is旧期权"] = line_dict["期权名称"].includes("A") && !line_dict["期权名称"].includes("A500");
 
     line_dict["沽购"] = line_dict["期权名称"].includes("购") ? "购" : "沽";
-    line_dict["到期日"] = line_dict["到期日"] + "";
-    line_dict["到期天数"] = dayjs(line_dict["到期日"], "YYYYMMDD").diff(dayjs(), "days") + 1;
-    line_dict["到期月份"] = dayjs(line_dict["到期日"], "YYYYMMDD").format("MM月");
+    line_dict["到期日"] = dayjs(line_dict["到期日"] + "", "YYYYMMDD").format("YYYY-MM-DD");
+    line_dict["到期天数"] = dayjs(line_dict["到期日"], "YYYY-MM-DD").diff(dayjs(), "days") + 1;
+    line_dict["到期月份"] = dayjs(line_dict["到期日"], "YYYY-MM-DD").format("MM月");
     line_dict["单日损耗"] = Math.floor((10 * line_dict["Theta"] * line_dict["合约单位"]) / 365) / 10;
     line_dict["最新价"] = get_最新价(line_dict);
     line_dict["涨跌额"] = line_dict["最新价"] - line_dict["昨收"];
@@ -292,7 +291,7 @@ export function get_fist_季度月份(dataList) {
   month_list.sort();
   let month_index = 0;
   for (let _index = 0; _index < month_list.length; _index++) {
-    const day = dayjs(month_list[_index], "YYYYMMDD").format("MM月");
+    const day = dayjs(month_list[_index], "YYYY-MM-DD").format("MM月");
     if (["03月", "06月", "09月", "12月"].includes(day)) {
       month_index = _index;
       break;

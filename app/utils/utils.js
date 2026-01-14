@@ -295,3 +295,5 @@ export function getValidExerciseDate(dateStr) {
   }
   return validMonthList[monthIdx].map((el) => getFourWednesdayOfMonth(el));
 }
+
+console.log("getValidExerciseDate", getValidExerciseDate(dayjs().format("YYYY-MM-DD")));

@@ -20,7 +20,7 @@
       <TagDiffPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
     </div>
     <div class="text-[gray] mb-[5px]">
-      <div class="mx-auto">{{ dayjs(current期权Item?.["到期日"], "YYYYMMDD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      <div class="mx-auto">{{ dayjs(current期权Item?.["到期日"], "YYYY-MM-DD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
       <div class="mx-auto">Delta {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
       <div class="mx-auto">隐波 {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
     </div>
@@ -35,7 +35,7 @@ import dayjs from "dayjs";
 const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "combo_list"]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
-  const month = dayjs(props.date, "YYYYMMDD").format("M月");
+  const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
   return type + month;
 });
 const 期权名称 = computed(() => {

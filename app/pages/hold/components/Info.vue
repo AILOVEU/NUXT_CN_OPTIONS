@@ -62,7 +62,7 @@ const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
-  const month = dayjs(props.date, "YYYYMMDD").format("M月");
+  const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
   return type + month;
 });
 const 正股代码 = computed(() => {

@@ -24,7 +24,7 @@ const 正股名称 = computed(() => {
   return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"]).name;
 });
 const 到期日 = computed(() => {
-  const month = dayjs(props.row["到期日"] + "", "YYYYMMDD").format("MM");
+  const month = dayjs(props.row["到期日"] + "", "YYYY-MM-DD").format("MM");
   return deadline_map[month];
 });
 const 行权价 = computed(() => {

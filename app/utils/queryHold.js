@@ -11,9 +11,9 @@ function handleHoldData(dataList, 正股代码List) {
     // 期权名称含有沽
     if (item["期权名称"].includes("沽")) return;
     if (item["到期日"] !== month_list[month_index]) return;
-    let 到期月份 = dayjs(item["到期日"], "YYYYMMDD").format("M月");
+    let 到期月份 = dayjs(item["到期日"], "YYYY-MM-DD").format("M月");
     month_list.forEach((month) => {
-      let 实际月份 = dayjs(month, "YYYYMMDD").format("M月");
+      let 实际月份 = dayjs(month, "YYYY-MM-DD").format("M月");
       let call_期权名称 = item["期权名称"].replace(到期月份, 实际月份);
       let put_期权名称 = item["期权名称"].replace(到期月份, 实际月份).replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);

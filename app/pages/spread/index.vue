@@ -26,9 +26,9 @@
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
             <template #header>
-              <div v-if="type" :style="getHeaderStyle(diff, dayjs(label, 'YYYYMMDD').diff(dayjs(), 'days') + 1)">
-                <div>{{ type }}{{ dayjs(label, "YYYYMMDD").format("M月") }}</div>
-                <div>({{ dayjs(label, "YYYYMMDD").diff(dayjs(), "days") + 1 }})</div>
+              <div v-if="type" :style="getHeaderStyle(diff, dayjs(label, 'YYYY-MM-DD').diff(dayjs(), 'days') + 1)">
+                <div>{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
+                <div>({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
                 <div>{{ diff }}</div>
               </div>
               <div v-else>

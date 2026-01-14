@@ -356,7 +356,7 @@ function getSankeyLegenColorMap({ 总和标识 }) {
     [总和标识]: 总和Color,
   };
   deadline_list.forEach((el, index) => {
-    colorMap[dayjs(el, "YYYYMMDD").format("M月")] = deadline_color_list[index];
+    colorMap[dayjs(el, "YYYY-MM-DD").format("M月")] = deadline_color_list[index];
   });
   OPTIONS_MAP.forEach((el) => {
     colorMap[el.code] = el.color;
@@ -372,7 +372,7 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
     dataList.push(el.target);
   });
   dataList = [...Array.from(new Set(dataList)), 总和标识];
-  const dataListSort = [..._.flattenDeep(OPTIONS_MAP.map((el) => [el.code, el.code + "[组合]"])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el, "YYYYMMDD").format("M月")), 总和标识];
+  const dataListSort = [..._.flattenDeep(OPTIONS_MAP.map((el) => [el.code, el.code + "[组合]"])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el, "YYYY-MM-DD").format("M月")), 总和标识];
   dataList = dataListSort.filter((el) => dataList.includes(el));
   return dataList;
 }
@@ -522,7 +522,7 @@ function getFilterDataByDataName(dataName, tableData) {
   }
   // 月份列
   else if (dataName.includes("月")) {
-    list = tableData.filter((el) => dayjs(el["到期日"], "YYYYMMDD").format("M月") === dataName);
+    list = tableData.filter((el) => dayjs(el["到期日"], "YYYY-MM-DD").format("M月") === dataName);
   }
   // 合计列
   else if (["持", "盈", "亏"].includes(dataName)) {
@@ -576,7 +576,7 @@ const 持仓分布Option = computed(() => {
         if (el["沽购"] === type && el["到期日"] === date) {
           const key = date + type;
           到日期to沽购Map[key] = {
-            source: dayjs(date, "YYYYMMDD").format("M月"),
+            source: dayjs(date, "YYYY-MM-DD").format("M月"),
             target: type + " ",
             value: (到日期to沽购Map[key]?.value || 0) + (el?.总价 || 0),
           };
@@ -594,7 +594,7 @@ const 持仓分布Option = computed(() => {
           正股to到日期Map[key] = {
             stock_code: item.code,
             source: item.code + 组合Str,
-            target: dayjs(date, "YYYYMMDD").format("M月"),
+            target: dayjs(date, "YYYY-MM-DD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.总价 || 0),
           };
         }
@@ -641,7 +641,7 @@ const 盈利分布Option = computed(() => {
         if (el["沽购"] === type && el["到期日"] === date && el?.今日总涨跌 > 0) {
           const key = date + type;
           到日期to沽购Map[key] = {
-            source: dayjs(date, "YYYYMMDD").format("M月"),
+            source: dayjs(date, "YYYY-MM-DD").format("M月"),
             target: type + " ",
             value: (到日期to沽购Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
@@ -659,7 +659,7 @@ const 盈利分布Option = computed(() => {
           正股to到日期Map[key] = {
             stock_code: item.code,
             source: item.code + 组合Str,
-            target: dayjs(date, "YYYYMMDD").format("M月"),
+            target: dayjs(date, "YYYY-MM-DD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (el?.今日总涨跌 || 0),
           };
         }
@@ -705,7 +705,7 @@ const 亏损分布Option = computed(() => {
         if (el["沽购"] === type && el["到期日"] === date && el?.今日总涨跌 < 0) {
           const key = date + type;
           到日期to沽购Map[key] = {
-            source: dayjs(date, "YYYYMMDD").format("M月"),
+            source: dayjs(date, "YYYY-MM-DD").format("M月"),
             target: type + " ",
             value: (到日期to沽购Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };
@@ -723,7 +723,7 @@ const 亏损分布Option = computed(() => {
           正股to到日期Map[key] = {
             stock_code: item.code,
             source: item.code + 组合Str,
-            target: dayjs(date, "YYYYMMDD").format("M月"),
+            target: dayjs(date, "YYYY-MM-DD").format("M月"),
             value: (正股to到日期Map[key]?.value || 0) + (-el?.今日总涨跌 || 0),
           };
         }

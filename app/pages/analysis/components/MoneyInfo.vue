@@ -205,7 +205,7 @@ const 盈亏曲线Option = computed(() => {
   盈亏曲线数据.forEach((item) => {
     const { name } = item;
     // 拆分日期为 年、月（统一格式，避免格式不一致导致判断错误）
-    const yearMonthKey = dayjs(name, "YYYYMMDD").format("YYYY-MM"); // 唯一标识：年-月
+    const yearMonthKey = dayjs(name, "YYYY-MM-DD").format("YYYY-MM"); // 唯一标识：年-月
 
     // 若该年月未记录首个日期，则存入并标记
     if (!monthFirstDateMap.has(yearMonthKey)) {
@@ -215,7 +215,6 @@ const 盈亏曲线Option = computed(() => {
   });
   const xAxisDateData = 盈亏曲线数据.map((item) => item.name);
   const seriesValueData = 盈亏曲线数据.map((item) => item.value);
-  console.log("firstDateSet", firstDateSet);
   return {
     // toolbox: {
     //   feature: {
@@ -231,11 +230,10 @@ const 盈亏曲线Option = computed(() => {
       show: true,
       trigger: "axis",
       formatter: function (params) {
-        console.log(params);
         const target = params[0];
         const { name, value, marker } = target;
         const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        const weekNumb = dayjs(name, "YYYYMMDD").day();
+        const weekNumb = dayjs(name, "YYYY-MM-DD").day();
         return `${marker}${name} ${weekdays[weekNumb]}<br />${value}`;
       },
     },
