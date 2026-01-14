@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
+import _ from "lodash";
 
 function isTimeBetweenNoonMarketClosed() {
   const now = dayjs();
@@ -181,7 +182,16 @@ export async function get_target_http_data(持仓JSON, fs) {
   }
   return all_data;
 }
-function formatRecord(_all_data) {
+let DEBUG_LIST = {};
+function debug(_all_data) {
+  console.log(
+    "DEBUG_LIST - ",
+    _.unionBy(_all_data, (row) => row["f333"])
+  );
+}
+
+function formatRecord(_all_data, 持仓JSON) {
+  debug(_all_data);
   let all_data = [];
   _all_data.forEach((_) => {
     // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
@@ -189,11 +199,26 @@ function formatRecord(_all_data) {
     Object.keys(fields_dict).forEach((key) => {
       row[fields_dict[key]] = _[key];
     });
-
-    // 旧字段格式化
-    ["最新价", "昨收", "买一", "卖一", "持仓量", "行权价", "日增", "隐波", "溢价率", "杠杆", "Delta", "Gamma", "Theta", "正股价格"].forEach((key) => {
+    [
+      // 旧字段格式化
+      "最新价",
+      "昨收",
+      "买一",
+      "卖一",
+      "持仓量",
+      "行权价",
+      "日增",
+      "隐波",
+      "溢价率",
+      "杠杆",
+      "Delta",
+      "Gamma",
+      "Theta",
+      "正股价格",
+    ].forEach((key) => {
       row[key] = row[key] ? +row[key] : row[key];
     });
+    console.log("row", { ...row });
     row["Delta"] = formatDecimal(row["Delta"], 3);
     row["Gamma"] = formatDecimal(row["Gamma"], 3);
     row["杠杆"] = formatDecimal(row["杠杆"], 1);
@@ -275,7 +300,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
         console.log(err);
       });
   }
-  let all_data = formatRecord(_all_data);
+  let all_data = formatRecord(_all_data, 持仓JSON);
   all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));
   const combo_list = 构建组合(all_data);
   all_data = all_data.map((el) => {
