@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       ],
     },
   },
-  debug: true,
+  debug: false,
   nitro: {
     preset: "node-server",
     minify: false, // 开发时关闭压缩
@@ -44,7 +44,7 @@ export default defineNuxtConfig({
   // future: { compatibilityVersion: 4 },
   // compatibilityDate: '2025-07-15',
 
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   vite: {
     server: {
       watch: {

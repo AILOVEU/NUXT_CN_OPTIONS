@@ -61,7 +61,7 @@ function get_option_实值(el) {
 function get_stock_code(name) {
   let code;
   OPTIONS_MAP.forEach((el) => {
-    if (name.includes(el.name)) {
+    if (name.includes(el.linkName)) {
       code = el.code;
     }
   });
@@ -135,7 +135,7 @@ function sleep(time) {
     }, time);
   });
 }
-export async function get_target_http_data(持仓JSON, fs) {
+async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
   const pz = 80;
   let all_data = [];

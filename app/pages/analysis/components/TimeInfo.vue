@@ -383,7 +383,7 @@ function getSpaceBetween4Div($1, $2, $3, $4) {
   return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
             <div style="display:flex;align-items: center;">
               <div style='width: 70px;'>${$1}</div>
-              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 70px;text-align: right;'>${$2}</div>
+              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 75px;text-align: right;'>${$2}</div>
             </div>
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
               <div>${$3}</div>  
@@ -458,7 +458,7 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
           )
           .join("");
         if (listStr) listStr += "<br />";
-        return dataType === "node" ? `${listStr}${getSpaceBetween2Div(targetName, targetValue)}` : `${listStr}${targetName}<br />${targetValue}`;
+        return `${listStr}${getSpaceBetween2Div(targetName, targetValue)}`;
       },
     },
     grid: {

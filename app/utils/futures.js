@@ -4,7 +4,7 @@ import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 
-export async function get_target_http_data(fs) {
+async function get_target_http_data(fs) {
   let curr_page = 1;
   const pageSize = 100;
   let all_data = [];

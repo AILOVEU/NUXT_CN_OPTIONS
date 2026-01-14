@@ -1,6 +1,6 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./options";
-
+import dayjs from 'dayjs'
 function handleTData(dataList) {
   let all_data = [];
   let 正股价格_dict = {};
@@ -37,6 +37,12 @@ function handleTData(dataList) {
         到期日,
         行权价: 正股价格_dict[正股代码],
       });
+      console.log("_split", {
+        _split: true,
+        正股代码,
+        到期日,
+        行权价: 行权价List[行权价List.length - 1],
+      });
       all_data.push({
         _split: true,
         正股代码,
@@ -50,7 +56,7 @@ function handleTData(dataList) {
       if (a["到期日"] === b["到期日"]) {
         return a["行权价"] - b["行权价"];
       }
-      return a["到期日"] - b["到期日"];
+      return dayjs(a["到期日"], "YYYY-MM-DD").isBefore(dayjs(b["到期日"], "YYYY-MM-DD")) ? 1 : -1;
     }
     const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["正股代码"]);
     const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
