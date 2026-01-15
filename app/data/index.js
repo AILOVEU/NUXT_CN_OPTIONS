@@ -178,6 +178,6 @@ export const 盈亏曲线数据 = _.unionBy(
   ]),
   (el) => el[0]
 ).map(([name, value]) => ({
-  name,
+  name: dayjs(name, "YYYYMMDD").format("YYYY-MM-DD"),
   value,
 }));
