@@ -200,7 +200,7 @@ function handleShowBs() {
     K: 行权价.value,
     r: 0.02,
     T: 到期天数.value / 365,
-    sigma: 隐波.value / 100,
+    sigma: (隐波.value || 0.01) / 100,
     optionType: props.isCall ? "call" : "put",
     price: 最新价.value,
   };

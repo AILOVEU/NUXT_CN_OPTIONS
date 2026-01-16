@@ -1,10 +1,10 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="BS" :width="'100vw'" :z-index="10000" append-to-body>
+  <el-dialog v-model="dialogVisible" title="BS" :width="isMobile ? '250vw' : '80vw'" :z-index="10000" append-to-body>
     {{ props.optionInfo }}
-    <VChart :option="option" style="height: 500px; width: 100vw; margin: auto" />
+    <VChart :option="option" :style="{ height: '700px', width: isMobile ? '250vw' : '80vw', margin: 'auto' }" />
     <template #footer>
       <div>
-        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button @click="dialogVisible = false">关闭</el-button>
       </div>
     </template>
   </el-dialog>
@@ -14,6 +14,9 @@
 import { ref } from "vue";
 import { ElMessageBox } from "element-plus";
 import { blackScholesOptionPrice } from "~/utils/bs";
+import { useGlobal } from "~/stores/useGlobal.js";
+import { formatDecimal } from "~/utils/utils";
+const { setGlobalLoading, isMobile } = useGlobal();
 const props = defineProps(["visible", "optionInfo"]);
 const emits = defineEmits(["update:visible"]);
 const dialogVisible = computed({
@@ -61,26 +64,37 @@ const option = computed(() => {
         color: "#fff",
       },
       padding: 10,
+      formatter: function (params) {
+        const data = params[0];
+        return `<div">
+            <div>y期价： ${formatDecimal(data.data[1], 4).toFixed(4)}</div><br/>
+            <div>x股价： ${formatDecimal(data.data[0], 4).toFixed(4)}</div>
+          </div>`;
+      },
     },
     grid: {
       top: 40,
-      left: 50,
-      right: 40,
+      left: 100,
+      right: 100,
       bottom: 50,
     },
     xAxis: {
       name: "x",
-      minorTick: {
-        show: true,
-      },
-      minorSplitLine: {
-        show: true,
-      },
+      interval: 0.01,
+      min: S * 0.9,
+      max: S * 1.1,
+      // minorTick: {
+      //   show: true,
+      // },
+      // minorSplitLine: {
+      //   show: true,
+      // },
     },
     yAxis: {
       name: "y",
       min: 0,
       max: price * 10,
+      interval: 0.025,
       minorTick: {
         show: true,
       },
@@ -94,8 +108,8 @@ const option = computed(() => {
         type: "inside",
         filterMode: "none",
         xAxisIndex: [0],
-        startValue: S * 0.98,
-        endValue: S * 1.02,
+        startValue: S * 0.95,
+        endValue: S * 1.05,
       },
       {
         show: true,
@@ -107,6 +121,23 @@ const option = computed(() => {
       },
     ],
     series: [
+      {
+        type: "line",
+        data: [],
+        markArea: {
+          itemStyle: {
+            color: "rgba(255, 180, 255, 0.2)",
+            borderColor: "#0099ff",
+          },
+          data: [
+            // 区域：按数据索引定位（第 3 个 → 第 5 个数据项，索引从 0 开始）
+            [
+              { xAxis: S * 0.95 }, // 起点：第 3 个数据项（周四）
+              { xAxis: S * 1.05 }, // 终点：第 5 个数据项（周六）
+            ],
+          ],
+        },
+      },
       {
         type: "line",
         showSymbol: false,
@@ -123,6 +154,31 @@ const option = computed(() => {
               { xAxis: S * 0.98 }, // 起点：第 3 个数据项（周四）
               { xAxis: S * 1.02 }, // 终点：第 5 个数据项（周六）
             ],
+          ],
+        },
+        markLine: {
+          symbol: "none",
+          data: [
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "正股价格",
+              xAxis: S,
+            },
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "期权价格",
+              yAxis: price,
+            },
           ],
         },
       },
