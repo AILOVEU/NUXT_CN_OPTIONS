@@ -1,0 +1,132 @@
+<template>
+  <el-dialog v-model="dialogVisible" title="BS" :width="'100vw'" :z-index="10000" append-to-body>
+    {{ props.optionInfo }}
+    <VChart :option="option" style="height: 500px; width: 100vw; margin: auto" />
+    <template #footer>
+      <div>
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { ElMessageBox } from "element-plus";
+import { blackScholesOptionPrice } from "~/utils/bs";
+const props = defineProps(["visible", "optionInfo"]);
+const emits = defineEmits(["update:visible"]);
+const dialogVisible = computed({
+  get() {
+    return props.visible;
+  },
+  set(val) {
+    emits("update:visible", val);
+  },
+});
+/**
+ * @param {number} S - 标的资产当前价格
+ * @param {number} K - 期权执行价格
+ * @param {number} r - 无风险利率（年化，连续复利）
+ * @param {number} T - 到期时间（年）
+ * @param {number} sigma - 标的资产年化波动率
+ * @param {string} optionType - 期权类型（'call' 看涨 / 'put' 看跌）
+ */
+const option = computed(() => {
+  if (!props.optionInfo) return {};
+  const seriesData = [];
+  const { S, K, r, T, sigma, optionType, price } = props.optionInfo;
+  for (let _S = S * 0.8; _S < S * 1.2; _S += 0.001) {
+    const x = _S;
+    const y = blackScholesOptionPrice(_S, K, r, T, sigma, optionType);
+    console.log({ x, y });
+    seriesData.push([x, y]);
+  }
+  return {
+    animation: false,
+    tooltip: {
+      trigger: "axis", // 关键1：坐标轴触发
+      axisPointer: {
+        type: "cross", // 关键2：十字线指示器
+        // 可选：自定义十字光标样式
+        crossStyle: {
+          color: "#0066cc",
+          width: 1,
+          opacity: 0.8,
+        },
+      },
+      // 可选：tooltip 提示框样式优化
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
+      textStyle: {
+        color: "#fff",
+      },
+      padding: 10,
+    },
+    grid: {
+      top: 40,
+      left: 50,
+      right: 40,
+      bottom: 50,
+    },
+    xAxis: {
+      name: "x",
+      minorTick: {
+        show: true,
+      },
+      minorSplitLine: {
+        show: true,
+      },
+    },
+    yAxis: {
+      name: "y",
+      min: 0,
+      max: price * 10,
+      minorTick: {
+        show: true,
+      },
+      minorSplitLine: {
+        show: true,
+      },
+    },
+    dataZoom: [
+      {
+        show: true,
+        type: "inside",
+        filterMode: "none",
+        xAxisIndex: [0],
+        startValue: S * 0.98,
+        endValue: S * 1.02,
+      },
+      {
+        show: true,
+        type: "inside",
+        filterMode: "none",
+        yAxisIndex: [0],
+        startValue: 0,
+        endValue: price * 2,
+      },
+    ],
+    series: [
+      {
+        type: "line",
+        showSymbol: false,
+        clip: true,
+        data: seriesData,
+        markArea: {
+          itemStyle: {
+            color: "rgba(0, 180, 255, 0.2)",
+            borderColor: "#0099ff",
+          },
+          data: [
+            // 区域：按数据索引定位（第 3 个 → 第 5 个数据项，索引从 0 开始）
+            [
+              { xAxis: S * 0.98 }, // 起点：第 3 个数据项（周四）
+              { xAxis: S * 1.02 }, // 终点：第 5 个数据项（周六）
+            ],
+          ],
+        },
+      },
+    ],
+  };
+});
+</script>

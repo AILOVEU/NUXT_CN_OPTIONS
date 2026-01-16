@@ -2,7 +2,7 @@
   <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
@@ -51,13 +51,17 @@
       </div>
     </div>
   </div>
+  <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
 </template>
 <script setup>
 import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import { formatDecimal } from "~/utils/utils";
-
+const bsModalData = reactive({
+  visible: false,
+  optionInfo: {},
+});
 const { money } = useMoneyStore();
 const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
 const prefixKey = computed(() => {
@@ -70,6 +74,12 @@ const 正股代码 = computed(() => {
 });
 const 到期日 = computed(() => {
   return props.row[prefixKey.value + "到期日"];
+});
+const 到期天数 = computed(() => {
+  return props.row[prefixKey.value + "到期天数"];
+});
+const 行权价 = computed(() => {
+  return props.row[prefixKey.value + "行权价"];
 });
 const 隐波 = computed(() => {
   return props.row[prefixKey.value + "隐波"];
@@ -91,6 +101,12 @@ const 持仓 = computed(() => {
 });
 const 一手价 = computed(() => {
   return props.row[prefixKey.value + "一手价"];
+});
+const 最新价 = computed(() => {
+  return props.row[prefixKey.value + "最新价"];
+});
+const 正股价格 = computed(() => {
+  return props.row["正股价格"];
 });
 const 一手时间价 = computed(() => {
   return props.row[prefixKey.value + "一手时间价"];
@@ -178,4 +194,16 @@ const style = computed(() => {
   return {};
   // return { width };
 });
+function handleShowBs() {
+  bsModalData.optionInfo = {
+    S: 正股价格.value,
+    K: 行权价.value,
+    r: 0.02,
+    T: 到期天数.value / 365,
+    sigma: 隐波.value / 100,
+    optionType: props.isCall ? "call" : "put",
+    price: 最新价.value,
+  };
+  bsModalData.visible = true;
+}
 </script>
