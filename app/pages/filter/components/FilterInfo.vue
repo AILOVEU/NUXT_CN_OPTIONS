@@ -39,6 +39,19 @@
               <el-input placeholder="最大值" v-model="formData.一手价Range[1]" />
             </el-col>
           </el-form-item>
+          <el-form-item label="一手时间价范围">
+            <el-col :span="11">
+              <span class="text-gray-500">最小值</span>
+              <el-input placeholder="最小值" v-model="formData.一手价时间价Range[0]" />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <span class="text-gray-500">最大值</span>
+              <el-input placeholder="最大值" v-model="formData.一手价时间价Range[1]" />
+            </el-col>
+          </el-form-item>
           <el-form-item label="Delta范围">
             <el-col :span="11">
               <span class="text-gray-500">最小值</span>
@@ -167,7 +180,7 @@
 </template>
 <script setup>
 import Hold from "~/pages/hold/index.vue";
-import { deadline_list, OPTIONS_MAP, 最大建议买入价 } from "~/data";
+import { deadline_list, OPTIONS_MAP, 最大建议买入价,最大建议买入时间价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
 const showType = ref("list");
@@ -178,6 +191,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
 const formData = reactive({
   溢价Range: [-100, 15],
   一手价Range: [0, 最大建议买入价],
+  一手价时间价Range: [0, 最大建议买入时间价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],
   GammaRange: [0.5, 9999],
@@ -210,6 +224,9 @@ const filteredTableData = computed(() => {
   filtered = filtered
     .filter((el) => {
       return el["一手价"] <= formData.一手价Range[1] && el["一手价"] >= formData.一手价Range[0];
+    })
+    .filter((el) => {
+      return el["一手时间价"] <= formData.一手价时间价Range[1] && el["一手时间价"] >= formData.一手价时间价Range[0];
     })
     .filter((el) => {
       return Math.abs(el["Delta"]) <= formData.DeltaRange[1] && Math.abs(el["Delta"]) >= formData.DeltaRange[0];

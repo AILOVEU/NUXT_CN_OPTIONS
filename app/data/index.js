@@ -14,6 +14,7 @@ export const 金额 = {
   现转期货: 10000, // 不参与计算
 };
 export const 最大建议买入价 = 380;
+export const 最大建议买入时间价 = 1000;
 export const fields_dict = {
   f2: "最新价", // 0.0033
   // f3: "涨跌幅", // 10.0
