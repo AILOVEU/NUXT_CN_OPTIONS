@@ -38,7 +38,15 @@ const dialogVisible = computed({
 const option = computed(() => {
   if (!props.optionInfo) return {};
   const seriesData = [];
-  const { S, K, r, T, sigma, optionType, price } = props.optionInfo;
+  // const { S, K, r, T, sigma, optionType, price } = props.optionInfo;
+  const S = props.optionInfo["正股价格"];
+  const K = props.optionInfo["行权价"];
+  const r = 0.02;
+  const T = props.optionInfo["到期天数"] / 365;
+  const sigma = (props.optionInfo["隐波"] || 0.01) / 100;
+  const optionType = props.optionInfo["沽购"] === "购" ? "call" : "put";
+  const price = props.optionInfo["最新价"];
+
   for (let _S = S * 0.8; _S < S * 1.2; _S += 0.001) {
     const x = _S;
     const y = blackScholesOptionPrice(_S, K, r, T, sigma, optionType);

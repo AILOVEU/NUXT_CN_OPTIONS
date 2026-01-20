@@ -174,15 +174,23 @@ const style = computed(() => {
   // return { width };
 });
 function handleShowBs() {
-  bsModalData.optionInfo = {
-    S: props.row["正股价格"],
-    K: props.row["行权价"],
-    r: 0.02,
-    T: current期权Item.value["到期天数"] / 365,
-    sigma: (current期权Item.value["隐波"] || 0.01) / 100,
-    optionType: props.isCall ? "call" : "put",
-    price: current期权Item.value["最新价"],
-  };
+  // bsModalData.optionInfo = {
+  //   正股价格: current期权Item.value["正股价格"],
+  //   行权价: current期权Item.value["行权价"],
+  //   到期天数: current期权Item.value["到期天数"],
+  //   隐波: current期权Item.value["隐波"],
+  //   沽购: current期权Item.value["沽购"],
+  //   最新价:  current期权Item.value["最新价"],
+
+  //   S: props.row["正股价格"],
+  //   K: props.row["行权价"],
+  //   r: 0.02,
+  //   T: current期权Item.value["到期天数"] / 365,
+  //   sigma: (current期权Item.value["隐波"] || 0.01) / 100,
+  //   optionType: props.isCall ? "call" : "put",
+  //   price: current期权Item.value["最新价"],
+  // };
+  bsModalData.optionInfo = current期权Item.value;
   bsModalData.visible = true;
 }
 </script>
