@@ -49,7 +49,7 @@ export const OPTIONS_MAP = [
   {
     code: "510050",
     name: "50ETF",
-    linkName: ["上证50ETF",'XD上证50ETF'], // 链接stock_code
+    linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
     color: "#73c0de",
     showName: "50ETF🧊", // 顶部tab筛选会用到
     行权价Range: [3000, 3400],
@@ -58,7 +58,7 @@ export const OPTIONS_MAP = [
   {
     code: "510300",
     name: "300ETF",
-    linkName: ["沪深300ETF华泰柏瑞",'XD沪深300ETF华泰柏瑞'],
+    linkName: ["沪深300ETF华泰柏瑞", "XD沪深300ETF华泰柏瑞"],
     color: "#91cc75",
     showName: "300ETF🍆",
     行权价Range: [4500, 5000],
@@ -119,6 +119,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260120", 21868],
     ["20260119", 21432],
     ["20260116", 22738],
     ["20260115", 21332],
