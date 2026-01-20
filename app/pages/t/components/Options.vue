@@ -10,15 +10,12 @@
   </div>
 </template>
 <script setup>
-const props = defineProps(["row", "isCall"]);
-const callOrPut = computed(() => {
-  return props.isCall ? "C" : "P";
-});
+const props = defineProps(["row"]);
 const 持仓量 = computed(() => {
-  return Math.floor(props.row[callOrPut.value + "持仓量"]);
+  return Math.floor(props.row["持仓量"]);
 });
 const 日增 = computed(() => {
-  let value = Math.floor(props.row[callOrPut.value + "日增"]);
+  let value = Math.floor(props.row["日增"]);
   if (isNaN(value)) return "-";
   return value;
 });

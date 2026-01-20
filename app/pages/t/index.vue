@@ -10,17 +10,17 @@
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(335vh-120px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约"><Options :row="row" :isCall="true" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="C_价值" prop="C_价值"><Time :row="row" :isCall="true" /> </el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息"><Info :row="row" :isCall="true" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓"><Hold :row="row" :isCall="true" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格"><Price :row="row" :isCall="true" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约"><Options :row="getRowTargetOption(row, 'C')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="C_价值" prop="C_价值"><Time :row="getRowTargetOption(row, 'C')" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息"><Info :row="getRowTargetOption(row, 'C')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓"><Hold :row="getRowTargetOption(row, 'C')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格"><Price :row="getRowTargetOption(row, 'C')" /></el-table-column>
           <el-table-column #default="{ row }" align="center" width="80" label="期权" prop="期权"><Center :row="row" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格"><Price :row="row" :isCall="false" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓"><Hold :row="row" :isCall="false" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息"><Info :row="row" :isCall="false" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="P_价值" prop="P_价值"><Time :row="row" :isCall="false" /> </el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="P_合约" prop="P_合约"><Options :row="row" :isCall="false" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格"><Price :row="getRowTargetOption(row, 'P')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓"><Hold :row="getRowTargetOption(row, 'P')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息"><Info :row="getRowTargetOption(row, 'P')" /></el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_价值" prop="P_价值"><Time :row="getRowTargetOption(row, 'P')" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_合约" prop="P_合约"><Options :row="getRowTargetOption(row, 'P')" /></el-table-column>
         </el-table>
       </div>
     </div>
@@ -48,13 +48,32 @@ const stockCodeOptions = computed(() => {
 const stockCode = ref(stockCodeOptions.value[0].value);
 const tableData = reactive({
   data: [],
+  combo_list: [],
+  tiledData: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const tData = await queryT(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [tData, combo_list, tiledData] = await queryT(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = tData || [];
+  tableData.combo_list = combo_list;
+  tableData.tiledData = tiledData;
   tableData.loading = false;
+}
+function getRowTargetOption(row, callType) {
+  // row
+  // C期权名称: "50ETF购3月3300"
+  // P期权名称: "50ETF沽3月3300"
+  // is旧期权: false
+  // 到期日: "2026-03-25"
+  // 千行权价: 3300
+  // 正股代码: "510050"
+  // 正股价格: 3.15
+  // 行权价: 3.3
+  if (!row["C期权名称"]) return row;
+  if (callType === "C") return tableData.tiledData.find((el) => el["期权名称"] === row["C期权名称"]) || {};
+  if (callType === "P") return tableData.tiledData.find((el) => el["期权名称"] === row["P期权名称"]) || {};
+  return row;
 }
 handleQuery();
 function handleStockCodeChange() {
@@ -65,8 +84,7 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    // if (el["正股代码"] !== stockCode.value) return false;
-    if (el["C持仓"] || el["P持仓"]) return true;
+    if (el["is行内有持仓"]) return true;
     if (el["is旧期权"]) return false;
     if (el._current || el._split) return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;

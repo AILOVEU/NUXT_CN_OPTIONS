@@ -7,36 +7,28 @@
       </div>
       <div class="px-[3px]">*{{ 持仓 }}</div>
       <div>
-        <div>
-          <el-tag type="info" size="small">仓位</el-tag>{{ 一手价 * 持仓 }}
-        </div>
+        <div><el-tag type="info" size="small">仓位</el-tag>{{ 一手价 * 持仓 }}</div>
         <div>
           <el-tag type="info" size="small"> 盈亏 </el-tag>
           <span :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 }}</span>
         </div>
       </div>
     </div>
-    <div
-      :style="{ color: 持仓 > 0 ? 'red' : 'green' }"
-      class="h-[12px] leading-[16px] align-bottom"
-    >
+    <div :style="{ color: 持仓 > 0 ? 'red' : 'green' }" class="h-[12px] leading-[16px] align-bottom">
       {{ 持仓Str }}
     </div>
   </div>
 </template>
 <script setup>
-const props = defineProps(["row", "isCall"]);
-const callOrPut = computed(() => {
-  return props.isCall ? "C" : "P";
-});
+const props = defineProps(["row"]);
 const 一手价 = computed(() => {
-  return props.row[callOrPut.value + "一手价"];
+  return props.row["一手价"];
 });
 const 一手成本价 = computed(() => {
-  return props.row[callOrPut.value + "一手成本价"];
+  return props.row["一手成本价"];
 });
 const 持仓 = computed(() => {
-  return props.row[callOrPut.value + "持仓"];
+  return props.row["持仓"];
 });
 const 盈亏 = computed(() => {
   return (一手价.value - 一手成本价.value) * 持仓.value;

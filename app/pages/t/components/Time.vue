@@ -12,18 +12,15 @@
   </div>
 </template>
 <script setup>
-const props = defineProps(["row", "isCall"]);
-const callOrPut = computed(() => {
-  return props.isCall ? "C" : "P";
-});
+const props = defineProps(["row"]);
 const 一手价 = computed(() => {
-  return props.row[callOrPut.value + "一手价"]
+  return props.row["一手价"];
 });
 
-const 一手时间价 = computed(()=> {
-  return props.row[callOrPut.value + '一手时间价']
-})
-const 一手内在价 = computed(()=> {
-  return props.row[callOrPut.value + '一手内在价']
-})
+const 一手时间价 = computed(() => {
+  return props.row["一手时间价"];
+});
+const 一手内在价 = computed(() => {
+  return props.row["一手内在价"];
+});
 </script>

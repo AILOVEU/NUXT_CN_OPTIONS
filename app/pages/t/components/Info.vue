@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="grid grid-cols-2 gap-[3px]"
-    v-if="!props.row?._split && !props.row?._current"
-  >
+  <div class="grid grid-cols-2 gap-[3px]" v-if="!props.row?._split && !props.row?._current">
     <div>
       <TagIv :隐波="隐波" :正股代码="正股代码" />
     </div>
@@ -18,24 +15,20 @@
   </div>
 </template>
 <script setup>
-
-const props = defineProps(["row", "isCall"]);
-const callOrPut = computed(() => {
-  return props.isCall ? "C" : "P";
-});
+const props = defineProps(["row"]);
 const 正股代码 = computed(() => {
   return props.row["正股代码"];
 });
 const 隐波 = computed(() => {
-  return props.row[callOrPut.value + "隐波"];
+  return props.row["隐波"];
 });
 const Delta = computed(() => {
-  return props.row[callOrPut.value + "Delta"];
+  return props.row["Delta"];
 });
 const 溢价率 = computed(() => {
-  return props.row[callOrPut.value + "溢价率"];
+  return props.row["溢价率"];
 });
 const 杠杆 = computed(() => {
-  return props.row[callOrPut.value + "杠杆"];
+  return props.row["杠杆"];
 });
 </script>

@@ -1,29 +1,28 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./options";
-import dayjs from 'dayjs'
+import dayjs from "dayjs";
 function handleTData(dataList) {
   let all_data = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
-    // 期权名称含有沽
+    // 只处理左侧认购数据
     if (item["期权名称"].includes("沽")) return;
     let call_item = item;
     let put_期权名称 = call_item["期权名称"].replace("购", "沽");
     let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
-    let data = {};
-    [...Object.keys(call_item), "单日损耗", "时间价值", "内在价值", "组合"].forEach((key) => {
-      if (["期权名称"].includes(key)) return;
-      data["C" + key] = call_item?.[key];
-      data["P" + key] = put_item?.[key];
-    });
-    // Center字段
-    data["期权"] = call_item["期权名称"].replace("购", "@");
+
+    let record = {};
+
+    if (call_item?.["持仓"] || put_item?.["持仓"]) record["is行内有持仓"] = true;
+
+    record["C" + "期权名称"] = call_item?.["期权名称"];
+    record["P" + "期权名称"] = put_item?.["期权名称"];
     // 公共字段
-    ["正股代码", "到期日", "到期天数", "行权价", "千行权价", "正股价格", "沽购"].forEach((key) => {
-      data[key] = call_item[key];
+    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权", "到期日"].forEach((key) => {
+      record[key] = call_item[key];
     });
-    正股价格_dict[data["正股代码"]] = data["正股价格"];
-    all_data.push(data);
+    正股价格_dict[record["正股代码"]] = record["正股价格"];
+    all_data.push(record);
   });
   const 正股代码List = Array.from(new Set(all_data.map((el) => el.正股代码)));
   const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
@@ -65,6 +64,7 @@ function handleTData(dataList) {
   return all_data;
 }
 export async function queryT(正股代码, useCatch) {
-  const [all_data, combo_list] = await get_http_data(正股代码, useCatch);
-  return handleTData(all_data);
+  const [tiledData, combo_list] = await get_http_data(正股代码, useCatch);
+  const tableData = handleTData(tiledData);
+  return [tableData, combo_list, tiledData];
 }
