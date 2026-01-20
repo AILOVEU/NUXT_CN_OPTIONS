@@ -18,7 +18,7 @@
       </el-form-item>
     </el-form>
   </div>
-  <el-table :data="richTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
+  <el-table :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
     <el-table-column type="expand">
       <template #expand> </template>
       <template #default="props">
@@ -329,6 +329,12 @@ const richTableData = computed(() => {
   ];
 });
 
+const validRichTableData = computed(()=> {
+  const [table1,table2,table3,table4] = richTableData.value || [];
+  if(!table1.children?.length && !table2.children?.length && !table3.children?.length) return [table4]
+  return richTableData.value
+})
+
 function getPercentColor(val) {
   if (val > 50) return "#f56c6c";
   if (val > 25) return "#e6a23c";
@@ -386,8 +392,8 @@ function getSpaceBetween4Div($1, $2, $3, $4) {
               <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 75px;text-align: right;'>${$2}</div>
             </div>
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
-              <div>${$3}</div>  
-              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>  
+              <div>${$3}</div>
+              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>
             </div>
           </div>`;
 }
