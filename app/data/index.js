@@ -70,7 +70,7 @@ export const OPTIONS_MAP = [
     linkName: "中证500ETF",
     color: "#fac858",
     showName: "沪500🦁",
-    行权价Range: [7000, 8000],
+    行权价Range: [7500, 9000],
     fs: "m:10+c:510500",
   },
   {
@@ -79,7 +79,7 @@ export const OPTIONS_MAP = [
     linkName: "深500",
     color: "#fc8452",
     showName: "深500🐯",
-    行权价Range: [2700, 3200],
+    行权价Range: [3000, 3500],
     fs: "m:12+c:159922",
   },
   {
@@ -88,7 +88,7 @@ export const OPTIONS_MAP = [
     linkName: "科创50ETF",
     color: "#9a60b4",
     showName: "科50🐸",
-    行权价Range: [1200, 1600],
+    行权价Range: [1300, 1700],
     fs: "m:10+c:588000",
   },
   {

@@ -87,13 +87,7 @@ const 期权名称 = computed(() => {
   return props.row[type + month + "期权名称"];
 });
 const current期权Item = computed(() => {
-  return props.tiledData?.find((el) => el["期权名称"] === 期权名称.value);
-});
-
-const prefixKey = computed(() => {
-  const type = props.isCall ? "C" : "P";
-  const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
-  return type + month;
+  return props.tiledData?.find((el) => el["期权名称"] === 期权名称.value) || {};
 });
 const 持仓 = computed(() => {
   return current期权Item.value["持仓"];
