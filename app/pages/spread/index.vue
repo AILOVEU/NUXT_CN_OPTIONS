@@ -112,6 +112,7 @@ function getColumnWidth(label) {
 
 const tableData = reactive({
   data: [],
+  combo_list: [],
   tiledData: [],
   loading: false,
 });
@@ -132,7 +133,7 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    // if (el["正股代码"] !== stockCode.value) return false;
+    if (el["is行内有持仓"]) return true;
     if (el._current || el._split) return true;
     if (el["is旧期权"]) return false;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;

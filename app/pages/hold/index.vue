@@ -25,7 +25,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :formData="props.formData" :mode="mode" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :formData="props.formData" :mode="mode" />
             </template>
           </el-table-column>
         </el-table>
@@ -42,6 +42,7 @@ import { queryHold } from "~/utils/queryHold.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 
+// formData ： 筛选条件
 const props = defineProps(["mode", "formData"]);
 
 const mode = computed(() => {
@@ -60,6 +61,7 @@ const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   data: [],
+  tiledData: [],
   loading: false,
   columns: [
     ...reversed_deadline_list.map((el) => ({ type: "C", label: el })),
@@ -78,8 +80,10 @@ function getColumnWidth(label) {
 }
 async function handleQuery() {
   tableData.loading = true;
-  const holdData = await queryHold(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [holdData, combo_list, tiledData] = await queryHold(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = holdData || [];
+  tableData.tiledData = tiledData;
+  tableData.combo_list = combo_list;
   tableData.loading = false;
 }
 handleQuery();
@@ -91,7 +95,7 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["_持仓"] && mode.value === "hold") return true;
+    if (el["is行内有持仓"] && mode.value === "hold") return true;
     if (el._current || el._split) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;

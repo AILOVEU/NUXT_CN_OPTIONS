@@ -1,5 +1,6 @@
 <template>
-  <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
+  <div v-if="false">{{ props.row }}</div>
+  <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
@@ -8,36 +9,36 @@
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
     </div>
     <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
-    <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ 一手内在价 }}</div>
-    <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ 一手时间价 }}</div>
+    <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
+    <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ current期权Item["一手时间价"] }}</div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
         <TagPrice :一手价="一手价" />
       </div>
       <div class="whitespace-nowrap">
-        <TagPremium :溢价率="溢价" />
+        <TagPremium :溢价率="current期权Item['溢价率']" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
-        <el-tag type="info" size="small" effect="plain"> 打和 {{ 打和点 }} </el-tag>
+        <el-tag type="info" size="small" effect="plain"> 打和 {{ current期权Item["打和点"] }} </el-tag>
       </div>
       <div class="whitespace-nowrap">
-        <TagLeverage :杠杆="杠杆" />
+        <TagLeverage :杠杆="current期权Item['杠杆']" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagGamma :Gamma="Gamma" />
+        <TagGamma :Gamma="current期权Item['Gamma']" />
       </div>
     </div>
 
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagIv :隐波="隐波" :正股="正股代码" />
+        <TagIv :隐波="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
       </div>
       <div class="whitespace-nowrap">
-        <TagDelta :Delta="Delta" :正股="正股代码" />
+        <TagDelta :Delta="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
       </div>
     </div>
     <div v-if="持仓">
@@ -63,66 +64,50 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "formData"]);
+const props = defineProps(["row", "isCall", "date", "mode", "formData", "tiledData"]);
+// props.row 示例
+// {
+//   C1月期权名称: "50ETF购1月3200",
+//   P1月期权名称: "50ETF沽1月3200",
+//   C2月期权名称: "50ETF购2月3200",
+//   P2月期权名称: "50ETF沽2月3200",
+//   C3月期权名称: "50ETF购3月3200",
+//   P3月期权名称: "50ETF沽3月3200",
+//   C6月期权名称: "50ETF购6月3200",
+//   P6月期权名称: "50ETF沽6月3200",
+//   正股代码: "510050",
+//   行权价: 3.2,
+//   正股价格: 3.153,
+//   千行权价: 3200,
+//   is旧期权: false,
+// };
+const 期权名称 = computed(() => {
+  const type = props.isCall ? "C" : "P";
+  const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
+  return props.row[type + month + "期权名称"];
+});
+const current期权Item = computed(() => {
+  return props.tiledData?.find((el) => el["期权名称"] === 期权名称.value);
+});
+
 const prefixKey = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
   return type + month;
 });
-const 正股代码 = computed(() => {
-  return props.row["正股代码"];
-});
-const 到期日 = computed(() => {
-  return props.row[prefixKey.value + "到期日"];
-});
-const 到期天数 = computed(() => {
-  return props.row[prefixKey.value + "到期天数"];
-});
-const 行权价 = computed(() => {
-  return props.row[prefixKey.value + "行权价"];
-});
-const 隐波 = computed(() => {
-  return props.row[prefixKey.value + "隐波"];
-});
-const Gamma = computed(() => {
-  return props.row[prefixKey.value + "Gamma"];
-});
-const Delta = computed(() => {
-  return props.row[prefixKey.value + "Delta"];
-});
-const 溢价 = computed(() => {
-  return props.row[prefixKey.value + "溢价率"];
-});
-const 杠杆 = computed(() => {
-  return props.row[prefixKey.value + "杠杆"];
-});
 const 持仓 = computed(() => {
-  return props.row[prefixKey.value + "持仓"];
+  return current期权Item.value["持仓"];
 });
 const 一手价 = computed(() => {
-  return props.row[prefixKey.value + "一手价"];
-});
-const 最新价 = computed(() => {
-  return props.row[prefixKey.value + "最新价"];
-});
-const 正股价格 = computed(() => {
-  return props.row["正股价格"];
-});
-const 一手时间价 = computed(() => {
-  return props.row[prefixKey.value + "一手时间价"];
-});
-const 一手内在价 = computed(() => {
-  return props.row[prefixKey.value + "一手内在价"];
-});
-const 打和点 = computed(() => {
-  return props.row[prefixKey.value + "打和点"];
-});
-const 一手涨跌价 = computed(() => {
-  return props.row[prefixKey.value + "一手涨跌价"];
+  return current期权Item.value["一手价"];
 });
 const 一手成本价 = computed(() => {
-  return props.row[prefixKey.value + "一手成本价"];
+  return current期权Item.value["一手成本价"];
 });
+const 一手涨跌价 = computed(() => {
+  return current期权Item.value["一手涨跌价"];
+});
+
 const 盈亏 = computed(() => {
   return (一手价.value - 一手成本价.value) * 持仓.value;
 });
@@ -168,19 +153,19 @@ const style = computed(() => {
         isChance = false;
       }
     }
-    if (溢价.value < formData.溢价Range[0] || 溢价.value > formData.溢价Range[1]) {
+    if (current期权Item.value["溢价率"] < formData.溢价Range[0] || current期权Item.value["溢价率"] > formData.溢价Range[1]) {
       isChance = false;
     }
     if (一手价.value < formData.一手价Range[0] || 一手价.value > formData.一手价Range[1]) {
       isChance = false;
     }
-    if (Math.abs(Delta.value) < formData.DeltaRange[0] || Math.abs(Delta.value) > formData.DeltaRange[1]) {
+    if (Math.abs(current期权Item.value["Delta"]) < formData.DeltaRange[0] || Math.abs(current期权Item.value["Delta"]) > formData.DeltaRange[1]) {
       isChance = false;
     }
-    if (Math.abs(Gamma.value) < formData.GammaRange[0] || Math.abs(Gamma.value) > formData.GammaRange[1]) {
+    if (Math.abs(current期权Item.value["Gamma"]) < formData.GammaRange[0] || Math.abs(current期权Item.value["Gamma"]) > formData.GammaRange[1]) {
       isChance = false;
     }
-    if (!formData.到期日List.includes(到期日.value)) {
+    if (!formData.到期日List.includes(current期权Item.value["到期日"])) {
       isChance = false;
     }
     if (isChance) {
@@ -196,13 +181,13 @@ const style = computed(() => {
 });
 function handleShowBs() {
   bsModalData.optionInfo = {
-    S: 正股价格.value,
-    K: 行权价.value,
+    S: props.row["正股价格"],
+    K: props.row["行权价"],
     r: 0.02,
-    T: 到期天数.value / 365,
-    sigma: (隐波.value || 0.01) / 100,
+    T: current期权Item.value["到期天数"] / 365,
+    sigma: (current期权Item.value["隐波"] || 0.01) / 100,
     optionType: props.isCall ? "call" : "put",
-    price: 最新价.value,
+    price: current期权Item.value["最新价"],
   };
   bsModalData.visible = true;
 }

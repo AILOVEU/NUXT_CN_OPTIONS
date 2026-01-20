@@ -7,10 +7,20 @@ function handleHoldData(dataList, 正股代码List) {
   let all_data = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
-    let data = {};
-    // 期权名称含有沽
+    let record = {};
+    // 只处理左侧认购数据
     if (item["期权名称"].includes("沽")) return;
+    // 只处理第一个季度数据
     if (item["到期日"] !== month_list[month_index]) return;
+    // 添加沽购+月份+"期权名称" = 期权名称，如下：
+    //   C1月期权名称: "50ETF购1月3000",
+    //   P1月期权名称: "50ETF沽1月3000",
+    //   C2月期权名称: "50ETF购2月3000",
+    //   P2月期权名称: "50ETF沽2月3000",
+    //   C3月期权名称: "50ETF购3月3000",
+    //   P3月期权名称: "50ETF沽3月3000",
+    //   C6月期权名称: "50ETF购6月3000",
+    //   P6月期权名称: "50ETF沽6月3000",
     let 到期月份 = dayjs(item["到期日"], "YYYY-MM-DD").format("M月");
     month_list.forEach((month) => {
       let 实际月份 = dayjs(month, "YYYY-MM-DD").format("M月");
@@ -18,29 +28,26 @@ function handleHoldData(dataList, 正股代码List) {
       let put_期权名称 = item["期权名称"].replace(到期月份, 实际月份).replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
-      if (call_item?.["持仓"] || put_item?.["持仓"]) {
-        data["_持仓"] = true;
-      }
-      [...Object.keys(item), "成本价", "单日损耗", "时间价值", "内在价值", "组合"].forEach((key) => {
-        if (["期权名称"].includes(key)) return;
-        data["C" + 实际月份 + key] = call_item?.[key];
-        data["P" + 实际月份 + key] = put_item?.[key];
-      });
-    });
 
-    // Center字段
-    data["期权"] = item["期权名称"].replace("购", "@").replace(到期月份, "");
-    data["月份"] = month_list;
-    // 公共字段
-    ["正股代码", "行权价", "正股价格", "沽购", "千行权价"].forEach((key) => {
-      data[key] = item[key];
+      if (call_item?.["持仓"] || put_item?.["持仓"]) record["is行内有持仓"] = true;
+
+      record["C" + 实际月份 + "期权名称"] = call_item?.["期权名称"];
+      record["P" + 实际月份 + "期权名称"] = put_item?.["期权名称"];
+      // [...Object.keys(item), "成本价", "单日损耗", "时间价值", "内在价值", "组合"].forEach((key) => {
+      //   if (["期权名称"].includes(key)) return;
+      //   data["C" + 实际月份 + key] = call_item?.[key];
+      //   data["P" + 实际月份 + key] = put_item?.[key];
+      // });
     });
-    正股价格_dict[data["正股代码"]] = data["正股价格"];
-    all_data.push(data);
+    // 公共字段
+    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权"].forEach((key) => {
+      record[key] = item[key];
+    });
+    正股价格_dict[record["正股代码"]] = record["正股价格"];
+    all_data.push(record);
   });
   if (正股代码List.length > 0) {
     const 正股代码List = Array.from(new Set(all_data.map((el) => el.正股代码)));
-    // const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
     const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
     行权价List.sort();
     正股代码List.forEach((正股代码) => {
@@ -69,5 +76,6 @@ function handleHoldData(dataList, 正股代码List) {
 }
 export async function queryHold(正股代码List, useCatch) {
   const [all_data, combo_list] = await get_http_data(正股代码List, useCatch);
-  return handleHoldData(all_data, 正股代码List);
+  const tableData = handleHoldData(all_data, 正股代码List);
+  return [tableData, combo_list, all_data];
 }
