@@ -22,8 +22,8 @@ export async function get_持仓JSON() {
               .map((el) => ({
                 名称: el[2],
                 持仓: +el[7], // 正值
-                持仓类别: el[4] === '权利' ? '权利仓' : '义务仓', // 义务仓、权利仓
-                开仓均价: +el[8]
+                持仓类别: el[4] === "权利" ? "权利仓" : "义务仓", // 义务仓、权利仓
+                开仓均价: +el[8],
               }))
           );
         })
@@ -38,6 +38,7 @@ export async function get_持仓JSON() {
 }
 export default eventHandler(async (event) => {
   const 持仓JSON = await get_持仓JSON();
+  console.log("持仓JSON", 持仓JSON);
   if (!持仓JSON?.length) return [];
   return 持仓JSON;
 });

@@ -3,7 +3,7 @@ import { getValidExerciseDate } from "~/utils/utils";
 import dayjs from "dayjs";
 export const 金额 = {
   第一目标: 5 * 10000,
-  // 
+  //
   前一期基础金额: 50000,
   基础金额: 10000,
   //
@@ -49,16 +49,16 @@ export const OPTIONS_MAP = [
   {
     code: "510050",
     name: "50ETF",
-    linkName: "上证50ETF",
+    linkName: ["上证50ETF",'XD上证50ETF'], // 链接stock_code
     color: "#73c0de",
-    showName: "50ETF🧊",
+    showName: "50ETF🧊", // 顶部tab筛选会用到
     行权价Range: [3000, 3400],
     fs: "m:10+c:510050",
   },
   {
     code: "510300",
     name: "300ETF",
-    linkName: "沪深300ETF华泰柏瑞",
+    linkName: ["沪深300ETF华泰柏瑞",'XD沪深300ETF华泰柏瑞'],
     color: "#91cc75",
     showName: "300ETF🍆",
     行权价Range: [4500, 5000],
@@ -67,7 +67,7 @@ export const OPTIONS_MAP = [
   {
     code: "510500",
     name: "沪500ETF",
-    linkName: "中证500ETF",
+    linkName: ["中证500ETF"],
     color: "#fac858",
     showName: "沪500🦁",
     行权价Range: [7500, 9000],
@@ -76,7 +76,7 @@ export const OPTIONS_MAP = [
   {
     code: "159922",
     name: "深500ETF", // 中文名无关，特殊处理了
-    linkName: "深500",
+    linkName: ["深500"], // 中文名无关，特殊处理了
     color: "#fc8452",
     showName: "深500🐯",
     行权价Range: [3000, 3500],
@@ -85,7 +85,7 @@ export const OPTIONS_MAP = [
   {
     code: "588000",
     name: "科50ETF",
-    linkName: "科创50ETF",
+    linkName: ["科创50ETF"],
     color: "#9a60b4",
     showName: "科50🐸",
     行权价Range: [1300, 1700],
@@ -94,7 +94,7 @@ export const OPTIONS_MAP = [
   {
     code: "159915",
     name: "创业板ETF",
-    linkName: "创业板ETF易方达",
+    linkName: ["创业板ETF易方达"],
     color: "#ea7ccc",
     showName: "创业板🦑",
     行权价Range: [3000, 3500],

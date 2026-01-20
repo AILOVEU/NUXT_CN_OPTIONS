@@ -38,7 +38,7 @@ function get_最新价(row) {
 }
 
 function get_持仓(持仓JSON, row) {
-  let targetList = 持仓JSON.filter((item) => item["名称"] === row["期权名称"]);
+  let targetList = 持仓JSON.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
   if (!targetList.length) return 0;
   let 持仓 = 0;
   targetList.forEach((item) => {
@@ -61,7 +61,7 @@ function get_option_实值(el) {
 function get_stock_code(name) {
   let code;
   OPTIONS_MAP.forEach((el) => {
-    if (name.includes(el.linkName)) {
+    if (el.linkName.some((item) => name.includes(item))) {
       code = el.code;
     }
   });
@@ -69,7 +69,7 @@ function get_stock_code(name) {
 }
 
 function get_成本价(row, 持仓JSON) {
-  let 成本价 = 持仓JSON.find((item) => item["名称"] === row["期权名称"])?.开仓均价 || undefined;
+  let 成本价 = 持仓JSON.find((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]))?.开仓均价 || undefined;
   成本价 = 成本价 ? +成本价 : undefined;
   return 成本价;
 }
