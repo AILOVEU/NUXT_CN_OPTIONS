@@ -33,7 +33,7 @@ import Info from "./components/Info.vue";
 import Options from "./components/Options.vue";
 import Time from "./components/Time.vue";
 import Hold from "./components/Hold.vue";
-import { queryT } from "~/utils/queryT.js";
+import { queryRow } from "~/utils/queryRow.js";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
@@ -54,7 +54,7 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [tData, combo_list, tiledData] = await queryT(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [tData, combo_list, tiledData] = await queryRow(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = tData || [];
   tableData.combo_list = combo_list;
   tableData.tiledData = tiledData;
@@ -86,7 +86,7 @@ const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (el["is行内有持仓"]) return true;
     if (el["is旧期权"]) return false;
-    if (el._current || el._split) return true;
+    if (el['_current'] || el['_split']) return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });

@@ -63,7 +63,7 @@ function handleTData(dataList) {
   });
   return all_data;
 }
-export async function queryT(正股代码, useCatch) {
+export async function queryRow(正股代码, useCatch) {
   const [tiledData, combo_list] = await get_http_data(正股代码, useCatch);
   const tableData = handleTData(tiledData);
   return [tableData, combo_list, tiledData];
