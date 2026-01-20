@@ -38,7 +38,7 @@ import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
-import { queryHold } from "~/utils/queryHold.js";
+import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 
@@ -80,7 +80,7 @@ function getColumnWidth(label) {
 }
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await queryHold(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [holdData, combo_list, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
   tableData.combo_list = combo_list;
