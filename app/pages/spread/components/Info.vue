@@ -1,5 +1,8 @@
 <template>
-  <div v-if="props.row._split" style="background-color: black">&nbsp;</div>
+  <div v-if="false">
+    {{ props.row }}
+  </div>
+  <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
   <div v-else-if="spread期权Item && show" class="p-[2px] h-[125px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[1px]" v-if="组合持仓">
@@ -31,18 +34,27 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-
 const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "combo_list"]);
-const prefixKey = computed(() => {
+// props.row 示例
+// {
+//   C1月期权名称: "50ETF购1月3000",
+//   P1月期权名称: "50ETF沽1月3000",
+//   C2月期权名称: "50ETF购2月3000",
+//   P2月期权名称: "50ETF沽2月3000",
+//   C3月期权名称: "50ETF购3月3000",
+//   P3月期权名称: "50ETF沽3月3000",
+//   C6月期权名称: "50ETF购6月3000",
+//   P6月期权名称: "50ETF沽6月3000",
+//   正股代码: "510050",
+//   行权价: 3,
+//   正股价格: 3.153,
+//   千行权价: 3000,
+//   is旧期权: false,
+// };
+const 期权名称 = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
-  return type + month;
-});
-const 期权名称 = computed(() => {
-  return props.row[prefixKey.value + "期权名称"];
-});
-const 行权价 = computed(() => {
-  return props.row["行权价"];
+  return props.row[type + month + "期权名称"];
 });
 const 千行权价 = computed(() => {
   return props.row["千行权价"];
