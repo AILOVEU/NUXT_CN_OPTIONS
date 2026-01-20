@@ -13,10 +13,10 @@
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ current期权Item["一手时间价"] }}</div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
-        <TagPrice :一手价="一手价" />
+        <TagPrice :value="一手价" />
       </div>
       <div class="whitespace-nowrap">
-        <TagPremium :溢价率="current期权Item['溢价率']" />
+        <TagPremium :value="current期权Item['溢价率']" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
@@ -24,21 +24,21 @@
         <el-tag type="info" size="small" effect="plain"> 打和 {{ current期权Item["打和点"] }} </el-tag>
       </div>
       <div class="whitespace-nowrap">
-        <TagLeverage :杠杆="current期权Item['杠杆']" />
+        <TagLeverage :value="current期权Item['杠杆']" />
       </div>
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagGamma :Gamma="current期权Item['Gamma']" />
+        <TagGamma :value="current期权Item['Gamma']" />
       </div>
     </div>
 
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagIv :隐波="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
+        <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
       </div>
       <div class="whitespace-nowrap">
-        <TagDelta :Delta="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
+        <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
       </div>
     </div>
     <div v-if="持仓">

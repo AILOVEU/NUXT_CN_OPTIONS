@@ -4,9 +4,9 @@
     size="small"
     effect='plain'
   >
-  杠杆 {{ props.杠杆.toFixed(1) }}
+  杠杆 {{ props.value.toFixed(1) }}
   </el-tag>
 </template>
 <script setup>
-const props = defineProps(["杠杆", "正股代码"]);
+const props = defineProps(["value", "正股代码"]);
 </script>

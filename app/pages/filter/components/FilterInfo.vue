@@ -136,7 +136,7 @@
         <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="90" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
-            <TagCallPut :沽购="row['沽购']" />
+            <TagCallPut :value="row['沽购']" />
           </el-table-column>
           <el-table-column label="到期天数" prop="到期天数" width="80" sortable align="right" />
         </el-table-column>
@@ -148,20 +148,20 @@
 
           <el-table-column label="正股价格" prop="正股价格" width="80" sortable align="right" />
           <el-table-column label="行权价" prop="千行权价" width="80" sortable align="right" />
-          <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="75" sortable align="right"> <TagPremium :溢价率="row['溢价率']" /> </el-table-column>
-          <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="75" sortable align="right"><TagLeverage :杠杆="row['杠杆']" /> </el-table-column>
+          <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="75" sortable align="right"> <TagPremium :value="row['溢价率']" /> </el-table-column>
+          <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="75" sortable align="right"><TagLeverage :value="row['杠杆']" /> </el-table-column>
         </el-table-column>
 
         <el-table-column label="希腊字母" align="center">
           <el-table-column #default="{ row }" label="隐波" prop="隐波" width="75" sortable align="right">
-            <TagIv :隐波="row['隐波']" />
+            <TagIv :value="row['隐波']" />
           </el-table-column>
           <el-table-column #default="{ row }" label="Delta" prop="Delta" width="85" sortable align="right">
-            <TagDelta :Delta="row['Delta']" />
+            <TagDelta :value="row['Delta']" />
           </el-table-column>
 
           <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
-            <TagGamma :Gamma="row['Gamma']" />
+            <TagGamma :value="row['Gamma']" />
           </el-table-column>
         </el-table-column>
 

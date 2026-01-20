@@ -1,6 +1,16 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="BS" :width="isMobile ? '250vw' : '80vw'" :z-index="10000" append-to-body>
-    {{ props.optionInfo }}
+  <el-dialog v-model="dialogVisible" :title="props.optionInfo['期权名称']" :width="isMobile ? '250vw' : '80vw'" :z-index="10000" append-to-body>
+    <div class="mx-auto">
+      <el-space>
+        <TagCallPut :value="props.optionInfo['沽购']" />
+        <TagPrice :value="props.optionInfo['一手价']" />
+        <TagIv :value="props.optionInfo['隐波']" />
+        <TagDelta :value="props.optionInfo['Delta']" />
+        <TagLeverage :value="props.optionInfo['杠杆']" />
+        <TagPremium :value="props.optionInfo['溢价率']" />
+        <TagGamma :value="props.optionInfo['Gamma']" />
+      </el-space>
+    </div>
     <VChart :option="option" :style="{ height: '700px', width: isMobile ? '250vw' : '80vw', margin: 'auto' }" />
     <template #footer>
       <div>

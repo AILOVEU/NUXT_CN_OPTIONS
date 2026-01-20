@@ -5,7 +5,7 @@
       <div class="w-full text-center border-b-[1px]">差:{{ 差价 }}</div>
 
       <div class="w-full text-center">
-        <TagPrice :一手价="一手价" />
+        <TagPrice :value="一手价" />
       </div>
     </div>
     <div class="p-[3px]">{{ 卖一 }}</div>

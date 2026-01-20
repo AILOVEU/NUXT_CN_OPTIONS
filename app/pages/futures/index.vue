@@ -28,7 +28,7 @@
         <div class="text-[10px]">{{ row["交易所"] }}</div>
       </el-table-column>
       <el-table-column label="隐波" prop="隐波" width="100" align="center" #default="{ row }" sortable>
-        <TagIv :隐波="row['隐波'] || 99" />
+        <TagIv :value="row['隐波'] || 99" />
       </el-table-column>
       <el-table-column label="期货价格" prop="期货价格" width="100" align="center" #default="{ row }" sortable>
         <div class="text-[10px]">{{ row["期货价格"] }}</div>

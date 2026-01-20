@@ -1,16 +1,16 @@
 <template>
   <div class="grid grid-cols-2 gap-[3px]" v-if="!props.row?._split && !props.row?._current">
     <div>
-      <TagIv :隐波="隐波" :正股代码="正股代码" />
+      <TagIv :value="隐波" :正股代码="正股代码" />
     </div>
     <div>
-      <TagDelta :Delta="Delta" :正股代码="正股代码" />
+      <TagDelta :value="Delta" :正股代码="正股代码" />
     </div>
     <div>
-      <TagPremium :溢价率="溢价率" :正股代码="正股代码" />
+      <TagPremium :value="溢价率" :正股代码="正股代码" />
     </div>
     <div>
-      <TagLeverage :杠杆="杠杆" :正股代码="正股代码" />
+      <TagLeverage :value="杠杆" :正股代码="正股代码" />
     </div>
   </div>
 </template>

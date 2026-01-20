@@ -37,7 +37,7 @@
                 {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
               </el-table-column>
               <el-table-column label="沽购" #default="{ row }" prop="沽购" minWidth="80" sortable>
-                <TagCallPut :沽购="row['沽购']" />
+                <TagCallPut :value="row['沽购']" />
               </el-table-column>
               <el-table-column label="到期天数" prop="到期天数" align="right" minWidth="120" sortable />
             </el-table-column>
