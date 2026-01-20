@@ -5,6 +5,20 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
 
+export function get_fist_季度月份(dataList) {
+  const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
+  month_list.sort();
+  let month_index = 0;
+  for (let _index = 0; _index < month_list.length; _index++) {
+    const day = dayjs(month_list[_index], "YYYY-MM-DD").format("MM月");
+    if (["03月", "06月", "09月", "12月"].includes(day)) {
+      month_index = _index;
+      break;
+    }
+  }
+  return [month_list, month_index];
+}
+
 function isTimeBetweenNoonMarketClosed() {
   const now = dayjs();
   const startTime = dayjs().hour(11).minute(30).second(0);
@@ -254,13 +268,10 @@ function formatRecord(_all_data, 持仓JSON) {
   });
   return all_data;
 }
+// 请求入口
 export async function get_http_data(正股代码List, useCatch = true) {
-  console.log("正股代码List", 正股代码List);
   let _all_data = [];
   let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
-  // let 持仓JSON = await $fetch("/api/queryHoldJsonByHuidian");
-  // catch == false , 请求全量数据 , 点击按钮执行请求
-  // catch == true , 请求本地数据 , 默认进来执行请求
   if (useCatch) {
     try {
       _all_data = await $fetch("/api/queryDataJson");
@@ -269,11 +280,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
       _all_data = [];
     }
   } else {
-    // $fetch("/api/querySaveData", {
-    //   method: "post",
-    //   body: { data: _all_data },
-    // });
-    const promiseList = OPTIONS_MAP.map((el) => el.fs)
+    const PROMISE_LIST = OPTIONS_MAP.map((el) => el.fs)
       .filter((el) => 正股代码List.some((code) => el.includes(code)))
       .map((fs, idx) => {
         return new Promise((resolve) => {
@@ -282,7 +289,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
           }, idx * 2000);
         });
       });
-    await Promise.all(promiseList)
+    await Promise.all(PROMISE_LIST)
       .then((list) => {
         list.forEach((el) => {
           _all_data.push(...el);
@@ -299,8 +306,9 @@ export async function get_http_data(正股代码List, useCatch = true) {
         console.log(err);
       });
   }
+
   let all_data = formatRecord(_all_data, 持仓JSON);
-  all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));
+  // all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"]));
   const combo_list = 构建组合(all_data);
   all_data = all_data.map((el) => {
     return {
@@ -310,18 +318,4 @@ export async function get_http_data(正股代码List, useCatch = true) {
   });
   console.log("[all_data, combo_list]", [all_data, combo_list]);
   return [all_data, combo_list];
-}
-
-export function get_fist_季度月份(dataList) {
-  const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
-  month_list.sort();
-  let month_index = 0;
-  for (let _index = 0; _index < month_list.length; _index++) {
-    const day = dayjs(month_list[_index], "YYYY-MM-DD").format("MM月");
-    if (["03月", "06月", "09月", "12月"].includes(day)) {
-      month_index = _index;
-      break;
-    }
-  }
-  return [month_list, month_index];
 }
