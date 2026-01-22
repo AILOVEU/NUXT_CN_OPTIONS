@@ -35,10 +35,10 @@ function getStyle(item) {
   if (item.isCurrent) styleCfg.border = "6px solid red";
   if (item.isGeneratedNewQuarterOptions) styleCfg.border = "6px solid green";
   if (item.isBirthday) styleCfg.border = "6px solid orange";
-  if (dayjs(item.date, "YYYY-MM-DD").isBefore(dayjs(), "days")) {
-    styleCfg.background = "gray";
-    styleCfg.filter = "grayscale(100%)";
-  }
+  // if (dayjs(item.date, "YYYY-MM-DD").isBefore(dayjs(), "days")) {
+  //   styleCfg.background = "gray";
+  //   styleCfg.filter = "grayscale(100%)";
+  // }
   if (item.isEvenMonth) {
     return {
       background: item.isHoliday ? "#70D4B4" : "#dacef3",
