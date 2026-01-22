@@ -23,12 +23,12 @@ const 持仓金额 = computed(() => {
     });
   return value;
 });
-const 盈亏金额 = computed(() => {
+const 非出金盈亏金额 = computed(() => {
   return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.基础金额;
 });
 
 const 总盈亏金额 = computed(() => {
-  return 盈亏金额.value;
+  return 非出金盈亏金额.value + money.出金;
 });
 const 盈亏概览Option = computed(() => {
   const 贷款位置 = 持仓金额.value + money.场内现金 + money.占用保证金 - money.贷款;
@@ -92,21 +92,21 @@ const 盈亏概览Option = computed(() => {
                 },
               },
             },
-            // {
-            //   lineStyle: {
-            //     color: "green",
-            //   },
-            //   name: "当前资金",
-            //   xAxis: 贷款位置 + money.已提现金额,
-            //   label: {
-            //     show: true,
-            //     position: "start",
-            //     formatter: (params) => {
-            //       const { name, value } = params;
-            //       return `${name}\n${value}`;
-            //     },
-            //   },
-            // },
+            {
+              lineStyle: {
+                color: "green",
+              },
+              name: "当前资金",
+              xAxis: 贷款位置 + money.出金,
+              label: {
+                show: true,
+                position: "start",
+                formatter: (params) => {
+                  const { name, value } = params;
+                  return `${name}\n${value}`;
+                },
+              },
+            },
           ],
         },
         name: "辅助",
@@ -179,19 +179,19 @@ const 盈亏概览Option = computed(() => {
               },
             },
             {
-              name: money.基础金额 > 贷款位置 ? "亏" : "盈",
+              name: money.基础金额 > 贷款位置 ? "亏(非出金)" : "盈(非出金)",
               value: Math.abs(money.基础金额 - 贷款位置),
               itemStyle: {
                 color: money.基础金额 > 贷款位置 ? "#91cc75" : "#ea5404",
               },
             },
-            // {
-            //   name: "提现",
-            //   value: money.已提现金额,
-            //   itemStyle: {
-            //     color: "orange",
-            //   },
-            // },
+            {
+              name: "本期出金",
+              value: money.出金,
+              itemStyle: {
+                color: "orange",
+              },
+            },
           ],
         },
       ],
