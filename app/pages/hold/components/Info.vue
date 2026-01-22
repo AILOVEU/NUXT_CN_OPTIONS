@@ -3,14 +3,21 @@
   <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[225px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div @click="handleShowBs" v-glass="current期权Item['一手时间价'] > 1000" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
     </div>
     <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
-    <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
-    <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">时:{{ current期权Item["一手时间价"] }}</div>
+    <div class="absolute bottom-[1px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
+    <div
+      class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px] text-[14px]"
+      :style="{
+        color: current期权Item['一手时间价'] > 1000 ? '#f66602' : 'black',
+      }"
+    >
+      时:{{ current期权Item["一手时间价"] }}
+    </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
       <div class="whitespace-nowrap">
         <TagPrice :value="一手价" />
@@ -193,4 +200,46 @@ function handleShowBs() {
   bsModalData.optionInfo = current期权Item.value;
   bsModalData.visible = true;
 }
+const vGlass = {
+  /**
+   * 元素挂载到DOM时执行（替代Vue2的bind）
+   * @param el 指令绑定的DOM元素
+   * @param binding 指令绑定信息（value为指令值）
+   */
+  mounted(el, binding) {
+    // 根据指令值添加/移除毛玻璃样式
+    handleGlassStyle(el, binding.value);
+  },
+  /**
+   * 指令值更新时执行
+   */
+  updated(el, binding) {
+    // 避免重复操作：只有值真正变化时才更新样式
+    if (binding.oldValue !== binding.value) {
+      handleGlassStyle(el, binding.value);
+    }
+  },
+};
+// 封装毛玻璃样式控制逻辑
+const handleGlassStyle = (el, isEnable) => {
+  if (isEnable) {
+    el.classList.add("glass-effect");
+  } else {
+    el.classList.remove("glass-effect");
+  }
+};
 </script>
+<style>
+.glass-effect {
+  /* 模糊核心属性：对元素后方内容模糊 */
+  backdrop-filter: blur(40px);
+  /* 兼容Chrome/Safari等webkit内核浏览器 */
+  -webkit-backdrop-filter: blur(40px);
+  /* 半透明背景：毛玻璃效果的关键（不能省略） */
+  background-color: rgba(100, 100, 100, 0.2);
+  /* 可选：边框增强质感 */
+  border: 1px solid rgba(100, 100, 100, 0.2);
+  /* 可选：阴影提升层次感 */
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+</style>
