@@ -24,11 +24,11 @@ const 持仓金额 = computed(() => {
   return value;
 });
 const 盈亏金额 = computed(() => {
-  return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.前一期基础金额;
+  return 持仓金额.value + money.占用保证金 + money.场内现金 - money.贷款 - money.基础金额;
 });
 
 const 总盈亏金额 = computed(() => {
-  return 盈亏金额.value + money.已提现金额;
+  return 盈亏金额.value;
 });
 const 盈亏概览Option = computed(() => {
   const 贷款位置 = 持仓金额.value + money.场内现金 + money.占用保证金 - money.贷款;
@@ -92,21 +92,21 @@ const 盈亏概览Option = computed(() => {
                 },
               },
             },
-            {
-              lineStyle: {
-                color: "green",
-              },
-              name: "当前资金",
-              xAxis: 贷款位置 + money.已提现金额,
-              label: {
-                show: true,
-                position: "start",
-                formatter: (params) => {
-                  const { name, value } = params;
-                  return `${name}\n${value}`;
-                },
-              },
-            },
+            // {
+            //   lineStyle: {
+            //     color: "green",
+            //   },
+            //   name: "当前资金",
+            //   xAxis: 贷款位置 + money.已提现金额,
+            //   label: {
+            //     show: true,
+            //     position: "start",
+            //     formatter: (params) => {
+            //       const { name, value } = params;
+            //       return `${name}\n${value}`;
+            //     },
+            //   },
+            // },
           ],
         },
         name: "辅助",
@@ -185,13 +185,13 @@ const 盈亏概览Option = computed(() => {
                 color: money.基础金额 > 贷款位置 ? "#91cc75" : "#ea5404",
               },
             },
-            {
-              name: "提现",
-              value: money.已提现金额,
-              itemStyle: {
-                color: "orange",
-              },
-            },
+            // {
+            //   name: "提现",
+            //   value: money.已提现金额,
+            //   itemStyle: {
+            //     color: "orange",
+            //   },
+            // },
           ],
         },
       ],

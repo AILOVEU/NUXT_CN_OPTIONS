@@ -47,7 +47,7 @@
           <TagCostPrice :一手成本价="一手成本价" />
         </div>
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 2) }}%)</el-tag>
+          <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%)</el-tag>
         </div>
       </div>
     </div>
