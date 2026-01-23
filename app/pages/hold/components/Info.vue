@@ -236,9 +236,9 @@ const handleGlassStyle = (el, isEnable) => {
   /* 兼容Chrome/Safari等webkit内核浏览器 */
   -webkit-backdrop-filter: blur(40px);
   /* 半透明背景：毛玻璃效果的关键（不能省略） */
-  background-color: rgba(100, 100, 100, 0.2);
+  background-color: rgba(247, 219, 145, 0.2);
   /* 可选：边框增强质感 */
-  border: 1px solid rgba(100, 100, 100, 0.2);
+  border: 1px solid rgba(247, 219, 145, 0.2);
   /* 可选：阴影提升层次感 */
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
 }

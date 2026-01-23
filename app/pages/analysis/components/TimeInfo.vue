@@ -33,54 +33,53 @@
               <CombinTableCell :value="row['期权名称']" :showDiff="false" />
             </el-table-column>
             <el-table-column label="信息" align="center">
-              <el-table-column label="正股" #default="{ row }" prop="正股代码" minWidth="140" sortable>
+              <el-table-column label="正股" #default="{ row }" prop="正股代码" minWidth="95" sortable>
                 {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
               </el-table-column>
               <el-table-column label="沽购" #default="{ row }" prop="沽购" minWidth="80" sortable>
                 <TagCallPut :value="row['沽购']" />
               </el-table-column>
-              <el-table-column label="到期天数" prop="到期天数" align="right" minWidth="120" sortable />
+              <el-table-column label="天数" prop="到期天数" align="right" minWidth="80" sortable />
             </el-table-column>
-            <el-table-column label="持仓" prop="持仓" align="right" minWidth="80" sortable />
-
+            <el-table-column label="持" prop="持仓" align="right" minWidth="70" sortable />
             <el-table-column label="价格构成" align="center">
-              <el-table-column label="时间" #default="{ row }" align="right" minWidth="140" prop="一手时间价" sortable>
+              <el-table-column label="时间" #default="{ row }" align="right" :minWidth="props.row.single ? 80 : 140" prop="一手时间价" sortable>
                 <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
               </el-table-column>
-              <el-table-column label="实值" #default="{ row }" align="right" minWidth="140" prop="一手内在价" sortable>
+              <el-table-column label="实值" #default="{ row }" align="right" :minWidth="props.row.single ? 80 : 140" prop="一手内在价" sortable>
                 <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
               </el-table-column>
             </el-table-column>
 
             <el-table-column label="盈亏" align="center">
-              <el-table-column label="一手价" minWidth="120" #default="{ row }" prop="一手价" align="right" sortable>
+              <el-table-column label="一手价" :minWidth="props.row.single ? 95 : 120" #default="{ row }" prop="一手价" align="right" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />
               </el-table-column>
 
-              <el-table-column label="一手成本价" minWidth="120" #default="{ row }" align="right" prop="一手成本价" sortable>
+              <el-table-column label="成本价" :minWidth="props.row.single ? 95 : 120" #default="{ row }" align="right" prop="一手成本价" sortable>
                 <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
               </el-table-column>
-              <el-table-column label="一手盈亏" prop="一手盈亏" align="right" minWidth="120" sortable />
+              <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :minWidth="props.row.single ? 110 : 120" sortable />
 
-              <el-table-column label="总盈亏" prop="总盈亏" align="right" minWidth="120" sortable />
+              <el-table-column label="总盈亏" prop="总盈亏" align="right" :minWidth="props.row.single ? 95 : 120" sortable />
             </el-table-column>
 
-            <el-table-column label="今日盈亏" align="center">
-              <el-table-column label="今日总涨跌" align="right" prop="今日总涨跌" minWidth="120" sortable />
-              <el-table-column label="今日单手涨跌" align="right" prop="今日单手涨跌" minWidth="140" sortable />
+            <el-table-column label="日盈亏" align="center">
+              <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" minWidth="110" sortable />
+              <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" minWidth="120" sortable />
             </el-table-column>
 
             <el-table-column label="希腊字母" align="center">
-              <el-table-column label="Gamma" #default="{ row }" prop="Gamma" align="right" width="120" sortable>
+              <el-table-column label="Gamma" #default="{ row }" prop="Gamma" align="right" :minWidth="props.row.single ? 105 : 120" sortable>
                 <CombinTableCell :value="row['Gamma']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
               </el-table-column>
-              <el-table-column label="Delta" #default="{ row }" prop="Delta" align="right" width="120" sortable>
+              <el-table-column label="Delta" #default="{ row }" prop="Delta" align="right" :minWidth="props.row.single ? 95 : 120" sortable>
                 <CombinTableCell :value="row['Delta']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
               </el-table-column>
             </el-table-column>
 
             <el-table-column label="仓位" align="center">
-              <el-table-column label="总价" prop="总价" align="right" minWidth="120" sortable />
+              <el-table-column label="总价" prop="总价" align="right" minWidth="85" sortable />
               <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="200">
                 <el-progress :percentage="row['总价占比']" :color="getPercentColor(row['总价占比'])" />
               </el-table-column>
@@ -295,6 +294,7 @@ const richTableData = computed(() => {
     // 单腿
     {
       showChart: true,
+      single: true,
       title: "单腿期权(占用时间价值)",
       value: 单腿期权持仓.value.value,
       涨跌: 单腿期权持仓.value.涨跌,
@@ -329,11 +329,11 @@ const richTableData = computed(() => {
   ];
 });
 
-const validRichTableData = computed(()=> {
-  const [table1,table2,table3,table4] = richTableData.value || [];
-  if(!table1.children?.length && !table2.children?.length && !table3.children?.length) return [table4]
-  return richTableData.value
-})
+const validRichTableData = computed(() => {
+  const [table1, table2, table3, table4] = richTableData.value || [];
+  if (!table1.children?.length && !table2.children?.length && !table3.children?.length) return [table4];
+  return richTableData.value;
+});
 
 function getPercentColor(val) {
   if (val > 50) return "#f56c6c";
@@ -746,6 +746,10 @@ const 亏损分布Option = computed(() => {
     总和标识: "亏",
   });
 });
+const filterHandler = (value, row, column) => {
+  const property = column["property"];
+  return row[property] === value;
+};
 </script>
 <style>
 .el-table .highlight-line {
