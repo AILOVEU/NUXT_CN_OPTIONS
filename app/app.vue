@@ -45,4 +45,10 @@ body {
     height: 4px;
   }
 }
+.el-table .el-table__cell{
+  padding: 2px 0;
+}
+.el-table .cell{
+  padding: 0 2px;
+}
 </style>

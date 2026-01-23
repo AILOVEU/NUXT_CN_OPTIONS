@@ -18,7 +18,7 @@
       </el-form-item>
     </el-form>
   </div>
-  <el-table :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
+  <el-table size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
     <el-table-column type="expand">
       <template #expand> </template>
       <template #default="props">
@@ -29,7 +29,7 @@
                 <div class="text-[10px]">{{ $index + 1 }}</div>
               </template>
             </el-table-column>
-            <el-table-column label="期权名称" prop="期权名称" #default="{ row }" minWidth="230" sortable fixed="left">
+            <el-table-column label="期权名称" prop="期权名称" #default="{ row }" :minWidth="props.row.single ? 180 : 230" minWidth="230" sortable fixed="left">
               <CombinTableCell :value="row['期权名称']" :showDiff="false" />
             </el-table-column>
             <el-table-column label="信息" align="center">
@@ -42,7 +42,7 @@
               <el-table-column label="天数" prop="到期天数" align="right" minWidth="80" sortable />
             </el-table-column>
             <el-table-column label="持" prop="持仓" align="right" minWidth="70" sortable />
-            <el-table-column label="价格构成" align="center">
+            <el-table-column label="一手价格构成" align="center">
               <el-table-column label="时间" #default="{ row }" align="right" :minWidth="props.row.single ? 80 : 140" prop="一手时间价" sortable>
                 <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
               </el-table-column>
@@ -51,22 +51,20 @@
               </el-table-column>
             </el-table-column>
 
-            <el-table-column label="盈亏" align="center">
+            <el-table-column label="日盈亏" align="center">
+              <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" minWidth="110" sortable />
+              <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" minWidth="120" sortable />
+            </el-table-column>
+
+            <el-table-column label="总盈亏" align="center">
               <el-table-column label="一手价" :minWidth="props.row.single ? 95 : 120" #default="{ row }" prop="一手价" align="right" sortable>
                 <CombinTableCell :value="row['一手价']" :showDiff="true" />
               </el-table-column>
-
               <el-table-column label="成本价" :minWidth="props.row.single ? 95 : 120" #default="{ row }" align="right" prop="一手成本价" sortable>
                 <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
               </el-table-column>
               <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :minWidth="props.row.single ? 110 : 120" sortable />
-
               <el-table-column label="总盈亏" prop="总盈亏" align="right" :minWidth="props.row.single ? 95 : 120" sortable />
-            </el-table-column>
-
-            <el-table-column label="日盈亏" align="center">
-              <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" minWidth="110" sortable />
-              <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" minWidth="120" sortable />
             </el-table-column>
 
             <el-table-column label="希腊字母" align="center">
@@ -78,7 +76,7 @@
               </el-table-column>
             </el-table-column>
 
-            <el-table-column label="仓位" align="center">
+            <el-table-column label="仓位" align="center" fixed="right">
               <el-table-column label="总价" prop="总价" align="right" minWidth="85" sortable />
               <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="200">
                 <el-progress :percentage="row['总价占比']" :color="getPercentColor(row['总价占比'])" />
@@ -100,7 +98,7 @@
     </el-table-column>
   </el-table>
 
-  <div class="overflow-auto">
+  <div class="overflow-auto mt-[10px]">
     <div class="min-w-[1000px] mx-auto">
       <VChart :option="持仓分布Option" style="height: 900px; width: 100%" />
       <VChart :option="盈利分布Option" style="height: 450px; width: 100%" />
@@ -423,6 +421,12 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
   return {
     title: {
       text: title,
+      top: 0, // 标题距离容器顶部10px（可根据需要调整）
+      padding: [0, 0, 25, 0], // 标题内边距：上、右、下、左 → 底部留25px空白
+      textStyle: {
+        fontSize: 18,
+        fontWeight: "normal",
+      },
     },
     tooltip: {
       trigger: "item",
@@ -469,12 +473,12 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
     },
     grid: {
       left: "center", // 水平居中
-      top: "middle", // 垂直居中
+      top: "10%", // 垂直居中
       right: "auto",
-      bottom: "auto",
-      containLabel: true, // 确保标签包含在grid区域内，避免溢出
+      bottom: "0",
+      // containLabel: true, // 确保标签包含在grid区域内，避免溢出
     },
-    animation: false,
+    animation: true,
     series: [
       {
         type: "sankey",
@@ -493,12 +497,18 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
             a: {
               height: 20,
               color: "black",
+              fontWeight: 600,
+              fontSize: "16px",
             },
             b: {
-              color: "#89a8c5",
+              color: "#569cd6",
+              fontWeight: 600,
+              fontSize: "16px",
             },
             c: {
-              color: "#89a8c5",
+              color: "#569cd6",
+              fontWeight: 600,
+              fontSize: "16px",
             },
           },
           formatter: function (params) {
