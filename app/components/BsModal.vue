@@ -1,6 +1,7 @@
 <template>
   <el-dialog v-model="dialogVisible" :title="props.optionInfo['期权名称']" :width="isMobile ? '250vw' : '80vw'" :z-index="10000" append-to-body>
     <div class="flex justify-center items-center scale-150 gap-[6px]">
+      <el-tag size="small"> 正股价: {{ props.optionInfo["正股价格"].toFixed(4) }} </el-tag>
       <TagCallPut :value="props.optionInfo['沽购']" />
       <TagPrice :value="props.optionInfo['一手价']" />
       <TagIv :value="props.optionInfo['隐波']" />
@@ -95,9 +96,15 @@ const option = computed(() => {
     },
     xAxis: {
       name: "x",
+      type: "value",
       interval: 0.05,
       min: S * 0.9,
       max: S * 1.1,
+      axisTick: {
+        alignWithLabel: true, // 强制刻度与标签对齐，确保精度
+      },
+      // 可选：关闭自动刻度优化，强制按interval生成刻度
+      boundaryGap: false,
       // minorTick: {
       //   show: true,
       // },
@@ -183,6 +190,46 @@ const option = computed(() => {
               },
               name: "正股价格",
               xAxis: S,
+            },
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "涨2%价",
+              xAxis: S * 1.02,
+            },
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "跌2%价",
+              xAxis: S * 0.98,
+            },
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "涨5%价",
+              xAxis: S * 1.05,
+            },
+            {
+              lineStyle: {
+                color: "red",
+              },
+              label: {
+                formatter: "{b}\n{c}",
+              },
+              name: "跌5%价",
+              xAxis: S * 0.95,
             },
             {
               lineStyle: {
