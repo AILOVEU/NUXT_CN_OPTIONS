@@ -411,13 +411,13 @@ function getSpaceBetween2Div($1, $2) {
 }
 function getSpaceBetween4Div($1, $2, $3, $4) {
   return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
-            <div style="display:flex;align-items: center;">
-              <div style='width: 70px;'>${$1}</div>
-              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 75px;text-align: right;'>${$2}</div>
-            </div>
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
-              <div>${$3}</div>
+              <div style='width:200px'>${$3}</div>
               <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>
+            </div>
+            <div style="display:flex;align-items: center;">
+              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 75px;text-align: right;'>${$2}</div>
+              <div style='width: 70px;text-align:right;'>${$1}</div>
             </div>
           </div>`;
 }
