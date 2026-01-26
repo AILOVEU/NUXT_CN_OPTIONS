@@ -16,14 +16,14 @@
     </div>
   </template>
   <template v-else>
-    {{ format(props.value) }}
+    <div @click="click">{{ format(props.value) }}</div>
   </template>
 </template>
 
 <script setup>
 import { formatDecimal } from "~/utils/utils";
 const props = defineProps(["value", "showDiff", "format"]);
-
+const emits = defineEmits(["click"]);
 const format = computed(() => {
   if (props.format) return props.format;
   return (val) => val;
@@ -35,4 +35,8 @@ const diffValue = computed(() => {
     return formatDecimal(diff, 3);
   }
 });
+
+function click() {
+  emits("click");
+}
 </script>

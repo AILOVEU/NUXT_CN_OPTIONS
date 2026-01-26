@@ -49,6 +49,6 @@ body {
   padding: 2px 0;
 }
 .el-table .cell{
-  padding: 0 2px;
+  padding: 0 6px 0 2px;
 }
 </style>

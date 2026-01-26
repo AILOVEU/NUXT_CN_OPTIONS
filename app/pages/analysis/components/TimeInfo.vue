@@ -30,7 +30,7 @@
               </template>
             </el-table-column>
             <el-table-column label="期权名称" prop="期权名称" #default="{ row }" :minWidth="props.row.single ? 180 : 230" minWidth="230" sortable fixed="left">
-              <CombinTableCell :value="row['期权名称']" :showDiff="false" />
+              <CombinTableCell :value="row['期权名称']" :showDiff="false" @click="() => handleShowBs(row)" />
             </el-table-column>
             <el-table-column label="信息" align="center">
               <el-table-column label="正股" #default="{ row }" prop="正股代码" minWidth="95" sortable>
@@ -105,6 +105,7 @@
       <VChart :option="亏损分布Option" style="height: 450px; width: 100%" />
     </div>
   </div>
+  <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
 </template>
 
 <script setup>
@@ -112,6 +113,31 @@ import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
+const bsModalData = reactive({
+  visible: false,
+  optionInfo: {},
+});
+function handleShowBs(row) {
+  const current期权Item = props.all_data.find((el) => el["期权名称"] === row['期权名称']);
+  // bsModalData.optionInfo = {
+  //   正股价格: current期权Item.value["正股价格"],
+  //   行权价: current期权Item.value["行权价"],
+  //   到期天数: current期权Item.value["到期天数"],
+  //   隐波: current期权Item.value["隐波"],
+  //   沽购: current期权Item.value["沽购"],
+  //   最新价:  current期权Item.value["最新价"],
+
+  //   S: props.row["正股价格"],
+  //   K: props.row["行权价"],
+  //   r: 0.02,
+  //   T: current期权Item.value["到期天数"] / 365,
+  //   sigma: (current期权Item.value["隐波"] || 0.01) / 100,
+  //   optionType: props.isCall ? "call" : "put",
+  //   price: current期权Item.value["最新价"],
+  // };
+  bsModalData.optionInfo = { ...current期权Item };
+  bsModalData.visible = true;
+}
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
@@ -498,23 +524,23 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
               height: 20,
               color: "black",
               fontWeight: 600,
-              fontSize: "16px",
+              fontSize: "14px",
             },
             b: {
-              color: "#569cd6",
+              color: "#4f6eda",
               fontWeight: 600,
-              fontSize: "16px",
+              fontSize: "14px",
             },
             c: {
-              color: "#569cd6",
+              color: "#4f6eda",
               fontWeight: 600,
-              fontSize: "16px",
+              fontSize: "14px",
             },
           },
           formatter: function (params) {
             const { value, data } = params;
             let targetName = getStockCodeName(data.name);
-            return `{a|${targetName}}  {b|${亏损符号 * value}} {c|(${formatDecimal((100 * value) / sumValue, 1)}%)}`;
+            return `{a|${targetName}} {b|${亏损符号 * value}} {c|(${formatDecimal((100 * value) / sumValue, 1)}%)}`;
           },
         },
         links: [...sourceToTargetList, ...totalData],

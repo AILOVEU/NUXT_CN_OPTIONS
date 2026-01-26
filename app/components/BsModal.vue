@@ -60,7 +60,6 @@ const option = computed(() => {
   for (let _S = S * 0.8; _S < S * 1.2; _S += 0.001) {
     const x = _S;
     const y = blackScholesOptionPrice(_S, K, r, T, sigma, optionType);
-    console.log({ x, y });
     seriesData.push([x, y]);
   }
   return {
