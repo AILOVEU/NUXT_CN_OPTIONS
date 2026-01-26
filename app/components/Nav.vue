@@ -22,7 +22,7 @@ const navList = [
   {
     href: "/hold",
     name: "持仓",
-  },  
+  },
   {
     href: "/spread",
     name: "价差",
@@ -39,7 +39,10 @@ const navList = [
     href: "/filter",
     name: "过滤",
   },
-
+  {
+    href: "/in-val",
+    name: "实值",
+  },
   {
     href: "/vixs",
     name: "Vixs",

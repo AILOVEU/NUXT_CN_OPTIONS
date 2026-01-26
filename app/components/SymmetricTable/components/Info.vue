@@ -125,6 +125,7 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
+  // 持仓
   if (props.mode === "hold") {
     if (持仓.value > 0)
       return {
@@ -139,7 +140,9 @@ const style = computed(() => {
         // backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
       };
     }
-  } else if (props.mode === "chance") {
+  }
+  // 过滤机会
+  else if (props.mode === "chance") {
     let isChance = true;
     const formData = props.formData;
 
@@ -176,9 +179,18 @@ const style = computed(() => {
         backgroundColor: "#b5e6f1",
       };
     }
+  } else if (props.mode === "in-val") {
+    if (current期权Item.value["一手内在价"] === 0) {
+      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
+    } else if (current期权Item.value["一手内在价"] > 3000) {
+      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
+    } else if (current期权Item.value["一手时间价"] > 1000) {
+      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
+    } else {
+      return { background: "" };
+    }
   }
   return {};
-  // return { width };
 });
 function handleShowBs() {
   // bsModalData.optionInfo = {
@@ -231,14 +243,15 @@ const handleGlassStyle = (el, isEnable) => {
 </script>
 <style>
 .glass-effect {
+  filter: grayscale(0.75);
   /* 模糊核心属性：对元素后方内容模糊 */
   backdrop-filter: blur(40px);
   /* 兼容Chrome/Safari等webkit内核浏览器 */
   -webkit-backdrop-filter: blur(40px);
   /* 半透明背景：毛玻璃效果的关键（不能省略） */
-  background-color: rgba(247, 219, 145, 0.2);
+  background-color: #ACBAC4;
   /* 可选：边框增强质感 */
-  border: 1px solid rgba(247, 219, 145, 0.2);
+  border: 1px solid #ACBAC4;
   /* 可选：阴影提升层次感 */
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
 }

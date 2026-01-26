@@ -1,7 +1,6 @@
 <template>
-  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '255%' : '100%' }">
+  <div v-loading="tableData.loading || globalLoading.value" :style="{ width: '100%' }">
     <div>
-      <Nav v-if="mode === 'hold'" />
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
@@ -22,10 +21,10 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 
 // formData ： 筛选条件
-const props = defineProps(["mode", "formData"]);
+const props = defineProps(["formData"]);
 
 const mode = computed(() => {
-  return props.mode || "hold";
+  return "chance";
 });
 
 const stockCodeOptions = computed(() => {

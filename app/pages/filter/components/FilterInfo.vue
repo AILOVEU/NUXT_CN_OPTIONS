@@ -176,10 +176,10 @@
       </el-table>
     </div>
   </div>
-  <Hold v-else-if="showType === 't'" mode="chance" :formData="formData" />
+  <FilterTable v-else-if="showType === 't'" mode="chance" :formData="formData" />
 </template>
 <script setup>
-import Hold from "~/pages/hold/index.vue";
+import FilterTable from "./FilterTable.vue";
 import { deadline_list, OPTIONS_MAP, 最大建议买入价,最大建议买入时间价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
