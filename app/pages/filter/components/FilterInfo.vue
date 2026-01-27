@@ -180,7 +180,7 @@
 </template>
 <script setup>
 import FilterTable from "./FilterTable.vue";
-import { deadline_list, OPTIONS_MAP, 最大建议买入价,最大建议买入时间价 } from "~/data";
+import { deadline_list, OPTIONS_MAP, 建议买入价,最大建议买入时间价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
 const showType = ref("list");
@@ -190,7 +190,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
 }));
 const formData = reactive({
   溢价Range: [-100, 15],
-  一手价Range: [0, 最大建议买入价],
+  一手价Range: [0, 建议买入价],
   一手价时间价Range: [0, 最大建议买入时间价],
   DeltaRange: [0.15, 1],
   隐波Range: [0, 23],

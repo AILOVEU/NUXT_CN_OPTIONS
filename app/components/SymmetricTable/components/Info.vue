@@ -3,7 +3,7 @@
   <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div @click="handleShowBs" v-glass="current期权Item['一手时间价'] > 1000" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div @click="handleShowBs" v-glass="current期权Item['一手时间价'] > 最大建议买入时间价" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
@@ -13,7 +13,7 @@
     <div
       class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px] text-[14px]"
       :style="{
-        color: current期权Item['一手时间价'] > 1000 ? '#f66602' : 'black',
+        color: current期权Item['一手时间价'] > 最大建议买入时间价 ? '#f66602' : 'black',
       }"
     >
       时:{{ current期权Item["一手时间价"] }}
@@ -66,6 +66,7 @@ import dayjs from "dayjs";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import { formatDecimal } from "~/utils/utils";
+import { 最大建议买入时间价, 最大建议买入价 } from "~/data";
 const bsModalData = reactive({
   visible: false,
   optionInfo: {},
@@ -182,9 +183,9 @@ const style = computed(() => {
   } else if (props.mode === "in-val") {
     if (current期权Item.value["一手内在价"] === 0) {
       return { background: "#ACBAC4", filter: `grayscale(0.75)` };
-    } else if (current期权Item.value["一手内在价"] > 3000) {
+    } else if (current期权Item.value["一手内在价"] > 最大建议买入价) {
       return { background: "#ACBAC4", filter: `grayscale(0.75)` };
-    } else if (current期权Item.value["一手时间价"] > 1000) {
+    } else if (current期权Item.value["一手时间价"] > 最大建议买入时间价) {
       return { background: "#ACBAC4", filter: `grayscale(0.75)` };
     } else {
       return { background: "" };
@@ -249,9 +250,9 @@ const handleGlassStyle = (el, isEnable) => {
   /* 兼容Chrome/Safari等webkit内核浏览器 */
   -webkit-backdrop-filter: blur(40px);
   /* 半透明背景：毛玻璃效果的关键（不能省略） */
-  background-color: #ACBAC4;
+  background-color: #acbac4;
   /* 可选：边框增强质感 */
-  border: 1px solid #ACBAC4;
+  border: 1px solid #acbac4;
   /* 可选：阴影提升层次感 */
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
 }
