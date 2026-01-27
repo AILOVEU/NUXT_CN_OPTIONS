@@ -72,7 +72,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "formData", "tiledData"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",
@@ -144,36 +144,7 @@ const style = computed(() => {
   }
   // 过滤机会
   else if (props.mode === "chance") {
-    let isChance = true;
-    const formData = props.formData;
-
-    if (formData.过滤持有) {
-      if (formData.过滤持有 === "权利" && 持仓.value <= 0) {
-        isChance = false;
-      }
-      if (formData.过滤持有 === "义务" && 持仓.value >= 0) {
-        isChance = false;
-      }
-      if (formData.过滤持有 === "持有" && !持仓.value) {
-        isChance = false;
-      }
-    }
-    if (current期权Item.value["溢价率"] < formData.溢价Range[0] || current期权Item.value["溢价率"] > formData.溢价Range[1]) {
-      isChance = false;
-    }
-    if (一手价.value < formData.一手价Range[0] || 一手价.value > formData.一手价Range[1]) {
-      isChance = false;
-    }
-    if (Math.abs(current期权Item.value["Delta"]) < formData.DeltaRange[0] || Math.abs(current期权Item.value["Delta"]) > formData.DeltaRange[1]) {
-      isChance = false;
-    }
-    if (Math.abs(current期权Item.value["Gamma"]) < formData.GammaRange[0] || Math.abs(current期权Item.value["Gamma"]) > formData.GammaRange[1]) {
-      isChance = false;
-    }
-    if (!formData.到期日List.includes(current期权Item.value["到期日"])) {
-      isChance = false;
-    }
-    if (!isChance) {
+    if (!current期权Item.value["_isChance"]) {
       return {
         background: "#ACBAC4",
         filter: `grayscale(0.75)`,

@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading || globalLoading.value" class="max-md:w-[255%]">
+  <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div>
       <el-form :model="formData" label-width="auto" label-suffix=":">
@@ -123,12 +123,11 @@
         {{ item.label }}
       </div>
     </div>
-    <FilterList v-if="showType === 'list'" :filteredTableData="filteredTableData" />
-    <FilterSymmetric v-else-if="showType === 'symmetric'" :formData="formData" />
+    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" />
+    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" />
   </div>
 </template>
 <script setup>
-import { get_http_data } from "~/utils/options";
 import _ from "lodash";
 import { useGlobal } from "~/stores/useGlobal.js";
 import FilterList from "./components/FilterList.vue";
@@ -136,15 +135,6 @@ import FilterSymmetric from "./components/FilterSymmetric.vue";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 
 const { globalLoading } = useGlobal();
-const all_data = ref([]);
-const loading = ref(false);
-async function handleQuery() {
-  loading.value = true;
-  const [data] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
-  all_data.value = data;
-  loading.value = false;
-}
-handleQuery();
 
 const showType = ref("list");
 const stockOptions = OPTIONS_MAP.map((el) => ({
@@ -162,13 +152,6 @@ const formData = reactive({
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
   过滤持有: false,
-});
-const filteredTableData = computed(() => {
-  let filtered = all_data.value?.filter((el) => checkIsChance(el));
-  // 越大越好：Gamma、Delta（Gamma不会骗人）
-  // 越小越好：一手价、隐波（价格是隐波的反应）
-  filtered = _.sortBy(filtered, (row) => Math.abs(row["一手价"] / (row["Gamme"] * row["Delta"])));
-  return filtered;
 });
 
 function checkIsChance(target) {

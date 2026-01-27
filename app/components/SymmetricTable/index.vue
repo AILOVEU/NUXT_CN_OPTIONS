@@ -14,7 +14,7 @@
         <Center :row="row" />
       </template>
       <template #default="{ row }" v-if="label !== '期权'">
-        <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :formData="props.formData" :mode="props.mode" />
+        <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" />
       </template>
     </el-table-column>
   </el-table>
@@ -27,9 +27,7 @@ import Info from "./components/Info.vue";
 import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
-
-// formData ： 筛选条件
-const props = defineProps(["mode", "formData", "tableData", "tiledData"]);
+const props = defineProps(["mode", "tableData", "tiledData"]);
 
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();

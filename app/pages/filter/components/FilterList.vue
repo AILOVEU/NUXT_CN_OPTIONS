@@ -1,7 +1,7 @@
 <template>
-  <div class="h-[calc(100vh-168px)] max-md:h-[calc(200vh-300px)] mb-[100px] flex justify-center">
+  <div v-loading="tableData.loading" class="h-[calc(100vh-168px)] max-md:h-[calc(200vh-300px)] mb-[100px] flex justify-center">
     <div class="mx-auto overflow-x-auto">
-      <el-table :data="props.filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
+      <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
         <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
           <div class="text-[10px]">{{ $index + 1 }}</div>
         </el-table-column>
@@ -55,6 +55,28 @@
   </div>
 </template>
 <script setup>
-const props = defineProps(["filteredTableData"]);
+import _ from "lodash";
+import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
+
+const props = defineProps(["checkIsChance"]);
+const tableData = reactive({
+  tiledData: [],
+  loading: false,
+});
+async function handleQuery() {
+  tableData.loading = true;
+  const [tiledData] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
+  tableData.tiledData = tiledData;
+  tableData.loading = false;
+}
+handleQuery();
+
+const filteredTableData = computed(() => {
+  let filtered = tableData.tiledData.filter((el) => props.checkIsChance(el));
+  // 越大越好：Gamma、Delta（Gamma不会骗人）
+  // 越小越好：一手价、隐波（价格是隐波的反应）
+  filtered = _.sortBy(filtered, (row) => Math.abs(row["一手价"] / (row["Gamme"] * row["Delta"])));
+  return filtered;
+});
 </script>
 <style lang="less"></style>

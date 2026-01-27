@@ -8,7 +8,7 @@
 
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
-        <SymmetricTable :tableData="tableData.data" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+        <SymmetricTable :tableData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="chance" />
       </div>
     </div>
   </div>
@@ -21,11 +21,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 
 // formData ： 筛选条件
-const props = defineProps(["formData"]);
-
-const mode = computed(() => {
-  return "chance";
-});
+const props = defineProps(["checkIsChance"]);
 
 const stockCodeOptions = computed(() => {
   let ops = OPTIONS_MAP.map((el) => ({
@@ -37,16 +33,19 @@ const stockCodeOptions = computed(() => {
 const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
-  data: [],
+  symmetricData: [],
   tiledData: [],
   combo_list: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
-  tableData.data = holdData || [];
-  tableData.tiledData = tiledData;
+  const [symmetricData, combo_list, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  tableData.symmetricData = symmetricData || [];
+  tableData.tiledData = tiledData.map((el) => ({
+    ...el,
+    _isChance: props.checkIsChance(el),
+  }));
   tableData.combo_list = combo_list;
   tableData.loading = false;
 }
