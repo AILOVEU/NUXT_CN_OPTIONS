@@ -43,7 +43,7 @@ function getStyle(item) {
   }
   if (item.isEvenMonth) {
     return {
-      background: item.isHoliday ? "#70D4B4" : "#dacef3",
+      background: item.isHoliday ? "#70D4B4" : "white",
       ...styleCfg,
     };
   } else {
