@@ -1,9 +1,9 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
-  <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
+  <div v-else-if="props.row._split" style="background-color: black" class="h-[25px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div @click="handleShowBs" v-glass="current期权Item['一手时间价'] > 最大建议买入时间价" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
@@ -173,11 +173,10 @@ const style = computed(() => {
     if (!formData.到期日List.includes(current期权Item.value["到期日"])) {
       isChance = false;
     }
-    if (isChance) {
+    if (!isChance) {
       return {
-        // width,
-        // border: "2px solid green",
-        backgroundColor: "#b5e6f1",
+        background: "#ACBAC4",
+        filter: `grayscale(0.75)`,
       };
     }
   } else if (props.mode === "in-val") {

@@ -1,13 +1,13 @@
 <template>
-  <div v-if="props.row._split" class="bg-[black]">&nbsp;</div>
+  <div v-if="props.row._split" class="bg-[black] h-[25px]">&nbsp;</div>
   <div v-else-if="!props.row?._current">
     <div>{{ 正股 }}</div>
-    <div>
+    <div class="text-[14px] pt-[4px]">
       {{ 千行权价 }}
     </div>
-    <div>
+    <div class="text-[14px] pt-[2px]">
       (
-      <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
+      <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
         {{ formatDecimal(溢价, 2) + "%" }}
       </span>
       )
@@ -23,7 +23,7 @@ import { formatDecimal } from "~/utils/utils";
 const props = defineProps(["row"]);
 
 const 正股 = computed(() => {
-  return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"])?.name;
+  return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"])?.showName;
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];

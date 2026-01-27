@@ -130,8 +130,8 @@ const option = computed(() => {
         type: "inside",
         filterMode: "none",
         xAxisIndex: [0],
-        startValue: S * 0.95,
-        endValue: S * 1.05,
+        startValue: S * 0.92,
+        endValue: S * 1.07,
       },
       {
         show: true,
