@@ -3,10 +3,10 @@
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
       <Card header="资金分析">
-        <MoneyInfo :all_data="all_data" :comboList="comboList" />
+        <MoneyTrend :all_data="all_data" :comboList="comboList" />
       </Card>
       <Card header="时间价值分析">
-        <TimeInfo :all_data="all_data" :comboList="comboList" />
+        <SankeyInfo :all_data="all_data" :comboList="comboList" />
       </Card>
       <Card header="持仓分析">
         <BarInfo :all_data="all_data" />
@@ -19,8 +19,8 @@ import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
 import BarInfo from "./components/BarInfo";
-import TimeInfo from "./components/TimeInfo";
-import MoneyInfo from "./components/MoneyInfo";
+import SankeyInfo from "./components/SankeyInfo";
+import MoneyTrend from "./components/MoneyTrend";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 const all_data = ref([]);

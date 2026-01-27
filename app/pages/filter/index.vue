@@ -2,7 +2,7 @@
   <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div>
-      <el-form :model="formData" label-width="auto" label-suffix=":">
+      <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <div>
           <el-form-item label="正股">
             <el-select v-model="formData.正股List" multiple allowClear clearable>
@@ -110,9 +110,9 @@
         </div>
       </el-form>
     </div>
-    <div class="w-full flex mb-[12px]">
+    <div class="w-full flex mb-[12px] gap-[20px] justify-between">
       <div
-        class="flex-1 border-[1px] leading-1 text-center cursor-pointer mx-[10px] h-[25px] flex items-center justify-center"
+        class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
         v-for="item in [
           { label: '列表', value: 'list' },
           { label: 'T型', value: 'symmetric' },

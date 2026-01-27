@@ -126,42 +126,23 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
-  // 持仓
-  if (props.mode === "hold") {
-    if (持仓.value > 0)
-      return {
-        // width,
-        border: "4px solid red",
-        // backgroundColor: redColorHandler(Math.abs(仓位占比.value * 2)),
-      };
-    if (持仓.value < 0) {
-      return {
-        // width,
-        border: "4px solid green",
-        // backgroundColor: greenColorHandler(Math.abs(仓位占比.value * 2)),
-      };
-    }
-  }
-  // 过滤机会
-  else if (props.mode === "chance") {
+  let style = {
+    border: 持仓.value > 0 ? "4px solid red" : 持仓.value < 0 ? "4px solid green" : "",
+  };
+  const grayStyle = {
+    background: "#ACBAC4",
+    filter: "grayscale(0.75)",
+  };
+  if (props.mode === "chance") {
     if (!current期权Item.value["_isChance"]) {
-      return {
-        background: "#ACBAC4",
-        filter: `grayscale(0.75)`,
-      };
+      style = { ...style, ...grayStyle };
     }
   } else if (props.mode === "in-val") {
-    if (current期权Item.value["一手内在价"] === 0) {
-      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
-    } else if (current期权Item.value["一手内在价"] > 最大建议买入价) {
-      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
-    } else if (current期权Item.value["一手时间价"] > 最大建议买入时间价) {
-      return { background: "#ACBAC4", filter: `grayscale(0.75)` };
-    } else {
-      return { background: "" };
+    if (current期权Item.value["一手内在价"] === 0 || current期权Item.value["一手内在价"] > 最大建议买入价 || current期权Item.value["一手时间价"] > 最大建议买入时间价) {
+      style = { ...style, ...grayStyle };
     }
   }
-  return {};
+  return style;
 });
 function handleShowBs() {
   // bsModalData.optionInfo = {

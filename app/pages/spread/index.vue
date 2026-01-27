@@ -8,7 +8,7 @@
     </div>
 
     <div>
-      <el-form :model="formData" label-width="auto" label-suffix=":">
+      <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <el-form-item label="到期日">
           <el-select v-model="formData.到期日List" multiple>
             <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />

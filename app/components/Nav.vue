@@ -1,6 +1,6 @@
 <template>
   <el-affix :offset="0">
-    <div class="flex justify-between text-[12px] mb-[12px]">
+    <div class="flex justify-between text-[12px] mb-[12px] gap-[20px]">
       <el-button @click="handleQuery" class="flex-1" type="primary" :disabled="isMobile"> 刷新 </el-button>
       <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
         <div :class="{ active: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
@@ -61,12 +61,15 @@ const navList = [
     name: "日历",
   },
 ];
-const activePath = computed(() => {
-  const path = route.path;
-  if (path === "") return "/";
-  return route.path;
-});
+
+const activePath = ref(route.path || "/");
+
 function handleClick(href) {
+  setGlobalLoading(true);
+  setTimeout(() => {
+    setGlobalLoading(false);
+  });
+  activePath.value = href;
   router.push(href);
 }
 

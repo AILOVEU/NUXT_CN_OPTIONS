@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
+    <div class="h-[calc(100vh-100px)] max-md:h-[calc(220vh-200px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
         <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="chance" />
       </div>
