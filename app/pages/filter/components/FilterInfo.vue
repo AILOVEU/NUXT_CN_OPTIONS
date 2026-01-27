@@ -131,10 +131,10 @@
         <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
 
         <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
-        <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="90" sortable align="right" />
+        <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="100" sortable align="right" />
 
         <el-table-column label="基本信息" align="center">
-          <el-table-column #default="{ row }" label="正股" prop="正股" width="90" sortable align="right" />
+          <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
             <TagCallPut :value="row['沽购']" />
           </el-table-column>
@@ -180,7 +180,7 @@
 </template>
 <script setup>
 import FilterTable from "./FilterTable.vue";
-import { deadline_list, OPTIONS_MAP, 建议买入价,最大建议买入时间价 } from "~/data";
+import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 import _ from "lodash";
 const props = defineProps(["all_data"]);
 const showType = ref("list");
@@ -256,5 +256,8 @@ const filteredTableData = computed(() => {
 }
 ::v-deep(.el-radio-group) {
   justify-content: flex-start;
+}
+::v-deep(.el-table--small .cell) {
+  padding: 0 6px 0 0 !important;
 }
 </style>

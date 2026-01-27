@@ -24,25 +24,26 @@ const navList = [
     name: "持仓",
   },
   {
+    href: "/in-val",
+    name: "实值",
+  },
+  {
+    href: "/filter",
+    name: "虚值",
+  },
+  {
     href: "/spread",
     name: "价差",
   },
-  {
-    href: "/t",
-    name: "T型",
-  },
+  // {
+  //   href: "/t",
+  //   name: "T型",
+  // },
   {
     href: "/analysis",
     name: "分析",
   },
-  {
-    href: "/filter",
-    name: "过滤",
-  },
-  {
-    href: "/in-val",
-    name: "实值",
-  },
+
   {
     href: "/vixs",
     name: "Vixs",
