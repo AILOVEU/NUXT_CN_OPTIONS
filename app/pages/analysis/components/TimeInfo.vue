@@ -118,7 +118,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 function handleShowBs(row) {
-  const current期权Item = props.all_data.find((el) => el["期权名称"] === row['期权名称']);
+  const current期权Item = props.all_data.find((el) => el["期权名称"] === row["期权名称"]);
   // bsModalData.optionInfo = {
   //   正股价格: current期权Item.value["正股价格"],
   //   行权价: current期权Item.value["行权价"],
@@ -787,8 +787,11 @@ const filterHandler = (value, row, column) => {
   return row[property] === value;
 };
 </script>
-<style>
+<style scoped>
 .el-table .highlight-line {
   background-color: #fdf6ec;
+}
+::v-deep(.el-table--small .cell) {
+  padding: 0 6px 0 0 !important;
 }
 </style>

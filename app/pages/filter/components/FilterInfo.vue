@@ -110,7 +110,7 @@
   </div>
   <div class="w-full flex mb-[12px]">
     <div
-      class="flex-1 border-[1px] leading-1 text-center mx-[10px]"
+      class="flex-1 border-[1px] leading-1 text-center cursor-pointer mx-[10px] h-[25px] flex items-center justify-center"
       v-for="item in [
         { label: '列表', value: 'list' },
         { label: 'T型', value: 't' },

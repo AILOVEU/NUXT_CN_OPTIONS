@@ -1,11 +1,6 @@
 <template>
   <div class="w-full flex">
-    <div
-      class="flex-1 border-[1px] leading-1 text-center mx-[10px] cursor-pointer"
-      v-for="item in props.options"
-      :class="{ active: item.value === modelValue }"
-      @click="modelValue = item.value"
-    >
+    <div class="flex-1 border-[1px] leading-1 text-center mx-[10px] cursor-pointer h-[25px] flex items-center justify-center" v-for="item in props.options" :class="{ active: item.value === modelValue }" @click="modelValue = item.value">
       {{ item.label }}
     </div>
   </div>
@@ -24,7 +19,7 @@ const modelValue = computed({
 });
 </script>
 <style scoped>
-.active{
+.active {
   color: white;
   background-color: #409eff;
 }
