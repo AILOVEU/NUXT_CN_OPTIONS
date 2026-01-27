@@ -48,15 +48,15 @@ const stockCodeOptions = computed(() => {
 const stockCode = ref(stockCodeOptions.value[0].value);
 const tableData = reactive({
   data: [],
-  combo_list: [],
+  comboList: [],
   tiledData: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [tData, combo_list, tiledData] = await queryRow(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [tData, comboList, tiledData] = await queryRow(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = tData || [];
-  tableData.combo_list = combo_list;
+  tableData.comboList = comboList;
   tableData.tiledData = tiledData;
   tableData.loading = false;
 }

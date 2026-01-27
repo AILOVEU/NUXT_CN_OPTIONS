@@ -39,7 +39,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :combo_list="tableData.combo_list" :diffValue="diff" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :comboList="tableData.comboList" :diffValue="diff" />
             </template>
           </el-table-column>
         </el-table>
@@ -112,16 +112,16 @@ function getColumnWidth(label) {
 
 const tableData = reactive({
   data: [],
-  combo_list: [],
+  comboList: [],
   tiledData: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [holdData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.data = holdData || [];
   tableData.tiledData = tiledData;
-  tableData.combo_list = combo_list;
+  tableData.comboList = comboList;
   tableData.loading = false;
 }
 handleQuery();

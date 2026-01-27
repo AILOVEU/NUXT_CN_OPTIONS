@@ -34,7 +34,7 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "combo_list"]);
+const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "comboList"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3000",
@@ -92,7 +92,7 @@ const 组合持仓 = computed(() => {
   if (!spread期权Item.value) return "";
   const current期权Name = current期权Item.value["期权名称"];
   const spread期权Name = spread期权Item.value["期权名称"];
-  const target = props.combo_list.find(([权利期权Option, 义务期权Option, 组合数]) => current期权Name === 权利期权Option && spread期权Name === 义务期权Option);
+  const target = props.comboList.find(([权利期权Option, 义务期权Option, 组合数]) => current期权Name === 权利期权Option && spread期权Name === 义务期权Option);
   return target?.[2];
 });
 

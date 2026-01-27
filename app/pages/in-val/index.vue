@@ -9,7 +9,7 @@
 
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
-        <SymmetricTable :tableData="tableData.data" :tiledData="tableData.tiledData" :mode="mode" :formData="{}" />
+        <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" :mode="mode" :formData="{}" />
       </div>
     </div>
   </div>
@@ -39,17 +39,17 @@ const stockCodeOptions = computed(() => {
 const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
-  data: [],
+  symmetricData: [],
   tiledData: [],
-  combo_list: [],
+  comboList: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, combo_list, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
-  tableData.data = holdData || [];
+  const [symmetricData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  tableData.symmetricData = symmetricData || [];
   tableData.tiledData = tiledData;
-  tableData.combo_list = combo_list;
+  tableData.comboList = comboList;
   tableData.loading = false;
 }
 handleQuery();

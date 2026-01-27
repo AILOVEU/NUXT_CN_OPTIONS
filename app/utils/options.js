@@ -309,13 +309,13 @@ export async function get_http_data(正股代码List, useCatch = true) {
 
   let all_data = formatRecord(_all_data, 持仓JSON);
   all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"])); // 缓存数据过滤
-  const combo_list = 构建组合(all_data);
+  const comboList = 构建组合(all_data);
   all_data = all_data.map((el) => {
     return {
       ...el,
-      组合: combo_list.some((item) => item.includes(el["期权名称"])),
+      组合: comboList.some((item) => item.includes(el["期权名称"])),
     };
   });
-  console.log("[all_data, combo_list]", [all_data, combo_list]);
-  return [all_data, combo_list];
+  console.log("[all_data, comboList]", [all_data, comboList]);
+  return [all_data, comboList];
 }

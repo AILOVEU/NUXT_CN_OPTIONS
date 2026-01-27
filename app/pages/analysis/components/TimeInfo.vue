@@ -147,7 +147,7 @@ const formData = reactive({
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
 });
-const props = defineProps(["all_data", "combo_list"]);
+const props = defineProps(["all_data", "comboList"]);
 const 组合期权持仓 = computed(() => {
   let 时间收益组合Value = 0;
   let 时间损耗组合Value = 0;
@@ -158,7 +158,7 @@ const 组合期权持仓 = computed(() => {
   const 时间收益组合List = [];
   const 时间损耗组合List = [];
 
-  props.combo_list.forEach((el) => {
+  props.comboList.forEach((el) => {
     const [权利Name, 义务Name, 组合持仓, 组合名称] = el;
     const 权利期权Item = props.all_data.find((el) => el["期权名称"] === 权利Name);
     const 义务期权Item = props.all_data.find((el) => el["期权名称"] === 义务Name);
@@ -189,7 +189,7 @@ const 组合期权持仓 = computed(() => {
 
 const 单腿期权持仓 = computed(() => {
   let 持仓List = props.all_data?.filter((el) => el["持仓"]).map((el) => ({ ...el }));
-  props.combo_list.forEach(([权利Name, 义务Name, 组合持仓]) => {
+  props.comboList.forEach(([权利Name, 义务Name, 组合持仓]) => {
     for (let i = 0; i < 持仓List.length; i++) {
       if (持仓List[i]["期权名称"] === 权利Name) {
         持仓List[i]["持仓"] -= 组合持仓;

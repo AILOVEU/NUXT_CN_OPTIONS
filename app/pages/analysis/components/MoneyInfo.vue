@@ -12,7 +12,7 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { 盈亏曲线数据 } from "~/data";
 import _ from "lodash";
 import dayjs from "dayjs";
-const props = defineProps(["all_data", "combo_list"]);
+const props = defineProps(["all_data", "comboList"]);
 const { money } = useMoneyStore();
 const 持仓金额 = computed(() => {
   let value = 0;
