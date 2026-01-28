@@ -96,9 +96,8 @@ const option = computed(() => {
     },
     xAxis: {
       name: "x",
-      type: "value",
-      interval: 0.05,
-      min: S * 0.9,
+      interval: 0.025,
+      min: 0,
       max: S * 1.1,
       axisTick: {
         alignWithLabel: true, // 强制刻度与标签对齐，确保精度
