@@ -66,6 +66,8 @@ export function formatNumberToWan(num) {
   // 1. 转换为数字并校验有效性
   const targetNum = Number(num);
   if (isNaN(targetNum)) {
+    console.log("输入参数必须是有效的数字或数字字符串", num);
+    return num;
     throw new Error("输入参数必须是有效的数字或数字字符串");
   }
 
@@ -82,7 +84,7 @@ export function formatNumberToWan(num) {
 
   // 4. 拆分万级部分和个级部分
   const wanInteger = Math.floor(positiveNum / 10000); // 万级整数（如 10000 → 1，12345678.9 → 1234）
-  const gePart = positiveNum % 10000; // 个级部分（如 10000 → 0，12345678.9 → 5678.9）
+  const gePart = ((positiveNum * 100) / 100) % 10000; // 个级部分（如 10000 → 0，12345678.9 → 5678.9）
 
   // 5. 判断是否为整万数，分别拼接结果
   if (gePart === 0) {

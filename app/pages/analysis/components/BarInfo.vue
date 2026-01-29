@@ -166,6 +166,7 @@ const 代替正股Option = computed(() => {
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
     let val = get_list_all_sum(codeOptions, "代替正股价");
+    val = formatDecimal(val, 0);
     代替正股Sum += val;
     return val;
   });
@@ -230,7 +231,6 @@ const 单日损耗Option = computed(() => {
     单日损耗Sum += val;
     return val;
   });
-  单日损耗Sum = 单日损耗Sum.toFixed(0);
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
@@ -263,7 +263,6 @@ const 实值价值Option = computed(() => {
     内在价值Sum += val;
     return val;
   });
-  内在价值Sum = 内在价值Sum.toFixed(0);
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
@@ -296,7 +295,6 @@ const 时间价值Option = computed(() => {
     时间价值Sum += val;
     return val;
   });
-  时间价值Sum = 时间价值Sum.toFixed(0);
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
