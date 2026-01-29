@@ -38,7 +38,7 @@ const formData = reactive({
 });
 
 function getSpaceBetween4Div($1, $2, $3, $4) {
-  return `<div style="font-size: 14px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
+  return `<div style="font-size: 18px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
             <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
               <div>${$3}</div>
               <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>
@@ -69,11 +69,11 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
         let listStr = "<br />";
         const name = params[0].name;
         // 标题取第一个item的name（x轴名称）
-        let result = `${name}<br/>`;
+        let result = `<div style="font-size: 18px;">${name}<br/>`;
         // 遍历所有系列
         params.forEach((item) => {
           const formatted = formatNumberToWan(item.value);
-          result += `${item.seriesName}：${formatted}<br/>`;
+          result += `${item.seriesName}：${formatted}</div><br/>`;
         });
 
         listStr += _.sortBy(dataMap[name], (el) => -el["排序字段"])
