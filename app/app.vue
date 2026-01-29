@@ -45,10 +45,13 @@ body {
     height: 4px;
   }
 }
-.el-table .el-table__cell{
+.el-table .el-table__cell {
   padding: 2px 0;
 }
-.el-table .cell{
+.el-table .cell {
   padding: 0 6px 0 2px;
+}
+.highlight-line {
+  background-color: #fdf6ec !important;
 }
 </style>

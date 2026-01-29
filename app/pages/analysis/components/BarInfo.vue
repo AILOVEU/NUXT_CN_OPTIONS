@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form size='small' :model="formData" label-width="auto" label-suffix=":">
+    <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
       <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple>
           <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -13,11 +13,13 @@
       </el-form-item>
     </el-form>
   </div>
-  <div class="grid grid-cols-2">
+  <div class="grid grid-cols-2 max-md:grid-cols-1">
     <VChart :option="deltaOption" style="height: 300px; width: 100%; margin: auto" />
     <VChart :option="代替正股Option" style="height: 300px; width: 100%; margin: auto" />
     <VChart :option="gammaOption" style="height: 300px; width: 100%; margin: auto" />
     <VChart :option="单日损耗Option" style="height: 300px; width: 100%; margin: auto" />
+    <VChart :option="实值价值Option" style="height: 300px; width: 100%; margin: auto" />
+    <VChart :option="时间价值Option" style="height: 300px; width: 100%; margin: auto" />
   </div>
 </template>
 <script setup>
@@ -65,7 +67,6 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
       },
       formatter: function (params) {
         let listStr = "<br />";
-        console.log("params", params);
         const name = params[0].name;
         // 标题取第一个item的name（x轴名称）
         let result = `${name}<br/>`;
@@ -107,6 +108,11 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
     ],
     yAxis: {
       type: "value",
+      axisLabel: {
+        formatter: function (value) {
+          return formatNumberToWan(value);
+        },
+      },
     },
     series: {
       type: "bar",
@@ -130,7 +136,7 @@ const deltaOption = computed(() => {
   const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
-    return get_list_all_delta(codeOptions);
+    return get_list_all_sum(codeOptions, "Delta");
   });
   const dataMap = {};
   stockCodeList.forEach((code) => {
@@ -159,7 +165,7 @@ const 代替正股Option = computed(() => {
   let 代替正股Sum = 0;
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
-    let val = get_list_all_代替正股(codeOptions);
+    let val = get_list_all_sum(codeOptions, "代替正股价");
     代替正股Sum += val;
     return val;
   });
@@ -220,7 +226,7 @@ const 单日损耗Option = computed(() => {
   let 单日损耗Sum = 0;
   const dataList = stockCodeList.map((code) => {
     let codeOptions = all_data.filter((el) => el["正股代码"] === code);
-    let val = get_list_all_单日损耗(codeOptions);
+    let val = get_list_all_sum(codeOptions, "单日损耗");
     单日损耗Sum += val;
     return val;
   });
@@ -246,20 +252,72 @@ const 单日损耗Option = computed(() => {
   });
 });
 
-function get_list_all_delta(list) {
-  let sum = 0;
-  list.forEach((el) => {
-    sum += el["持仓"] * el["Delta"];
+const 实值价值Option = computed(() => {
+  let all_data = filteredData.value;
+  if (!all_data?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let 内在价值Sum = 0;
+  const dataList = stockCodeList.map((code) => {
+    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let val = get_list_all_sum(codeOptions, "一手内在价");
+    内在价值Sum += val;
+    return val;
   });
-  return Math.floor(sum * 100) / 100;
-}
-function get_list_all_代替正股(list) {
-  let sum = 0;
-  list.forEach((el) => {
-    sum += el["持仓"] * el["代替正股价"];
+  内在价值Sum = 内在价值Sum.toFixed(0);
+  const dataMap = {};
+  stockCodeList.forEach((code) => {
+    const name = OPTIONS_MAP.find((el) => el.code == code).name;
+    dataMap[name] = all_data
+      .filter((el) => el["正股代码"] === code)
+      .map((el) => ({
+        排序字段: el["一手内在价"] * el["持仓"],
+        展示字段: formatDecimal(el["一手内在价"] * el["持仓"], 1),
+        期权名称: el["期权名称"],
+        持仓: el["持仓"],
+      }));
   });
-  return Math.floor(sum);
-}
+  return getBarOps({
+    stockCodeList,
+    name: "内在价值",
+    title: `内在价值 ( ${formatNumberToWan(内在价值Sum)} ) `,
+    dataList,
+    dataMap,
+  });
+});
+
+const 时间价值Option = computed(() => {
+  let all_data = filteredData.value;
+  if (!all_data?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let 时间价值Sum = 0;
+  const dataList = stockCodeList.map((code) => {
+    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let val = get_list_all_sum(codeOptions, "一手时间价");
+    时间价值Sum += val;
+    return val;
+  });
+  时间价值Sum = 时间价值Sum.toFixed(0);
+  const dataMap = {};
+  stockCodeList.forEach((code) => {
+    const name = OPTIONS_MAP.find((el) => el.code == code).name;
+    dataMap[name] = all_data
+      .filter((el) => el["正股代码"] === code)
+      .map((el) => ({
+        排序字段: el["一手时间价"] * el["持仓"],
+        展示字段: formatDecimal(el["一手时间价"] * el["持仓"], 1),
+        期权名称: el["期权名称"],
+        持仓: el["持仓"],
+      }));
+  });
+  return getBarOps({
+    stockCodeList,
+    name: "时间价值",
+    title: `时间价值 ( ${formatNumberToWan(时间价值Sum)} ) `,
+    dataList,
+    dataMap,
+  });
+});
+
 function get_list_all_gamma(list) {
   let sum = 0;
   list.forEach((el) => {
@@ -269,10 +327,10 @@ function get_list_all_gamma(list) {
   });
   return Math.floor(sum * 100) / 100;
 }
-function get_list_all_单日损耗(list) {
+function get_list_all_sum(list, typeName) {
   let sum = 0;
   list.forEach((el) => {
-    sum += el["持仓"] * el["单日损耗"];
+    sum += el["持仓"] * el[typeName];
   });
   return Math.floor(sum * 100) / 100;
 }

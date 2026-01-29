@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form size='small' :model="formData" label-width="auto" label-suffix=":">
+    <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
       <el-form-item label="正股">
         <el-select v-model="formData.正股List" multiple clearable>
           <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -788,13 +788,10 @@ const filterHandler = (value, row, column) => {
 };
 </script>
 <style scoped>
-.el-table .highlight-line {
-  background-color: #fdf6ec;
-}
 ::v-deep(.el-table--small .cell) {
   padding: 0 6px 0 0 !important;
 }
-::v-deep(.el-table--small .el-table__cell){
+::v-deep(.el-table--small .el-table__cell) {
   padding: 2px 0 !important;
 }
 </style>

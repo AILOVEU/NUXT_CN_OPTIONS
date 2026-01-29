@@ -1,28 +1,37 @@
 <template>
-  <div v-loading="loading" class="max-md:w-[200%]">
+  <div v-loading="loading" class="max-md:w-[300%]">
     <Nav />
     <el-affix :offset="32">
-      <div class="grid grid-cols-7 bg-white w-full">
-        <div class="text-center">星期一</div>
-        <div class="text-center">星期二</div>
-        <div class="text-center">星期三</div>
-        <div class="text-center">星期四</div>
-        <div class="text-center">星期五</div>
-        <div class="text-center">星期六</div>
-        <div class="text-center">星期日</div>
+      <div class="flex">
+        <div class="basis-[12.5%]">&nbsp;</div>
+        <div class="grid grid-cols-7 bg-white w-full">
+          <div class="text-center">星期一</div>
+          <div class="text-center">星期二</div>
+          <div class="text-center">星期三</div>
+          <div class="text-center">星期四</div>
+          <div class="text-center">星期五</div>
+          <div class="text-center">星期六</div>
+          <div class="text-center">星期日</div>
+        </div>
       </div>
     </el-affix>
-    <div class="grid grid-cols-7 mt-[32px]">
-      <div v-for="item in days" class="border-[1px] border-[black] h-[80px] flex items-center justify-center flex-col" :style="getStyle(item)">
-        <div class="text-[12px]" v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
-        <div class="text-[20px]" v-else>{{ item.showText }}</div>
+    <div class="flex mb-[200px]">
+      <div class="basis-[12.5%]">&nbsp;</div>
+      <div class="basis-[87.5%] grid grid-cols-7 mt-[32px]">
+        <div v-for="item in days" class="border-[1px] border-[black] h-[80px] flex items-center justify-center flex-col" :style="getStyle(item)">
+          <div class="text-[12px]" v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
+          <div class="text-[20px]" v-else>{{ item.showText }}</div>
 
-        <div v-if="item.holidayName">{{ item.holidayName }}</div>
-        <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
-        <div v-if="item.isQuarterOptions" class="text-[24px]">🍀</div>
-        <div v-else-if="item.isFourthWednesday">🔔</div>
-        <div v-if="item.isGeneratedNewQuarterOptions">📚️</div>
-        <div v-if="item.isBirthday">🎂</div>
+          <div v-if="item.holidayName">{{ item.holidayName }}</div>
+          <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
+          <div v-if="item.isQuarterOptions" class="text-[24px]">季交割</div>
+          <div v-else-if="item.isFourthWednesday">交割</div>
+          <div v-if="item.isGeneratedNewQuarterOptions">新季期权</div>
+          <div v-if="item.isBirthday">🎂</div>
+          <div v-if="item.isFirstMonday" class="relative translate-x-[-100%] w-full flex justify-center text-[30px]">
+            {{ dayjs(item.date, "YYYY-MM-DD").format("M月") }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -30,12 +39,12 @@
 <script setup>
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourThursdayOfMonth, getFourWednesdayOfMonth, getLastMondayOfPreMonth, getDatesBetween } from "~/utils/utils";
+import { getFourThursdayOfMonth, getFourWednesdayOfMonth, getLastMondayOfPreMonth, getDatesBetween, getFirstMondayOfMonth } from "~/utils/utils";
 
 function getStyle(item) {
   const styleCfg = {};
   if (item.isCurrent) styleCfg.border = "6px solid red";
-  if (item.isGeneratedNewQuarterOptions) styleCfg.border = "6px solid green";
+  // if (item.isGeneratedNewQuarterOptions) styleCfg.border = "6px solid green";
   if (item.isBirthday) styleCfg.border = "6px solid orange";
   if (dayjs(item.date, "YYYY-MM-DD").isBefore(dayjs(), "days")) {
     // styleCfg.background = "gray";
@@ -43,12 +52,12 @@ function getStyle(item) {
   }
   if (item.isEvenMonth) {
     return {
-      background: item.isHoliday ? "#70D4B4" : "white",
+      background: item.isHoliday ? "#A8DF8E" : "white",
       ...styleCfg,
     };
   } else {
     return {
-      background: item.isHoliday ? "#70D4B4" : "white",
+      background: item.isHoliday ? "#A8DF8E" : "white",
       ...styleCfg,
     };
   }
@@ -111,6 +120,7 @@ const days = ref(
       isWorkDay: WORKDAY.includes(el),
       isEvenMonth: !!(dayjs(el, "YYYY-MM-DD").month() % 2),
       showText,
+      isFirstMonday: getFirstMondayOfMonth(el) === el,
       isMonthFirstDay: dayjs(el, "YYYY-MM-DD").format("DD") === "01",
     };
   })

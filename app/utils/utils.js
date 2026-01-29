@@ -151,6 +151,27 @@ export function getLastMondayOfPreMonth() {
   return date;
 }
 
+/**
+ * 获取指定月份（默认当前月）的第一个星期一
+ * @param {string|number|Date|dayjs.Dayjs} [date=当前日期] - 指定日期（用于定位月份）
+ * @returns {dayjs.Dayjs} 当月第一个星期一的 dayjs 实例
+ */
+export function getFirstMondayOfMonth(date) {
+  // 1. 获取指定月份的第一天
+  const firstDayOfMonth = dayjs(date, "YYYY-MM-DD").startOf("month");
+
+  // 2. 获取第一天是星期几（dayjs中：0=周日，1=周一，2=周二...6=周六）
+  const firstDayWeekday = firstDayOfMonth.day();
+
+  // 3. 计算需要偏移的天数：找到距离第一天最近的下一个周一
+  // 公式逻辑：如果首日是周一（1），偏移0天；如果是周日（0），偏移1天；如果是周二（2），偏移6天，以此类推
+  const offsetDays = (1 - firstDayWeekday + 7) % 7;
+
+  // 4. 首日加上偏移天数，得到当月第一个周一
+  const firstMonday = firstDayOfMonth.add(offsetDays, "day");
+
+  return firstMonday.format("YYYY-MM-DD");
+}
 // 获取两个日期之间的所有日期
 export function getDatesBetween(startDate, endDate, format = "YYYY-MM-DD") {
   const dates = [];
