@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="mx-[20px]">
       <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <el-form-item label="到期日">
           <el-select v-model="formData.到期日List" multiple>
