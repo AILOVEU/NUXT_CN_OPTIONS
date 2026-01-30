@@ -78,8 +78,8 @@
 
             <el-table-column label="仓位" align="center" fixed="right">
               <el-table-column label="总价" prop="总价" align="right" minWidth="85" sortable />
-              <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="200">
-                <el-progress :percentage="row['总价占比']" :color="getPercentColor(row['总价占比'])" />
+              <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="150">
+                <el-progress :percentage="row['总价占比'].toFixed(2)" :color="getPercentColor(row['总价占比'])" />
               </el-table-column>
             </el-table-column>
           </el-table>
@@ -793,5 +793,10 @@ const filterHandler = (value, row, column) => {
 }
 ::v-deep(.el-table--small .el-table__cell) {
   padding: 2px 0 !important;
+}
+</style>
+<style>
+.el-progress__text {
+  text-align: right;
 }
 </style>

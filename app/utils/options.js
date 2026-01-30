@@ -179,7 +179,7 @@ async function get_target_http_data(持仓JSON, fs) {
     }).catch((res) => {
       console.log(res);
     });
-    await sleep(100);
+    await sleep(10000);
     if (!res["data"]) {
       console.log(fs + "请求完成" + all_data.length);
       break;
@@ -286,7 +286,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(get_target_http_data(持仓JSON, fs));
-          }, idx * 2000);
+          }, idx * 5000);
         });
       });
     await Promise.all(PROMISE_LIST)
