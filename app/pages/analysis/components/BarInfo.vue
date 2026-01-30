@@ -103,6 +103,7 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
         },
         axisLabel: {
           rotate: 61, // 旋转角度
+          fontSize: 14
         },
       },
     ],
@@ -117,6 +118,16 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
     series: {
       type: "bar",
       name,
+      label: {
+        show: true, // 开启标签显示
+        position: "top", // 标签位置：顶部（可选：top/inside/outside/bottom等）
+        fontSize: 12, // 字体大小
+        color: "#333", // 字体颜色
+        // 可选：自定义数值格式（比如保留1位小数）
+        formatter: function ({ value }) {
+          return formatNumberToWan(value);
+        },
+      },
       data: dataList,
     },
   };

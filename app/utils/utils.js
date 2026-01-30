@@ -237,6 +237,13 @@ export function getMaxPointFiveMultipleLessThan(num) {
   const maxPointFiveMultiple = floorQuotient * 0.5; // 还原为0.5的倍数
   return maxPointFiveMultiple;
 }
+export function getMinPointOneMultiple(num) {
+  // 步骤2：核心逻辑：除以0.5 → 向上取整 → 乘以0.5
+  const quotient = num / 0.1; // 输入值除以0.5（等价于乘以2）
+  const ceilQuotient = Math.ceil(quotient); // 对商进行向上取整
+  const minPointFiveMultiple = ceilQuotient * 0.1; // 还原为0.5的倍数
+  return minPointFiveMultiple;
+}
 
 /**
  * 查找时间范围内所有当月第四个周三的日期

@@ -78,7 +78,7 @@
 
             <el-table-column label="仓位" align="center" fixed="right">
               <el-table-column label="总价" prop="总价" align="right" minWidth="85" sortable />
-              <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="150">
+              <el-table-column sortable :label="props.row._custom ? `待收益占比(${props.row.value})` : `总价占比(${持仓总价})`" prop="总价占比" #default="{ row }" width="160">
                 <el-progress :percentage="row['总价占比'].toFixed(2)" :color="getPercentColor(row['总价占比'])" />
               </el-table-column>
             </el-table-column>
