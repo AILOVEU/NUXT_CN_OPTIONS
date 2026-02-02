@@ -3,16 +3,16 @@
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
       <Card header="概览">
-        <Overview :all_data="all_data" :comboList="comboList" />
+        <Overview :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="资金分析">
-        <MoneyTrend :all_data="all_data" :comboList="comboList" />
+        <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="时间价值分析">
-        <SankeyInfo :all_data="all_data" :comboList="comboList" />
+        <SankeyInfo :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="持仓分析">
-        <BarInfo :all_data="all_data" />
+        <BarInfo :tiledData="tiledData" />
       </Card>
     </div>
   </div>
@@ -27,14 +27,14 @@ import MoneyTrend from "./components/MoneyTrend";
 import Overview from './components/Overview';
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
-const all_data = ref([]);
+const tiledData = ref([]);
 const comboList = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
   const [data, list] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   comboList.value = list;
-  all_data.value = data;
+  tiledData.value = data;
   loading.value = false;
 }
 handleQuery();

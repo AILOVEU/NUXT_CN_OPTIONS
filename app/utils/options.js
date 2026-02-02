@@ -101,9 +101,9 @@ function getIs非法持仓(row) {
   if (row["到期天数"] < 15) return true;
   return false;
 }
-export function 构建组合(all_data) {
+export function 构建组合(tiledData) {
   const { set保证金 } = useMoneyStore();
-  const 持仓List = all_data.filter((el) => el["持仓"]);
+  const 持仓List = tiledData.filter((el) => el["持仓"]);
   const 组合List = [];
   let 持仓Map = {};
   持仓List.forEach((el) => {
@@ -160,7 +160,7 @@ function sleep(time) {
 async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
   const pz = 50;
-  let all_data = [];
+  let tiledData = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
     const res = await $fetch("/api/queryEastmoney", {
@@ -189,33 +189,33 @@ async function get_target_http_data(持仓JSON, fs) {
     });
     await sleep(10000);
     if (!res["data"]) {
-      console.log(fs + "请求完成" + all_data.length);
+      console.log(fs + "请求完成" + tiledData.length);
       break;
     }
     curr_page += 1;
     let res_data = res["data"]["diff"];
     res_data.forEach((_) => {
-      all_data.push(_);
+      tiledData.push(_);
     });
     if (res_data?.length < pz) {
-      console.log(fs + "请求完成" + all_data.length);
+      console.log(fs + "请求完成" + tiledData.length);
       break;
     }
   }
-  return all_data;
+  return tiledData;
 }
 let DEBUG_LIST = {};
-function debug(_all_data) {
+function debug(_tiledData) {
   console.log(
     "DEBUG_LIST - ",
-    _.unionBy(_all_data, (row) => row["f333"])
+    _.unionBy(_tiledData, (row) => row["f333"])
   );
 }
 
-function formatRecord(_all_data, 持仓JSON) {
-  debug(_all_data);
-  let all_data = [];
-  _all_data.forEach((_) => {
+function formatRecord(_tiledData, 持仓JSON) {
+  debug(_tiledData);
+  let tiledData = [];
+  _tiledData.forEach((_) => {
     // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
     let row = {};
     Object.keys(fields_dict).forEach((key) => {
@@ -273,20 +273,20 @@ function formatRecord(_all_data, 持仓JSON) {
     row["成本价"] = get_成本价(row, 持仓JSON);
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
     row["is非法持仓"] = getIs非法持仓(row);
-    all_data.push(row);
+    tiledData.push(row);
   });
-  return all_data;
+  return tiledData;
 }
 // 请求入口
 export async function get_http_data(正股代码List, useCatch = true) {
-  let _all_data = [];
+  let _tiledData = [];
   let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
   if (useCatch) {
     try {
-      _all_data = await $fetch("/api/queryDataJson");
+      _tiledData = await $fetch("/api/queryDataJson");
     } catch (e) {
       console.warn("e", e);
-      _all_data = [];
+      _tiledData = [];
     }
   } else {
     const PROMISE_LIST = OPTIONS_MAP.map((el) => el.fs)
@@ -301,12 +301,12 @@ export async function get_http_data(正股代码List, useCatch = true) {
     await Promise.all(PROMISE_LIST)
       .then((list) => {
         list.forEach((el) => {
-          _all_data.push(...el);
+          _tiledData.push(...el);
         });
-        if (_all_data.length) {
+        if (_tiledData.length) {
           $fetch("/api/querySaveData", {
             method: "post",
-            body: { data: _all_data },
+            body: { data: _tiledData },
           });
         }
       })
@@ -316,15 +316,15 @@ export async function get_http_data(正股代码List, useCatch = true) {
       });
   }
 
-  let all_data = formatRecord(_all_data, 持仓JSON);
-  all_data = all_data.filter((el) => 正股代码List.includes(el["正股代码"])); // 缓存数据过滤
-  const comboList = 构建组合(all_data);
-  all_data = all_data.map((el) => {
+  let tiledData = formatRecord(_tiledData, 持仓JSON);
+  tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"])); // 缓存数据过滤
+  const comboList = 构建组合(tiledData);
+  tiledData = tiledData.map((el) => {
     return {
       ...el,
       组合: comboList.some((item) => item.includes(el["期权名称"])),
     };
   });
-  console.log("[all_data, comboList]", [all_data, comboList]);
-  return [all_data, comboList];
+  console.log("[tiledData, comboList]", [tiledData, comboList]);
+  return [tiledData, comboList];
 }

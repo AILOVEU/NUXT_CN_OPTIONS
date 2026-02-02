@@ -7,7 +7,7 @@ import { ElMessage } from "element-plus";
 async function get_target_http_data(fs) {
   let curr_page = 1;
   const pageSize = 100;
-  let all_data = [];
+  let tiledData = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
     let res = await $fetch("https://futsseapi.eastmoney.com/list/" + fs, {
@@ -27,20 +27,20 @@ async function get_target_http_data(fs) {
     });
     res = JSON.parse(res);
     if (!res["list"]) {
-      console.log(fs + "请求完成" + all_data.length);
+      console.log(fs + "请求完成" + tiledData.length);
       break;
     }
     curr_page += 1;
     let res_data = res["list"];
     res_data.forEach((_) => {
-      all_data.push(_);
+      tiledData.push(_);
     });
     if (res_data?.length < pageSize) {
-      console.log("请求完成" + all_data.length);
+      console.log("请求完成" + tiledData.length);
       break;
     }
   }
-  return all_data;
+  return tiledData;
 }
 
 let fields_dict = {
@@ -79,7 +79,7 @@ const 市场List = [
   },
 ];
 export async function get_all_http_data() {
-  let _all_data = [];
+  let _tiledData = [];
   const promiseList = 市场List.map((el) => {
     return new Promise((resolve) => {
       resolve(get_target_http_data(el.fs));
@@ -87,21 +87,21 @@ export async function get_all_http_data() {
   });
   await Promise.all(promiseList).then((list) => {
     list.forEach((el) => {
-      _all_data.push(...el);
+      _tiledData.push(...el);
     });
   });
-  let all_data = [];
-  _all_data.forEach((_) => {
+  let tiledData = [];
+  _tiledData.forEach((_) => {
     let line_dict = {
       市场: 市场List.find((el) => el.fs === _.sc)?.name,
     };
     Object.keys(fields_dict).forEach((key) => {
       line_dict[fields_dict[key]] = _[key];
     });
-    all_data.push(line_dict);
+    tiledData.push(line_dict);
   });
-  let 非主连List = all_data.filter((el) => !el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
-  let 主连List = all_data.filter((el) => el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
+  let 非主连List = tiledData.filter((el) => !el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
+  let 主连List = tiledData.filter((el) => el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
   主连List = 主连List.map((el) => ({
     ...el,
     期货标的名称: el.期货名称.replace("主连", ""),

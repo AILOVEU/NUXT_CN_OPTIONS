@@ -2,7 +2,7 @@ import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./options";
 import dayjs from "dayjs";
 function handleTData(dataList) {
-  let all_data = [];
+  let tiledData = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
     // 只处理左侧认购数据
@@ -22,21 +22,21 @@ function handleTData(dataList) {
       record[key] = call_item[key];
     });
     正股价格_dict[record["正股代码"]] = record["正股价格"];
-    all_data.push(record);
+    tiledData.push(record);
   });
-  const 正股代码List = Array.from(new Set(all_data.map((el) => el.正股代码)));
-  const 到期日List = Array.from(new Set(all_data.map((el) => el.到期日)));
-  const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
+  const 正股代码List = Array.from(new Set(tiledData.map((el) => el.正股代码)));
+  const 到期日List = Array.from(new Set(tiledData.map((el) => el.到期日)));
+  const 行权价List = Array.from(new Set(tiledData.map((el) => el.行权价)));
   行权价List.sort();
   正股代码List.forEach((正股代码) => {
     到期日List.forEach((到期日) => {
-      all_data.push({
+      tiledData.push({
         _current: true,
         正股代码,
         到期日,
         行权价: 正股价格_dict[正股代码],
       });
-      all_data.push({
+      tiledData.push({
         _split: true,
         正股代码,
         到期日,
@@ -44,7 +44,7 @@ function handleTData(dataList) {
       });
     });
   });
-  all_data.sort(function (a, b) {
+  tiledData.sort(function (a, b) {
     if (a["正股代码"] === b["正股代码"]) {
       if (a["到期日"] === b["到期日"]) {
         return a["行权价"] - b["行权价"];
@@ -55,7 +55,7 @@ function handleTData(dataList) {
     const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
     return aSort - bSort;
   });
-  return all_data;
+  return tiledData;
 }
 export async function queryRow(正股代码, useCatch) {
   const [tiledData, comboList] = await get_http_data(正股代码, useCatch);

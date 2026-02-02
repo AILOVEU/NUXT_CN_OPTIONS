@@ -50,7 +50,7 @@ function getSpaceBetween4Div($1, $2, $3, $4) {
           </div>`;
 }
 
-const props = defineProps(["all_data"]);
+const props = defineProps(["tiledData"]);
 function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
   return {
     title: {
@@ -135,24 +135,24 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
 
 const filteredData = computed(() => {
   return (
-    props.all_data
+    props.tiledData
       ?.filter((el) => el["持仓"])
       ?.filter((el) => formData.正股List.includes(el["正股代码"]))
       ?.filter((el) => formData.到期日List.includes(el["到期日"])) || []
   );
 });
 const deltaOption = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     return get_list_all_sum(codeOptions, "Delta");
   });
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["Delta"] * el["持仓"],
@@ -170,12 +170,12 @@ const deltaOption = computed(() => {
   });
 });
 const 代替正股Option = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   let 代替正股Sum = 0;
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     let val = get_list_all_sum(codeOptions, "代替正股价");
     val = formatDecimal(val, 0);
     代替正股Sum += val;
@@ -184,7 +184,7 @@ const 代替正股Option = computed(() => {
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["代替正股价"] * el["持仓"],
@@ -203,17 +203,17 @@ const 代替正股Option = computed(() => {
 });
 
 const gammaOption = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     return get_list_all_gamma(codeOptions);
   });
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["Gamma"] * el["持仓"],
@@ -232,12 +232,12 @@ const gammaOption = computed(() => {
 });
 
 const 单日损耗Option = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   let 单日损耗Sum = 0;
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     let val = get_list_all_sum(codeOptions, "单日损耗");
     单日损耗Sum += val;
     return val;
@@ -245,7 +245,7 @@ const 单日损耗Option = computed(() => {
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["单日损耗"] * el["持仓"],
@@ -264,12 +264,12 @@ const 单日损耗Option = computed(() => {
 });
 
 const 实值价值Option = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   let 内在价值Sum = 0;
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     let val = get_list_all_sum(codeOptions, "一手内在价");
     内在价值Sum += val;
     return val;
@@ -277,7 +277,7 @@ const 实值价值Option = computed(() => {
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["一手内在价"] * el["持仓"],
@@ -296,12 +296,12 @@ const 实值价值Option = computed(() => {
 });
 
 const 时间价值Option = computed(() => {
-  let all_data = filteredData.value;
-  if (!all_data?.length) return {};
-  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(all_data.map((el) => el["正股代码"]))).includes(el));
+  let tiledData = filteredData.value;
+  if (!tiledData?.length) return {};
+  const stockCodeList = OPTIONS_MAP.map((el) => el.code).filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el));
   let 时间价值Sum = 0;
   const dataList = stockCodeList.map((code) => {
-    let codeOptions = all_data.filter((el) => el["正股代码"] === code);
+    let codeOptions = tiledData.filter((el) => el["正股代码"] === code);
     let val = get_list_all_sum(codeOptions, "一手时间价");
     时间价值Sum += val;
     return val;
@@ -309,7 +309,7 @@ const 时间价值Option = computed(() => {
   const dataMap = {};
   stockCodeList.forEach((code) => {
     const name = OPTIONS_MAP.find((el) => el.code == code).name;
-    dataMap[name] = all_data
+    dataMap[name] = tiledData
       .filter((el) => el["正股代码"] === code)
       .map((el) => ({
         排序字段: el["一手时间价"] * el["持仓"],

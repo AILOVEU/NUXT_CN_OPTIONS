@@ -79,8 +79,8 @@ function handleQuery() {
     OPTIONS_MAP.map((el) => el.code),
     false
   )
-    .then(([all_data]) => {
-      if (all_data.length) {
+    .then(([tiledData]) => {
+      if (tiledData.length) {
         window.location.reload();
       }
     })

@@ -4,7 +4,7 @@ import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
 function handleHoldData(dataList, 正股代码List) {
   const [month_list, month_index] = get_fist_季度月份(dataList);
-  let all_data = [];
+  let tiledData = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
     let record = {};
@@ -44,19 +44,19 @@ function handleHoldData(dataList, 正股代码List) {
       record[key] = item[key];
     });
     正股价格_dict[record["正股代码"]] = record["正股价格"];
-    all_data.push(record);
+    tiledData.push(record);
   });
   if (正股代码List.length > 0) {
-    const 正股代码List = Array.from(new Set(all_data.map((el) => el.正股代码)));
-    const 行权价List = Array.from(new Set(all_data.map((el) => el.行权价)));
+    const 正股代码List = Array.from(new Set(tiledData.map((el) => el.正股代码)));
+    const 行权价List = Array.from(new Set(tiledData.map((el) => el.行权价)));
     行权价List.sort();
     正股代码List.forEach((正股代码) => {
-      all_data.push({
+      tiledData.push({
         _current: true,
         正股代码,
         行权价: 正股价格_dict[正股代码],
       });
-      all_data.push({
+      tiledData.push({
         _split: true,
         正股代码,
         行权价: 行权价List[行权价List.length - 1],
@@ -64,7 +64,7 @@ function handleHoldData(dataList, 正股代码List) {
     });
   }
 
-  all_data.sort(function (a, b) {
+  tiledData.sort(function (a, b) {
     if (a["正股代码"] === b["正股代码"]) {
       return a["行权价"] - b["行权价"];
     }
@@ -72,10 +72,10 @@ function handleHoldData(dataList, 正股代码List) {
     const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
     return aSort - bSort;
   });
-  return all_data;
+  return tiledData;
 }
 export async function queryGrid(正股代码List, useCatch) {
-  const [all_data, comboList] = await get_http_data(正股代码List, useCatch);
-  const tableData = handleHoldData(all_data, 正股代码List);
-  return [tableData, comboList, all_data];
+  const [tiledData, comboList] = await get_http_data(正股代码List, useCatch);
+  const tableData = handleHoldData(tiledData, 正股代码List);
+  return [tableData, comboList, tiledData];
 }
