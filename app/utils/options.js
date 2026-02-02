@@ -185,7 +185,7 @@ async function get_target_http_data(持仓JSON, fs) {
         // fs: "m:10",
       },
     }).catch((res) => {
-      console.log(res);
+      console.warn(res);
     });
     await sleep(10000);
     if (!res["data"]) {
@@ -285,7 +285,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
     try {
       _all_data = await $fetch("/api/queryDataJson");
     } catch (e) {
-      console.log("e", e);
+      console.warn("e", e);
       _all_data = [];
     }
   } else {
@@ -312,7 +312,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
       })
       .catch((err) => {
         ElMessage({ message: err, type: "error" });
-        console.log(err);
+        console.warn(err);
       });
   }
 

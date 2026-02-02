@@ -23,7 +23,7 @@ async function get_target_http_data(fs) {
         pageIndex: curr_page - 1,
       },
     }).catch((res) => {
-      console.log(res);
+      console.warn(res);
     });
     res = JSON.parse(res);
     if (!res["list"]) {

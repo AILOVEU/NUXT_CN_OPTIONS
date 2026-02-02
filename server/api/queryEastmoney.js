@@ -5,7 +5,6 @@ const COOKIE_LIST = {
 };
 export default eventHandler(async (event) => {
   let cookie = COOKIE_LIST[getQuery(event)["fs"]] || COOKIE_LIST["_"];
-  console.log("cookie", cookie);
   const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
     method: "get",
     params: getQuery(event),

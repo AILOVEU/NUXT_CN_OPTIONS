@@ -36,12 +36,6 @@ function handleTData(dataList) {
         到期日,
         行权价: 正股价格_dict[正股代码],
       });
-      console.log("_split", {
-        _split: true,
-        正股代码,
-        到期日,
-        行权价: 行权价List[行权价List.length - 1],
-      });
       all_data.push({
         _split: true,
         正股代码,

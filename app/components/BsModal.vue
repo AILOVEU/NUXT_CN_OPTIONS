@@ -59,7 +59,6 @@ const option = computed(() => {
     const x = formatDecimal(_S, 2);
     const y = blackScholesOptionPrice(_S, K, r, T, sigma, optionType);
     seriesData.push([x, y]);
-    console.log([x, y]);
   }
   return {
     animation: false,

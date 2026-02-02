@@ -66,7 +66,7 @@ export function formatNumberToWan(num) {
   // 1. 转换为数字并校验有效性
   const targetNum = Number(num);
   if (isNaN(targetNum)) {
-    console.log("输入参数必须是有效的数字或数字字符串", num);
+    console.warn("输入参数必须是有效的数字或数字字符串", num);
     return num;
     throw new Error("输入参数必须是有效的数字或数字字符串");
   }

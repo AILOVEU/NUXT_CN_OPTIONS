@@ -78,7 +78,6 @@ function handleStockCodeChange() {
 const options = computed(() => {
   if (!fundData.value?.length) return {};
   let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
-  console.log("monthLen", monthLen);
   const colNum = 4; // 列数
   rowNum.value = Math.floor(monthLen / 3 / colNum) + 1; // 行数
   setTimeout(() => {
@@ -114,10 +113,8 @@ const options = computed(() => {
       // 获取当月日期列表
       const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[2], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
       const curYearFilteredData = fundData.value?.filter((el) => el.date.startsWith(yearStr + "-"));
-      console.log(index, curYearFilteredData);
       let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr))); // 获取20xx年xx月的数据
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date }); // 构建完整日期数据
-      // console.log("filterFundData", filterFundData);
       const xAxisData = filteredData.map((el) => el.date);
       const seriesData = filteredData.map((el) => [el.open, el.close, el.low, el.high]);
       const left = padding + col * (gridWidth + gap);
@@ -138,8 +135,6 @@ const options = computed(() => {
         type: "category",
         data: xAxisData,
       });
-      console.log(index, "max", getMax(curYearFilteredData));
-      console.log(index, "min", getMin(curYearFilteredData));
 
       yAxisArr.push({
         gridIndex: index,
