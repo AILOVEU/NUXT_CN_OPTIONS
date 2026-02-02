@@ -23,7 +23,7 @@
       <template #expand> </template>
       <template #default="props">
         <div>
-          <el-table :data="filterTableData(props.row.children)" :border="false">
+          <el-table :data="filterTableData(props.row.children)" :border="false" :row-style="getInRowStyle">
             <el-table-column label="序" minWidth="40" align="center" fixed="left">
               <template #default="{ $index }">
                 <div class="text-[10px]">{{ $index + 1 }}</div>
@@ -109,7 +109,7 @@
 </template>
 
 <script setup>
-import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
+import { deadline_list, deadline_color_list, OPTIONS_MAP, 最大建议买入时间价 } from "~/data";
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
@@ -786,6 +786,12 @@ const filterHandler = (value, row, column) => {
   const property = column["property"];
   return row[property] === value;
 };
+function getInRowStyle({ row }) {
+  const 一手内在价 = row["一手内在价"];
+  const 一手时间价 = row["一手时间价"];
+  if (一手时间价 > 最大建议买入时间价) return { background: "#FFAAB8" };
+  if (一手内在价 && 一手时间价 > 一手内在价) return { background: "#FFAAB8" };
+}
 </script>
 <style scoped>
 ::v-deep(.el-table--small .cell) {
