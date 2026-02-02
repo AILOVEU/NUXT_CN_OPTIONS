@@ -1,4 +1,4 @@
-import { fields_dict, OPTIONS_MAP, 金额 } from "~/data";
+import { fields_dict, OPTIONS_MAP, 金额, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -92,6 +92,14 @@ function get组合名称(权利Item, 义务Item) {
   const 行权价Name = `${权利Item["千行权价"]}-${义务Item["千行权价"]}`;
   const 到期月 = dayjs(权利Item["到期日"], "YYYY-MM-DD").format("M月");
   return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
+}
+
+function getIs非法持仓(row) {
+  if (row["持仓"]) {
+    if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
+  }
+  if (row["到期天数"] < 15) return true;
+  return false;
 }
 export function 构建组合(all_data) {
   const { set保证金 } = useMoneyStore();
@@ -264,6 +272,7 @@ function formatRecord(_all_data, 持仓JSON) {
     row["持仓"] = get_持仓(持仓JSON, row);
     row["成本价"] = get_成本价(row, 持仓JSON);
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
+    row["is非法持仓"] = getIs非法持仓(row);
     all_data.push(row);
   });
   return all_data;

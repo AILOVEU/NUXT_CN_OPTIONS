@@ -328,15 +328,16 @@ const richTableData = computed(() => {
         const 一手盈亏 = 期权["一手价"] - 期权["一手成本价"];
         const 总盈亏 = 一手盈亏 * 持仓;
         return {
-          期权名称: 期权["期权名称"],
-          持仓,
-          一手价: 期权["一手价"],
-          一手成本价: 期权["一手成本价"],
-          一手内在价: 期权["一手内在价"],
-          一手时间价: 期权["一手时间价"],
-          到期天数: 期权["到期天数"],
-          Gamma: 期权["Gamma"],
-          Delta: 期权["Delta"],
+          ...期权,
+          // 期权名称: 期权["期权名称"],
+          // 持仓,
+          // 一手价: 期权["一手价"],
+          // 一手成本价: 期权["一手成本价"],
+          // 一手内在价: 期权["一手内在价"],
+          // 一手时间价: 期权["一手时间价"],
+          // 到期天数: 期权["到期天数"],
+          // Gamma: 期权["Gamma"],
+          // Delta: 期权["Delta"],
 
           今日总涨跌: 期权["一手涨跌价"] * 持仓,
           今日单手涨跌: 期权["一手涨跌价"],
@@ -344,9 +345,9 @@ const richTableData = computed(() => {
           一手盈亏,
           总盈亏,
           总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
-          正股代码: 期权["正股代码"],
-          沽购: 期权["沽购"],
-          到期日: 期权["到期日"],
+          // 正股代码: 期权["正股代码"],
+          // 沽购: 期权["沽购"],
+          // 到期日: 期权["到期日"],
         };
       }),
     },
@@ -787,10 +788,7 @@ const filterHandler = (value, row, column) => {
   return row[property] === value;
 };
 function getInRowStyle({ row }) {
-  const 一手内在价 = row["一手内在价"];
-  const 一手时间价 = row["一手时间价"];
-  if (一手时间价 > 最大建议买入时间价) return { background: "#FFAAB8" };
-  if (一手内在价 && 一手时间价 > 一手内在价) return { background: "#FFAAB8" };
+  if (row["is非法持仓"]) return { background: "#FFE2AF" };
 }
 </script>
 <style scoped>
