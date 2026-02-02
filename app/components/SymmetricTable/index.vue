@@ -49,7 +49,7 @@ function getColumnWidth(label) {
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
-    if (el["is行内有持仓"] && props.mode === "hold") return true;
+    if (el["is行内有持仓"]) return true;
     if (el._current || el._split) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;
