@@ -126,12 +126,12 @@ const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const style = computed(() => {
-  let style = {
-    border: 持仓.value > 0 ? "4px solid red" : 持仓.value < 0 ? "4px solid green" : "",
-  };
   const grayStyle = {
     background: "#ACBAC4",
     filter: "grayscale(0.75)",
+  };
+  let style = {
+    border: 持仓.value > 0 ? "4px solid red" : 持仓.value < 0 ? "4px solid green" : "",
   };
   if (props.mode === "chance") {
     if (!current期权Item.value["_isChance"]) {
@@ -140,6 +140,10 @@ const style = computed(() => {
   } else if (props.mode === "in-val") {
     if (current期权Item.value["一手内在价"] === 0 || current期权Item.value["一手内在价"] > 最大建议买入价 || current期权Item.value["一手时间价"] > 最大建议买入时间价) {
       style = { ...style, ...grayStyle };
+    }
+  } else if (props.mode === "hold") {
+    if (current期权Item.value["is非法持仓"]) {
+      style = { ...style, background: "#FFE2AF" };
     }
   }
   return style;

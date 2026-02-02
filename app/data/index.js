@@ -53,7 +53,7 @@ export const OPTIONS_MAP = [
     linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
     color: "#73c0de",
     showName: "50ETF🧊", // 顶部tab筛选会用到
-    行权价Range: [2900, 3300],
+    行权价Range: [2900, 3200],
     fs: "m:10+c:510050",
   },
   {
@@ -98,7 +98,7 @@ export const OPTIONS_MAP = [
     linkName: ["创业板ETF易方达"],
     color: "#ea7ccc",
     showName: "创业板🦑",
-    行权价Range: [3000, 3400],
+    行权价Range: [3100, 3400],
     fs: "m:12+c:159915",
   },
 ];

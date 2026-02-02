@@ -36,7 +36,7 @@ const stockCodeOptions = computed(() => {
   }));
   return [...ops, { value: "all", label: "全" }];
 });
-const stockCode = ref(stockCodeOptions.value[0].value);
+const stockCode = ref("all");
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   symmetricData: [],
