@@ -1,5 +1,11 @@
 import dayjs from "dayjs";
-
+export function getRandomInt(start, end) {
+  // Math.random() 生成 0 ≤ 随机数 < 1 的浮点数
+  // 乘以5后，得到 0 ≤ 随机数 < 5 的浮点数
+  // Math.floor() 向下取整，得到 0、1、2、3、4
+  // 最后加1，得到 1、2、3、4、5
+  return Math.floor(Math.random() * end) + start;
+}
 export function useCopy(text) {
   function selectText(textbox, startIndex, stopIndex) {
     if (textbox.createTextRange) {

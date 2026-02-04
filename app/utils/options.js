@@ -1,6 +1,6 @@
 import { fields_dict, OPTIONS_MAP, 金额, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
-import { formatDecimal } from "~/utils/utils";
+import { formatDecimal, getRandomInt } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
@@ -93,7 +93,6 @@ function get组合名称(权利Item, 义务Item) {
   const 到期月 = dayjs(权利Item["到期日"], "YYYY-MM-DD").format("M月");
   return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
 }
-
 function getIs非法持仓(row) {
   if (row["持仓"]) {
     if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
@@ -187,7 +186,7 @@ async function get_target_http_data(持仓JSON, fs) {
     }).catch((res) => {
       console.warn(res);
     });
-    await sleep(10000);
+    await sleep(getRandomInt(3, 6) * 1000);
     if (!res["data"]) {
       console.log(fs + "请求完成" + tiledData.length);
       break;
@@ -295,7 +294,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(get_target_http_data(持仓JSON, fs));
-          }, idx * 5000);
+          }, idx * 1000 * getRandomInt(5, 10));
         });
       });
     await Promise.all(PROMISE_LIST)
