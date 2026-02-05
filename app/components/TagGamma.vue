@@ -1,6 +1,8 @@
 <template>
   <!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
-  <el-tag :type="type" size="small" :effect="effect"> Gamma {{ (props.value * 10).toFixed(1) }} </el-tag>
+  <el-tag :type="type" size="small" :effect="effect">
+    Gamma <div class="w-[30px] inline-block">{{ (props.value * 10).toFixed(1) }}</div>
+  </el-tag>
 </template>
 <script setup>
 const props = defineProps(["value"]);

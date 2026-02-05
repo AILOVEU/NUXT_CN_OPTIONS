@@ -1,6 +1,9 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <div class="font-[400]">Delta {{ (props.value * 100).toFixed(1) }}</div>
+    <div class="font-[400]">
+      Delta
+      <div class="w-[30px] inline-block">{{ (props.value * 100).toFixed(1) }}</div>
+    </div>
   </el-tag>
 </template>
 <script setup>

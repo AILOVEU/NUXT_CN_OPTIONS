@@ -1,5 +1,8 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect"> Vega {{ (props.value * 100).toFixed(0) }} </el-tag>
+  <el-tag :type="type" size="small" :effect="effect">
+    Vega
+    <div class="w-[20px] inline-block">{{ (props.value * 100).toFixed(0) }}</div>
+  </el-tag>
 </template>
 <script setup>
 const props = defineProps(["value"]);

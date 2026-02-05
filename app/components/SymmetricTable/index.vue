@@ -45,7 +45,7 @@ function getColumnWidth(label) {
   if (isMobile) {
     return label === "期权" ? "80px" : "120px";
   }
-  return label === "期权" ? "80px" : "161px";
+  return label === "期权" ? "80px" : "169px";
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {

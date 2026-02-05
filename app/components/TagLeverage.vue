@@ -1,10 +1,7 @@
 <template>
-  <el-tag
-    type="info"
-    size="small"
-    effect='plain'
-  >
-  杠杆 {{ props.value.toFixed(1) }}
+  <el-tag type="info" size="small" effect="plain">
+    杠杆
+    <div class="w-[30px] inline-block">{{ props.value.toFixed(1) }}</div>
   </el-tag>
 </template>
 <script setup>
