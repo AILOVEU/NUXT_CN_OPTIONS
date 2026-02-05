@@ -52,12 +52,15 @@
       </div>
     </div>
     <div v-if="持仓">
-      <div class="flex justify-center whitespace-nowrap max-md:flex-col">
+      <div class="flex justify-center whitespace-nowrap max-md:flex-col gap-[1px]">
         <div class="whitespace-nowrap">
           <TagCostPrice :一手成本价="一手成本价" />
         </div>
         <div class="whitespace-nowrap">
-          <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%)</el-tag>
+          <el-tag type="info" size="small" effect="plain"
+            >仓{{ 仓位 }}
+            <!-- ({{ formatDecimal(仓位占比, 1) }}%) -->
+          </el-tag>
         </div>
       </div>
     </div>
