@@ -103,7 +103,7 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
         },
         axisLabel: {
           rotate: 61, // 旋转角度
-          fontSize: 14
+          fontSize: 14,
         },
       },
     ],
@@ -257,7 +257,7 @@ const 单日损耗Option = computed(() => {
   return getBarOps({
     stockCodeList,
     name: "单日损耗",
-    title: `单日损耗 ( ${formatNumberToWan(单日损耗Sum)} ) `,
+    title: `单日损耗 ( ${formatNumberToWan(formatDecimal(单日损耗Sum, 0))} ) `,
     dataList,
     dataMap,
   });
