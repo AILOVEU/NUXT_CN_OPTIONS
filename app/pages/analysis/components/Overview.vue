@@ -1,5 +1,7 @@
 <template>
   <div class="flex items-center gap-[20px]">
+    <Statistic title="持仓总和" :value="持仓总和" />
+    <Statistic title="时间价值总和" :value="时间价值总和" />
     <Statistic title="时间价占比" :value="时间价占比" />
     <Statistic title="总杠杆" :value="总杠杆" />
   </div>
