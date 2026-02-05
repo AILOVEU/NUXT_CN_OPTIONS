@@ -69,10 +69,16 @@
 
             <el-table-column label="希腊字母" align="center">
               <el-table-column label="Gamma" #default="{ row }" prop="Gamma" align="right" :minWidth="props.row.single ? 105 : 120" sortable>
-                <CombinTableCell :value="row['Gamma']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
+                <CombinTableCell v-if="props.row.single" :value="row['Gamma'].map((el) => el * 10)" :showDiff="true" :format="(val) => val?.toFixed(1)" />
+                <TagGamma v-else :value="row['Gamma']" />
               </el-table-column>
               <el-table-column label="Delta" #default="{ row }" prop="Delta" align="right" :minWidth="props.row.single ? 95 : 120" sortable>
-                <CombinTableCell :value="row['Delta']" :showDiff="true" :format="(val) => val?.toFixed(2)" />
+                <CombinTableCell v-if="props.row.single" :value="row['Delta'].map((el) => el * 100)" :showDiff="true" :format="(val) => val?.toFixed(1)" />
+                <TagDelta v-else :value="row['Delta']" />
+              </el-table-column>
+              <el-table-column label="Vega" #default="{ row }" prop="Vega" align="right" :minWidth="props.row.single ? 95 : 120" sortable>
+                <CombinTableCell v-if="props.row.single" :value="row['Vega'].map((el) => el * 100)" :showDiff="true" :format="(val) => val?.toFixed(0)" />
+                <TagVega v-else :value="row['Vega']" />
               </el-table-column>
             </el-table-column>
 
@@ -254,6 +260,7 @@ const richTableData = computed(() => {
         const 今日单手涨跌 = 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"];
         return {
           isCombo: true,
+          Vega: [权利期权Item["Vega"], 义务期权Item["Vega"]],
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
           Delta: [权利期权Item["Delta"], 义务期权Item["Delta"]],
           正股代码: 权利期权Item["正股代码"],
@@ -297,6 +304,7 @@ const richTableData = computed(() => {
           沽购: 权利期权Item["沽购"],
           到期日: 权利期权Item["到期日"],
           到期天数: 权利期权Item["到期天数"],
+          Vega: [权利期权Item["Vega"], 义务期权Item["Vega"]],
           Gamma: [权利期权Item["Gamma"], 义务期权Item["Gamma"]],
           Delta: [权利期权Item["Delta"], 义务期权Item["Delta"]],
 

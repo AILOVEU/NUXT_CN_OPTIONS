@@ -40,6 +40,10 @@
           <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
             <TagGamma :value="row['Gamma']" />
           </el-table-column>
+
+          <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
+            <TagVega :value="row['Vega']" />
+          </el-table-column>
         </el-table-column>
 
         <el-table-column label="持仓信息" align="center">

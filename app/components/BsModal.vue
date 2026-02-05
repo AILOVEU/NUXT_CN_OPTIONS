@@ -9,6 +9,7 @@
       <TagLeverage :value="props.optionInfo['杠杆']" />
       <TagPremium :value="props.optionInfo['溢价率']" />
       <TagGamma :value="props.optionInfo['Gamma']" />
+      <TagVega :value="props.optionInfo['Vega']" />
     </div>
     <VChart :option="option" :style="{ height: isMobile ? 'calc(250vh - 300px)' : `calc(100vh - 300px)`, width: isMobile ? '250vw' : '80vw', margin: 'auto' }" />
     <template #footer>

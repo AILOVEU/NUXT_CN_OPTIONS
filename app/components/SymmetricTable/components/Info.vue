@@ -36,16 +36,19 @@
     </div>
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagGamma :value="current期权Item['Gamma']" />
+        <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
+      </div>
+      <div class="whitespace-nowrap">
+        <TagVega :value="current期权Item['Vega']" />
       </div>
     </div>
 
     <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
       <div class="whitespace-nowrap">
-        <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
+        <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
       </div>
       <div class="whitespace-nowrap">
-        <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
+        <TagGamma :value="current期权Item['Gamma']" />
       </div>
     </div>
     <div v-if="持仓">

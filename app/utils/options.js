@@ -234,13 +234,16 @@ function formatRecord(_tiledData, 持仓JSON) {
       "杠杆",
       "Delta",
       "Gamma",
+      "Vega",
       "Theta",
       "正股价格",
     ].forEach((key) => {
-      row[key] = row[key] ? +row[key] : row[key];
+      row[key] = row[key] ? +row[key] : 0;
     });
     row["Delta"] = formatDecimal(row["Delta"], 3);
     row["Gamma"] = formatDecimal(row["Gamma"], 3);
+    row["Vega"] = formatDecimal(row["Vega"], 3);
+
     row["杠杆"] = formatDecimal(row["杠杆"], 1);
     row["到期日"] = dayjs(row["到期日"] + "", "YYYYMMDD").format("YYYY-MM-DD");
     row["最新价"] = get_最新价(row);
