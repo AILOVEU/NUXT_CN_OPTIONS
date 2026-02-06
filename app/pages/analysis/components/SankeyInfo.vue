@@ -418,14 +418,12 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
 function getSpaceBetween2Div($1, $2) {
   return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;"><div>${$1}</div><div>${$2}</div></div>`;
 }
-function getSpaceBetween4Div($1, $2, $3, $4) {
-  return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
-            <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
-              <div style='width:200px'>${$3}</div>
-              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>
-            </div>
-            <div style="display:flex;align-items: center;">
-              <div style='border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;width: 75px;text-align: right;'>${$2}</div>
+function getSpaceBetween4Div($1, $2, $3, $4, $5) {
+  return `<div style="font-size: 20px;display:flex;justify-content: space-between;align-items: center;column-gap: 5px;height: 24px;">
+              <div style='width: 75px;border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;text-align: right;;margin-right: 20px;'>${$2}</div>
+              <div style='width:230px'>${$3}</div>
+              <div style='width: 50px;font-size:12px; text-align:right;color: #607cdd;'>${$5}</div>
+              <div style='width: 60px;color: #409eff;border-radius: 3px;text-align: right;'>${$4}手</div>
               <div style='width: 70px;text-align:right;'>${$1}</div>
             </div>
           </div>`;
@@ -498,7 +496,8 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
                 formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%",
                 // 名称
                 el["期权名称"],
-                el["持仓"]
+                el["持仓"],
+                formatDecimal(el[展示字段] / el["持仓"], 0)
               )}`
           )
           .join("");

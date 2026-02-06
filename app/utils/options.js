@@ -186,7 +186,7 @@ async function get_target_http_data(持仓JSON, fs) {
     }).catch((res) => {
       console.warn(res);
     });
-    await sleep(getRandomInt(3, 6) * 1000);
+    await sleep(getRandomInt(6, 12) * 1000);
     if (!res["data"]) {
       console.log(fs + "请求完成" + tiledData.length);
       break;
@@ -297,7 +297,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(get_target_http_data(持仓JSON, fs));
-          }, idx * 1000 * getRandomInt(5, 10));
+          }, idx * 1000 * getRandomInt(8, 12));
         });
       });
     await Promise.all(PROMISE_LIST)

@@ -1,23 +1,30 @@
 <template>
-  <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-    <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
-      <template #header>
-        <div v-if="type" class="leading-[1.2]">
-          <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
-          <div class="leading-[1.2]">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
-        </div>
-        <div v-else class="leading-[1.2]">
-          {{ label }}
-        </div>
-      </template>
-      <template #default="{ row }" v-if="label === '期权'">
-        <Center :row="row" />
-      </template>
-      <template #default="{ row }" v-if="label !== '期权'">
-        <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" />
-      </template>
-    </el-table-column>
-  </el-table>
+  <div class="flex flex-col h-full">
+    <div class="w-full pb-[12px] h-[30px]">
+      <TabSelectMult :options="indexOptions" v-model="indexVal" />
+    </div>
+    <div class="h-[calc(100%-35px)]">
+      <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
+          <template #header>
+            <div v-if="type" class="leading-[1.2]">
+              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
+              <div class="leading-[1.2]">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
+            </div>
+            <div v-else class="leading-[1.2]">
+              {{ label }}
+            </div>
+          </template>
+          <template #default="{ row }" v-if="label === '期权'">
+            <Center :row="row" />
+          </template>
+          <template #default="{ row }" v-if="label !== '期权'">
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </div>
 </template>
 <script setup>
 import { OPTIONS_MAP, deadline_list } from "~/data";
@@ -31,6 +38,9 @@ const props = defineProps(["mode", "symmetricData", "tiledData"]);
 
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
+
+const indexOptions = ["隐波", "溢价率", "打和点", "杠杆", "Gamma", "一手价", "Vega", "一手成本价", "仓位"].map((el) => ({ label: el, value: el }));
+const indexVal = ref([]);
 const tableData = reactive({
   columns: [
     ...reversed_deadline_list.map((el) => ({ type: "C", label: el })),

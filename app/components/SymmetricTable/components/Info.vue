@@ -3,7 +3,7 @@
   <div v-else-if="props.row._split" style="background-color: black" class="h-[25px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] relative px-[4px]" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
@@ -18,49 +18,51 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
-      <div class="whitespace-nowrap">
-        <TagPrice :value="一手价" />
-      </div>
-      <div class="whitespace-nowrap">
-        <TagPremium :value="current期权Item['溢价率']" />
-      </div>
-    </div>
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
-      <div class="whitespace-nowrap">
-        <el-tag type="info" size="small" effect="plain"> 打和 {{ current期权Item["打和点"] }} </el-tag>
-      </div>
-      <div class="whitespace-nowrap">
-        <TagLeverage :value="current期权Item['杠杆']" />
-      </div>
-    </div>
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
-      <div class="whitespace-nowrap">
-        <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
-      </div>
-      <div class="whitespace-nowrap">
-        <TagVega :value="current期权Item['Vega']" />
-      </div>
-    </div>
-
-    <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
-      <div class="whitespace-nowrap">
-        <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
-      </div>
-      <div class="whitespace-nowrap">
-        <TagGamma :value="current期权Item['Gamma']" />
-      </div>
-    </div>
-    <div v-if="持仓">
-      <div class="flex justify-center whitespace-nowrap max-md:flex-col gap-[1px]">
-        <div class="whitespace-nowrap">
-          <TagCostPrice :一手成本价="一手成本价" />
+    <div class="flex flex-col justify-center mx-auto h-[140px]" :style="{ transform: [1, 2, 3].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
+          <TagPrice :value="一手价" />
         </div>
-        <div class="whitespace-nowrap">
-          <el-tag type="info" size="small" effect="plain"
-            >仓{{ 仓位 }}
-            <!-- ({{ formatDecimal(仓位占比, 1) }}%) -->
-          </el-tag>
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('溢价率')">
+          <TagPremium :value="current期权Item['溢价率']" />
+        </div>
+      </div>
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('打和点')">
+          <el-tag type="info" size="small" effect="plain"> 打和 {{ current期权Item["打和点"] }} </el-tag>
+        </div>
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('杠杆')">
+          <TagLeverage :value="current期权Item['杠杆']" />
+        </div>
+      </div>
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('隐波')">
+          <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
+        </div>
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Vega')">
+          <TagVega :value="current期权Item['Vega']" />
+        </div>
+      </div>
+
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Delta')">
+          <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
+        </div>
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Gamma')">
+          <TagGamma :value="current期权Item['Gamma']" />
+        </div>
+      </div>
+      <div v-if="持仓">
+        <div class="flex justify-center whitespace-nowrap max-md:flex-col gap-[1px]">
+          <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
+            <TagCostPrice :一手成本价="一手成本价" />
+          </div>
+          <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
+            <el-tag type="info" size="small" effect="plain"
+              >仓{{ 仓位 }}
+              <!-- ({{ formatDecimal(仓位占比, 1) }}%) -->
+            </el-tag>
+          </div>
         </div>
       </div>
     </div>
@@ -78,7 +80,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",

@@ -37,16 +37,12 @@ const formData = reactive({
   到期日List: [...deadline_list],
 });
 
-function getSpaceBetween4Div($1, $2, $3, $4) {
-  return `<div style="font-size: 18px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;">
-            <div style="display:flex;align-items: center;justify-content: space-between;column-gap: 5px;">
-              <div>${$3}</div>
-              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}</div>
-            </div>
-            <div style="display:flex;align-items: center;">
-              <div style='width: 70px;text-align: right;'>${$1}</div>
-              <div style='width: 5px;text-align: right;'>${$2}</div>
-            </div>
+function getSpaceBetween4Div($1, $2 = "", $3, $4, $5) {
+  return `<div style="font-size: 18px;display:flex;align-items: center;justify-content: space-between;column-gap: 5px;height: 24px;">
+              <div style='width: 200px;'>${$3}</div>
+              <div style='font-size:12px; width: 70px;text-align:right;color: #607cdd;'>${$5}</div>
+              <div style='color: #409eff;border-radius: 3px;width: 40px;text-align: right;'>${$4}手</div>
+              <div style='width: 90px;text-align: right;'>${$1}</div>
           </div>`;
 }
 
@@ -68,6 +64,7 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
       formatter: function (params) {
         let listStr = "<br />";
         const name = params[0].name;
+        const seriesName = params[0].seriesName;
         // 标题取第一个item的name（x轴名称）
         let result = `<div style="font-size: 18px;">${name}<br/>`;
         // 遍历所有系列
@@ -86,7 +83,8 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
                 "",
                 // 名称
                 el["期权名称"],
-                el["持仓"]
+                el["持仓"],
+                seriesName === "代替正股" ? formatNumberToWan(formatDecimal(el["排序字段"] / el["持仓"], 0)) : (el["排序字段"] / el["持仓"]).toFixed(1)
               )}`
           )
           .join("");
