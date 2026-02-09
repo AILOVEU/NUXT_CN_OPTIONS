@@ -4,6 +4,7 @@
     <Statistic title="时间价值总和" :value="时间价值总和" />
     <Statistic title="时间价占比" :value="时间价占比" />
     <Statistic title="总杠杆" :value="总杠杆" />
+    <Statistic title="单笔期权平均价" :value="单笔期权平均价" />
   </div>
 </template>
 <script setup>
@@ -44,5 +45,18 @@ const 时间价占比 = computed(() => {
 const 总杠杆 = computed(() => {
   let val = 代替正股总和.value / 持仓总和.value;
   return formatDecimal(val, 2);
+});
+const 单笔期权平均价 = computed(() => {
+  let 总手数 = 0;
+  let 总组合数 = 0;
+
+  props.tiledData.forEach((el) => {
+    总手数 += el["持仓"];
+  });
+  props.comboList.forEach((el) => {
+    总组合数 += el[2];
+  });
+  const res = 持仓总和.value / (总手数 + 总组合数 || 1);
+  return formatDecimal(res, 0);
 });
 </script>

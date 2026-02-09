@@ -1,7 +1,7 @@
 // import dayjs from "dayjs";
 
 const COOKIE_LIST = {
-  _: "fullscreengg=1; fullscreengg2=1; qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=ehBRERETB5AziWsmo_56J50e3; st_si=61856702606190; st_pvi=33871840292620; st_sp=2026-02-06%2015%3A32%3A04; st_inirUrl=; st_sn=1; st_psi=2026020615320434-113200301321-3082857776; st_asi=delete; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1770363124344; gviem=d91rwQx_GAAIFrcWWx3gvfcab; gviem_create_time=1770363124345",
+  _: "qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=ehBRERETB5AziWsmo_56J50e3; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1770363124344; gviem=d91rwQx_GAAIFrcWWx3gvfcab; gviem_create_time=1770363124345; fullscreengg=1; fullscreengg2=1; st_si=28340020454269; st_asi=delete; wsc_checkuser_ok=1; st_pvi=33871840292620; st_sp=2026-02-06%2015%3A32%3A04; st_inirUrl=; st_sn=2; st_psi=20260209151709114-113200301321-6561723262",
 };
 export default eventHandler(async (event) => {
   let cookie = COOKIE_LIST[getQuery(event)["fs"]] || COOKIE_LIST["_"];
