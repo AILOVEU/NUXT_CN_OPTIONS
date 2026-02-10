@@ -1,11 +1,11 @@
 // import dayjs from "dayjs";
 
 const COOKIE_LIST = {
-  _: "qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=ehBRERETB5AziWsmo_56J50e3; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1770363124344; gviem=d91rwQx_GAAIFrcWWx3gvfcab; gviem_create_time=1770363124345; fullscreengg=1; fullscreengg2=1; st_si=28340020454269; st_asi=delete; wsc_checkuser_ok=1; st_pvi=33871840292620; st_sp=2026-02-06%2015%3A32%3A04; st_inirUrl=; st_sn=2; st_psi=20260209151709114-113200301321-6561723262",
+  _: "fullscreengg=1; fullscreengg2=1; qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=Y4JrxyaiCKK-2TODAslF9f9b2; st_si=41928381375245; st_pvi=28052368977460; st_sp=2026-02-10%2015%3A18%3A07; st_inirUrl=; st_sn=1; st_psi=20260210151807828-113200301321-3187995602; st_asi=delete; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1770707888041; gviem=JwEptIKwdl7PLe2HhQxEzc2a7; gviem_create_time=1770707888041",
 };
 export default eventHandler(async (event) => {
   let cookie = COOKIE_LIST[getQuery(event)["fs"]] || COOKIE_LIST["_"];
-  const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
+  const res = await $fetch("https://push2." + "eastmoney.com" + "/api/qt/" + "clist/get", {
     method: "get",
     params: getQuery(event),
     headers: {
