@@ -96,8 +96,8 @@ function get组合名称(权利Item, 义务Item) {
 function getIs非法持仓(row) {
   if (row["持仓"]) {
     if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
+    if (row["到期天数"] < 15) return true;
   }
-  if (row["到期天数"] < 15) return true;
   return false;
 }
 export function 构建组合(tiledData) {
