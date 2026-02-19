@@ -3,7 +3,7 @@
   <div v-else-if="props.row._split" style="background-color: black" class="h-[25px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[240px] relative px-[4px]" :style="style">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[260px] relative px-[4px]" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
@@ -18,7 +18,7 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex flex-col justify-center mx-auto h-[140px]" :style="{ transform: [1, 2, 3].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
+    <div class="flex flex-col justify-center mx-auto h-[140px] max-md:h-[260px] max-md:mt-[-5px]" :style="{ transform: [1, 2, 3].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
       <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />

@@ -5,6 +5,7 @@
     <Statistic title="时间价占比" :value="时间价占比" />
     <Statistic title="总杠杆" :value="总杠杆" />
     <Statistic title="单笔期权平均价" :value="单笔期权平均价" />
+    <Statistic title="非组合平均Delta" :value="非组合平均Delta" />
   </div>
 </template>
 <script setup>
@@ -58,5 +59,20 @@ const 单笔期权平均价 = computed(() => {
   });
   const res = 持仓总和.value / (总手数 + 总组合数 || 1);
   return formatDecimal(res, 0);
+});
+
+const 非组合平均Delta = computed(() => {
+  let 总手数 = 0;
+  let 总Delta = 0;
+
+  props.tiledData.forEach((el) => {
+    if (!el["组合"]) {
+      总手数 += el["持仓"];
+      总Delta += el["持仓"] * el["Delta"];
+    }
+  });
+  if (!总手数) return 0;
+  const res = 总Delta / 总手数;
+  return formatDecimal(res, 2);
 });
 </script>
