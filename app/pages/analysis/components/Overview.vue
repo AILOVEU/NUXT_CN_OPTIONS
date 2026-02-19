@@ -1,6 +1,8 @@
 <template>
   <div class="flex items-center gap-[20px]">
     <Statistic title="持仓总和" :value="持仓总和" />
+    <Statistic title="涨跌1%盈亏" :value="涨跌盈亏1" />
+    <Statistic title="涨跌2%盈亏" :value="涨跌盈亏2" />
     <Statistic title="时间价值总和" :value="时间价值总和" />
     <Statistic title="时间价占比" :value="时间价占比" />
     <Statistic title="总杠杆" :value="总杠杆" />
@@ -31,6 +33,12 @@ const 代替正股总和 = computed(() => {
     if (el["持仓"]) sum += el["持仓"] * el["代替正股价"];
   });
   return sum;
+});
+const 涨跌盈亏1 = computed(() => {
+  return formatDecimal(代替正股总和.value * 0.01, 0);
+});
+const 涨跌盈亏2 = computed(() => {
+  return formatDecimal(代替正股总和.value * 0.02, 0);
 });
 const 持仓总和 = computed(() => {
   let sum = 0;
