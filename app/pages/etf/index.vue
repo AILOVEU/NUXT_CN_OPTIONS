@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 30) + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -121,7 +121,7 @@ const options = computed(() => {
       const top = padding + row * (gridHeight + gap);
 
       const graphicLeft = left + gridWidth / 4;
-      const graphicTop = top + gridHeight / 2;
+      const graphicTop = top + gridHeight / 4;
       gridArr.push({
         left: `${left}%`,
         top: `${top}%`,
@@ -152,6 +152,29 @@ const options = computed(() => {
         data: seriesData,
         itemStyle: { borderRadius: 1 }, // 小圆角适配小柱状图
         barWidth: "100%", // 柱状图宽度占网格x轴的60%
+        markLine: {
+          symbol: "none",
+          label: {
+            show: false,
+          },
+          // 标记线整体样式
+          lineStyle: {
+            color: "rgba(255,0,0,0.6)", // 红色高亮
+            width: 0.5, // 线宽
+            type: "dashed", // 实线
+          },
+          // 标记线数据：定位到2024-05-09的垂直标记线
+          data: [
+            {
+              name: yearStr + "-03-04",
+              xAxis: yearStr + "-03-04",
+            },
+            {
+              name: yearStr + "-03-14",
+              xAxis: yearStr + "-03-14",
+            }
+          ],
+        },
       });
 
       graphicArr.push({

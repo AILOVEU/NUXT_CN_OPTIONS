@@ -6,11 +6,11 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-    <div class="w-full overflow-auto h-[30vh]">
-      <VChart :option="总览options" ref="echartRef" :style="{ height: '30vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
+    <div class="w-full overflow-auto h-[30vh] max-md:h-[90vh]">
+      <VChart :option="总览options" ref="echartRef" :style="{ height: isMobile ? '90vh' : '30vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
     </div>
-    <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 20 : 30) + 'vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
+    <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(210vh-100px)]">
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 30) + 'vh', width: isMobile ? '300vw' : '100vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -172,10 +172,20 @@ const options = computed(() => {
             type: "dashed", // 实线
           },
           // 标记线数据：定位到2024-05-09的垂直标记线
-          data: monthFourthWednesdayList.map((curMonthFourthWednesday) => ({
-            name: curMonthFourthWednesday,
-            xAxis: curMonthFourthWednesday,
-          })),
+          data: [
+            // {
+            //   name: yearStr + "-03-04",
+            //   xAxis: yearStr + "-03-04",
+            // },
+            // {
+            //   name: yearStr + "-03-14",
+            //   xAxis: yearStr + "-03-14",
+            // },
+            ...monthFourthWednesdayList.map((curMonthFourthWednesday) => ({
+              name: curMonthFourthWednesday,
+              xAxis: curMonthFourthWednesday,
+            })),
+          ],
         },
       });
 

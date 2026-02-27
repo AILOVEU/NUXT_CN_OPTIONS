@@ -49,7 +49,7 @@ const navList = [
     name: "Vixs",
   },
   {
-    href: "/fund",
+    href: "/etf",
     name: "ETF",
   },
   {
