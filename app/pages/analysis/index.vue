@@ -24,7 +24,7 @@ import _ from "lodash";
 import BarInfo from "./components/BarInfo";
 import SankeyInfo from "./components/SankeyInfo";
 import MoneyTrend from "./components/MoneyTrend";
-import Overview from './components/Overview';
+import Overview from "./components/Overview";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 const tiledData = ref([]);
