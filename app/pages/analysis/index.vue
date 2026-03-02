@@ -2,8 +2,11 @@
   <div v-loading="loading || globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
-      <Card header="概览">
-        <Overview :tiledData="tiledData" :comboList="comboList" />
+      <Card header="非组合概览">
+        <UnComboOverview :tiledData="tiledData" :comboList="comboList" />
+      </Card>
+      <Card header="组合概览" v-if="comboList.length">
+        <ComboOverview :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="资金分析">
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
@@ -24,7 +27,8 @@ import _ from "lodash";
 import BarInfo from "./components/BarInfo";
 import SankeyInfo from "./components/SankeyInfo";
 import MoneyTrend from "./components/MoneyTrend";
-import Overview from "./components/Overview";
+import UnComboOverview from "./components/UnComboOverview";
+import ComboOverview from "./components/ComboOverview";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 const tiledData = ref([]);

@@ -6,7 +6,12 @@
 </template>
 <script setup>
 const props = defineProps(["title", "value", "style", "titleStyle", "contentStyle"]);
-const style = computed(() => props.style || {});
+const style = computed(
+  () =>
+    props.style || {
+      backgroundColor: "rgba(240,240,240,0.5)",
+    }
+);
 const titleStyle = computed(() => props.titleStyle || {});
 const contentStyle = computed(() => props.contentStyle || {});
 </script>
