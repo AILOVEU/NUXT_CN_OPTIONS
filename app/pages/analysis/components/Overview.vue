@@ -31,6 +31,10 @@
 <script setup>
 import { formatDecimal, formatNumberToWan } from "~/utils/utils";
 const props = defineProps(["tiledData", "comboList"]);
+// const 认购价值 = computed(()=> {
+
+// })
+
 const 内在价值总和 = computed(() => {
   let sum = 0;
   props.tiledData.forEach((el) => {

@@ -1,7 +1,7 @@
 // import dayjs from "dayjs";
 
 const COOKIE_LIST = {
-  _: "qgqp_b_id=9b5c5b018a8a9ff2f8d9780997fc2519; st_nvi=y7BYR8q1U2SHGwn1-GzUK7bf4; nid18=010d039dd427dc4d187090491f47d7ad; nid18_create_time=1770793551438; gviem=A9bdiUwg-I7EnaGd0w9Gi3808; gviem_create_time=1770793551438; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; EMFUND8=null; EMFUND0=null; EMFUND9=02-11 16:22:07@#$%u5BCC%u56FD%u4E2D%u8BC1%u6E2F%u80A1%u901A%u4E92%u8054%u7F51ETF@%23%24159792; fullscreengg=1; fullscreengg2=1; st_si=64428945459123; st_asi=delete; wsc_checkuser_ok=1; st_pvi=05596905424376; st_sp=2026-02-11%2015%3A05%3A51; st_inirUrl=https%3A%2F%2Fwww.google.com.hk%2F; st_sn=2; st_psi=20260227232011997-113200301321-3574045024",
+  _: "fullscreengg=1; fullscreengg2=1; qgqp_b_id=83a7366c474092ee17159c3b5e107e9e; st_nvi=X12kz8s3nmu2vGAZrMauZ43f9; st_si=14249273190115; st_pvi=07985580781362; st_sp=2026-03-02%2017%3A35%3A32; st_inirUrl=; st_sn=1; st_psi=20260302173532729-113200301321-6745119968; st_asi=delete; nid18=0a78177fb812bebb626a2b42b8ec90ef; nid18_create_time=1772444133300; gviem=6-jZrEWQdEIaQle807Snuaf2a; gviem_create_time=1772444133300",
 };
 export default eventHandler(async (event) => {
   let cookie = COOKIE_LIST[getQuery(event)["fs"]] || COOKIE_LIST["_"];

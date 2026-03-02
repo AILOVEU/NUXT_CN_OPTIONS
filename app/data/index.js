@@ -6,12 +6,12 @@ export const 金额 = {
   //
   基础金额: 10000,
   //
-  场内现金: 814,
+  场内现金: 710,
   占用保证金: 0, // 单笔保证金50 -> 15 了
-  贷款: 46500,
+  贷款: 47000,
   出金: 0, // 整万提取，多出部分转到文档“补差价”字段，转出后不可转入，转入是贷款
   // 👇不参与计算👇
-  现转股: 4500,
+  现转股: 4000,
   现转期: 3000,
 };
 export const 建议买入价 = 380;
@@ -85,15 +85,6 @@ export const OPTIONS_MAP = [
     fs: "m:12+c:159922",
   },
   {
-    code: "588000",
-    name: "科50ETF",
-    linkName: ["科创50ETF"],
-    color: "#9a60b4",
-    showName: "科50🐸",
-    行权价Range: [1400, 1700],
-    fs: "m:10+c:588000",
-  },
-  {
     code: "159915",
     name: "创业板ETF",
     linkName: ["创业板ETF易方达"],
@@ -101,6 +92,15 @@ export const OPTIONS_MAP = [
     showName: "创业板🦑",
     行权价Range: [3100, 3400],
     fs: "m:12+c:159915",
+  },
+  {
+    code: "588000",
+    name: "科50ETF",
+    linkName: ["科创50ETF"],
+    color: "#9a60b4",
+    showName: "科50🐸",
+    行权价Range: [1400, 1700],
+    fs: "m:10+c:588000",
   },
 ];
 export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
@@ -121,6 +121,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260302", -18191],
     ["20260227", -18912],
     ["20260213", -19488],
     ["20260211", -2507],
