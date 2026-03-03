@@ -8,7 +8,7 @@
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="认购代替正股和" :value="formatNumberToWan(认购代替正股和)" />
     <div class="mx-[2px]">|</div>
-    <Statistic title="认沽对冲占比" :value="Math.abs(formatDecimal(认沽对冲占比, 2)) + '%'" :style="{ backgroundColor: 认沽对冲占比 > 0.1 ? '#FFA6A6' : '#BCD9A2' }" />
+    <Statistic title="认沽对冲占比" :value="Math.abs(formatDecimal(认沽对冲占比, 2)) + '%'" :style="{ backgroundColor: Math.abs(认沽对冲占比) > 10 ? '#BCD9A2' : '#FFA6A6' }" />
   </div>
   <br />
   <br />
