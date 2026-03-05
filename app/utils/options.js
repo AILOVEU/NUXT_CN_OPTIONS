@@ -158,7 +158,7 @@ function sleep(time) {
 }
 async function get_target_http_data(持仓JSON, fs) {
   let curr_page = 1;
-  const pz = 50;
+  const pz = 20;
   let tiledData = [];
   while (curr_page < 50) {
     // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {

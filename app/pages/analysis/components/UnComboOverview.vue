@@ -1,5 +1,14 @@
 <template>
   <div class="flex items-center justify-center">
+    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" />
+    <div class="mx-[2px]">&nbsp;</div>
+    <Statistic title="时间价总和" :value="formatNumberToWan(时间价总和)" />
+    <div class="mx-[2px]">&nbsp;</div>
+    <Statistic title="时间价占比" :value="formatDecimal(时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
+  </div>
+  <br /><br />
+
+  <div class="flex items-center justify-center">
     <Statistic title="认沽总价" :value="formatNumberToWan(认沽总价)" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="认购总价" :value="formatNumberToWan(认购总价)" />
@@ -10,8 +19,8 @@
     <div class="mx-[2px]">|</div>
     <Statistic title="认沽对冲占比" :value="Math.abs(formatDecimal(认沽对冲占比, 2)) + '%'" :style="{ backgroundColor: Math.abs(认沽对冲占比) > 10 ? '#BCD9A2' : '#FFA6A6' }" />
   </div>
-  <br />
-  <br />
+  <br /><br />
+  
   <div class="flex items-center justify-center">
     <Statistic title="代替正股总和" :value="formatNumberToWan(代替正股总和)" />
     <div class="mx-[2px]">&nbsp;</div>
@@ -19,14 +28,8 @@
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="涨跌2%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.02, 0))" />
     <div class="mx-[2px]">|</div>
-    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="时间价总和" :value="formatNumberToWan(时间价总和)" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="时间价占比" :value="formatDecimal(时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
-  <br />
-  <br />
+  <br /><br />
   <div class="flex items-center justify-center">
     <Statistic title="总杠杆" :value="总杠杆" :style="{ backgroundColor: '#ece7d1' }" />
     <div class="mx-[2px]">&nbsp;</div>
