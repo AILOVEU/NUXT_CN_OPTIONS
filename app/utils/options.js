@@ -280,7 +280,12 @@ function formatRecord(_tiledData, 持仓JSON) {
   return tiledData;
 }
 // 请求入口
-export async function get_http_data(正股代码List, useCatch = true) {
+// 一般只请求持仓的数据，若需要请求所有数据，不提供切回只展示持仓的模式
+export async function get_http_data(
+  正股代码List,
+  useCatch = true, // 默认使用缓存数据
+  catchAll = true // 当useCatch为false，请求接口时默认缓存所有
+) {
   let _tiledData = [];
   let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
   if (useCatch) {
@@ -291,7 +296,11 @@ export async function get_http_data(正股代码List, useCatch = true) {
       _tiledData = [];
     }
   } else {
-    const PROMISE_LIST = OPTIONS_MAP.map((el) => el.fs)
+    // 重新请求接口时，判断时候请求所有数据
+    const 持仓StockCodeList = Array.from(new Set(持仓JSON.map((el) => el["正股代码"])));
+    let filteredOptionsList = catchAll ? OPTIONS_MAP : OPTIONS_MAP.filter((el) => 持仓StockCodeList.includes(el.code));
+    const PROMISE_LIST = filteredOptionsList
+      .map((el) => el.fs)
       .filter((el) => 正股代码List.some((code) => el.includes(code)))
       .map((fs, idx) => {
         return new Promise((resolve) => {
@@ -319,6 +328,7 @@ export async function get_http_data(正股代码List, useCatch = true) {
   }
 
   let tiledData = formatRecord(_tiledData, 持仓JSON);
+  let filteredOptionsList = OPTIONS_MAP.filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el.code));
   tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"])); // 缓存数据过滤
   const comboList = 构建组合(tiledData);
   tiledData = tiledData.map((el) => {
@@ -327,6 +337,6 @@ export async function get_http_data(正股代码List, useCatch = true) {
       组合: comboList.some((item) => item.includes(el["期权名称"])),
     };
   });
-  console.log("[tiledData, comboList]", [tiledData, comboList]);
-  return [tiledData, comboList];
+  console.log("[tiledData, comboList,filteredOptionsList]", [tiledData, comboList, filteredOptionsList]);
+  return [tiledData, comboList, filteredOptionsList];
 }

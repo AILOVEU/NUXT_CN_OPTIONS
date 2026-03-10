@@ -6,13 +6,13 @@ export const 金额 = {
   //
   基础金额: 10000,
   //
-  场内现金: 120,
+  场内现金: 551,
   占用保证金: 0, // 单笔保证金50 -> 15 了
-  贷款: 37500,
+  贷款: 39500,
   出金: 0, // 整万提取，多出部分转到文档“补差价”字段，转出后不可转入，转入是贷款
   // 👇不参与计算👇
-  现转股: 3500,
-  现转期: 3000,
+  现转股: 0,
+  现转期: 13000,
 };
 export const 建议买入价 = 380;
 export const 最大建议买入时间价 = 750;
@@ -48,15 +48,15 @@ export const fields_dict = {
   f334: "正股价格", // 3.025
 };
 export const OPTIONS_MAP = [
-  // {
-  //   code: "510050",
-  //   name: "50ETF",
-  //   linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
-  //   color: "#73c0de",
-  //   showName: "50ETF🧊", // 顶部tab筛选会用到
-  //   行权价Range: [2900, 3200],
-  //   fs: "m:10+c:510050",
-  // },
+  {
+    code: "510050",
+    name: "50ETF",
+    linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
+    color: "#73c0de",
+    showName: "50ETF🧊", // 顶部tab筛选会用到
+    行权价Range: [2900, 3200],
+    fs: "m:10+c:510050",
+  },
   {
     code: "510300",
     name: "300ETF",
@@ -66,42 +66,42 @@ export const OPTIONS_MAP = [
     行权价Range: [4500, 4800],
     fs: "m:10+c:510300",
   },
-  // {
-  //   code: "510500",
-  //   name: "沪500ETF",
-  //   linkName: ["中证500ETF"],
-  //   color: "#fac858",
-  //   showName: "沪500🦁",
-  //   行权价Range: [7500, 8500],
-  //   fs: "m:10+c:510500",
-  // },
-  // {
-  //   code: "159922",
-  //   name: "深500ETF", // 中文名无关，特殊处理了
-  //   linkName: ["深500"], // 中文名无关，特殊处理了
-  //   color: "#fc8452",
-  //   showName: "深500🐯",
-  //   行权价Range: [3000, 3400],
-  //   fs: "m:12+c:159922",
-  // },
-  // {
-  //   code: "159915",
-  //   name: "创业板ETF",
-  //   linkName: ["创业板ETF易方达"],
-  //   color: "#ea7ccc",
-  //   showName: "创业板🦑",
-  //   行权价Range: [3100, 3400],
-  //   fs: "m:12+c:159915",
-  // },
-  // {
-  //   code: "588000",
-  //   name: "科50ETF",
-  //   linkName: ["科创50ETF"],
-  //   color: "#9a60b4",
-  //   showName: "科50🐸",
-  //   行权价Range: [1400, 1700],
-  //   fs: "m:10+c:588000",
-  // },
+  {
+    code: "510500",
+    name: "沪500ETF",
+    linkName: ["中证500ETF"],
+    color: "#fac858",
+    showName: "沪500🦁",
+    行权价Range: [7500, 8500],
+    fs: "m:10+c:510500",
+  },
+  {
+    code: "159922",
+    name: "深500ETF", // 中文名无关，特殊处理了
+    linkName: ["深500"], // 中文名无关，特殊处理了
+    color: "#fc8452",
+    showName: "深500🐯",
+    行权价Range: [3000, 3400],
+    fs: "m:12+c:159922",
+  },
+  {
+    code: "159915",
+    name: "创业板ETF",
+    linkName: ["创业板ETF易方达"],
+    color: "#ea7ccc",
+    showName: "创业板🦑",
+    行权价Range: [3100, 3400],
+    fs: "m:12+c:159915",
+  },
+  {
+    code: "588000",
+    name: "科50ETF",
+    linkName: ["科创50ETF"],
+    color: "#9a60b4",
+    showName: "科50🐸",
+    行权价Range: [1400, 1700],
+    fs: "m:10+c:588000",
+  },
 ];
 export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
@@ -121,6 +121,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260310", -33098],
     ["20260305", -34787],
     ["20260304", -31754],
     ["20260303", -22812],

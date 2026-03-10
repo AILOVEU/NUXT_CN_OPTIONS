@@ -29,29 +29,31 @@ const mode = computed(() => {
 });
 
 const tableRef = ref();
-const stockCodeOptions = computed(() => {
-  let ops = OPTIONS_MAP.map((el) => ({
-    value: el.code,
-    label: el.showName,
-  }));
-  return [...ops, { value: "all", label: "全" }];
-});
 const stockCode = ref("all");
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   symmetricData: [],
   tiledData: [],
   comboList: [],
+  filteredOptionsList: [],
   loading: false,
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [symmetricData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [symmetricData, comboList, tiledData, filteredOptionsList] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.symmetricData = symmetricData || [];
   tableData.tiledData = tiledData;
   tableData.comboList = comboList;
+  tableData.filteredOptionsList = filteredOptionsList;
   tableData.loading = false;
 }
+const stockCodeOptions = computed(() => {
+  let ops = tableData.filteredOptionsList.map((el) => ({
+    value: el.code,
+    label: el.showName,
+  }));
+  return [...ops, { value: "all", label: "全" }];
+});
 handleQuery();
 function handleStockCodeChange() {
   setTimeout(() => {

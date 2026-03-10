@@ -1,7 +1,12 @@
 <template>
   <el-affix :offset="0">
-    <div class="flex justify-between text-[12px] mb-[12px] gap-[20px]">
-      <el-button @click="handleQuery" class="flex-1" type="primary" :disabled="isMobile"> 刷新 </el-button>
+    <div class="flex justify-between text-[12px] mb-[12px] gap-[20px] bg-white">
+      <div class="flex gap-[12px] items-center">
+        <el-button @click="() => handleQuery(false)" class="flex-1" type="primary" :disabled="isMobile"> 刷新持仓 </el-button>
+        <el-button @click="() => handleQuery(true)" class="flex-1" :disabled="isMobile"> 全部刷新 </el-button>
+        <div>更新时间<br />{{ updateTime }}</div>
+      </div>
+
       <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
         <div :class="{ active: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
           {{ item.name }}
@@ -15,9 +20,11 @@
 import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
+import dayjs from "dayjs";
 const { setGlobalLoading, isMobile } = useGlobal();
 const route = useRoute();
 const router = useRouter();
+const updateTime = ref(localStorage.getItem("updateTime"));
 const navList = [
   {
     href: "/hold",
@@ -73,13 +80,16 @@ function handleClick(href) {
   router.push(href);
 }
 
-function handleQuery() {
+function handleQuery(catchAll = false) {
   setGlobalLoading(true);
+  const useCatch = false;
   get_http_data(
     OPTIONS_MAP.map((el) => el.code),
-    false
+    useCatch,
+    catchAll
   )
     .then(([tiledData]) => {
+      localStorage.setItem("updateTime", dayjs().format("YYYY-MM-DD HH:mm:ss"));
       if (tiledData.length) {
         window.location.reload();
       }

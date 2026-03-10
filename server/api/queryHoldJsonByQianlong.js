@@ -24,6 +24,7 @@ export async function get_持仓JSON() {
                 持仓: +el[7], // 正值
                 持仓类别: el[4] === "权利" ? "权利仓" : "义务仓", // 义务仓、权利仓
                 开仓均价: +el[8],
+                正股代码: el[32]?.split(el[32].includes("C") ? "C" : "P")[0],
               }))
           );
         })
