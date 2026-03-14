@@ -1,6 +1,6 @@
 import { fields_dict, OPTIONS_MAP, 金额, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
-import { formatDecimal, getRandomInt } from "~/utils/utils";
+import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
@@ -157,51 +157,56 @@ function sleep(time) {
   });
 }
 async function get_target_http_data(持仓JSON, fs) {
-  let curr_page = 1;
-  const pz = 20;
-  let tiledData = [];
-  while (curr_page < 50) {
-    // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
-    const res = await $fetch("/api/queryEastmoney", {
-      method: "get",
-      params: {
-        np: "1",
-        fltt: "2",
-        invt: "2",
-        fs,
-        fields: Object.keys(fields_dict).join(","),
-        fid: "f3",
-        pn: curr_page + "",
-        pz,
-        po: "1",
-        dect: "1",
-        // ut: generateRandomString(32),
-        ut: "fa5fd1943c7b386f172d6893dbfba10b",
-        wbp2u: "|0|1|0|web",
-        _: dayjs().valueOf() - Math.floor(Math.random() * 100),
-        // fs: "m:10+c:510050",
-        // fs: "m:10,m:12",
-        // fs: "m:10",
-      },
-    }).catch((res) => {
-      console.warn(res);
-    });
-    await sleep(getRandomInt(6, 12) * 1000);
-    if (!res["data"]) {
-      console.log(fs + "请求完成" + tiledData.length);
-      break;
+  return new Promise(async (resolve, reject) => {
+    let curr_page = 1;
+    const pz = 20;
+    let tiledData = [];
+    while (curr_page < 50) {
+      // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
+      const res = await $fetch("/api/queryEastmoney", {
+        method: "get",
+        params: {
+          np: "1",
+          fltt: "2",
+          invt: "2",
+          fs,
+          fields: Object.keys(fields_dict).join(","),
+          fid: "f3",
+          pn: curr_page + "",
+          pz,
+          po: "1",
+          dect: "1",
+          // ut: generateRandomString(32),
+          ut: "fa5fd1943c7b386f172d6893dbfba10b",
+          wbp2u: "|0|1|0|web",
+          _: dayjs().valueOf() - Math.floor(Math.random() * 100),
+          // fs: "m:10+c:510050",
+          // fs: "m:10,m:12",
+          // fs: "m:10",
+        },
+      }).catch((res) => {
+        console.warn(res);
+        reject(false);
+      });
+      console.log("fs query", fs, curr_page);
+      await sleep(getRandomInt(2, 4) * 1000);
+      if (!res["data"]) {
+        console.log(fs + "请求完成" + tiledData.length);
+        break;
+      }
+      curr_page += 1;
+      let res_data = res["data"]["diff"];
+      res_data.forEach((_) => {
+        tiledData.push(_);
+      });
+      if (res_data?.length < pz) {
+        console.log(fs + "请求完成" + tiledData.length);
+        break;
+      }
     }
-    curr_page += 1;
-    let res_data = res["data"]["diff"];
-    res_data.forEach((_) => {
-      tiledData.push(_);
-    });
-    if (res_data?.length < pz) {
-      console.log(fs + "请求完成" + tiledData.length);
-      break;
-    }
-  }
-  return tiledData;
+    console.log("fs resolve", fs);
+    resolve(tiledData);
+  });
 }
 let DEBUG_LIST = {};
 function debug(_tiledData) {
@@ -298,18 +303,20 @@ export async function get_http_data(
   } else {
     // 重新请求接口时，判断时候请求所有数据
     const 持仓StockCodeList = Array.from(new Set(持仓JSON.map((el) => el["正股代码"])));
+    console.log("持仓StockCodeList", 持仓StockCodeList);
     let filteredOptionsList = catchAll ? OPTIONS_MAP : OPTIONS_MAP.filter((el) => 持仓StockCodeList.includes(el.code));
     const PROMISE_LIST = filteredOptionsList
       .map((el) => el.fs)
       .filter((el) => 正股代码List.some((code) => el.includes(code)))
       .map((fs, idx) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(get_target_http_data(持仓JSON, fs));
-          }, idx * 1000 * getRandomInt(8, 12));
-        });
+        return () =>
+          new Promise((resolve, reject) => {
+            get_target_http_data(持仓JSON, fs)
+              .then((res) => resolve(res))
+              .catch((err) => reject(err));
+          });
       });
-    await Promise.all(PROMISE_LIST)
+    await promiseAllSequential(PROMISE_LIST)
       .then((list) => {
         list.forEach((el) => {
           _tiledData.push(...el);

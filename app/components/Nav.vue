@@ -89,8 +89,8 @@ function handleQuery(catchAll = false) {
     catchAll
   )
     .then(([tiledData]) => {
-      localStorage.setItem("updateTime", dayjs().format("YYYY-MM-DD HH:mm:ss"));
       if (tiledData.length) {
+        localStorage.setItem("updateTime", dayjs().format("YYYY-MM-DD HH:mm:ss"));
         window.location.reload();
       }
     })

@@ -329,3 +329,17 @@ export function getValidExerciseDate(dateStr) {
   }
   return validMonthList[monthIdx].map((el) => getFourWednesdayOfMonth(el));
 }
+export async function promiseAllSequential(tasks) {
+  const results = [];
+  console.log('tasks',tasks)
+  for (const task of tasks) {
+    console.log('task',task)
+    try {
+      const result = await task();
+      results.push(result);
+    } catch (error) {
+      throw error; // 直接抛出，停止后续执行
+    }
+  }
+  return results;
+}
