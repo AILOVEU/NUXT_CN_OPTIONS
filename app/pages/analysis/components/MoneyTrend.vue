@@ -308,21 +308,6 @@ const 盈亏曲线Option = computed(() => {
           data: [
             {
               lineStyle: {
-                color: "red",
-              },
-              name: "一万重建盈亏线",
-              yAxis: 21537,
-              // label: {
-              //   show: false,
-              //   position: "start",
-              //   formatter: (params) => {
-              //     const { name, value } = params;
-              //     return `${name}\n${value}`;
-              //   },
-              // },
-            },
-            {
-              lineStyle: {
                 color: "orange",
               },
               name: "平均值",
