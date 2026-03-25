@@ -1,6 +1,6 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
-  <div v-else-if="props.row._split" style="background-color: black" class="h-[25px]">&nbsp;</div>
+  <div v-else-if="props.row._split" style="background-color: black" class="h-[100px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[260px] relative px-[4px]" :style="style">

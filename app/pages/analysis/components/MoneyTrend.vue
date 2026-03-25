@@ -239,7 +239,7 @@ const 盈亏曲线Option = computed(() => {
     },
     backgroundColor: "#fefefe",
     title: {
-      text: "历史盈亏曲线",
+      text: "2026盈亏曲线",
     },
     xAxis: {
       type: "category",
