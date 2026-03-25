@@ -308,10 +308,18 @@ const 盈亏曲线Option = computed(() => {
           data: [
             {
               lineStyle: {
-                color: "orange",
+                color: "red",
               },
-              name: "平均值",
-              type: "average",
+              name: "第一目标位",
+              yAxis: money.第一目标,
+              // label: {
+              //   show: false,
+              //   position: "start",
+              //   formatter: (params) => {
+              //     const { name, value } = params;
+              //     return `${name}\n${value}`;
+              //   },
+              // },
             },
             {
               lineStyle: {
@@ -320,6 +328,13 @@ const 盈亏曲线Option = computed(() => {
               name: "平均值",
               type: "average",
             },
+            // {
+            //   lineStyle: {
+            //     color: "orange",
+            //   },
+            //   name: "平均值",
+            //   type: "average",
+            // },
             // {
             //   lineStyle: {
             //     color: "green",
