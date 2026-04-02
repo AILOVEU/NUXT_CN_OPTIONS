@@ -800,7 +800,7 @@ function getInRowStyle({ row }) {
 </script>
 <style scoped>
 ::v-deep(.el-table--small .cell) {
-  padding: 0 6px 0 0 !important;
+  padding: 0 0px 0 0 !important;
 }
 ::v-deep(.el-table--small .el-table__cell) {
   padding: 2px 0 !important;

@@ -1,19 +1,25 @@
 <template>
   <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
-    <div>
+    <div class="mx-[20px]">
       <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <div>
           <el-form-item label="正股">
             <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
           </el-form-item>
+          <!-- 
           <el-form-item label="到期日" clearable>
-            <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
-          </el-form-item>
+            <el-select v-model="formData.到期日List" multiple>
+              <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
+            </el-select>
+          </el-form-item> -->
           <el-form-item label="沽购" clearable>
             <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
+            <!-- <el-select v-model="formData.沽购List" multiple>
+              <el-option v-for="call in ['沽', '购']" :key="call" :label="call" :value="call" />
+            </el-select> -->
           </el-form-item>
-          <el-form-item label="过滤持有">
+          <!-- <el-form-item label="过滤持有">
             <el-radio-group v-model="formData.过滤持有">
               <el-radio :value="'权利'">仅权利</el-radio>
               <el-radio :value="'义务'">仅义务</el-radio>
@@ -100,11 +106,11 @@
                 <el-input placeholder="最大值" v-model="formData.溢价Range[1]" />
               </el-col>
             </el-form-item>
-          </template>
+          </template> -->
         </div>
       </el-form>
     </div>
-    <div class="w-full flex mb-[12px] gap-[20px] justify-between">
+    <div class="w-full flex mb-[12px] gap-[20px] justify-between mx-[20px]">
       <div
         class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
         v-for="item in [
@@ -117,7 +123,16 @@
         {{ item.label }}
       </div>
     </div>
-    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" />
+    <div v-if="showType === 'list'" class="h-[calc(100vh-300px)] max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col">
+      <div class="flex justify-center">彩票</div>
+      <FilterList :checkIsChance="checkIsChance彩票" />
+      <div class="flex justify-center">短期</div>
+      <FilterList :checkIsChance="checkIsChance短期" />
+      <div class="flex justify-center">中期</div>
+      <FilterList :checkIsChance="checkIsChance中期" />
+      <div class="flex justify-center">远期</div>
+      <FilterList :checkIsChance="checkIsChance远期" />
+    </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" />
   </div>
 </template>
@@ -144,25 +159,72 @@ const formData = reactive({
   GammaRange: [0.5, 9999],
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
-  沽购List: ["沽", "购"],
+  沽购List: ["购"],
   过滤持有: false,
 });
-
-function checkIsChance(target) {
+function checkIsChance彩票(target) {
   if (target["is旧期权"]) return false;
   if (!formData.沽购List.includes(target["沽购"])) return false;
   if (!formData.正股List.includes(target["正股代码"])) return false;
-  if (!formData.到期日List.includes(target["到期日"])) return false;
-  if (formData.过滤持有 === "权利" && !(target["持仓"] > 0)) return false;
-  if (formData.过滤持有 === "义务" && !(target["持仓"] < 0)) return false;
-  if (formData.过滤持有 === "持有" && !target["持仓"]) return false;
-  if (!(target["一手价"] <= formData.一手价Range[1] && target["一手价"] >= formData.一手价Range[0])) return false;
-  if (!(target["一手时间价"] <= formData.一手价时间价Range[1] && target["一手时间价"] >= formData.一手价时间价Range[0])) return false;
-  if (!(Math.abs(target["Delta"]) <= formData.DeltaRange[1] && Math.abs(target["Delta"]) >= formData.DeltaRange[0])) return false;
-  if (!(target["隐波"] <= formData.隐波Range[1] && target["隐波"] >= formData.隐波Range[0])) return false;
-  if (!(Math.abs(target["Gamma"]) <= formData.GammaRange[1] && Math.abs(target["Gamma"]) >= formData.GammaRange[0])) return false;
-  if (!(target["溢价率"] <= formData.溢价Range[1] && target["溢价率"] >= formData.溢价Range[0])) return false;
+
+  // if (target["到期天数"] > 10) return false;
+  if (target["一手价"] >= 200) return false;
+  if (target["溢价率"] >= 1.5) return false;
   return true;
+}
+// 短期不关注隐波，只关注溢价率和价格
+function checkIsChance短期(target) {
+  if (target["is旧期权"]) return false;
+  if (!formData.沽购List.includes(target["沽购"])) return false;
+  if (!formData.正股List.includes(target["正股代码"])) return false;
+
+  if (target["到期天数"] > 45 || target["到期天数"] <= 10) return false;
+  if (target["一手价"] >= 1000) return false;
+  if (target["一手时间价"] >= 500) return false;
+  if (target["溢价率"] >= 3 && Math.abs(target["Delta"]) < 0.2) return false;
+  return true;
+}
+function checkIsChance中期(target) {
+  const OpsItem = OPTIONS_MAP.find((item) => item.code === target["正股代码"]);
+  if (target["is旧期权"]) return false;
+  if (!formData.沽购List.includes(target["沽购"])) return false;
+  if (!formData.正股List.includes(target["正股代码"])) return false;
+  if (target["沽购"] === "购") {
+    if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
+  }
+
+  if (target["到期天数"] <= 45 || target["到期天数"] >= 90) return false;
+  if (target["一手价"] >= 1500) return false;
+  if (target["一手时间价"] >= 500) return false;
+  if (target["溢价率"] >= 10) return false;
+  // 实值不关注隐波
+  if (target["隐波"] >= OpsItem.隐波Max && target["一手时间价"] >= 500 && target["一手内在价"] > 0) return false;
+  return true;
+}
+function checkIsChance远期(target) {
+  const OpsItem = OPTIONS_MAP.find((item) => item.code === target["正股代码"]);
+  if (target["is旧期权"]) return false;
+  if (!formData.沽购List.includes(target["沽购"])) return false;
+  if (!formData.正股List.includes(target["正股代码"])) return false;
+  if (target["沽购"] === "购") {
+    if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
+  }
+
+  if (target["到期天数"] < 90) return false;
+  if (target["一手价"] >= 3500) return false;
+  if (target["一手时间价"] >= 1000) return false;
+  if (target["溢价率"] >= 20) return false;
+  // 实值不关注隐波
+  if (target["隐波"] >= OpsItem.隐波Max && target["一手时间价"] >= 500 && target["一手内在价"] > 0) return false;
+  return true;
+}
+
+function checkIsChance(target) {
+  if (checkIsChance彩票(target)) return true;
+  if (checkIsChance短期(target)) return true;
+  if (checkIsChance中期(target)) return true;
+  if (checkIsChance远期(target)) return true;
+  return false;
 }
 </script>
 <style scoped>

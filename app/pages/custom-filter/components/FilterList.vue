@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading" class="h-[calc(100vh-168px)] max-md:h-[calc(200vh-300px)] mb-[100px] flex justify-center">
+  <div v-loading="tableData.loading" class="flex justify-center">
     <div class="mx-auto overflow-x-auto">
       <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
         <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
@@ -11,7 +11,7 @@
         <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="100" sortable align="right" />
         <el-table-column #default="{ row }" label="一手时间价" prop="一手时间价" width="100" sortable align="right" />
         <el-table-column #default="{ row }" label="一手内在价" prop="一手内在价" width="100" sortable align="right" />
-        
+
         <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
@@ -43,7 +43,7 @@
             <TagGamma :value="row['Gamma']" />
           </el-table-column>
 
-          <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
+          <el-table-column #default="{ row }" label="Vega" prop="Vega" width="90" sortable align="right">
             <TagVega :value="row['Vega']" />
           </el-table-column>
         </el-table-column>

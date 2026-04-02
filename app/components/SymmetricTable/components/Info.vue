@@ -1,7 +1,7 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
-  <div v-else-if="props.row._split" style="background-color: black" class="h-[100px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
+  <div v-else-if="props.row._split" style="background-color: black" class="h-[24px]">&nbsp;</div>
+  <div v-else-if="props.row._current" style="background-color: #e5effe; height: 24px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[150px] cursor-pointer max-md:h-[260px] relative px-[4px]" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
@@ -136,18 +136,32 @@ const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 const style = computed(() => {
   const grayStyle = {
     background: "#ACBAC4",
-    filter: "grayscale(0.75)",
+    filter: "grayscale(0.25)",
+  };
+  const 实值Style = {
+    background: "#EF88AD",
+    // filter: "grayscale(0.75)",
   };
   let style = {
     border: 持仓.value > 0 ? "4px solid red" : 持仓.value < 0 ? "4px solid green" : "",
   };
-  if (props.mode === "chance") {
+  if (props.mode === "custom") {
     if (!current期权Item.value["_isChance"]) {
       style = { ...style, ...grayStyle };
+    } else {
+      style = { ...style, ...实值Style };
+    }
+  } else if (props.mode === "chance") {
+    if (!current期权Item.value["_isChance"]) {
+      style = { ...style, ...grayStyle };
+    } else {
+      style = { ...style, ...实值Style };
     }
   } else if (props.mode === "in-val") {
     if (current期权Item.value["一手内在价"] === 0 || current期权Item.value["一手内在价"] > 最大建议买入价 || current期权Item.value["一手时间价"] > 最大建议买入时间价) {
       style = { ...style, ...grayStyle };
+    } else {
+      style = { ...style, ...实值Style };
     }
   } else if (props.mode === "hold") {
     if (current期权Item.value["is非法持仓"]) {

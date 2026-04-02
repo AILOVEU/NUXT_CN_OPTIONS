@@ -35,6 +35,10 @@ const navList = [
     name: "实值",
   },
   {
+    href: "/custom-filter",
+    name: "自定义",
+  },
+  {
     href: "/filter",
     name: "机会",
   },
