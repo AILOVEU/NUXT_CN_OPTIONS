@@ -2,19 +2,13 @@
   <div>
     <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
       <el-form-item label="正股">
-        <el-select v-model="formData.正股List" multiple clearable>
-          <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
+        <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
       </el-form-item>
       <el-form-item label="到期日">
-        <el-select v-model="formData.到期日List" multiple clearable>
-          <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
-        </el-select>
+        <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
       </el-form-item>
       <el-form-item label="沽购">
-        <el-select v-model="formData.沽购List" multiple clearable>
-          <el-option v-for="call in ['沽', '购']" :key="call" :label="call" :value="call" />
-        </el-select>
+        <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
       </el-form-item>
     </el-form>
   </div>

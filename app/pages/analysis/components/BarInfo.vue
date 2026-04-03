@@ -2,14 +2,10 @@
   <div>
     <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
       <el-form-item label="正股">
-        <el-select v-model="formData.正股List" multiple>
-          <el-option v-for="item in stockOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
+        <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
       </el-form-item>
       <el-form-item label="到期日">
-        <el-select v-model="formData.到期日List" multiple>
-          <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
-        </el-select>
+        <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
       </el-form-item>
     </el-form>
   </div>
