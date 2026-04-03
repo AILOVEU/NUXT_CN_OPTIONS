@@ -116,6 +116,7 @@
         v-for="item in [
           { label: '列表', value: 'list' },
           { label: 'T型', value: 'symmetric' },
+          // { label: '全部', value: 'all' },
         ]"
         :class="{ active: item.value === showType }"
         @click="showType = item.value"
@@ -123,7 +124,7 @@
         {{ item.label }}
       </div>
     </div>
-    <div v-if="showType === 'list'" class="h-[calc(100vh-300px)] max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col">
+    <div v-if="showType === 'list'" class="h-[calc(100vh-250px)] max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col">
       <div class="flex justify-center">彩票</div>
       <FilterList :checkIsChance="checkIsChance彩票" />
       <div class="flex justify-center">短期</div>
@@ -134,6 +135,7 @@
       <FilterList :checkIsChance="checkIsChance远期" />
     </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" />
+    <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" />
   </div>
 </template>
 <script setup>

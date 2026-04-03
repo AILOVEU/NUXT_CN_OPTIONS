@@ -4,6 +4,7 @@ import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
+import { blackScholesOptionPrice } from "~/utils/bs";
 
 export function get_fist_季度月份(dataList) {
   const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
@@ -215,7 +216,16 @@ function debug(_tiledData) {
     _.unionBy(_tiledData, (row) => row["f333"])
   );
 }
-
+function get盈亏比(el) {
+  let 盈 = 0;
+  let 亏 = el["一手价"];
+  if (到期天数 < 10) {
+    // 涨1.5%
+  } else {
+    // 
+  }
+  return [formatDecimal(盈 / 亏, 2), formatDecimal(盈 * 10000), formatDecimal(亏 * 10000)];
+}
 function formatRecord(_tiledData, 持仓JSON) {
   debug(_tiledData);
   let tiledData = [];
@@ -280,6 +290,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["成本价"] = get_成本价(row, 持仓JSON);
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
     row["is非法持仓"] = getIs非法持仓(row);
+    row["盈亏比"] = get盈亏比(row);
     tiledData.push(row);
   });
   return tiledData;

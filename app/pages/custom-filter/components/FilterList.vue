@@ -11,7 +11,15 @@
         <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="100" sortable align="right" />
         <el-table-column #default="{ row }" label="一手时间价" prop="一手时间价" width="100" sortable align="right" />
         <el-table-column #default="{ row }" label="一手内在价" prop="一手内在价" width="100" sortable align="right" />
-
+        <el-table-column #default="{ row }" label="盈亏比" prop="盈亏比" width="70" sortable align="right">
+          <div class="flex gap-[4px] justify-between mx-[6px]">
+            <div class="flex items-center">{{ row["盈亏比"][0] }}</div>
+            <div class="flex flex-col gap-[6px] justify-between">
+              <div>{{ row["盈亏比"][1] }}</div>
+              <div>{{ row["盈亏比"][2] }}</div>
+            </div>
+          </div>
+        </el-table-column>
         <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
@@ -81,7 +89,7 @@ const filteredTableData = computed(() => {
   let filtered = tableData.tiledData.filter((el) => props.checkIsChance(el));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
-  filtered = _.sortBy(filtered, (row) => Math.abs(row["一手价"] / (row["Gamme"] * row["Delta"])));
+  filtered = _.sortBy(filtered, (row) => -row["盈亏比"][0]);
   return filtered;
 });
 </script>
