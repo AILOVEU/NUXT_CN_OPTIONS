@@ -219,11 +219,11 @@ function debug(_tiledData) {
 function get盈亏比(el) {
   let 盈 = 0;
   let 亏 = el["一手价"];
-  if (到期天数 < 10) {
-    // 涨1.5%
-  } else {
-    // 
-  }
+  // if (到期天数 < 10) {
+  //   // 涨1.5%
+  // } else {
+  //   // 
+  // }
   return [formatDecimal(盈 / 亏, 2), formatDecimal(盈 * 10000), formatDecimal(亏 * 10000)];
 }
 function formatRecord(_tiledData, 持仓JSON) {
