@@ -323,6 +323,21 @@ const 盈亏曲线Option = computed(() => {
             },
             {
               lineStyle: {
+                color: "red",
+              },
+              name: "创新高",
+              yAxis: 43029,
+              // label: {
+              //   show: false,
+              //   position: "start",
+              //   formatter: (params) => {
+              //     const { name, value } = params;
+              //     return `${name}\n${value}`;
+              //   },
+              // },
+            },
+            {
+              lineStyle: {
                 color: "orange",
               },
               name: "平均值",

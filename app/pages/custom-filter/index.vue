@@ -183,6 +183,7 @@ function checkIsChance短期(target) {
   if (target["到期天数"] > 45 || target["到期天数"] <= 10) return false;
   if (target["一手价"] >= 1000) return false;
   if (target["一手时间价"] >= 500) return false;
+  if (target["一手内在价"] >= 500) return false;
   if (target["溢价率"] >= 3 && Math.abs(target["Delta"]) < 0.2) return false;
   return true;
 }
