@@ -18,7 +18,7 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex flex-col justify-center mx-auto h-[160px] max-md:h-[260px] max-md:mt-[-5px]" :style="{ transform: [1, 2, 3].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
+    <div class="flex flex-col justify-center mx-auto h-[160px] max-md:h-[260px] max-md:mt-[-5px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
       <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -52,11 +52,14 @@
           <TagGamma :value="current期权Item['Gamma']" />
         </div>
       </div>
-      <!-- <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('盈亏比')">
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+        <!-- <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('盈亏比')">
           <TagRatio :value="current期权Item['盈亏比']" />
+        </div> -->
+        <div class="whitespace-nowrap">
+          <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')"/>
         </div>
-      </div> -->
+      </div>
       <div v-if="持仓">
         <div class="flex justify-center whitespace-nowrap max-md:flex-col gap-[1px]">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
