@@ -52,11 +52,11 @@
           <TagGamma :value="current期权Item['Gamma']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+      <!-- <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('盈亏比')">
           <TagRatio :value="current期权Item['盈亏比']" />
         </div>
-      </div>
+      </div> -->
       <div v-if="持仓">
         <div class="flex justify-center whitespace-nowrap max-md:flex-col gap-[1px]">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
