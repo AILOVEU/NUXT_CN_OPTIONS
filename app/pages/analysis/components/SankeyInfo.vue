@@ -12,7 +12,23 @@
       </el-form-item>
     </el-form>
   </div>
-  <el-table size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
+
+  <div class="w-full flex mb-[12px] gap-[20px] justify-between mx-[20px]">
+    <div
+      class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
+      v-for="item in [
+        { label: '列表', value: 'list' },
+        { label: 'T型', value: 'symmetric' },
+        // { label: '全部', value: 'all' },
+      ]"
+      :class="{ active: item.value === showType }"
+      @click="showType = item.value"
+    >
+      {{ item.label }}
+    </div>
+  </div>
+
+  <el-table v-if="showType === 'list'" size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
     <el-table-column type="expand">
       <template #expand> </template>
       <template #default="props">
@@ -97,6 +113,9 @@
       </div>
     </el-table-column>
   </el-table>
+  <div v-else-if="showType === 'symmetric'" class="h-[calc(100vh-400px)] max-md:h-[calc(220vh-200px)] flex justify-center">
+    <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="hold" :onlyShowHold="true" />
+  </div>
 
   <div class="overflow-auto mt-[10px]">
     <div class="min-w-[1000px] mx-auto">
@@ -113,6 +132,7 @@ import { deadline_list, deadline_color_list, OPTIONS_MAP, 最大建议买入时�
 import { formatDecimal } from "~/utils/utils";
 import _ from "lodash";
 import dayjs from "dayjs";
+const showType = ref("list");
 const bsModalData = reactive({
   visible: false,
   optionInfo: {},
@@ -138,6 +158,25 @@ function handleShowBs(row) {
   bsModalData.optionInfo = { ...current期权Item };
   bsModalData.visible = true;
 }
+
+const tableData = reactive({
+  symmetricData: [],
+  tiledData: [],
+  comboList: [],
+  loading: false,
+});
+async function handleQuery() {
+  tableData.loading = true;
+  const [symmetricData, comboList, tiledData] = await queryGrid(OPTIONS_MAP.map((el) => el.code));
+  tableData.symmetricData = symmetricData || [];
+  tableData.tiledData = tiledData.map((el) => ({
+    ...el,
+  }));
+  tableData.comboList = comboList;
+  tableData.loading = false;
+}
+handleQuery();
+
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
@@ -803,5 +842,9 @@ function getInRowStyle({ row }) {
 <style>
 .el-progress__text {
   text-align: right;
+}
+.active {
+  color: white;
+  background-color: #409eff;
 }
 </style>

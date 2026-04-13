@@ -57,7 +57,7 @@
           <TagRatio :value="current期权Item['盈亏比']" />
         </div> -->
         <div class="whitespace-nowrap">
-          <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')"/>
+          <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')" />
         </div>
       </div>
       <div v-if="持仓">
@@ -66,10 +66,7 @@
             <TagCostPrice :一手成本价="一手成本价" />
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
-            <el-tag type="info" size="small" effect="plain"
-              >仓{{ 仓位 }}
-              <!-- ({{ formatDecimal(仓位占比, 1) }}%) -->
-            </el-tag>
+            <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%) </el-tag>
           </div>
         </div>
       </div>
@@ -134,8 +131,16 @@ const 仓位 = computed(() => {
   return 持仓.value * 一手价.value;
 });
 
+const 持仓总和 = computed(() => {
+  let sum = 0;
+  props.tiledData.forEach((el) => {
+    if (el["持仓"]) sum += el["持仓"] * el["一手价"];
+  });
+  return sum;
+});
+
 const 仓位占比 = computed(() => {
-  return (100 * 仓位.value) / money.基础金额;
+  return (100 * 仓位.value) / (持仓总和.value || 1);
 });
 
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");

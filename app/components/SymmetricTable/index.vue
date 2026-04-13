@@ -34,7 +34,7 @@ import Info from "./components/Info.vue";
 import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
-const props = defineProps(["mode", "symmetricData", "tiledData"]);
+const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]);
 
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
@@ -59,8 +59,9 @@ function getColumnWidth(label) {
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
-    if (el["is行内有持仓"]) return true;
     if (el._current || el._split) return true;
+    if (props.onlyShowHold && !el["is行内有持仓"]) return false;
+    if (el["is行内有持仓"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;
     if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
