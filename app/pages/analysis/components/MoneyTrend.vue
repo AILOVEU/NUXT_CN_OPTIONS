@@ -306,21 +306,21 @@ const 盈亏曲线Option = computed(() => {
             formatter: "{b}\n{c}",
           },
           data: [
-            {
-              lineStyle: {
-                color: "red",
-              },
-              name: "第一目标位",
-              yAxis: money.第一目标,
-              // label: {
-              //   show: false,
-              //   position: "start",
-              //   formatter: (params) => {
-              //     const { name, value } = params;
-              //     return `${name}\n${value}`;
-              //   },
-              // },
-            },
+            // {
+            //   lineStyle: {
+            //     color: "red",
+            //   },
+            //   name: "第一目标位",
+            //   yAxis: money.第一目标,
+            //   // label: {
+            //   //   show: false,
+            //   //   position: "start",
+            //   //   formatter: (params) => {
+            //   //     const { name, value } = params;
+            //   //     return `${name}\n${value}`;
+            //   //   },
+            //   // },
+            // },
             {
               lineStyle: {
                 color: "red",

@@ -66,7 +66,8 @@
             <TagCostPrice :一手成本价="一手成本价" />
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
-            <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%) </el-tag>
+            <TagPercent :value="仓位" :仓位占比="仓位占比" />
+            <!-- <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%) </el-tag> -->
           </div>
         </div>
       </div>
