@@ -2,7 +2,7 @@
   <div v-loading="loading || globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
-      <Card header="非组合概览">
+      <Card :header="'非组合概览'">
         <UnComboOverview :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="组合概览" v-if="comboList.length">

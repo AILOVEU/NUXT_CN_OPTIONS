@@ -1,8 +1,8 @@
 <template>
-  <el-card style="width: 100%;">
+  <el-card style="width: 100%">
     <template #header>
       <div class="font-semibold text-[20px] text-[#4a9cd6]">
-        <span>{{ props.header }}</span>
+        <span>{{ props.header }}{{ todayStr }}</span>
       </div>
     </template>
     <div><slot> </slot></div>
@@ -10,4 +10,6 @@
 </template>
 <script setup>
 const props = defineProps(["header"]);
+import dayjs from "dayjs";
+const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD")})`);
 </script>
