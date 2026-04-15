@@ -8,7 +8,7 @@
       </div>
 
       <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
-        <div :class="{ active: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
+        <div :class="{ navActive: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
           {{ item.name }}
         </div>
       </div>
@@ -104,7 +104,7 @@ function handleQuery(catchAll = false) {
 }
 </script>
 <style scoped>
-.active {
+.navActive {
   color: #409eff;
   font-weight: 800;
 }

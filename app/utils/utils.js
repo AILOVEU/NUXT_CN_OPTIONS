@@ -343,3 +343,33 @@ export async function promiseAllSequential(tasks) {
   }
   return results;
 }
+
+/**
+ * 计算数组的中位数
+ * @param {Array<number>} arr - 数字数组
+ * @returns {number} 中位数
+ */
+export function getMedian(arr) {
+  // 1. 过滤非数字、空值，避免计算错误
+  const numbers = arr.filter(item => typeof item === 'number' && !isNaN(item));
+  
+  // 2. 处理空数组
+  if (numbers.length === 0) {
+    return 0; // 可根据需求返回 null/undefined
+  }
+
+  // 3. 排序：从小到大（核心：sort默认按字符串排序，必须传比较函数）
+  const sortedArr = numbers.sort((a, b) => a - b);
+
+  // 4. 获取数组长度
+  const len = sortedArr.length;
+  // 5. 计算中间索引
+  const mid = Math.floor(len / 2);
+
+  // 6. 奇数长度返回中间值，偶数长度返回中间两个数的平均值
+  if (len % 2 !== 0) {
+    return sortedArr[mid];
+  } else {
+    return (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+  }
+}

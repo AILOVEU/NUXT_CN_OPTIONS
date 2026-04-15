@@ -2,50 +2,67 @@
   <div class="flex justify-evenly">
     <!-- 认购 -->
     <div class="flex flex-col items-center">
-      <div>认购</div>
+      <div>认购Call</div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认购总价" :value="formatNumberToWan(认购总价)" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购内在价总和" :value="formatNumberToWan(认购内在价总和)" />
         <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认购时间价占比" :value="formatDecimal(认购时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
+        <Statistic title="认购时间价占比" :value="formatDecimal(认购时间价占比, 2) + '%'" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购总杠杆" :value="认购总杠杆" />
       </div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认购代替正股总和" :value="formatNumberToWan(认购代替正股总和)" />
-        <div class="mx-[2px]">|</div>
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认购单日损耗" :value="formatNumberToWan(认购单日损耗)" />
+        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购总手数" :value="formatNumberToWan(认购总手数)" />
-        <div class="mx-[2px]">|</div>
-        <Statistic title="认购单笔期权平均价" :value="formatNumberToWan(认购单笔期权平均价)" />
-        <div class="mx-[2px]">|</div>
+      </div>
+      <br /><br />
+      <div class="flex items-center justify-center">
+        <Statistic title="认购平均价" :value="formatNumberToWan(认购平均价)" />
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认购中位价" :value="formatNumberToWan(认购中位价)" />
+        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购平均Delta" :value="formatNumberToWan(认购平均Delta)" />
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认购平均溢价" :value="认购平均溢价 + '%'" />
       </div>
     </div>
+    <div class="w-[30px]"></div>
     <!-- 认沽 -->
     <div class="flex flex-col items-center">
-      <div>认沽</div>
+      <div>认沽Put</div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认沽总价" :value="formatNumberToWan(认沽总价)" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽内在价总和" :value="formatNumberToWan(认沽内在价总和)" />
         <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认沽时间价占比" :value="formatDecimal(认沽时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
+        <Statistic title="认沽时间价占比" :value="formatDecimal(认沽时间价占比, 2) + '%'" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽总杠杆" :value="认沽总杠杆" />
       </div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认沽代替正股总和" :value="formatNumberToWan(认沽代替正股总和)" />
-        <div class="mx-[2px]">|</div>
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认沽单日损耗" :value="formatNumberToWan(认沽单日损耗)" />
+        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽总手数" :value="formatNumberToWan(认沽总手数)" />
-        <div class="mx-[2px]">|</div>
-        <Statistic title="认沽单笔期权平均价" :value="formatNumberToWan(认沽单笔期权平均价)" />
-        <div class="mx-[2px]">|</div>
+      </div>
+      <br /><br />
+      <div class="flex items-center justify-center">
+        <Statistic title="认沽平均价" :value="formatNumberToWan(认沽平均价)" />
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认沽中位价" :value="formatNumberToWan(认沽中位价)" />
+        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽平均Delta" :value="formatNumberToWan(认沽平均Delta)" />
+        <div class="mx-[2px]">&nbsp;</div>
+        <Statistic title="认沽平均溢价" :value="认沽平均溢价 + '%'" />
       </div>
     </div>
   </div>
@@ -56,10 +73,9 @@
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="代替正股总和" :value="formatNumberToWan(代替正股总和)" />
     <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" />
+    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
   <br /><br />
-
   <div class="flex items-center justify-center">
     <Statistic title="涨跌1%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.01, 0))" />
     <div class="mx-[2px]">&nbsp;</div>
@@ -70,20 +86,21 @@
     <Statistic title="时间价占比" :value="formatDecimal(时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="总杠杆" :value="总杠杆" :style="{ backgroundColor: '#ece7d1' }" />
+    <div class="mx-[2px]">&nbsp;</div>
+    <Statistic title="总单日损耗" :value="总单日损耗" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
 </template>
 <script setup>
-import { formatDecimal, formatNumberToWan } from "~/utils/utils";
+import { formatDecimal, formatNumberToWan, getMedian } from "~/utils/utils";
 const props = defineProps(["tiledData", "comboList"]);
 const 非组合TiledData = computed(() => {
-  return props.tiledData.filter((el) => !el["组合"]);
+  return props.tiledData.filter((el) => !el["组合"] && el["持仓"] > 0);
 });
 
 const 认购总价 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手价"];
     });
@@ -94,7 +111,6 @@ const 认沽总价 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手价"];
     });
@@ -103,20 +119,16 @@ const 认沽总价 = computed(() => {
 
 const 内在价总和 = computed(() => {
   let sum = 0;
-  非组合TiledData.value
-    .filter((el) => el["持仓"])
-    .forEach((el) => {
-      sum += el["持仓"] * el["一手内在价"];
-    });
+  非组合TiledData.value.forEach((el) => {
+    sum += el["持仓"] * el["一手内在价"];
+  });
   return sum;
 });
 const 时间价总和 = computed(() => {
   let sum = 0;
-  非组合TiledData.value
-    .filter((el) => el["持仓"])
-    .forEach((el) => {
-      sum += el["持仓"] * el["一手时间价"];
-    });
+  非组合TiledData.value.forEach((el) => {
+    sum += el["持仓"] * el["一手时间价"];
+  });
   return sum;
 });
 
@@ -124,7 +136,6 @@ const 认购内在价总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手内在价"];
     });
@@ -134,7 +145,6 @@ const 认购时间价总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手时间价"];
     });
@@ -145,7 +155,6 @@ const 认沽内在价总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手内在价"];
     });
@@ -155,7 +164,6 @@ const 认沽时间价总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手时间价"];
     });
@@ -164,18 +172,15 @@ const 认沽时间价总和 = computed(() => {
 
 const 代替正股总和 = computed(() => {
   let sum = 0;
-  非组合TiledData.value
-    .filter((el) => el["持仓"])
-    .forEach((el) => {
-      sum += el["持仓"] * el["代替正股价"];
-    });
+  非组合TiledData.value.forEach((el) => {
+    sum += el["持仓"] * el["代替正股价"];
+  });
   return formatDecimal(sum, 0);
 });
 const 认购代替正股总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["代替正股价"];
     });
@@ -185,7 +190,6 @@ const 认沽代替正股总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["代替正股价"];
     });
@@ -198,11 +202,9 @@ const 认沽对冲占比 = computed(() => {
 });
 const 持仓总和 = computed(() => {
   let sum = 0;
-  非组合TiledData.value
-    .filter((el) => el["持仓"])
-    .forEach((el) => {
-      sum += el["持仓"] * el["一手价"];
-    });
+  非组合TiledData.value.forEach((el) => {
+    sum += el["持仓"] * el["一手价"];
+  });
   return sum;
 });
 
@@ -210,7 +212,6 @@ const 认购持仓总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手价"];
     });
@@ -220,7 +221,6 @@ const 认沽持仓总和 = computed(() => {
   let sum = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       sum += el["持仓"] * el["一手价"];
     });
@@ -266,7 +266,6 @@ const 认购总手数 = computed(() => {
   let 总手数 = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       总手数 += el["持仓"];
     });
@@ -277,19 +276,18 @@ const 认沽总手数 = computed(() => {
   let 总手数 = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       总手数 += el["持仓"];
     });
   return 总手数 || 0;
 });
 
-const 认购单笔期权平均价 = computed(() => {
+const 认购平均价 = computed(() => {
   const res = 认购持仓总和.value / (认购总手数.value || 1);
   return formatDecimal(res, 0);
 });
 
-const 认沽单笔期权平均价 = computed(() => {
+const 认沽平均价 = computed(() => {
   const res = 认沽持仓总和.value / (认沽总手数.value || 1);
   return formatDecimal(res, 0);
 });
@@ -299,7 +297,6 @@ const 认购平均Delta = computed(() => {
   let 总Delta = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "购")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       总手数 += el["持仓"];
       总Delta += el["持仓"] * el["Delta"];
@@ -314,7 +311,6 @@ const 认沽平均Delta = computed(() => {
   let 总Delta = 0;
   非组合TiledData.value
     .filter((el) => el["沽购"] === "沽")
-    .filter((el) => el["持仓"])
     .forEach((el) => {
       总手数 += el["持仓"];
       总Delta += el["持仓"] * el["Delta"];
@@ -322,5 +318,73 @@ const 认沽平均Delta = computed(() => {
   if (!总手数) return 0;
   const res = 总Delta / 总手数;
   return formatDecimal(res, 2);
+});
+
+const 认购单日损耗 = computed(() => {
+  let 单日损耗 = 0;
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "购")
+    .forEach((el) => {
+      单日损耗 += el["单日损耗"] * el["持仓"];
+    });
+  return formatDecimal(单日损耗, 0);
+});
+
+const 认沽单日损耗 = computed(() => {
+  let 单日损耗 = 0;
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "沽")
+    .forEach((el) => {
+      单日损耗 += el["单日损耗"] * el["持仓"];
+    });
+  return formatDecimal(单日损耗, 0);
+});
+
+const 总单日损耗 = computed(() => {
+  return 认购单日损耗.value + 认沽单日损耗.value;
+});
+
+const 认购平均溢价 = computed(() => {
+  let 溢价率 = 0;
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "购")
+    .forEach((el) => {
+      溢价率 += el["溢价率"] * el["持仓"];
+    });
+  return formatDecimal(溢价率 / 认购总手数.value, 1);
+});
+
+const 认沽平均溢价 = computed(() => {
+  let 溢价率 = 0;
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "沽")
+    .forEach((el) => {
+      溢价率 += el["溢价率"] * el["持仓"];
+    });
+  return formatDecimal(溢价率 / 认沽总手数.value, 0);
+});
+
+const 认购中位价 = computed(() => {
+  let list = [];
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "购")
+    .forEach((el) => {
+      for (let i = 0; i < el["持仓"]; i++) {
+        list.push(el["一手价"]);
+      }
+    });
+  return formatDecimal(getMedian(list), 1);
+});
+
+const 认沽中位价 = computed(() => {
+  let list = [];
+  非组合TiledData.value
+    .filter((el) => el["沽购"] === "沽")
+    .forEach((el) => {
+      for (let i = 0; i < el["持仓"]; i++) {
+        list.push(el["一手价"]);
+      }
+    });
+  return formatDecimal(getMedian(list), 1);
 });
 </script>
