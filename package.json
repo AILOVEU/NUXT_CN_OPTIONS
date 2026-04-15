@@ -16,6 +16,7 @@
     "echarts": "^6.0.0",
     "element-plus": "^2.11.1",
     "exceljs": "^4.4.0",
+    "html2canvas": "^1.4.1",
     "iconv-lite": "^0.7.0",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
