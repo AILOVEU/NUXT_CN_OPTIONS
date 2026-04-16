@@ -118,7 +118,7 @@
       </div>
     </div>
     <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" />
-    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" />
+    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
   </div>
 </template>
 <script setup>

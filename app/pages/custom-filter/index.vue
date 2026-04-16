@@ -134,7 +134,7 @@
       <div class="flex justify-center">远期</div>
       <FilterList :checkIsChance="checkIsChance远期" />
     </div>
-    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" />
+    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
     <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" />
   </div>
 </template>
@@ -161,7 +161,7 @@ const formData = reactive({
   GammaRange: [0.5, 9999],
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
-  沽购List: ["购"],
+  沽购List: ["购",'沽'],
   过滤持有: false,
 });
 function checkIsChance彩票(target) {
