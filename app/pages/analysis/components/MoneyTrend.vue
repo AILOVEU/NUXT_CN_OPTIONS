@@ -2,7 +2,7 @@
   <div class="w-full">
     <VChart :option="盈亏曲线Option" style="height: 400px; width: 100%" />
   </div>
-  <div class="mx-auto text-center text-[18px] font-semibold">资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
+  <div class="mx-auto text-center text-[18px] font-semibold">{{ yearStr }}资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
   <div class="w-full">
     <VChart :option="盈亏概览Option" style="height: 400px; width: 100%" />
   </div>
@@ -12,6 +12,7 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { 盈亏曲线数据 } from "~/data";
 import _ from "lodash";
 import dayjs from "dayjs";
+const yearStr = computed(() => dayjs().format("YYYY"));
 const props = defineProps(["tiledData", "comboList"]);
 const { money } = useMoneyStore();
 const 持仓金额 = computed(() => {
@@ -239,7 +240,7 @@ const 盈亏曲线Option = computed(() => {
     },
     backgroundColor: "#fefefe",
     title: {
-      text: "2026盈亏曲线",
+      text: dayjs().format("YYYY") + "盈亏曲线",
     },
     xAxis: {
       type: "category",

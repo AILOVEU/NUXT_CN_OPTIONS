@@ -10,12 +10,12 @@ export const 金额 = {
   //
   基础金额: 10000,
   //
-  场内现金: 694,
+  场内现金: 139,
   占用保证金: 0, // 单笔保证金50 -> 15 了
-  贷款: 0,
+  贷款: 1000,
   出金: 60000, // 整万提取，多出部分转到文档“补差价”字段，转出后不可转入，转入是贷款
   // 👇不参与计算👇
-  现转股: 10 * 10000,
+  现转股: 10 * 10000 + 6000,
   现转期: 5000,
 };
 export const 建议买入价 = 380;
@@ -58,7 +58,7 @@ export const OPTIONS_MAP = [
     linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
     color: "#73c0de",
     showName: "50ETF🧊", // 顶部tab筛选会用到
-    行权价Range: [2800, 3200],
+    // 行权价Range: [2900, 3200],
     隐波Max: 15,
     fs: "m:10+c:510050",
   },
@@ -68,7 +68,7 @@ export const OPTIONS_MAP = [
     linkName: ["沪深300ETF华泰柏瑞", "XD沪深300ETF华泰柏瑞"],
     color: "#91cc75",
     showName: "300ETF🍆",
-    行权价Range: [4200, 5000],
+    // 行权价Range: [4500, 5000],
     隐波Max: 15,
     fs: "m:10+c:510300",
   },
@@ -78,7 +78,7 @@ export const OPTIONS_MAP = [
     linkName: ["中证500ETF"],
     color: "#fac858",
     showName: "沪500🦁",
-    行权价Range: [7500, 9000],
+    // 行权价Range: [8000, 9500],
     隐波Max: 22,
     fs: "m:10+c:510500",
   },
@@ -88,7 +88,7 @@ export const OPTIONS_MAP = [
     linkName: ["深500"], // 中文名无关，特殊处理了
     color: "#fc8452",
     showName: "深500🐯",
-    行权价Range: [2800, 3500],
+    // 行权价Range: [3000, 3500],
     隐波Max: 22,
     fs: "m:12+c:159922",
   },
@@ -98,7 +98,7 @@ export const OPTIONS_MAP = [
     linkName: ["创业板ETF易方达"],
     color: "#ea7ccc",
     showName: "创业板🦑",
-    行权价Range: [3000, 3500],
+    // 行权价Range: [3000, 3500],
     隐波Max: 22,
     fs: "m:12+c:159915",
   },
@@ -108,7 +108,7 @@ export const OPTIONS_MAP = [
     linkName: ["科创50ETF"],
     color: "#9a60b4",
     showName: "科50🐸",
-    行权价Range: [1200, 1600],
+    // 行权价Range: [1200, 1600],
     隐波Max: 22,
     fs: "m:10+c:588000",
   },
@@ -131,6 +131,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260417", 76097],
     ["20260416", 85299],
     ["20260415", 81227],
     ["20260414", 81856],

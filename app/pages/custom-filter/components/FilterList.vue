@@ -89,7 +89,7 @@ const filteredTableData = computed(() => {
   let filtered = tableData.tiledData.filter((el) => props.checkIsChance(el));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
-  filtered = _.sortBy(filtered, (row) => -row["盈亏比"][0]);
+  filtered = _.sortBy(filtered, ["到期日", "沽购", "正股代码"]);
   return filtered;
 });
 </script>

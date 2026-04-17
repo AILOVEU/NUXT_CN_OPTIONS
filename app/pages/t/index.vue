@@ -87,6 +87,7 @@ const filteredTableData = computed(() => {
     if (el["is行内有持仓"]) return true;
     if (el["is旧期权"]) return false;
     if (el['_current'] || el['_split']) return true;
+    return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });

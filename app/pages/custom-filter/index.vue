@@ -181,9 +181,9 @@ function checkIsChance短期(target) {
   if (!formData.正股List.includes(target["正股代码"])) return false;
 
   if (target["到期天数"] > 45 || target["到期天数"] <= 10) return false;
-  if (target["一手价"] >= 1000) return false;
-  if (target["一手时间价"] >= 500) return false;
-  if (target["一手内在价"] >= 500) return false;
+  if (target["一手价"] >= 500) return false;
+  if (target["一手时间价"] >= 400) return false;
+  if (target["一手内在价"] >= 400) return false;
   if (target["溢价率"] >= 3 && Math.abs(target["Delta"]) < 0.2) return false;
   return true;
 }
@@ -192,12 +192,12 @@ function checkIsChance中期(target) {
   if (target["is旧期权"]) return false;
   if (!formData.沽购List.includes(target["沽购"])) return false;
   if (!formData.正股List.includes(target["正股代码"])) return false;
-  if (target["沽购"] === "购") {
-    if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
-  }
+  // if (target["沽购"] === "购") {
+  //   if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
+  // }
 
   if (target["到期天数"] <= 45 || target["到期天数"] >= 90) return false;
-  if (target["一手价"] >= 1500) return false;
+  if (target["一手价"] >= 1000) return false;
   if (target["一手时间价"] >= 500) return false;
   if (target["溢价率"] >= 10) return false;
   // 实值不关注隐波
@@ -209,12 +209,12 @@ function checkIsChance远期(target) {
   if (target["is旧期权"]) return false;
   if (!formData.沽购List.includes(target["沽购"])) return false;
   if (!formData.正股List.includes(target["正股代码"])) return false;
-  if (target["沽购"] === "购") {
-    if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
-  }
+  // if (target["沽购"] === "购") {
+  //   if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
+  // }
 
   if (target["到期天数"] < 90) return false;
-  if (target["一手价"] >= 3500) return false;
+  if (target["一手价"] >= 1500) return false;
   if (target["一手时间价"] >= 1000) return false;
   if (target["溢价率"] >= 20) return false;
   // 实值不关注隐波
