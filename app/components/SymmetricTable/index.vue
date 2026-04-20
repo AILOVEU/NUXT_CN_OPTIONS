@@ -65,6 +65,7 @@ const filteredTableData = computed(() => {
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;
     if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
+    return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
