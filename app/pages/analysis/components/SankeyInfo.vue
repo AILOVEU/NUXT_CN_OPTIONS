@@ -113,7 +113,7 @@
       </div>
     </el-table-column>
   </el-table>
-  <div v-else-if="showType === 'symmetric'" class="h-[calc(100vh-400px)] max-md:h-[calc(220vh-200px)] flex justify-center">
+  <div v-else-if="showType === 'symmetric'" class="flex justify-center">
     <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="hold" :onlyShowHold="true" />
   </div>
 

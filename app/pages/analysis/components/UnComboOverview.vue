@@ -1,8 +1,8 @@
 <template>
-  <div class="flex justify-evenly">
+  <div class="flex justify-evenly gap-[50px]">
     <!-- 认购 -->
     <div class="flex flex-col items-center">
-      <div>认购Call</div>
+      <div class='text-[red]'>认购Call</div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认购总价" :value="formatNumberToWan(认购总价)" />
@@ -32,10 +32,9 @@
         <Statistic title="认购平均溢价" :value="认购平均溢价 + '%'" />
       </div>
     </div>
-    <div class="w-[30px]"></div>
     <!-- 认沽 -->
-    <div class="flex flex-col items-center">
-      <div>认沽Put</div>
+    <div class="flex flex-col items-center" v-if="认沽总手数">
+      <div class='text-[green]'>认沽Put</div>
       <br /><br />
       <div class="flex items-center justify-center">
         <Statistic title="认沽总价" :value="formatNumberToWan(认沽总价)" />
@@ -67,6 +66,7 @@
     </div>
   </div>
   <br /><br />
+  <div class='w-full bg-[gray] h-[10px]'>&nbsp;</div>
   <br /><br />
   <div class="flex items-center justify-center">
     <Statistic title="认沽对冲占比" :value="Math.abs(formatDecimal(认沽对冲占比, 2)) + '%'" :style="{ backgroundColor: Math.abs(认沽对冲占比) > 10 ? '#BCD9A2' : '#FFA6A6' }" />
