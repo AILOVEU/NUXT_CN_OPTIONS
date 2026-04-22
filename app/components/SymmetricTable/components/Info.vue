@@ -7,6 +7,7 @@
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
+      <div class='leading-[16px]'>({{formatDecimal(盈亏百分比 * 100, 0)}}%)</div>
     </div>
     <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
     <div class="absolute bottom-[1px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
@@ -128,6 +129,10 @@ const 盈亏 = computed(() => {
   return (一手价.value - 一手成本价.value) * 持仓.value;
 });
 
+const 盈亏百分比 = computed(() => {
+  return (一手价.value - 一手成本价.value) / 一手成本价.value;
+});
+
 const 仓位 = computed(() => {
   return 持仓.value * 一手价.value;
 });
@@ -178,7 +183,7 @@ const style = computed(() => {
       style = { ...style, ...实值Style };
     }
   } else if (props.mode === "hold") {
-    if (current期权Item.value["is非法持仓"]) {
+    if (current期权Item.value["持仓"]) {
       style = { ...style, background: "#FFE2AF" };
     }
   }
