@@ -3,11 +3,11 @@
   <div v-else-if="props.row._split" style="background-color: black" class="h-[24px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 24px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[170px] cursor-pointer max-md:h-[280px] relative px-[4px]" :style="style">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[200px] cursor-pointer max-md:h-[320px] relative px-[4px]" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
-      <div class='leading-[16px]'>({{formatDecimal(盈亏百分比 * 100, 0)}}%)</div>
+      <div class="leading-[16px]">({{ formatDecimal(盈亏百分比 * 100, 0) }}%)</div>
     </div>
     <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
     <div class="absolute bottom-[1px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
@@ -19,7 +19,7 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex flex-col justify-center mx-auto h-[160px] max-md:h-[280px] max-md:mt-[-5px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
+    <div class="flex flex-col justify-center mx-auto h-[190px] max-md:h-[310px] max-md:mt-[-5px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '' }">
       <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -59,6 +59,14 @@
         </div> -->
         <div class="whitespace-nowrap">
           <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')" />
+        </div>
+      </div>
+      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
+          <el-tag size="small" :effect="effect"> 持:{{ 持仓量 }} </el-tag>
+        </div>
+        <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('增仓量')">
+          <TagPosition :value="日增量" />
         </div>
       </div>
       <div v-if="持仓">
@@ -114,6 +122,12 @@ const current期权Item = computed(() => {
 });
 const 持仓 = computed(() => {
   return current期权Item.value["持仓"];
+});
+const 日增量 = computed(() => {
+  return current期权Item.value["日增"];
+});
+const 持仓量 = computed(() => {
+  return current期权Item.value["持仓量"];
 });
 const 一手价 = computed(() => {
   return current期权Item.value["一手价"];

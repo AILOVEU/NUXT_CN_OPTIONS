@@ -39,7 +39,7 @@ const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 
-const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位"].map((el) => ({ label: el, value: el }));
+const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位",'持仓量','增仓量'].map((el) => ({ label: el, value: el }));
 const indexVal = ref([]);
 const tableData = reactive({
   columns: [
