@@ -7,106 +7,9 @@
           <el-form-item label="正股">
             <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
           </el-form-item>
-          <!-- 
-          <el-form-item label="到期日" clearable>
-            <el-select v-model="formData.到期日List" multiple>
-              <el-option v-for="date in deadline_list" :key="date" :label="date" :value="date" />
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="沽购" clearable>
             <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
-            <!-- <el-select v-model="formData.沽购List" multiple>
-              <el-option v-for="call in ['沽', '购']" :key="call" :label="call" :value="call" />
-            </el-select> -->
           </el-form-item>
-          <!-- <el-form-item label="过滤持有">
-            <el-radio-group v-model="formData.过滤持有">
-              <el-radio :value="'权利'">仅权利</el-radio>
-              <el-radio :value="'义务'">仅义务</el-radio>
-              <el-radio :value="'持有'">持有</el-radio>
-              <el-radio :value="false">不过滤</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <template v-if="!formData.过滤持有">
-            <el-form-item label="一手价范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.一手价Range[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.一手价Range[1]" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="一手时间价范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.一手价时间价Range[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.一手价时间价Range[1]" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="Delta范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.DeltaRange[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.DeltaRange[1]" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="隐波范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.隐波Range[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.隐波Range[1]" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="Gamma范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.GammaRange[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.GammaRange[1]" />
-              </el-col>
-            </el-form-item>
-            <el-form-item label="溢价范围">
-              <el-col :span="11">
-                <span class="text-gray-500">最小值</span>
-                <el-input placeholder="最小值" v-model="formData.溢价Range[0]" />
-              </el-col>
-              <el-col :span="2" class="text-center">
-                <span class="text-gray-500">-</span>
-              </el-col>
-              <el-col :span="11">
-                <span class="text-gray-500">最大值</span>
-                <el-input placeholder="最大值" v-model="formData.溢价Range[1]" />
-              </el-col>
-            </el-form-item>
-          </template> -->
         </div>
       </el-form>
     </div>
@@ -126,22 +29,21 @@
     </div>
     <div v-if="showType === 'list'" class="h-[calc(100vh-250px)] max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col">
       <div class="flex justify-center">彩票</div>
-      <FilterList :checkIsChance="checkIsChance彩票" />
+      <FilterList :checkIsChance="checkIsChance彩票" :showHold='false'/>
       <div class="flex justify-center">短期</div>
-      <FilterList :checkIsChance="checkIsChance短期" />
+      <FilterList :checkIsChance="checkIsChance短期" :showHold='false'/>
       <div class="flex justify-center">中期</div>
-      <FilterList :checkIsChance="checkIsChance中期" />
+      <FilterList :checkIsChance="checkIsChance中期" :showHold='false'/>
       <div class="flex justify-center">远期</div>
-      <FilterList :checkIsChance="checkIsChance远期" />
+      <FilterList :checkIsChance="checkIsChance远期" :showHold='false'/>
     </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
-    <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" />
+    <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" :showHold='false'/>
   </div>
 </template>
 <script setup>
 import _ from "lodash";
 import { useGlobal } from "~/stores/useGlobal.js";
-import FilterList from "./components/FilterList.vue";
 import FilterSymmetric from "./components/FilterSymmetric.vue";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 

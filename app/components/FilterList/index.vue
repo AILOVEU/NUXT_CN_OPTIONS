@@ -6,27 +6,53 @@
           <div class="text-[10px]">{{ $index + 1 }}</div>
         </el-table-column>
         <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
-
         <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
-        <el-table-column #default="{ row }" label="一手涨跌价" prop="一手涨跌价" width="100" sortable align="right" />
-        <el-table-column #default="{ row }" label="一手时间价" prop="一手时间价" width="100" sortable align="right" />
-        <el-table-column #default="{ row }" label="一手内在价" prop="一手内在价" width="100" sortable align="right" />
-        <!-- <el-table-column #default="{ row }" label="盈亏比" prop="盈亏比" width="70" sortable align="right">
-          <div class="flex gap-[4px] justify-between mx-[6px]">
-            <div class="flex items-center">{{ row["盈亏比"][0] }}</div>
-            <div class="flex flex-col gap-[6px] justify-between">
-              <div>{{ row["盈亏比"][1] }}</div>
-              <div>{{ row["盈亏比"][2] }}</div>
-            </div>
-          </div>
-        </el-table-column> -->
-        <el-table-column label="基本信息" align="center">
+        <el-table-column label="一手价格构成" align="center">
+          <el-table-column label="时间" #default="{ row }" align="right" :minWidth="props.isCombo ? 140 : 80" prop="一手时间价" sortable>
+            <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
+          </el-table-column>
+          <el-table-column label="实值" #default="{ row }" align="right" :minWidth="props.isCombo ? 140 : 80" prop="一手内在价" sortable>
+            <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
+          </el-table-column>
+        </el-table-column>
+        <el-table-column label="日盈亏" align="center" v-if="props.showHold">
+          <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" minWidth="110" sortable />
+          <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" minWidth="120" sortable />
+        </el-table-column>
+        <el-table-column label="总盈亏" align="center" v-if="props.showHold">
+          <el-table-column label="一手价" :minWidth="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
+            <CombinTableCell :value="row['一手价']" :showDiff="true" />
+          </el-table-column>
+          <el-table-column label="成本价" :minWidth="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
+            <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
+          </el-table-column>
+          <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :minWidth="110" sortable />
+          <el-table-column label="总盈亏" prop="总盈亏" align="right" :minWidth="95" sortable />
+          <el-table-column label="收益率" :minWidth="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
+            <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
+          </el-table-column>
+        </el-table-column>
+        <el-table-column label="信息" align="center">
+          <el-table-column label="正股" #default="{ row }" prop="正股代码" align="right" minWidth="95" sortable>
+            {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
+          </el-table-column>
+          <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" minWidth="80" sortable>
+            <TagCallPut :value="row['沽购']" />
+          </el-table-column>
+          <el-table-column label="天数" prop="到期天数" align="right" minWidth="80" sortable />
+        </el-table-column>
+
+        <el-table-column label="持" #default="{ row }" prop="持仓" align="right" minWidth="70" sortable>
+          {{ row["持仓"] || "" }}
+        </el-table-column>
+
+        <!-- <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
             <TagCallPut :value="row['沽购']" />
           </el-table-column>
           <el-table-column label="到期天数" prop="到期天数" width="80" sortable align="right" />
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column label="溢价信息" align="center">
           <el-table-column #default="{ row }" label="打和点" prop="打和点" width="70" sortable align="right">
@@ -55,14 +81,8 @@
             <TagVega :value="row['Vega']" />
           </el-table-column>
         </el-table-column>
-
-        <el-table-column label="持仓信息" align="center">
-          <el-table-column #default="{ row }" label="持仓" prop="持仓" width="60" sortable align="right">
-            {{ row["持仓"] || "" }}
-          </el-table-column>
-          <el-table-column #default="{ row }" label="组合" prop="组合" width="60" sortable align="left">
-            {{ row["组合"] ? "是" : "" }}
-          </el-table-column>
+        <el-table-column #default="{ row }" label="是否组合" prop="组合" width="60" sortable align="left">
+          {{ row["组合"] ? "是" : "" }}
         </el-table-column>
       </el-table>
     </div>
@@ -72,12 +92,16 @@
 import _ from "lodash";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 
-const props = defineProps(["checkIsChance"]);
+const props = defineProps(["checkIsChance", "data", "isCombo", "showHold"]);
 const tableData = reactive({
   tiledData: [],
   loading: false,
 });
 async function handleQuery() {
+  if (props.data?.length) {
+    tableData.tiledData = props.data;
+    return;
+  }
   tableData.loading = true;
   const [tiledData] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   tableData.tiledData = tiledData;
@@ -86,7 +110,7 @@ async function handleQuery() {
 handleQuery();
 
 const filteredTableData = computed(() => {
-  let filtered = tableData.tiledData.filter((el) => props.checkIsChance(el));
+  let filtered = (props.data?.length ? props.data : tableData.tiledData).filter((el) => props.checkIsChance(el));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
   filtered = _.sortBy(filtered, ["到期日", "沽购", "正股代码"]);

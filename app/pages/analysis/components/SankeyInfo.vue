@@ -33,7 +33,8 @@
       <template #expand> </template>
       <template #default="props">
         <div>
-          <el-table :data="filterTableData(props.row.children)" :border="false" :row-style="getInRowStyle">
+          <FilterList :checkIsChance="checkIsHold" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
+          <el-table v-if="false" :data="filterTableData(props.row.children)" :border="false" :row-style="getInRowStyle">
             <el-table-column label="序" minWidth="40" align="center" fixed="left">
               <template #default="{ $index }">
                 <div class="text-[10px]">{{ $index + 1 }}</div>
@@ -413,6 +414,13 @@ function filterTableData(tableData) {
     .filter((el) => formData.正股List.includes(el["正股代码"]))
     .filter((el) => formData.到期日List.includes(el["到期日"]))
     .filter((el) => formData.沽购List.includes(el["沽购"]));
+}
+
+function checkIsHold(el) {
+  if (!formData.正股List.includes(el["正股代码"])) return false;
+  if (!formData.到期日List.includes(el["到期日"])) return false;
+  if (!formData.沽购List.includes(el["沽购"])) return false;
+  return true;
 }
 
 function getSankeyLegenColorMap({ 总和标识 }) {

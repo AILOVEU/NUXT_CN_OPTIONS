@@ -222,7 +222,7 @@ function get盈亏比(el) {
   // if (到期天数 < 10) {
   //   // 涨1.5%
   // } else {
-  //   // 
+  //   //
   // }
   return [formatDecimal(盈 / 亏, 2), formatDecimal(盈 * 10000), formatDecimal(亏 * 10000)];
 }
@@ -289,6 +289,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["持仓"] = get_持仓(持仓JSON, row);
     row["成本价"] = get_成本价(row, 持仓JSON);
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
+    row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
     row["is非法持仓"] = getIs非法持仓(row);
     row["盈亏比"] = get盈亏比(row);
     tiledData.push(row);

@@ -117,14 +117,13 @@
         {{ item.label }}
       </div>
     </div>
-    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" />
+    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold='false'/>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
   </div>
 </template>
 <script setup>
 import _ from "lodash";
 import { useGlobal } from "~/stores/useGlobal.js";
-import FilterList from "./components/FilterList.vue";
 import FilterSymmetric from "./components/FilterSymmetric.vue";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 
