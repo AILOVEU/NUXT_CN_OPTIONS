@@ -36,12 +36,12 @@ const navList = [
   },
   {
     href: "/custom-filter",
-    name: "自定义",
+    name: "★自定义",
   },
-  {
-    href: "/filter",
-    name: "机会",
-  },
+  // {
+  //   href: "/filter",
+  //   name: "机会",
+  // },
   {
     href: "/spread",
     name: "价差",
@@ -52,7 +52,7 @@ const navList = [
   // },
   {
     href: "/analysis",
-    name: "分析",
+    name: "★分析",
   },
 
   {
