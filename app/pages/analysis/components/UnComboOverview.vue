@@ -2,20 +2,10 @@
   <div class="flex justify-evenly gap-[50px]">
     <!-- 认购 -->
     <div class="flex flex-col items-center">
-      <div class='text-[red]'>认购Call</div>
+      <div class="text-[red]">认购Call</div>
       <br /><br />
       <div class="flex items-center justify-center">
-        <Statistic title="认购总价" :value="formatNumberToWan(认购总价)" />
-        <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认购内在价总和" :value="formatNumberToWan(认购内在价总和)" />
-        <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认购时间价占比" :value="formatDecimal(认购时间价占比, 2) + '%'" />
-        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购总杠杆" :value="认购总杠杆" />
-      </div>
-      <br /><br />
-      <div class="flex items-center justify-center">
-        <Statistic title="认购代替正股总和" :value="formatNumberToWan(认购代替正股总和)" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认购单日损耗" :value="formatNumberToWan(认购单日损耗)" />
         <div class="mx-[2px]">&nbsp;</div>
@@ -34,20 +24,10 @@
     </div>
     <!-- 认沽 -->
     <div class="flex flex-col items-center" v-if="认沽总手数">
-      <div class='text-[green]'>认沽Put</div>
+      <div class="text-[green]">认沽Put</div>
       <br /><br />
       <div class="flex items-center justify-center">
-        <Statistic title="认沽总价" :value="formatNumberToWan(认沽总价)" />
-        <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认沽内在价总和" :value="formatNumberToWan(认沽内在价总和)" />
-        <div class="mx-[2px]">&nbsp;</div>
-        <Statistic title="认沽时间价占比" :value="formatDecimal(认沽时间价占比, 2) + '%'" />
-        <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽总杠杆" :value="认沽总杠杆" />
-      </div>
-      <br /><br />
-      <div class="flex items-center justify-center">
-        <Statistic title="认沽代替正股总和" :value="formatNumberToWan(认沽代替正股总和)" />
         <div class="mx-[2px]">&nbsp;</div>
         <Statistic title="认沽单日损耗" :value="formatNumberToWan(认沽单日损耗)" />
         <div class="mx-[2px]">&nbsp;</div>
@@ -66,11 +46,17 @@
     </div>
   </div>
   <br /><br />
-  <div class='w-full bg-[gray] h-[10px]'>&nbsp;</div>
+  <div class="w-full bg-[gray] h-[10px]">&nbsp;</div>
+  <br />
+  <div>
+    <PercentBar title="购沽仓位" :list="沽购价格List" />
+  </div>
+  <br />
+  <div>
+    <PercentBar title="沽购代替正股List" :list="沽购代替正股List" />
+  </div>
   <br /><br />
   <div class="flex items-center justify-center">
-    <Statistic title="认沽对冲占比" :value="Math.abs(formatDecimal(认沽对冲占比, 2)) + '%'" :style="{ backgroundColor: Math.abs(认沽对冲占比) > 10 ? '#BCD9A2' : '#FFA6A6' }" />
-    <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="代替正股总和" :value="formatNumberToWan(代替正股总和)" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" :style="{ backgroundColor: '#ece7d1' }" />
@@ -386,5 +372,34 @@ const 认沽中位价 = computed(() => {
       }
     });
   return formatDecimal(getMedian(list), 1);
+});
+
+const 沽购价格List = computed(() => {
+  return [
+    {
+      title: "认购总价",
+      value: 认购总价.value,
+      background: "#ffcccc",
+    },
+    {
+      title: "认沽总价",
+      value: 认沽总价.value,
+      background: "#e6ebda",
+    },
+  ];
+});
+const 沽购代替正股List = computed(() => {
+  return [
+    {
+      title: "认购代替正股总和",
+      value: 认购代替正股总和.value,
+      background: "#ffcccc",
+    },
+    {
+      title: "认沽代替正股总和",
+      value: 认沽代替正股总和.value,
+      background: "#e6ebda",
+    },
+  ];
 });
 </script>
