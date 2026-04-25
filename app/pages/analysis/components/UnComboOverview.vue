@@ -64,12 +64,16 @@
   </div>
   <br /><br />
   <div class="flex items-center justify-center">
+    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" :style="{ backgroundColor: '#ece7d1' }" />
+    <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="代替正股总和" :value="formatNumberToWan(代替正股总和)" />
     <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" :style="{ backgroundColor: '#ece7d1' }" />
+    <Statistic title="总杠杆" :value="总杠杆" :style="{ backgroundColor: '#ece7d1' }" />
+    <div class="mx-[2px]">&nbsp;</div>
+    <Statistic title="总单日损耗" :value="总单日损耗" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
   <br /><br />
-  <div class="flex items-center justify-center">
+  <!-- <div class="flex items-center justify-center">
     <Statistic title="涨跌1%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.01, 0))" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="涨跌2%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.02, 0))" />
@@ -77,11 +81,7 @@
     <Statistic title="时间价总和" :value="formatNumberToWan(时间价总和)" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="时间价占比" :value="formatDecimal(时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="总杠杆" :value="总杠杆" :style="{ backgroundColor: '#ece7d1' }" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="总单日损耗" :value="总单日损耗" :style="{ backgroundColor: '#ece7d1' }" />
-  </div>
+  </div> -->
 </template>
 <script setup>
 import { formatDecimal, formatNumberToWan, getMedian } from "~/utils/utils";
@@ -418,6 +418,7 @@ const 沽购持仓价格分布Option = computed(() => {
   return {
     title: {
       text: "沽购持仓价格分布",
+      top: 0, // 标题距离容器顶部10px（可根据需要调整）
     },
     grid: {
       bottom: "0",
@@ -448,7 +449,7 @@ const 沽购持仓价格分布Option = computed(() => {
             formatter: function (param) {
               return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
             },
-            // position: "top",
+            position: "left",
           },
         },
       },
@@ -467,7 +468,7 @@ const 沽购持仓价格分布Option = computed(() => {
             formatter: function (param) {
               return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
             },
-            // position: "top",
+            position: "left",
           },
         },
       },

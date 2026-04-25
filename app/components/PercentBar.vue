@@ -46,7 +46,7 @@ const computedList = computed(() => {
       ...el,
       justifyContent,
       borderRadius,
-      percent: formatDecimal(100 * (Math.abs(el.value) / sum), 1),
+      percent: formatDecimal(100 * (Math.abs(el.value) / sum), 0),
     };
   });
 });
