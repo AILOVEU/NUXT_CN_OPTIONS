@@ -409,7 +409,9 @@ const 沽购代替正股List = computed(() => {
     },
   ];
 });
-
+function infoFormatter(param) {
+  return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
+}
 const 沽购持仓价格分布Option = computed(() => {
   const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
   const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
@@ -419,6 +421,7 @@ const 沽购持仓价格分布Option = computed(() => {
     title: {
       text: "沽购持仓价格分布",
       top: 0, // 标题距离容器顶部10px（可根据需要调整）
+      z: 0, // 👈 关键：把标题层级设为最低
     },
     grid: {
       bottom: "0",
@@ -443,13 +446,22 @@ const 沽购持仓价格分布Option = computed(() => {
           color: "green",
         },
         emphasis: {
-          focus: "series",
+          focus: "item",
           label: {
             show: true,
-            formatter: function (param) {
-              return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
-            },
+            formatter: infoFormatter,
             position: "left",
+            // 🔥 清晰强化样式
+            fontSize: 14, // 文字更大
+            fontWeight: "bold", // 文字加粗
+            color: "green", // 纯白文字
+            backgroundColor: "white", // 深绿背景（更清晰）
+            borderWidth: 2, // 白色边框
+            borderColor: "#fff", // 边框强化
+            borderRadius: 6, // 圆角更美观
+            padding: [6, 10], // 内边距更宽松
+            // textBorderColor: "#333", // 文字描边
+            textBorderWidth: 1, // 描边粗细
           },
         },
       },
@@ -462,13 +474,22 @@ const 沽购持仓价格分布Option = computed(() => {
           color: "red",
         },
         emphasis: {
-          focus: "series",
+          focus: "item",
           label: {
             show: true,
-            formatter: function (param) {
-              return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
-            },
+            formatter: infoFormatter,
             position: "left",
+            // 🔥 清晰强化样式
+            fontSize: 14, // 文字更大
+            fontWeight: "bold", // 文字加粗
+            color: "red", // 纯白文字
+            backgroundColor: "white", // 深绿背景（更清晰）
+            borderWidth: 2, // 白色边框
+            borderColor: "#fff", // 边框强化
+            borderRadius: 6, // 圆角更美观
+            padding: [6, 10], // 内边距更宽松
+            // textBorderColor: "#333", // 文字描边
+            textBorderWidth: 1, // 描边粗细
           },
         },
       },
