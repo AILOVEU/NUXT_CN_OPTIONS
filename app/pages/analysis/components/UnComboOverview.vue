@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-evenly gap-[50px]">
+  <div class="flex justify-evenly gap-[50px] max-md:flex-col">
     <!-- 认购 -->
     <div class="flex flex-col items-center">
       <div class="text-[red]">认购Call</div>
@@ -48,12 +48,19 @@
   <br /><br />
   <div class="w-full bg-[gray] h-[10px]">&nbsp;</div>
   <br />
-  <div>
-    <PercentBar title="购沽仓位" :list="沽购价格List" />
+
+  <div class="mx-auto">
+    <div class="w-full mx-auto">
+      <PercentBar title="购沽仓位" :list="沽购价格List" />
+    </div>
+    <br />
+    <div class="w-full mx-auto">
+      <PercentBar title="沽购代替正股List" :list="沽购代替正股List" />
+    </div>
   </div>
-  <br />
-  <div>
-    <PercentBar title="沽购代替正股List" :list="沽购代替正股List" />
+  <br /><br />
+  <div class="w-full mx-auto">
+    <CPScatter :option="沽购持仓价格分布Option" />
   </div>
   <br /><br />
   <div class="flex items-center justify-center">
@@ -401,5 +408,70 @@ const 沽购代替正股List = computed(() => {
       background: "#e6ebda",
     },
   ];
+});
+
+const 沽购持仓价格分布Option = computed(() => {
+  const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
+  const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
+  const 认沽SeriesData = 认沽list.map((el) => [el["一手价"], el["持仓"], el["期权名称"]]);
+  const 认购SeriesData = 认购list.map((el) => [el["一手价"], el["持仓"], el["期权名称"]]);
+  return {
+    title: {
+      text: "沽购持仓价格分布",
+    },
+    grid: {
+      bottom: "0",
+      top: "30px",
+      left: "0",
+      right: "0",
+    },
+    xAxis: {},
+    yAxis: {},
+    legend: {
+      right: "10%",
+      top: "3%",
+      data: ["认购", "认沽"],
+    },
+    series: [
+      {
+        name: "认沽",
+        symbolSize: 20,
+        data: 认沽SeriesData,
+        type: "scatter",
+        itemStyle: {
+          color: "green",
+        },
+        emphasis: {
+          focus: "series",
+          label: {
+            show: true,
+            formatter: function (param) {
+              return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
+            },
+            // position: "top",
+          },
+        },
+      },
+      {
+        name: "认购",
+        symbolSize: 20,
+        data: 认购SeriesData,
+        type: "scatter",
+        itemStyle: {
+          color: "red",
+        },
+        emphasis: {
+          focus: "series",
+          label: {
+            show: true,
+            formatter: function (param) {
+              return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
+            },
+            // position: "top",
+          },
+        },
+      },
+    ],
+  };
 });
 </script>
