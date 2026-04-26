@@ -80,6 +80,10 @@
   <div class="w-full mx-auto">
     <CPScatter :option="沽购代替正股分布Option" />
   </div>
+  <br /><br />
+  <div class="w-full mx-auto">
+    <CPScatter :option="沽购仓位分布Option" />
+  </div>
 </template>
 <script setup>
 import { formatDecimal, formatNumberToWan, getMedian } from "~/utils/utils";
@@ -453,6 +457,23 @@ const 沽购代替正股分布Option = computed(() => {
     infoFormatter: function infoFormatter(param) {
       const el = param.data[2];
       return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n代替正股价:${el["代替正股价"]}`;
+    },
+  };
+});
+
+const 沽购仓位分布Option = computed(() => {
+  const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
+  const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
+  const 认沽SeriesData = 认沽list.map((el) => [el["一手价"] * el["持仓"], el["持仓"], el]);
+  const 认购SeriesData = 认购list.map((el) => [el["一手价"] * el["持仓"], el["持仓"], el]);
+  return {
+    title: "沽购仓位分布",
+    认沽SeriesData,
+    认购SeriesData,
+    xAxisName: "元",
+    infoFormatter: function infoFormatter(param) {
+      const el = param.data[2];
+      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n仓位:${el["一手价"] * el["持仓"]}`;
     },
   };
 });

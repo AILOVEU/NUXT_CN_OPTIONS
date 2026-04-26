@@ -25,7 +25,7 @@ const option = computed(() => {
     },
     legend: {
       right: "10%",
-      top: "3%",
+      top: "0%",
       data: ["认购", "认沽"],
     },
     series: [
