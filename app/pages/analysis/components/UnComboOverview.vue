@@ -59,10 +59,6 @@
     </div>
   </div>
   <br /><br />
-  <div class="w-full mx-auto">
-    <CPScatter :option="沽购持仓价格分布Option" />
-  </div>
-  <br /><br />
   <div class="flex items-center justify-center">
     <Statistic title="持仓总和" :value="formatNumberToWan(持仓总和)" :style="{ backgroundColor: '#ece7d1' }" />
     <div class="mx-[2px]">&nbsp;</div>
@@ -73,15 +69,17 @@
     <Statistic title="总单日损耗" :value="总单日损耗" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
   <br /><br />
-  <!-- <div class="flex items-center justify-center">
-    <Statistic title="涨跌1%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.01, 0))" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="涨跌2%盈亏" :value="formatNumberToWan(formatDecimal(代替正股总和 * 0.02, 0))" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="时间价总和" :value="formatNumberToWan(时间价总和)" />
-    <div class="mx-[2px]">&nbsp;</div>
-    <Statistic title="时间价占比" :value="formatDecimal(时间价占比, 2) + '%'" :style="{ backgroundColor: '#ece7d1' }" />
-  </div> -->
+  <div class="w-full mx-auto">
+    <CPScatter :option="沽购持仓价格分布Option" />
+  </div>
+  <br /><br />
+  <div class="w-full mx-auto">
+    <CPScatter :option="沽购溢价率分布Option" />
+  </div>
+  <br /><br />
+  <div class="w-full mx-auto">
+    <CPScatter :option="沽购代替正股分布Option" />
+  </div>
 </template>
 <script setup>
 import { formatDecimal, formatNumberToWan, getMedian } from "~/utils/utils";
@@ -409,91 +407,53 @@ const 沽购代替正股List = computed(() => {
     },
   ];
 });
-function infoFormatter(param) {
-  return `${param.data[2]}\n\n${param.data[1]}手\n${param.data[0]}`;
-}
 const 沽购持仓价格分布Option = computed(() => {
   const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
   const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
-  const 认沽SeriesData = 认沽list.map((el) => [el["一手价"], el["持仓"], el["期权名称"]]);
-  const 认购SeriesData = 认购list.map((el) => [el["一手价"], el["持仓"], el["期权名称"]]);
+  const 认沽SeriesData = 认沽list.map((el) => [el["一手价"], el["持仓"], el]);
+  const 认购SeriesData = 认购list.map((el) => [el["一手价"], el["持仓"], el]);
   return {
-    title: {
-      text: "沽购持仓价格分布",
-      top: 0, // 标题距离容器顶部10px（可根据需要调整）
-      z: 0, // 👈 关键：把标题层级设为最低
+    title: "沽购持仓价格分布",
+    认沽SeriesData,
+    认购SeriesData,
+    xAxisName: "元",
+    infoFormatter: function infoFormatter(param) {
+      const el = param.data[2];
+      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n一手价:${el["一手价"]}`;
     },
-    grid: {
-      bottom: "0",
-      top: "30px",
-      left: "0",
-      right: "0",
+  };
+});
+const 沽购溢价率分布Option = computed(() => {
+  const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
+  const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
+  const 认沽SeriesData = 认沽list.map((el) => [el["溢价率"], el["持仓"], el]);
+  const 认购SeriesData = 认购list.map((el) => [el["溢价率"], el["持仓"], el]);
+  return {
+    title: "沽购溢价率分布",
+    认沽SeriesData,
+    认购SeriesData,
+    xAxisName: "%",
+    infoFormatter: function infoFormatter(param) {
+      const el = param.data[2];
+      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n溢价率:${el["溢价率"]}%`;
     },
-    xAxis: {},
-    yAxis: {},
-    legend: {
-      right: "10%",
-      top: "3%",
-      data: ["认购", "认沽"],
+  };
+});
+
+const 沽购代替正股分布Option = computed(() => {
+  const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
+  const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
+  const 认沽SeriesData = 认沽list.map((el) => [el["代替正股价"], el["持仓"], el]);
+  const 认购SeriesData = 认购list.map((el) => [el["代替正股价"], el["持仓"], el]);
+  return {
+    title: "沽购代替正股分布",
+    认沽SeriesData,
+    认购SeriesData,
+    xAxisName: "元",
+    infoFormatter: function infoFormatter(param) {
+      const el = param.data[2];
+      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n代替正股价:${el["代替正股价"]}`;
     },
-    series: [
-      {
-        name: "认沽",
-        symbolSize: 20,
-        data: 认沽SeriesData,
-        type: "scatter",
-        itemStyle: {
-          color: "green",
-        },
-        emphasis: {
-          focus: "item",
-          label: {
-            show: true,
-            formatter: infoFormatter,
-            position: "left",
-            // 🔥 清晰强化样式
-            fontSize: 14, // 文字更大
-            fontWeight: "bold", // 文字加粗
-            color: "green", // 纯白文字
-            backgroundColor: "white", // 深绿背景（更清晰）
-            borderWidth: 2, // 白色边框
-            borderColor: "#fff", // 边框强化
-            borderRadius: 6, // 圆角更美观
-            padding: [6, 10], // 内边距更宽松
-            // textBorderColor: "#333", // 文字描边
-            textBorderWidth: 1, // 描边粗细
-          },
-        },
-      },
-      {
-        name: "认购",
-        symbolSize: 20,
-        data: 认购SeriesData,
-        type: "scatter",
-        itemStyle: {
-          color: "red",
-        },
-        emphasis: {
-          focus: "item",
-          label: {
-            show: true,
-            formatter: infoFormatter,
-            position: "left",
-            // 🔥 清晰强化样式
-            fontSize: 14, // 文字更大
-            fontWeight: "bold", // 文字加粗
-            color: "red", // 纯白文字
-            backgroundColor: "white", // 深绿背景（更清晰）
-            borderWidth: 2, // 白色边框
-            borderColor: "#fff", // 边框强化
-            borderRadius: 6, // 圆角更美观
-            padding: [6, 10], // 内边距更宽松
-            // textBorderColor: "#333", // 文字描边
-            textBorderWidth: 1, // 描边粗细
-          },
-        },
-      },
-    ],
   };
 });
 </script>

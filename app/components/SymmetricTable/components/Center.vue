@@ -23,7 +23,7 @@ import { formatDecimal } from "~/utils/utils";
 const props = defineProps(["row"]);
 
 const 正股 = computed(() => {
-  return OPTIONS_MAP.find((el) => el.code === props.row["正股代码"])?.showName;
+  return props.row['展示正股名称'];
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];

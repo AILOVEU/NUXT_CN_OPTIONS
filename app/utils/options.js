@@ -276,6 +276,8 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["打和点"] = formatDecimal(row["行权价"] + (row["沽购"] === "购" ? 1 : -1) * row["最新价"], 4);
     row["正股代码"] = row["期权名称"].startsWith("中证500ETF") ? "159922" : get_stock_code(row["正股"]);
     row["正股名称"] = OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.name;
+    row["展示正股名称"] = OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName;
+    row["正股符号"] = OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.极简Name;
     // 一手价
     row["一手买一价"] = toPrice(row["买一"], row["合约单位"]);
     row["一手卖一价"] = toPrice(row["卖一"], row["合约单位"]);
@@ -284,7 +286,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["一手涨跌价"] = toPrice(row["涨跌额"], row["合约单位"]);
     row["一手时间价"] = toPrice(row["时间价值"], row["合约单位"]);
     row["一手内在价"] = toPrice(row["内在价值"], row["合约单位"]);
-    row["代替正股价"] = row["Delta"] * row["正股价格"] * row["合约单位"];
+    row["代替正股价"] = formatDecimal(row["Delta"] * row["正股价格"] * row["合约单位"], 0);
     // 持仓字段
     row["持仓"] = get_持仓(持仓JSON, row);
     row["成本价"] = get_成本价(row, 持仓JSON);
@@ -292,6 +294,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
     row["is非法持仓"] = getIs非法持仓(row);
     row["盈亏比"] = get盈亏比(row);
+    row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     tiledData.push(row);
   });
   return tiledData;
