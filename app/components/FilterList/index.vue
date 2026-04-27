@@ -28,6 +28,9 @@
           </el-table-column>
           <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :minWidth="110" sortable />
           <el-table-column label="总盈亏" prop="总盈亏" align="right" :minWidth="95" sortable />
+          <el-table-column label="仓位" :minWidth="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
+            <div>{{ row["仓位"] }}</div>
+          </el-table-column>
           <el-table-column label="收益率" :minWidth="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
             <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
           </el-table-column>
@@ -117,4 +120,3 @@ const filteredTableData = computed(() => {
   return filtered;
 });
 </script>
-<style lang="less"></style>
