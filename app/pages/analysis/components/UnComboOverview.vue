@@ -411,6 +411,10 @@ const 沽购代替正股List = computed(() => {
     },
   ];
 });
+
+function commonInfoFormatter(el) {
+  return `${el["展示期权名称"]}\n${el["持仓"]}手\t价:${el["一手价"]}\t溢:${el['溢价率']}%\n\n`;
+}
 const 沽购持仓价格分布Option = computed(() => {
   const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
   const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
@@ -423,7 +427,7 @@ const 沽购持仓价格分布Option = computed(() => {
     xAxisName: "元",
     infoFormatter: function infoFormatter(param) {
       const el = param.data[2];
-      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n一手价:${el["一手价"]}`;
+      return `${commonInfoFormatter(el)}一手价:${el["一手价"]}`;
     },
   };
 });
@@ -439,7 +443,7 @@ const 沽购溢价率分布Option = computed(() => {
     xAxisName: "%",
     infoFormatter: function infoFormatter(param) {
       const el = param.data[2];
-      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n溢价率:${el["溢价率"]}%`;
+      return `${commonInfoFormatter(el)}溢价率:${el["溢价率"]}%`;
     },
   };
 });
@@ -447,8 +451,8 @@ const 沽购溢价率分布Option = computed(() => {
 const 沽购代替正股分布Option = computed(() => {
   const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
   const 认购list = 非组合TiledData.value.filter((el) => el["沽购"] === "购");
-  const 认沽SeriesData = 认沽list.map((el) => [el["代替正股价"], el["持仓"], el]);
-  const 认购SeriesData = 认购list.map((el) => [el["代替正股价"], el["持仓"], el]);
+  const 认沽SeriesData = 认沽list.map((el) => [Math.abs(el["代替正股价"]), el["持仓"], el]);
+  const 认购SeriesData = 认购list.map((el) => [Math.abs(el["代替正股价"]), el["持仓"], el]);
   return {
     title: "沽购代替正股分布",
     认沽SeriesData,
@@ -456,7 +460,7 @@ const 沽购代替正股分布Option = computed(() => {
     xAxisName: "元",
     infoFormatter: function infoFormatter(param) {
       const el = param.data[2];
-      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n代替正股价:${el["代替正股价"]}`;
+      return `${commonInfoFormatter(el)}代替正股价:${el["代替正股价"]}`;
     },
   };
 });
@@ -473,7 +477,7 @@ const 沽购仓位分布Option = computed(() => {
     xAxisName: "元",
     infoFormatter: function infoFormatter(param) {
       const el = param.data[2];
-      return `${el["展示期权名称"]}\n${el["持仓"]}手\n\n仓位:${el["一手价"] * el["持仓"]}`;
+      return `${commonInfoFormatter(el)}仓位:${el["一手价"] * el["持仓"]}`;
     },
   };
 });
