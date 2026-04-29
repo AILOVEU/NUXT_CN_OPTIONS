@@ -20,6 +20,8 @@ const option = computed(() => {
       name: props.option.xAxisName || "",
     },
     yAxis: {
+      // type: 'log',
+      min: '-5',
       name: "手", // 单位文本
       // nameLocation: "start", // 定位到Y轴顶部（起点）
     },
@@ -65,7 +67,7 @@ const option = computed(() => {
           label: {
             show: true,
             formatter: props.option.infoFormatter,
-            position: "left",
+            // position: "left",
             // 🔥 清晰强化样式
             fontSize: 14, // 文字更大
             fontWeight: "bold", // 文字加粗

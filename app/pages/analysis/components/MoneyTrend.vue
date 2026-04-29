@@ -231,6 +231,20 @@ const 盈亏曲线日Option = computed(() => {
   });
   const xAxisDateData = 盈亏曲线数据.map((item) => item.name);
   const seriesValueData = 盈亏曲线数据.map((item) => item.value);
+  let preValue = 0;
+  const seriesData = 盈亏曲线数据
+    .map((item, itemIdx) => {
+      let open = item.value === 0 ? 0 : preValue;
+      preValue = item.value;
+      return {
+        date: item.name,
+        low: Math.min(preValue, item.value),
+        high: Math.max(preValue, item.value),
+        open: open,
+        close: item.value,
+      };
+    })
+    .map((item) => [item.open, item.close, item.low, item.high, item.date]);
   return {
     // toolbox: {
     //   feature: {
@@ -242,15 +256,31 @@ const 盈亏曲线日Option = computed(() => {
     // grid: {
     //   right: '10'
     // },
+    // tooltip: {
+    //   show: true,
+    //   trigger: "axis",
+    //   formatter: function (params) {
+    //     const target = params[0];
+    //     const { name, value, marker } = target;
+    //     const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+    //     const weekNumb = dayjs(name, "YYYY-MM-DD").day();
+    //     return `${marker}${name} ${weekdays[weekNumb]}<br />${value}`;
+    //   },
+    // },
     tooltip: {
-      show: true,
       trigger: "axis",
+      axisPointer: {
+        type: "cross",
+      },
       formatter: function (params) {
         const target = params[0];
         const { name, value, marker } = target;
+        const data = target.data;
         const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        const weekNumb = dayjs(name, "YYYY-MM-DD").day();
-        return `${marker}${name} ${weekdays[weekNumb]}<br />${value}`;
+        const weekNumb = dayjs(data[5], "YYYY-MM-DD").day();
+        const 收盘 = data[2];
+        const 涨跌 = data[2] - data[1];
+        return `${marker}${name} ${weekdays[weekNumb]}<br />${formatNumberToWan(收盘)}<br /><br /><span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "盈" : "亏"}: ${formatNumberToWan(涨跌)}</span>`;
       },
     },
     backgroundColor: "#fefefe",
@@ -266,23 +296,14 @@ const 盈亏曲线日Option = computed(() => {
     },
     series: [
       {
-        label: {
-          show: false,
-          // position: "insideTop",
-        },
-        data: seriesValueData,
-        type: "line",
+        name: "价格数据",
+        type: "candlestick", // K 线图类型
+        data: seriesData,
         itemStyle: {
-          color: function (params) {
-            // params.dataIndex：当前数据点的索引
-            const currentDate = xAxisDateData[params.dataIndex];
-            // 判断当前日期是否是当月首个有效日期
-            if (firstDateSet.has(currentDate)) {
-              return "#ff0000"; // 红色：当月首个日期
-            } else {
-              return "#0066ff"; // 蓝色：其他日期
-            }
-          },
+          color: "#ef5350", // 上涨颜色
+          color0: "#26a69a", // 下跌颜色
+          borderColor: "#ef5350",
+          borderColor0: "#26a69a",
         },
         markPoint: {
           data: [
@@ -488,8 +509,8 @@ const 盈亏曲线月Option = computed(() => {
     targetList = _.sortBy(targetList, (el) => el.name);
     let open = targetList[0].value;
     let close = targetList[targetList.length - 1].value;
-    let high = 0;
-    let low = 0;
+    let high = targetList[0].value;
+    let low = targetList[0].value;
     targetList.forEach((el) => {
       if (el.value > high) high = el.value;
       if (el.value < low) low = el.value;
