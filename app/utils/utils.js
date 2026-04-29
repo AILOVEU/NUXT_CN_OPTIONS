@@ -331,9 +331,9 @@ export function getValidExerciseDate(dateStr) {
 }
 export async function promiseAllSequential(tasks) {
   const results = [];
-  console.log('tasks',tasks)
+  console.log("tasks", tasks);
   for (const task of tasks) {
-    console.log('task',task)
+    console.log("task", task);
     try {
       const result = await task();
       results.push(result);
@@ -351,8 +351,8 @@ export async function promiseAllSequential(tasks) {
  */
 export function getMedian(arr) {
   // 1. 过滤非数字、空值，避免计算错误
-  const numbers = arr.filter(item => typeof item === 'number' && !isNaN(item));
-  
+  const numbers = arr.filter((item) => typeof item === "number" && !isNaN(item));
+
   // 2. 处理空数组
   if (numbers.length === 0) {
     return 0; // 可根据需求返回 null/undefined
@@ -372,4 +372,39 @@ export function getMedian(arr) {
   } else {
     return (sortedArr[mid - 1] + sortedArr[mid]) / 2;
   }
+}
+
+export function getWeekRange(n) {
+  // 当年第一天
+  const yearStart = dayjs().startOf("year");
+
+  // day(): 周日0 周一1 周二2 ... 周六6
+  const w = yearStart.day();
+
+  // 算出当年第一个周一
+  let firstMonday;
+  if (w === 1) {
+    firstMonday = yearStart;
+  } else if (w === 0) {
+    // 周日，往后+1天到周一
+    firstMonday = yearStart.add(1, "day");
+  } else {
+    // 周二~周六，往前推到周一
+    firstMonday = yearStart.subtract(w - 1, "day");
+  }
+
+  // 第11周的周一
+  const weekStart = firstMonday.add(n - 1, "week");
+  // 第11周的周日
+  const weekEnd = weekStart.add(6, "day");
+  return [weekStart.format("YYYY-MM-DD"), weekEnd.format("YYYY-MM-DD")];
+  // return {
+  //   start: weekStart.format("YYYY-MM-DD"),
+  //   end: weekEnd.format("YYYY-MM-DD"),
+  // };
+}
+
+export function isDateInRangeWeek(week, date) {
+  const [start, end] = getWeekRange(week);
+  return dayjs(date, "YYYY-MM-DD").isSameOrAfter(start, "day") && dayjs(date, "YYYY-MM-DD").isSameOrBefore(end, "day");
 }
