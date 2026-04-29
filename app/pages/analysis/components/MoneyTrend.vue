@@ -428,7 +428,7 @@ const 盈亏曲线周Option = computed(() => {
   // ECharts 最终配置项
   return {
     title: {
-      text: "数据趋势 K 线图",
+      text: "2026盈亏周K线图",
       left: "center",
     },
     tooltip: {
@@ -518,7 +518,7 @@ const 盈亏曲线月Option = computed(() => {
   // ECharts 最终配置项
   return {
     title: {
-      text: "数据趋势 K 线图",
+      text: "2026盈亏月K线图",
       left: "center",
     },
     tooltip: {
@@ -528,6 +528,7 @@ const 盈亏曲线月Option = computed(() => {
       },
       formatter: function (params) {
         const data = params[0].data;
+        if(data[1] === undefined) return ''
         return `${data[5]}<br/>
         开盘：${formatNumberToWan(data[1])}<br/>
         收盘：${formatNumberToWan(data[2])}<br/>
