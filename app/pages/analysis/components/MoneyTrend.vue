@@ -214,6 +214,114 @@ const 盈亏概览Option = computed(() => {
     ],
   };
 });
+
+const commonMark = {
+  markPoint: {
+    data: [
+      {
+        type: "max",
+        name: "最大值",
+        // symbol: "none",
+        itemStyle: {
+          normal: {
+            color: "red",
+            // label: {
+            //   show: true,
+            //   color: '#ffffff'
+            // }
+          },
+        },
+      },
+      {
+        type: "min",
+        name: "最小值",
+        // symbol: "none",
+        itemStyle: {
+          normal: {
+            color: "green",
+            // label: {
+            //   show: true,
+            //   color: '#ffffff'
+            // }
+          },
+        },
+      },
+    ],
+  },
+  markLine: {
+    symbol: "none",
+    label: {
+      formatter: "{b}\n{c}",
+    },
+    data: [
+      // {
+      //   lineStyle: {
+      //     color: "red",
+      //   },
+      //   name: "第一目标位",
+      //   yAxis: money.第一目标,
+      //   // label: {
+      //   //   show: false,
+      //   //   position: "start",
+      //   //   formatter: (params) => {
+      //   //     const { name, value } = params;
+      //   //     return `${name}\n${value}`;
+      //   //   },
+      //   // },
+      // },
+      {
+        lineStyle: {
+          color: "orange",
+        },
+        name: "当前",
+        yAxis: 盈亏曲线数据[盈亏曲线数据.length - 1].value,
+      },
+      {
+        lineStyle: {
+          color: "red",
+        },
+        name: "创新高",
+        yAxis: 43029,
+        // label: {
+        //   show: false,
+        //   position: "start",
+        //   formatter: (params) => {
+        //     const { name, value } = params;
+        //     return `${name}\n${value}`;
+        //   },
+        // },
+      },
+      // {
+      //   lineStyle: {
+      //     color: "orange",
+      //   },
+      //   name: "平均值",
+      //   type: "average",
+      // },
+      // {
+      //   lineStyle: {
+      //     color: "orange",
+      //   },
+      //   name: "平均值",
+      //   type: "average",
+      // },
+      // {
+      //   lineStyle: {
+      //     color: "green",
+      //   },
+      //   name: "最小值",
+      //   type: "min",
+      // },
+      // {
+      //   lineStyle: {
+      //     color: "red",
+      //   },
+      //   name: "最大值",
+      //   type: "max",
+      // },
+    ],
+  },
+};
 const 盈亏曲线日Option = computed(() => {
   // 2. 数据预处理：识别每个月的第一个存在的日期（核心步骤）
   const monthFirstDateMap = new Map(); // 存储「年月标识」->「当月首个日期」
@@ -305,104 +413,7 @@ const 盈亏曲线日Option = computed(() => {
           borderColor: "#ef5350",
           borderColor0: "#26a69a",
         },
-        markPoint: {
-          data: [
-            {
-              type: "max",
-              name: "最大值",
-              // symbol: "none",
-              itemStyle: {
-                normal: {
-                  color: "red",
-                  // label: {
-                  //   show: true,
-                  //   color: '#ffffff'
-                  // }
-                },
-              },
-            },
-            {
-              type: "min",
-              name: "最小值",
-              // symbol: "none",
-              itemStyle: {
-                normal: {
-                  color: "green",
-                  // label: {
-                  //   show: true,
-                  //   color: '#ffffff'
-                  // }
-                },
-              },
-            },
-          ],
-        },
-        markLine: {
-          symbol: "none",
-          label: {
-            formatter: "{b}\n{c}",
-          },
-          data: [
-            // {
-            //   lineStyle: {
-            //     color: "red",
-            //   },
-            //   name: "第一目标位",
-            //   yAxis: money.第一目标,
-            //   // label: {
-            //   //   show: false,
-            //   //   position: "start",
-            //   //   formatter: (params) => {
-            //   //     const { name, value } = params;
-            //   //     return `${name}\n${value}`;
-            //   //   },
-            //   // },
-            // },
-            {
-              lineStyle: {
-                color: "red",
-              },
-              name: "创新高",
-              yAxis: 43029,
-              // label: {
-              //   show: false,
-              //   position: "start",
-              //   formatter: (params) => {
-              //     const { name, value } = params;
-              //     return `${name}\n${value}`;
-              //   },
-              // },
-            },
-            {
-              lineStyle: {
-                color: "orange",
-              },
-              name: "平均值",
-              type: "average",
-            },
-            // {
-            //   lineStyle: {
-            //     color: "orange",
-            //   },
-            //   name: "平均值",
-            //   type: "average",
-            // },
-            // {
-            //   lineStyle: {
-            //     color: "green",
-            //   },
-            //   name: "最小值",
-            //   type: "min",
-            // },
-            // {
-            //   lineStyle: {
-            //     color: "red",
-            //   },
-            //   name: "最大值",
-            //   type: "max",
-            // },
-          ],
-        },
+        ...commonMark,
       },
     ],
   };
@@ -495,6 +506,7 @@ const 盈亏曲线周Option = computed(() => {
           borderColor: "#ef5350",
           borderColor0: "#26a69a",
         },
+        ...commonMark,
       },
     ],
   };
@@ -585,6 +597,7 @@ const 盈亏曲线月Option = computed(() => {
           borderColor: "#ef5350",
           borderColor0: "#26a69a",
         },
+        ...commonMark,
       },
     ],
   };
