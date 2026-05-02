@@ -406,5 +406,5 @@ export function getWeekRange(n) {
 
 export function isDateInRangeWeek(week, date) {
   const [start, end] = getWeekRange(week);
-  return dayjs(date, "YYYY-MM-DD").isSameOrAfter(start, "day") && dayjs(date, "YYYY-MM-DD").isSameOrBefore(end, "day");
+  return (dayjs(date, "YYYY-MM-DD").isSame(start, "day") || dayjs(date, "YYYY-MM-DD").isAfter(start, "day")) && (dayjs(date, "YYYY-MM-DD").isSame(end, "day") || dayjs(date, "YYYY-MM-DD").isBefore(end, "day"));
 }
