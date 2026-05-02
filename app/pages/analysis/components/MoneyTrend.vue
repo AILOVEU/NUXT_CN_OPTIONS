@@ -216,38 +216,38 @@ const 盈亏概览Option = computed(() => {
 });
 
 const commonMark = {
-  markPoint: {
-    data: [
-      {
-        type: "max",
-        name: "最大值",
-        // symbol: "none",
-        itemStyle: {
-          normal: {
-            color: "red",
-            // label: {
-            //   show: true,
-            //   color: '#ffffff'
-            // }
-          },
-        },
-      },
-      {
-        type: "min",
-        name: "最小值",
-        // symbol: "none",
-        itemStyle: {
-          normal: {
-            color: "green",
-            // label: {
-            //   show: true,
-            //   color: '#ffffff'
-            // }
-          },
-        },
-      },
-    ],
-  },
+  // markPoint: {
+  //   data: [
+  //     {
+  //       type: "max",
+  //       name: "最大值",
+  //       // symbol: "none",
+  //       itemStyle: {
+  //         normal: {
+  //           color: "red",
+  //           // label: {
+  //           //   show: true,
+  //           //   color: '#ffffff'
+  //           // }
+  //         },
+  //       },
+  //     },
+  //     {
+  //       type: "min",
+  //       name: "最小值",
+  //       // symbol: "none",
+  //       itemStyle: {
+  //         normal: {
+  //           color: "green",
+  //           // label: {
+  //           //   show: true,
+  //           //   color: '#ffffff'
+  //           // }
+  //         },
+  //       },
+  //     },
+  //   ],
+  // },
   markLine: {
     symbol: "none",
     label: {
@@ -282,14 +282,11 @@ const commonMark = {
         },
         name: "创新高",
         yAxis: 43029,
-        // label: {
-        //   show: false,
-        //   position: "start",
-        //   formatter: (params) => {
-        //     const { name, value } = params;
-        //     return `${name}\n${value}`;
-        //   },
-        // },
+        label: {
+          show: true,
+          position: "insideStart", // 靠左（最关键）
+          formatter: "{b}\n{c}", // 保持和全局一样的格式
+        },
       },
       // {
       //   lineStyle: {
@@ -471,9 +468,12 @@ const 盈亏曲线周Option = computed(() => {
       formatter: function (params) {
         const data = params[0].data;
         if (data[1] === undefined) return "";
+        const 涨跌 = data[2] - data[1];
         return `第${data[5]}周（${getWeekRange(data[5]).join("~")}）<br/><br/>
         收盘：${formatNumberToWan(data[2])}<br/>
         开盘：${formatNumberToWan(data[1])}<br/><br/>
+        <span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "盈" : "亏"}: ${formatNumberToWan(涨跌)}</span>
+        <br/><br/>
         最高：${formatNumberToWan(data[4])}<br/>
         最低：${formatNumberToWan(data[3])}
       `;
@@ -562,9 +562,12 @@ const 盈亏曲线月Option = computed(() => {
       formatter: function (params) {
         const data = params[0].data;
         if (data[1] === undefined) return "";
+        const 涨跌 = data[2] - data[1];
         return `${dayjs().format("YYYY")}年${data[5]}<br/><br/>
         收盘：${formatNumberToWan(data[2])}<br/>
         开盘：${formatNumberToWan(data[1])}<br/><br/>
+        <span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "盈" : "亏"}: ${formatNumberToWan(涨跌)}</span>
+        <br/><br/>
         最高：${formatNumberToWan(data[4])}<br/>
         最低：${formatNumberToWan(data[3])}
       `;
