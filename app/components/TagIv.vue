@@ -1,7 +1,7 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
     <div class="font-[400]">
-      隐波
+      <span>隐波</span>
       <div class="w-[30px] inline-block">{{ props.value.toFixed(1) }}</div>
     </div>
   </el-tag>

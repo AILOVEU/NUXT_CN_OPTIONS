@@ -4,15 +4,15 @@
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 24px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] h-[200px] cursor-pointer max-md:h-[360px] relative px-[4px]" :style="style">
-    <div v-if="持仓" class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
+    <div v-if="持仓" class="absolute top-[2px] left-[0px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
       <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
       <div class="leading-[16px] ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
-    <div class="absolute top-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
-    <div class="absolute bottom-[1px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
+    <div class="absolute top-[2px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
+    <div class="absolute bottom-[1px] left-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
     <div
-      class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px] text-[14px]"
+      class="absolute bottom-[2px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px] text-[14px]"
       :style="{
         color: current期权Item['一手时间价'] > 最大建议买入时间价 ? '#f66602' : 'black',
       }"
@@ -25,7 +25,7 @@
           <TagPrice :value="一手价" />
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('打和点')">
-          <el-tag type="info" size="small" effect="plain"> 和 {{ current期权Item["打和点"] }} </el-tag>
+          <el-tag type="info" size="small" effect="plain"> <span>和 {{ current期权Item["打和点"] }}</span> </el-tag>
         </div>
       </div>
       <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
@@ -63,7 +63,7 @@
       </div>
       <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
-          <el-tag size="small" :effect="effect"> 持:{{ 持仓量 }} </el-tag>
+          <el-tag size="small" :effect="effect"> <span>持:{{ 持仓量 }}</span> </el-tag>
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('增仓量')">
           <TagPosition :value="日增量" />

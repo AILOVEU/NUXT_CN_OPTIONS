@@ -1,5 +1,5 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect"> 成本:{{ 一手成本价 }} </el-tag>
+  <el-tag :type="type" size="small" :effect="effect"> <span>成本:{{ 一手成本价 }}</span> </el-tag>
 </template>
 <script setup>
 import { 建议买入价 } from "~/data";

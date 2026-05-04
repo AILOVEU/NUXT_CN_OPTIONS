@@ -7,13 +7,13 @@
 const props = defineProps(["value", "仓位占比"]);
 const effect = computed(() => {
   // const absGamma = Math.abs(props.value);
-  if (props.仓位占比 >= 5) return "dark";
+  if (props.value >= 3000) return "dark";
   // if(absGamma > 1.5) return 'light'
   return "plain";
 });
 const type = computed(() => {
   // const absGamma = Math.abs(props.value);
-  if (props.仓位占比 >= 5) return "warning";
+  if (props.value >= 3000) return "warning";
   return "info";
 });
 </script>

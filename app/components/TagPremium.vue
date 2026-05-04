@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" :effect="effect" size="small">
-    溢
+    <span>溢</span>
     <div class="w-[40px] inline-block">{{ props.value.toFixed(2) }}%</div></el-tag
   >
 </template>

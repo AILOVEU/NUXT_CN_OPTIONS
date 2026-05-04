@@ -1,9 +1,9 @@
 <template>
     <el-tag v-if="props.value === '沽'" type="success">
-        沽
+        <span>沽</span>
     </el-tag>
     <el-tag v-if="props.value === '购'" type="danger">
-        购
+        <span>购</span>
     </el-tag>
   </template>
   <script setup>

@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    Vega
+    <span>Vega</span>
     <div class="w-[20px] inline-block">{{ (props.value * 100).toFixed(0) }}</div>
   </el-tag>
 </template>

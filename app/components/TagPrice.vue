@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    价
+    <span>价</span>
     <div class="w-[30px] inline-block">{{ props.value }}</div>
   </el-tag>
 </template>
