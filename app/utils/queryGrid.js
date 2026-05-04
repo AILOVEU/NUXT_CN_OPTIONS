@@ -40,7 +40,7 @@ function handleHoldData(dataList, 正股代码List) {
       // });
     });
     // 公共字段
-    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权"].forEach((key) => {
+    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权", "展示正股名称"].forEach((key) => {
       record[key] = item[key];
     });
     正股价格_dict[record["正股代码"]] = record["正股价格"];
