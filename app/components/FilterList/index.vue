@@ -1,9 +1,17 @@
 <template>
   <div v-loading="tableData.loading" class="flex justify-center">
-    <div class="mx-auto overflow-x-auto">
+    <div class="mx-auto overflow-x-auto w-full flex-1" ref="captureRef">
       <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
-        <el-table-column label="序" width="40" align="center" fixed="left" #default="{ $index }">
-          <div class="text-[10px]">{{ $index + 1 }}</div>
+        <el-table-column label="序" width="40" align="center" fixed="left">
+          <template #header>
+            <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="download">
+              <div>序</div>
+              <el-button link>⬇</el-button>
+            </div>
+          </template>
+          <template #default="{ row, $index }">
+            <div class="text-[10px] leading-[1.2]">{{ $index + 1 }}</div>
+          </template>
         </el-table-column>
         <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
         <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
@@ -94,6 +102,7 @@
 <script setup>
 import _ from "lodash";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
+import dayjs from "dayjs";
 
 const props = defineProps(["checkIsChance", "data", "isCombo", "showHold"]);
 const tableData = reactive({
@@ -119,4 +128,34 @@ const filteredTableData = computed(() => {
   filtered = _.sortBy(filtered, ["到期日", "沽购", "正股代码"]);
   return filtered;
 });
+
+const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD")})`);
+const captureRef = ref(null);
+async function download() {
+  // 服务端直接返回
+  if (process.server) return;
+
+  // 动态引入（避免服务端打包报错）
+  const html2canvas = (await import("html2canvas")).default;
+
+  const el = captureRef.value;
+  if (!el) return;
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2, // 清晰度
+      useCORS: true, // 跨域图片
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+
+    // 转成图片并下载
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `T型报价图${todayStr.value}.png`;
+    link.click();
+  } catch (e) {
+    console.error("截图失败", e);
+  }
+}
 </script>

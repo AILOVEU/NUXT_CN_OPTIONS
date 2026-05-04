@@ -3,7 +3,7 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-35px)]">
+    <div class="h-[calc(100%-35px)]" ref="captureRef">
       <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
           <template #header>
@@ -11,8 +11,9 @@
               <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
               <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
             </div>
-            <div v-else class="leading-[1.2]">
-              {{ label }}
+            <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="download">
+              <div>{{ label }}</div>
+              <el-button link>⬇</el-button>
             </div>
           </template>
           <template #default="{ row }" v-if="label === '期权'">
@@ -39,7 +40,7 @@ const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 
-const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位",'持仓量','增仓量'].map((el) => ({ label: el, value: el }));
+const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位", "持仓量", "增仓量"].map((el) => ({ label: el, value: el }));
 const indexVal = ref([]);
 const tableData = reactive({
   columns: [
@@ -99,6 +100,36 @@ watch(
     deep: true,
   }
 );
+
+const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD")})`);
+const captureRef = ref(null);
+async function download() {
+  // 服务端直接返回
+  if (process.server) return;
+
+  // 动态引入（避免服务端打包报错）
+  const html2canvas = (await import("html2canvas")).default;
+
+  const el = captureRef.value;
+  if (!el) return;
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2, // 清晰度
+      useCORS: true, // 跨域图片
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+
+    // 转成图片并下载
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `T型报价图${todayStr.value}.png`;
+    link.click();
+  } catch (e) {
+    console.error("截图失败", e);
+  }
+}
 </script>
 <style lang="less">
 .el-table--small .cell {
