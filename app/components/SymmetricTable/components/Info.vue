@@ -29,8 +29,6 @@
             <span>和 {{ current期权Item["打和点"] }}</span>
           </el-tag>
         </div>
-      </div>
-      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col pt-[2px]">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('溢价率')">
           <TagPremium :value="current期权Item['溢价率']" />
         </div>
@@ -45,9 +43,6 @@
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Delta')">
           <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
         </div>
-      </div>
-
-      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Vega')">
           <TagVega :value="current期权Item['Vega']" />
         </div>
@@ -59,8 +54,6 @@
         <div class="whitespace-nowrap">
           <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')" />
         </div>
-      </div>
-      <div class="flex gap-[2px] justify-center whitespace-nowrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <el-tag size="small" :effect="effect">
             <span>持:{{ 持仓量 }}</span>

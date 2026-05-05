@@ -72,7 +72,7 @@ function getColumnWidth(label) {
     return label === "期权" ? "80px" : "120px";
   }
   if (showTypeVal.value === "打印") {
-    return label === "期权" ? "80px" : "240px";
+    return label === "期权" ? "80px" : "290px";
   }
   return label === "期权" ? "80px" : "169px";
 }
