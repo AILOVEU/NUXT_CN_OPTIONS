@@ -298,6 +298,15 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     tiledData.push(row);
   });
+  let 总仓位 = 0;
+  tiledData.forEach((el) => {
+    总仓位 += el["一手价"] * el["持仓"];
+  });
+  总仓位 = 总仓位 || 1;
+  tiledData = tiledData.map((el) => ({
+    ...el,
+    仓位率: formatDecimal(100*(el["一手价"] * el["持仓"]) / 总仓位 , 1),
+  }));
   return tiledData;
 }
 // 请求入口

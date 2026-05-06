@@ -10,7 +10,7 @@ export const 金额 = {
   //
   基础金额: 10000,
   //
-  场内现金: 12011,
+  场内现金: 10665,
   占用保证金: 0, // 单笔保证金50 -> 15 了
   贷款: 10000,
   出金: 65000, // 转出后不可转入，转入是贷款
@@ -138,6 +138,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260506", 71840],
     ["20260430", 67096],
     ["20260429", 63564],
     ["20260428", 58339],
@@ -338,15 +339,15 @@ export const 盈亏曲线数据年 = _.unionBy(
   _.reverse([
     {
       year: "2026",
-      high: close2025 + _.max(盈亏曲线数据.map((el) => el.value)),
-      low: close2025 + _.min(盈亏曲线数据.map((el) => el.value)),
+      high: close2025 + _.max([...盈亏曲线数据.map((el) => el.value), 0]),
+      low: close2025 + _.min([...盈亏曲线数据.map((el) => el.value), 0]),
       open: close2025,
       close: close2025 + 盈亏曲线数据[盈亏曲线数据.length - 1].value,
     },
     {
       year: "2025",
-      high: close2024 + _.max(盈亏曲线数据2025.map((el) => el.value)),
-      low: close2024 + _.min(盈亏曲线数据2025.map((el) => el.value)),
+      high: close2024 + _.max([...盈亏曲线数据2025.map((el) => el.value), 0]),
+      low: close2024 + _.min([...盈亏曲线数据2025.map((el) => el.value), 0]),
       open: close2024,
       close: close2025,
     },

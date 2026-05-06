@@ -152,16 +152,8 @@ const 仓位 = computed(() => {
   return 持仓.value * 一手价.value;
 });
 
-const 持仓总和 = computed(() => {
-  let sum = 0;
-  props.tiledData.forEach((el) => {
-    if (el["持仓"]) sum += el["持仓"] * el["一手价"];
-  });
-  return sum;
-});
-
 const 仓位占比 = computed(() => {
-  return (100 * 仓位.value) / (持仓总和.value || 1);
+  return current期权Item.value["一手涨跌价"];
 });
 
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
