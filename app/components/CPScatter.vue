@@ -21,7 +21,7 @@ const option = computed(() => {
     },
     yAxis: {
       // type: 'log',
-      min: '-5',
+      // min: '-5',
       name: "手", // 单位文本
       // nameLocation: "start", // 定位到Y轴顶部（起点）
     },
