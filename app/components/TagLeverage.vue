@@ -1,6 +1,6 @@
 <template>
   <el-tag type="info" size="small" effect="plain">
-    <span>杠杆</span>
+    <span>杠</span>
     <div class="w-[30px] inline-block">{{ props.value.toFixed(1) }}</div>
   </el-tag>
 </template>

@@ -1,7 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <span>Vega</span>
-    <div class="w-[20px] inline-block">{{ (props.value * 100).toFixed(0) }}</div>
+    <span>Veg</span><div class="inline-block">{{ (props.value * 100).toFixed(0) }}</div>
   </el-tag>
 </template>
 <script setup>

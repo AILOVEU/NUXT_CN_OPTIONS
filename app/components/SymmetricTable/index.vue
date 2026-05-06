@@ -68,7 +68,7 @@ const showColumns = computed(() => {
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
 function getInfoColumnWidth() {
-  return showTypeVal.value === "打印" ? "275px" : "152px";
+  return showTypeVal.value === "打印" ? "290px" : "152px";
 }
 function getColumnWidth(label) {
   if (label === "期权") return "80px";

@@ -1,8 +1,7 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
     <div class="font-[400]">
-      <span>Delta</span>
-      <div class="w-[30px] inline-block">{{ (props.value * 100).toFixed(1) }}</div>
+      <span>Del</span><div class="inline-block">{{ (props.value * 100).toFixed(1) }}</div>
     </div>
   </el-tag>
 </template>

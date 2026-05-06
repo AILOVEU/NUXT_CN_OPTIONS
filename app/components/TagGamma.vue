@@ -1,7 +1,7 @@
 <template>
   <!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
   <el-tag :type="type" size="small" :effect="effect">
-     <span>Gamma</span><div class="w-[30px] inline-block">{{ (props.value * 10).toFixed(1) }}</div>
+     <span>Gam</span><div class="inline-block">{{ (props.value * 10).toFixed(1) }}</div>
   </el-tag>
 </template>
 <script setup>
