@@ -5,6 +5,8 @@
         { label: '日', value: '日' },
         { label: '周', value: '周' },
         { label: '月', value: '月' },
+        { label: '年', value: '年' },
+        { label: '2025日', value: '2025日' },
       ]"
       v-model="盈亏曲线Type"
       @click="(val) => (盈亏曲线Type = val)"
@@ -14,6 +16,8 @@
     <VChart v-if="盈亏曲线Type === '日'" :option="盈亏曲线日Option" style="height: 400px; width: 100%" />
     <VChart v-if="盈亏曲线Type === '周'" :option="盈亏曲线周Option" style="height: 400px; width: 100%" />
     <VChart v-if="盈亏曲线Type === '月'" :option="盈亏曲线月Option" style="height: 400px; width: 100%" />
+    <VChart v-if="盈亏曲线Type === '年'" :option="盈亏曲线年Option" style="height: 400px; width: 100%" />
+    <VChart v-if="盈亏曲线Type === '2025日'" :option="盈亏曲线日2025Option" style="height: 400px; width: 100%" />
   </div>
   <div class="mx-auto text-center text-[18px] font-semibold">{{ yearStr }}资金分布(总盈亏金额：{{ 总盈亏金额 }})</div>
   <div class="w-full">
@@ -22,7 +26,7 @@
 </template>
 <script setup>
 import { useMoneyStore } from "~/stores/useMoneyStore";
-import { 盈亏曲线数据 } from "~/data";
+import { 盈亏曲线数据, 盈亏曲线数据2025, 盈亏曲线数据年 } from "~/data";
 import _ from "lodash";
 import dayjs from "dayjs";
 import { isDateInRangeWeek } from "~/utils/utils";
@@ -319,7 +323,7 @@ const commonMark = {
     ],
   },
 };
-const 盈亏曲线日Option = computed(() => {
+function get盈亏曲线日Option(盈亏曲线数据, yearStr) {
   // 2. 数据预处理：识别每个月的第一个存在的日期（核心步骤）
   const monthFirstDateMap = new Map(); // 存储「年月标识」->「当月首个日期」
   const firstDateSet = new Set(); // 存储所有当月首个日期，用于快速判断
@@ -390,7 +394,7 @@ const 盈亏曲线日Option = computed(() => {
     },
     backgroundColor: "#fefefe",
     title: {
-      text: dayjs().format("YYYY") + "盈亏曲线",
+      text: yearStr + "盈亏曲线",
     },
     xAxis: {
       type: "category",
@@ -410,10 +414,16 @@ const 盈亏曲线日Option = computed(() => {
           borderColor: "#ef5350",
           borderColor0: "#26a69a",
         },
-        ...commonMark,
+        ...(yearStr === dayjs().format("YYYY") ? commonMark : {}),
       },
     ],
   };
+}
+const 盈亏曲线日Option = computed(() => {
+  return get盈亏曲线日Option(盈亏曲线数据, dayjs().format("YYYY"));
+});
+const 盈亏曲线日2025Option = computed(() => {
+  return get盈亏曲线日Option(盈亏曲线数据2025, "2025");
 });
 const 盈亏曲线周Option = computed(() => {
   const weekList = [];
@@ -601,6 +611,70 @@ const 盈亏曲线月Option = computed(() => {
           borderColor0: "#26a69a",
         },
         ...commonMark,
+      },
+    ],
+  };
+  // return monthMapList;
+});
+const 盈亏曲线年Option = computed(() => {
+  // 处理数据：过滤空对象，生成 K 线数据格式
+  const seriesData = 盈亏曲线数据年.map((item) => [item.open, item.close, item.low, item.high, item.year]);
+
+  // 生成 x 轴类目
+  const xData = seriesData.map((item) => `${item[4]}`);
+
+  // ECharts 最终配置项
+  return {
+    title: {
+      text: "盈亏年K线图",
+      left: "center",
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "cross",
+      },
+      formatter: function (params) {
+        const data = params[0].data;
+        if (data[1] === undefined) return "";
+        const 涨跌 = data[2] - data[1];
+        return `${data[5]}年<br/><br/>
+        收盘：${formatNumberToWan(data[2])}<br/>
+        开盘：${formatNumberToWan(data[1])}<br/><br/>
+        <span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "盈" : "亏"}: ${formatNumberToWan(涨跌)}</span>
+        <br/><br/>
+        最高：${formatNumberToWan(data[4])}<br/>
+        最低：${formatNumberToWan(data[3])}
+      `;
+      },
+    },
+    grid: {
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      data: xData,
+      boundaryGap: true,
+      axisLine: { onZero: false },
+    },
+    yAxis: {
+      type: "value",
+      scale: true, // 自动适配数据区间
+    },
+    series: [
+      {
+        name: "价格数据",
+        type: "candlestick", // K 线图类型
+        data: seriesData,
+        itemStyle: {
+          color: "#ef5350", // 上涨颜色
+          color0: "#26a69a", // 下跌颜色
+          borderColor: "#ef5350",
+          borderColor0: "#26a69a",
+        },
       },
     ],
   };
