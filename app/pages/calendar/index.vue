@@ -1,9 +1,9 @@
 <template>
-  <div v-loading="loading" class="max-md:w-[300%]">
+  <div v-loading="loading" class="max-md:w-[300%]" ref="captureRef">
     <Nav />
     <el-affix :offset="32">
       <div class="flex">
-        <div class="basis-[12.5%]">&nbsp;</div>
+        <div class="basis-[12.5%] flex justify-center items-center"><el-button @click="download" link>⬇</el-button></div>
         <div class="grid grid-cols-7 bg-white w-full">
           <div class="text-center">星期一</div>
           <div class="text-center">星期二</div>
@@ -125,4 +125,33 @@ const days = ref(
     };
   })
 );
+
+const captureRef = ref(null);
+async function download() {
+  // 服务端直接返回
+  if (process.server) return;
+
+  // 动态引入（避免服务端打包报错）
+  const html2canvas = (await import("html2canvas")).default;
+
+  const el = captureRef.value;
+  if (!el) return;
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2, // 清晰度
+      useCORS: true, // 跨域图片
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+
+    // 转成图片并下载
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `${dayjs().format("YYYY")}日历.png`;
+    link.click();
+  } catch (e) {
+    console.error("截图失败", e);
+  }
+}
 </script>
