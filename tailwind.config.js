@@ -7,10 +7,10 @@ module.exports = {
     // './composables/**/*.{js,ts}',
     // './plugins/**/*.{js,ts}',
     // './app.{js,ts,vue}',
-    './app/**/*.vue'
+    "./app/**/*.vue",
   ],
   theme: {
-    extend: {}
+    extend: {},
   },
-  plugins: []
-}
+  plugins: [],
+};

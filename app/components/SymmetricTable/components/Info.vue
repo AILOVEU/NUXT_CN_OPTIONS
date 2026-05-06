@@ -5,7 +5,7 @@
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative px-[4px]" :style="style">
     <div v-if="持仓" class="absolute top-[2px] left-[0px] flex flex-row max-md:flex-col-reverse items-start gap-[3px]">
-      <div class="rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
+      <div class="rounded-[50%] h-[16px] leading-[14px] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
       <div class="whitespace-nowrap font-[600] leading-[16px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
       <div class="leading-[16px] ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>

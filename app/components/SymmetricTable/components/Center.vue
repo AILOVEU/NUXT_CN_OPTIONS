@@ -5,12 +5,12 @@
     <div class="text-[14px] pt-[4px]">
       {{ 千行权价 }}
     </div>
-    <div class="text-[14px] pt-[2px]">
-      (
+    <div class="text-[14px] pt-[2px] pb-[4px]">
+      <span>(</span>
       <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
         {{ formatDecimal(溢价, 2) + "%" }}
       </span>
-      )
+      <span>)</span>
     </div>
   </div>
   <div v-else class="h-[24px] leading-[24px] text-[18px]">
@@ -23,7 +23,7 @@ import { formatDecimal } from "~/utils/utils";
 const props = defineProps(["row"]);
 
 const 正股 = computed(() => {
-  return props.row['展示正股名称'];
+  return props.row["展示正股名称"];
 });
 const 行权价 = computed(() => {
   return props.row["行权价"];

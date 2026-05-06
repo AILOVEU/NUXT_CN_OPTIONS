@@ -54,4 +54,8 @@ body {
 .highlight-line {
   background-color: #fdf6ec !important;
 }
+/* 全局覆盖 el-table 文字颜色 */
+:root {
+  --el-table-text-color: red !important;
+}
 </style>

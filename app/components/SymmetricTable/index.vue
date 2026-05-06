@@ -9,7 +9,7 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-35px)]" ref="captureRef">
+    <div class="h-[calc(100%-35px)] px-[5px]" ref="captureRef">
       <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
           <template #header>
