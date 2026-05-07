@@ -844,7 +844,7 @@ function getInRowStyle({ row }) {
   padding: 0 0px 0 0 !important;
 }
 ::v-deep(.el-table--small .el-table__cell) {
-  padding: 2px 0 !important;
+  padding: 0px 0 !important;
 }
 </style>
 <style>

@@ -118,7 +118,7 @@ function getRowStyle({ row }) {
   padding: 0 2px;
 }
 .el-table--small .el-table__cell {
-  padding: 2px 0;
+  padding: 0px 0;
 }
 .el-radio-group {
   justify-content: center;

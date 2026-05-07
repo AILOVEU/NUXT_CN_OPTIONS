@@ -1,5 +1,5 @@
 <template>
-  <div v-if="props.row._split" class="bg-[black] h-[24px]">&nbsp;</div>
+  <div v-if="props.row._split" class="bg-[black] h-[10px] text-[white] flex items-center justify-center">&nbsp;</div>
   <div v-else-if="!props.row?._current">
     <div class="text-[17px] whitespace-nowrap">{{ 展示正股名称 }}</div>
     <div class="text-[17px] pt-[4px]">
@@ -11,13 +11,15 @@
       </span>
     </div>
   </div>
-  <div v-else class="h-[24px] leading-[24px] text-[17px]">
+  <div v-else class="h-[22px] leading-[22px] text-[20px]">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>
 <script setup>
 import { OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
+import dayjs from "dayjs";
+
 const props = defineProps(["row"]);
 
 const 展示正股名称 = computed(() => {

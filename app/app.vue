@@ -46,7 +46,7 @@ body {
   }
 }
 .el-table .el-table__cell {
-  padding: 2px 0;
+  padding: 0px 0;
 }
 .el-table .cell {
   padding: 0 6px 0 2px;

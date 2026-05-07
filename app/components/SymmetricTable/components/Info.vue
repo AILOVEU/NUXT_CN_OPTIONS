@@ -1,12 +1,12 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
-  <div v-else-if="props.row._split" style="background-color: black" class="h-[24px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #e5effe; height: 24px">&nbsp;</div>
+  <div v-else-if="props.row._split" style="background-color: black" class="h-[10px]">&nbsp;</div>
+  <div v-else-if="props.row._current" style="background-color: #e5effe; height: 22px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative px-[4px]" :style="style" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse items-center gap-[2px] hold-print">
-      <div class="hold-print rounded-[50%] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
-      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse items-center gap-[1px] hold-print">
+      <div class="hold-print rounded-[6px] text-[white] font-semibold px-[4px] leading-[18px] h-[20px] flex items-start" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
+      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
       <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
     <div v-if="!isPrint" class="absolute top-[0px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
@@ -20,8 +20,8 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '120px' : '190px' }">
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col pt-[2px]" :style="{ width: props.width }">
+    <div class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
         </div>
@@ -63,7 +63,7 @@
       </div>
 
       <div v-if="持仓">
-        <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]" :style="{ width: props.width }">
+        <div class="flex justify-center flex-nowrap max-md:flex-col gap-[1px]" :style="{ width: props.width }">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
             <TagCostPrice :一手成本价="一手成本价" />
           </div>
@@ -161,7 +161,7 @@ const 仓位占比 = computed(() => {
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
 const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
-const style = computed(() => {
+const wrapperStyle = computed(() => {
   const grayStyle = {
     background: "#ACBAC4",
     filter: "grayscale(0.25)",
@@ -171,8 +171,8 @@ const style = computed(() => {
     // filter: "grayscale(0.75)",
   };
   let style = {
-    height: isPrint.value ? "130px" : "200px",
-    border: 持仓.value > 0 ? "4px solid red" : 持仓.value < 0 ? "4px solid green" : "",
+    height: isPrint.value ? "108px" : "176px",
+    border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
     if (!current期权Item.value["_isChance"]) {
@@ -265,10 +265,10 @@ const handleGlassStyle = (el, isEnable) => {
 /* 👇 打印模式文字放大样式 */
 .print-text-large,
 .print-text-large * {
-  font-size: 24px !important; /* 👈 可自行调整大小：14/16/18px */
+  font-size: 26px !important; /* 👈 可自行调整大小：14/16/18px */
   /* line-height: 1.4 !important; */
   .el-tag--small {
-    height: 24px;
+    height: 26px;
   }
   .hold-print {
     font-size: 18px !important;

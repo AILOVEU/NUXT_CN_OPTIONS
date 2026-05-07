@@ -9,7 +9,8 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-35px)] px-[5px]" ref="captureRef">
+    <div class="h-[calc(100%-35px)] border-[5px] border-[black] border-t-0" ref="captureRef">
+      <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-black">{{ dayStr }}</div>
       <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
           <template #header>
@@ -42,7 +43,7 @@ import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]);
-
+const dayStr = computed(() => dayjs().format("YYYY-MM-DD") || " ");
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = ["精简", "打印"].map((el) => ({ label: el, value: el }));
@@ -95,8 +96,8 @@ function getCellStyle({ column, row }) {
   // 红 | 绿
   // -------
   // 绿 | 红
-  const 实值style = { border: "3px solid rgb(255, 220, 220)", background: "white" };
-  const 虚值style = { border: "3px solid rgb(190, 220, 190)", background: "white" };
+  const 实值style = { border: "2px solid rgb(255, 220, 220)", background: "white" };
+  const 虚值style = { border: "2px solid rgb(190, 220, 190)", background: "white" };
   if (row["行权价"] > row["正股价格"]) {
     return column?.["property"]?.includes("C") ? 虚值style : 实值style;
   } else {
@@ -150,10 +151,10 @@ async function download() {
 </script>
 <style lang="less">
 .el-table--small .cell {
-  padding: 0 0px;
+  padding: 0 0px !important;
 }
 .el-table--small .el-table__cell {
-  padding: 0px 0;
+  padding: 0px 0 !important;
 }
 .el-radio-group {
   justify-content: center;
