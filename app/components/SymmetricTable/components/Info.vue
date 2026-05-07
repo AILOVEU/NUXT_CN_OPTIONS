@@ -4,10 +4,10 @@
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 24px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative px-[4px]" :style="style" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse items-start gap-[2px]">
-      <div class="rounded-[50%] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
-      <div class="whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
-      <div class="ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
+    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse items-center gap-[2px] hold-print">
+      <div class="hold-print rounded-[50%] text-[white] font-semibold px-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
+      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}:{{ 盈亏 }}</div>
+      <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
     <div v-if="!isPrint" class="absolute top-[0px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
     <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
@@ -37,7 +37,7 @@
           <TagLeverage :value="current期权Item['杠杆']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col box-border" :style="{ width: props.width }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('隐波')">
           <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
         </div>
@@ -248,7 +248,7 @@ const handleGlassStyle = (el, isEnable) => {
   }
 };
 </script>
-<style>
+<style lang="less">
 .glass-effect {
   filter: grayscale(0.75);
   /* 模糊核心属性：对元素后方内容模糊 */
@@ -265,7 +265,13 @@ const handleGlassStyle = (el, isEnable) => {
 /* 👇 打印模式文字放大样式 */
 .print-text-large,
 .print-text-large * {
-  font-size: 20px !important; /* 👈 可自行调整大小：14/16/18px */
+  font-size: 24px !important; /* 👈 可自行调整大小：14/16/18px */
   /* line-height: 1.4 !important; */
+  .el-tag--small {
+    height: 24px;
+  }
+  .hold-print {
+    font-size: 18px !important;
+  }
 }
 </style>

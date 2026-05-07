@@ -60,4 +60,10 @@ body {
 .el-tag--info {
   color: black !important;
 }
+.el-tag {
+  border-width: 0 !important;
+}
+// .el-table .el-table__cell {
+//   box-sizing: border-content !important;
+// }
 </style>
