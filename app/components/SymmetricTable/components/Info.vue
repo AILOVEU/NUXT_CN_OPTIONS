@@ -169,7 +169,7 @@ const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const wrapperStyle = computed(() => {
   const grayStyle = {
-    background: "#ACBAC4",
+    background: "white",
     filter: "grayscale(0.25)",
   };
   const 实值Style = {
@@ -201,6 +201,10 @@ const wrapperStyle = computed(() => {
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
       style = { ...style, background: "#FFE2AF" };
+    } else {
+      style = {
+        display: "none",
+      };
     }
   }
   return style;

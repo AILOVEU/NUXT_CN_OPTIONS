@@ -9,7 +9,7 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-35px)] border-[5px] border-[black] border-t-0" ref="captureRef">
+    <div class="h-[calc(100%-35px)] border-x-[10px] border-[black]" ref="captureRef">
       <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-black">{{ dayStr }}</div>
       <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
