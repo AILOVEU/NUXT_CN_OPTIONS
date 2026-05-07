@@ -15,18 +15,20 @@
         </div>
       </div>
     </el-affix>
-    <div class="flex mb-[200px]">
+    <div class="flex">
       <div class="basis-[12.5%]">&nbsp;</div>
       <div class="basis-[87.5%] grid grid-cols-7 mt-[32px]">
-        <div v-for="item in days" class="border-[1px] border-[black] h-[80px] flex items-center justify-center flex-col" :style="getStyle(item)">
-          <div class="text-[12px]" v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
-          <div class="text-[20px]" v-else>{{ item.showText }}</div>
-
+        <div v-for="item in days" class="text-[28px] relative border-[1px] border-[black] h-[119px] flex items-center justify-center flex-col" :style="getStyle(item)">
+          <div class="absolute left-[5px] top-[5px]">
+            <div v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
+            <div v-else>{{ item.showText }}</div>
+          </div>
+          <div v-if="customTextMap[item.date]" class="text-[24px] text-[red]">{{ customTextMap[item.date] }}</div>
           <div v-if="item.holidayName">{{ item.holidayName }}</div>
           <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
-          <div v-if="item.isQuarterOptions" class="text-[24px]">季交割</div>
+          <div v-if="item.isQuarterOptions" class="text-[30px]">季交割</div>
           <div v-else-if="item.isFourthWednesday">交割</div>
-          <div v-if="item.isGeneratedNewQuarterOptions">新季期权</div>
+          <div v-if="item.isGeneratedNewQuarterOptions" class="text-[30px]">🔖新季期权</div>
           <div v-if="item.isBirthday">🎂</div>
           <div v-if="item.isFirstMonday" class="relative translate-x-[-100%] w-full flex justify-center text-[30px]">
             {{ dayjs(item.date, "YYYY-MM-DD").format("M月") }}
@@ -49,6 +51,7 @@ function getStyle(item) {
   if (dayjs(item.date, "YYYY-MM-DD").isBefore(dayjs(), "days")) {
     // styleCfg.background = "gray";
     styleCfg.filter = "grayscale(0.75)";
+    // styleCfg.background = "gray";
   }
   if (item.isEvenMonth) {
     return {
@@ -125,6 +128,11 @@ const days = ref(
     };
   })
 );
+
+const customTextMap = ref({
+  "2026-05-13": "白糖、玻璃、纯碱",
+  "2026-05-21": "铁矿石",
+});
 
 const captureRef = ref(null);
 async function download() {
