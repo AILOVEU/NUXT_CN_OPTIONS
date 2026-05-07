@@ -43,7 +43,7 @@ import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]);
-const dayStr = computed(() => dayjs().format("YYYY-MM-DD") || " ");
+const dayStr = computed(() => dayjs().format("YYYY-MM-DD HH:mm:ss") || " ");
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = ["精简", "打印"].map((el) => ({ label: el, value: el }));
@@ -69,11 +69,12 @@ const showColumns = computed(() => {
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
 function getInfoColumnWidth() {
+  if (isMobile) return "90px";
   return showTypeVal.value === "打印" ? "300px" : "152px";
 }
 function getColumnWidth(label) {
   if (label === "期权") return "80px";
-  if (isMobile) return "120px";
+  if (isMobile) return "100px";
   return showTypeVal.value === "打印" ? "300px" : "169px";
 }
 const filteredTableData = computed(() => {

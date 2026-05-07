@@ -4,10 +4,10 @@
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse items-center gap-[1px] hold-print">
+    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse max-md:items-start items-center gap-[1px] hold-print">
       <div class="hold-print rounded-[6px] text-[white] font-semibold px-[4px] leading-[18px] h-[20px] flex items-start" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
-      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
-      <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
+      <div class="hold-print whitespace-nowrap font-[600] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
+      <div class="hold-print ml-[2px] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
     <div v-if="!isPrint" class="absolute top-[0px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
     <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
@@ -20,7 +20,10 @@
     >
       时:{{ current期权Item["一手时间价"] }}
     </div>
-    <div class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }">
+    <div
+      class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]"
+      :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : isMobile ? '300px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }"
+    >
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -89,6 +92,9 @@ import { useMoneyStore } from "~/stores/useMoneyStore";
 import { getColorSplitHander } from "~/utils/color";
 import { formatDecimal } from "~/utils/utils";
 import { 最大建议买入时间价, 最大建议买入价 } from "~/data";
+import { useGlobal } from "~/stores/useGlobal.js";
+const { globalLoading, isMobile } = useGlobal();
+
 const bsModalData = reactive({
   visible: false,
   optionInfo: {},
@@ -171,7 +177,7 @@ const wrapperStyle = computed(() => {
     // filter: "grayscale(0.75)",
   };
   let style = {
-    height: isPrint.value ? "108px" : "176px",
+    height: isPrint.value ? "108px" : isMobile ? "310px" : "170px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
