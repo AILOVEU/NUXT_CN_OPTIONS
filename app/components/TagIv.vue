@@ -2,7 +2,7 @@
   <el-tag :type="type" size="small" :effect="effect">
     <div class="font-[400]">
       <span>隐</span>
-      <div class="w-[30px] inline-block">{{ props.value.toFixed(1) }}</div>
+      <div class="inline-block">{{ props.value.toFixed(1) }}</div>
     </div>
   </el-tag>
 </template>
