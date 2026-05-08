@@ -30,15 +30,17 @@
     <div class="w-full flex justify-center">
       <el-button @click="download" link>⬇</el-button>
     </div>
-    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col" ref="captureRef">
-      <div class="flex justify-center">彩票</div>
-      <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
-      <div class="flex justify-center">短期</div>
-      <FilterList :checkIsChance="checkIsChance短期" :showHold="false" />
-      <div class="flex justify-center">中期</div>
-      <FilterList :checkIsChance="checkIsChance中期" :showHold="false" />
-      <div class="flex justify-center">远期</div>
-      <FilterList :checkIsChance="checkIsChance远期" :showHold="false" />
+    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col">
+      <div class="mx-auto" ref="captureRef">
+        <div class="flex justify-center py-[5px]">彩票</div>
+        <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
+        <div class="flex justify-center py-[5px]">短期</div>
+        <FilterList :checkIsChance="checkIsChance短期" :showHold="false" />
+        <div class="flex justify-center py-[5px]">中期</div>
+        <FilterList :checkIsChance="checkIsChance中期" :showHold="false" />
+        <div class="flex justify-center py-[5px]">远期</div>
+        <FilterList :checkIsChance="checkIsChance远期" :showHold="false" />
+      </div>
     </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
     <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" :showHold="false" />

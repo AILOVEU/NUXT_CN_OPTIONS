@@ -1,8 +1,8 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
     <div class="font-[400]">
-      <span>隐</span>
-      <div class="inline-block">{{ props.value.toFixed(1) }}</div>
+      <span class="text-[9px]">隐</span>
+      <div class="inline-block ml-[1px]">{{ props.value.toFixed(1) }}</div>
     </div>
   </el-tag>
 </template>

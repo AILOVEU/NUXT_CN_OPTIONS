@@ -1,6 +1,6 @@
 <template>
     <el-tag :type="type" size="small" :effect="effect">
-       <span>日损</span><div class="inline-block">{{ props.value }}</div>
+       <span class="text-[9px]">日损</span><div class="inline-block">{{ props.value }}</div>
     </el-tag>
   </template>
   <script setup>

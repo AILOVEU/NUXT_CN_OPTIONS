@@ -1,6 +1,7 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <div class="inline-block">仓{{ props.value }}({{ formatDecimal(props.仓位占比, 1) }}%)</div>
+    <span class="text-[9px]">仓</span>
+    <div class="inline-block">{{ props.value }}({{ formatDecimal(props.仓位占比, 1) }}%)</div>
   </el-tag>
 </template>
 <script setup>

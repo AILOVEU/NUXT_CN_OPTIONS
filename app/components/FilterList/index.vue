@@ -1,6 +1,6 @@
 <template>
   <div v-loading="tableData.loading" class="flex justify-center">
-    <div class="mx-auto overflow-x-auto w-full flex-1" ref="captureRef">
+    <div class="mx-auto overflow-x-auto border-[5px] border-[black]" ref="captureRef">
       <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
         <el-table-column label="序" width="40" align="center" fixed="left">
           <template #header>
@@ -16,44 +16,44 @@
         <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
         <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
         <el-table-column label="一手价格构成" align="center">
-          <el-table-column label="时间" #default="{ row }" align="right" :minWidth="props.isCombo ? 140 : 80" prop="一手时间价" sortable>
+          <el-table-column label="时间" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手时间价" sortable>
             <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
           </el-table-column>
-          <el-table-column label="实值" #default="{ row }" align="right" :minWidth="props.isCombo ? 140 : 80" prop="一手内在价" sortable>
+          <el-table-column label="实值" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手内在价" sortable>
             <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
           </el-table-column>
         </el-table-column>
         <el-table-column label="日盈亏" align="center" v-if="props.showHold">
-          <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" minWidth="110" sortable />
-          <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" minWidth="120" sortable />
+          <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" width="110" sortable />
+          <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" width="120" sortable />
         </el-table-column>
         <el-table-column label="总盈亏" align="center" v-if="props.showHold">
-          <el-table-column label="一手价" :minWidth="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
+          <el-table-column label="一手价" :width="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
             <CombinTableCell :value="row['一手价']" :showDiff="true" />
           </el-table-column>
-          <el-table-column label="成本价" :minWidth="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
+          <el-table-column label="成本价" :width="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
             <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
           </el-table-column>
-          <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :minWidth="110" sortable />
-          <el-table-column label="总盈亏" prop="总盈亏" align="right" :minWidth="95" sortable />
-          <el-table-column label="仓位" :minWidth="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
+          <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="110" sortable />
+          <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="95" sortable />
+          <el-table-column label="仓位" :width="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
             <div>{{ row["仓位"] }}</div>
           </el-table-column>
-          <el-table-column label="收益率" :minWidth="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
+          <el-table-column label="收益率" :width="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
             <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
           </el-table-column>
         </el-table-column>
         <el-table-column label="信息" align="center">
-          <el-table-column label="正股" #default="{ row }" prop="正股代码" align="right" minWidth="95" sortable>
+          <el-table-column label="正股" #default="{ row }" prop="正股代码" align="right" width="95" sortable>
             {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
           </el-table-column>
-          <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" minWidth="80" sortable>
+          <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" width="55" sortable>
             <TagCallPut :value="row['沽购']" />
           </el-table-column>
-          <el-table-column label="天数" prop="到期天数" align="right" minWidth="80" sortable />
+          <el-table-column label="天数" prop="到期天数" align="right" width="55" sortable />
         </el-table-column>
 
-        <el-table-column label="持" #default="{ row }" prop="持仓" align="right" minWidth="70" sortable>
+        <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="45" sortable>
           {{ row["持仓"] || "" }}
         </el-table-column>
 

@@ -1,7 +1,8 @@
 <template>
   <el-tag :type="type" :effect="effect" size="small">
-    <span>溢</span><div class="inline-block">{{ props.value.toFixed(2) }}%</div></el-tag
-  >
+    <span class="text-[9px]">溢</span>
+    <div class="inline-block">{{ props.value.toFixed(2) }}%</div>
+  </el-tag>
 </template>
 <script setup>
 const props = defineProps(["value", "正股代码"]);
