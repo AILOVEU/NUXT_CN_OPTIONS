@@ -303,10 +303,12 @@ function formatRecord(_tiledData, 持仓JSON) {
     总仓位 += el["一手价"] * el["持仓"];
   });
   总仓位 = 总仓位 || 1;
-  tiledData = tiledData.map((el) => ({
-    ...el,
-    仓位率: formatDecimal(100*(el["一手价"] * el["持仓"]) / 总仓位 , 1),
-  }));
+  tiledData = tiledData
+    .map((el) => ({
+      ...el,
+      仓位率: formatDecimal((100 * (el["一手价"] * el["持仓"])) / 总仓位, 1),
+    }))
+    .filter((el) => el["一手价"]);
   return tiledData;
 }
 // 请求入口

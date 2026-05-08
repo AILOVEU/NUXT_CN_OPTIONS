@@ -27,18 +27,21 @@
         {{ item.label }}
       </div>
     </div>
-    <div v-if="showType === 'list'" class="h-[calc(100vh-250px)] max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col">
+    <div class="w-full flex justify-center">
+      <el-button @click="download" link>⬇</el-button>
+    </div>
+    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] overflow-auto gap-[20px] flex flex-col" ref="captureRef">
       <div class="flex justify-center">彩票</div>
-      <FilterList :checkIsChance="checkIsChance彩票" :showHold='false'/>
+      <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
       <div class="flex justify-center">短期</div>
-      <FilterList :checkIsChance="checkIsChance短期" :showHold='false'/>
+      <FilterList :checkIsChance="checkIsChance短期" :showHold="false" />
       <div class="flex justify-center">中期</div>
-      <FilterList :checkIsChance="checkIsChance中期" :showHold='false'/>
+      <FilterList :checkIsChance="checkIsChance中期" :showHold="false" />
       <div class="flex justify-center">远期</div>
-      <FilterList :checkIsChance="checkIsChance远期" :showHold='false'/>
+      <FilterList :checkIsChance="checkIsChance远期" :showHold="false" />
     </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
-    <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" :showHold='false'/>
+    <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" :showHold="false" />
   </div>
 </template>
 <script setup>
@@ -46,7 +49,7 @@ import _ from "lodash";
 import { useGlobal } from "~/stores/useGlobal.js";
 import FilterSymmetric from "./components/FilterSymmetric.vue";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
-
+import dayjs from "dayjs";
 const { globalLoading } = useGlobal();
 
 const showType = ref("list");
@@ -63,7 +66,7 @@ const formData = reactive({
   GammaRange: [0.5, 9999],
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
-  沽购List: ["购",'沽'],
+  沽购List: ["购", "沽"],
   过滤持有: false,
 });
 function checkIsChance彩票(target) {
@@ -130,6 +133,35 @@ function checkIsChance(target) {
   if (checkIsChance中期(target)) return true;
   if (checkIsChance远期(target)) return true;
   return false;
+}
+
+const captureRef = ref(null);
+async function download() {
+  // 服务端直接返回
+  if (process.server) return;
+
+  // 动态引入（避免服务端打包报错）
+  const html2canvas = (await import("html2canvas")).default;
+
+  const el = captureRef.value;
+  if (!el) return;
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2, // 清晰度
+      useCORS: true, // 跨域图片
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+
+    // 转成图片并下载
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `${dayjs().format("YYYY")}彩票期权.png`;
+    link.click();
+  } catch (e) {
+    console.error("截图失败", e);
+  }
 }
 </script>
 <style scoped>
