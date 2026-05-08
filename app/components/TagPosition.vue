@@ -1,7 +1,7 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
     <span class="text-[9px]">{{ props.value > 0 ? "增" : "减" }}</span>
-    <div class="inline-block">{{ props.value }}</div>
+    <div class="inline-block ml-[1px]">{{ props.value }}</div>
   </el-tag>
 </template>
 <script setup>

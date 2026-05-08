@@ -9,7 +9,11 @@
       <div class="hold-print whitespace-nowrap font-[600] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
       <div class="hold-print ml-[2px] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
-    <div v-if="!isPrint" class="absolute top-[0px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">{{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}</div>
+    <div class="hold-print absolute top-[0px] right-[0px] rounded-[5px] h-[20px] leading-[18px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
+      <!-- br -->
+      {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}
+    </div>
+
     <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
     <div
       v-if="!isPrint"
@@ -30,7 +34,7 @@
         </div>
         <div class="whitespace-nowrap" v-if="(!props.indexVal.length || props.indexVal.includes('打和点')) && !isPrint">
           <el-tag type="info" size="small" effect="plain">
-            <span>和 {{ current期权Item["打和点"] }}</span>
+            <span class="text-[9px]">和</span><span class="ml-[1px]">{{ current期权Item["打和点"] }}</span>
           </el-tag>
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('溢价率')">
@@ -57,7 +61,7 @@
       <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col" :style="{ width: props.innerWidth }" v-if="!isPrint">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <el-tag size="small" :effect="effect">
-            <span>持{{ 持仓量 }}</span>
+            <span class="text-[9px]">持</span><span class="ml-[1px]">{{ 持仓量 }}</span>
           </el-tag>
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('增仓量')">
@@ -74,7 +78,7 @@
             <TagCostPrice :一手成本价="一手成本价" />
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
-            <TagPercent :value="仓位" :仓位占比="仓位占比" />
+            <TagPercent :value="仓位" :仓位占比="仓位率" />
             <!-- <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%) </el-tag> -->
           </div>
         </div>
@@ -157,8 +161,8 @@ const 仓位 = computed(() => {
   return 持仓.value * 一手价.value;
 });
 
-const 仓位占比 = computed(() => {
-  return current期权Item.value["一手涨跌价"];
+const 仓位率 = computed(() => {
+  return current期权Item.value["仓位率"];
 });
 
 const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");

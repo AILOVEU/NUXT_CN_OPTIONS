@@ -300,7 +300,9 @@ function formatRecord(_tiledData, 持仓JSON) {
   });
   let 总仓位 = 0;
   tiledData.forEach((el) => {
-    总仓位 += el["一手价"] * el["持仓"];
+    if (el["持仓"]) {
+      总仓位 += el["一手价"] * el["持仓"];
+    }
   });
   总仓位 = 总仓位 || 1;
   tiledData = tiledData

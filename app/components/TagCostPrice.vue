@@ -1,7 +1,7 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <span>本</span>
-    <div class="inline-block">{{ props.一手成本价 }}</div>
+    <span class="text-[9px]">本</span>
+    <div class="inline-block ml-[1px]">{{ props.一手成本价 }}</div>
   </el-tag>
 </template>
 <script setup>
