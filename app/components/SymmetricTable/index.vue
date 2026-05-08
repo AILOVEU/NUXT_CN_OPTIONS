@@ -9,7 +9,7 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-35px)] border-x-[10px] border-[black]" ref="captureRef">
+    <div class="h-[calc(100%-120px)] border-x-[10px] border-[black]" ref="captureRef">
       <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-black">{{ dayStr }}</div>
       <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
         <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
@@ -27,7 +27,7 @@
             <Center :row="row" />
           </template>
           <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :width="getInfoColumnWidth()" />
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" :onlyShowHold="props.onlyShowHold" />
           </template>
         </el-table-column>
       </el-table>
@@ -84,7 +84,7 @@ const filteredTableData = computed(() => {
     if (el["is行内有持仓"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;
-    if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
+    // if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
     return true;
     const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];

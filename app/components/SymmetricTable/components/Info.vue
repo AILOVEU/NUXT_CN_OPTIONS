@@ -22,9 +22,9 @@
     </div>
     <div
       class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]"
-      :style="{ transform: [1].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : isMobile ? '300px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }"
+      :style="{ transform: [1, 2].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : isMobile ? '300px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }"
     >
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
         </div>
@@ -40,7 +40,7 @@
           <TagLeverage :value="current期权Item['杠杆']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('隐波')">
           <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
         </div>
@@ -54,7 +54,7 @@
           <TagGamma :value="current期权Item['Gamma']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }" v-if="!isPrint">
+      <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col" :style="{ width: props.innerWidth }" v-if="!isPrint">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <el-tag size="small" :effect="effect">
             <span>持{{ 持仓量 }}</span>
@@ -63,10 +63,13 @@
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('增仓量')">
           <TagPosition :value="日增量" />
         </div>
+        <div class="whitespace-nowrap ml-[4px]" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')">
+          <TagTheta :value="current期权Item['单日损耗']" />
+        </div>
       </div>
 
       <div v-if="持仓">
-        <div class="flex justify-center flex-nowrap max-md:flex-col gap-[1px]" :style="{ width: props.width }">
+        <div class="flex justify-center flex-nowrap max-md:flex-col gap-[1px]" :style="{ width: props.innerWidth }">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
             <TagCostPrice :一手成本价="一手成本价" />
           </div>
@@ -76,12 +79,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.width }">
-        <div class="whitespace-nowrap">
-          <TagTheta :value="current期权Item['单日损耗']" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')" />
-        </div>
-      </div> -->
     </div>
   </div>
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
@@ -100,7 +97,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal", "width"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal", "innerWidth", "onlyShowHold"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",
@@ -201,7 +198,7 @@ const wrapperStyle = computed(() => {
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
       style = { ...style, background: "#FFE2AF" };
-    } else {
+    } else if (props.onlyShowHold) {
       style = {
         display: "none",
       };
