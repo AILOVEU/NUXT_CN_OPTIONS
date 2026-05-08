@@ -1,63 +1,64 @@
 <template>
   <div v-loading="tableData.loading" class="flex justify-center">
-    <div class="mx-auto overflow-x-auto border-[5px] border-[black]" ref="captureRef">
-      <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
-        <el-table-column label="序" width="40" align="center" fixed="left">
-          <template #header>
-            <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="download">
-              <div>序</div>
-              <el-button link>⬇</el-button>
-            </div>
-          </template>
-          <template #default="{ row, $index }">
-            <div class="text-[10px] leading-[1.2]">{{ $index + 1 }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
-        <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
-        <el-table-column label="一手价格构成" align="center">
-          <el-table-column label="时间" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手时间价" sortable>
-            <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
+    <div class="mx-auto overflow-x-auto border-[5px] border-[black]">
+      <Capture title="期权列表" ref="captureRef">
+        <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
+          <el-table-column label="序" width="40" align="center" fixed="left">
+            <template #header>
+              <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+                <div>序</div>
+                <el-button link>⬇</el-button>
+              </div>
+            </template>
+            <template #default="{ row, $index }">
+              <div class="text-[10px] leading-[1.2]">{{ $index + 1 }}</div>
+            </template>
           </el-table-column>
-          <el-table-column label="实值" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手内在价" sortable>
-            <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
+          <el-table-column label="期权名称" prop="期权名称" width="150" sortable align="left" fixed="left" />
+          <el-table-column #default="{ row }" label="一手价" prop="一手价" width="70" sortable align="right" />
+          <el-table-column label="一手价格构成" align="center">
+            <el-table-column label="时间" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手时间价" sortable>
+              <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
+            </el-table-column>
+            <el-table-column label="实值" #default="{ row }" align="right" :width="props.isCombo ? 140 : 80" prop="一手内在价" sortable>
+              <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
+            </el-table-column>
           </el-table-column>
-        </el-table-column>
-        <el-table-column label="日盈亏" align="center" v-if="props.showHold">
-          <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" width="110" sortable />
-          <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" width="120" sortable />
-        </el-table-column>
-        <el-table-column label="总盈亏" align="center" v-if="props.showHold">
-          <el-table-column label="一手价" :width="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
-            <CombinTableCell :value="row['一手价']" :showDiff="true" />
+          <el-table-column label="日盈亏" align="center" v-if="props.showHold">
+            <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" width="110" sortable />
+            <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" width="120" sortable />
           </el-table-column>
-          <el-table-column label="成本价" :width="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
-            <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
+          <el-table-column label="总盈亏" align="center" v-if="props.showHold">
+            <el-table-column label="一手价" :width="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
+              <CombinTableCell :value="row['一手价']" :showDiff="true" />
+            </el-table-column>
+            <el-table-column label="成本价" :width="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
+              <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
+            </el-table-column>
+            <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="110" sortable />
+            <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="95" sortable />
+            <el-table-column label="仓位" :width="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
+              <div>{{ row["仓位"] }}</div>
+            </el-table-column>
+            <el-table-column label="收益率" :width="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
+              <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
+            </el-table-column>
           </el-table-column>
-          <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="110" sortable />
-          <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="95" sortable />
-          <el-table-column label="仓位" :width="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
-            <div>{{ row["仓位"] }}</div>
+          <el-table-column label="信息" align="center">
+            <el-table-column label="正股" #default="{ row }" prop="正股代码" align="right" width="95" sortable>
+              {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
+            </el-table-column>
+            <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" width="55" sortable>
+              <TagCallPut :value="row['沽购']" />
+            </el-table-column>
+            <el-table-column label="天数" prop="到期天数" align="right" width="55" sortable />
           </el-table-column>
-          <el-table-column label="收益率" :width="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
-            <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column label="信息" align="center">
-          <el-table-column label="正股" #default="{ row }" prop="正股代码" align="right" width="95" sortable>
-            {{ OPTIONS_MAP.find((el) => el.code === row["正股代码"])?.showName }}
-          </el-table-column>
-          <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" width="55" sortable>
-            <TagCallPut :value="row['沽购']" />
-          </el-table-column>
-          <el-table-column label="天数" prop="到期天数" align="right" width="55" sortable />
-        </el-table-column>
 
-        <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="45" sortable>
-          {{ row["持仓"] || "" }}
-        </el-table-column>
+          <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="45" sortable>
+            {{ row["持仓"] || "" }}
+          </el-table-column>
 
-        <!-- <el-table-column label="基本信息" align="center">
+          <!-- <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
             <TagCallPut :value="row['沽购']" />
@@ -65,37 +66,38 @@
           <el-table-column label="到期天数" prop="到期天数" width="80" sortable align="right" />
         </el-table-column> -->
 
-        <el-table-column label="溢价信息" align="center">
-          <el-table-column #default="{ row }" label="打和点" prop="打和点" width="70" sortable align="right">
-            {{ row["打和点"].toFixed(4) }}
+          <el-table-column label="溢价信息" align="center">
+            <el-table-column #default="{ row }" label="打和点" prop="打和点" width="70" sortable align="right">
+              {{ row["打和点"].toFixed(4) }}
+            </el-table-column>
+
+            <el-table-column label="正股价格" prop="正股价格" width="80" sortable align="right" />
+            <el-table-column label="行权价" prop="千行权价" width="80" sortable align="right" />
+            <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="75" sortable align="right"> <TagPremium :value="row['溢价率']" /> </el-table-column>
+            <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="75" sortable align="right"><TagLeverage :value="row['杠杆']" /> </el-table-column>
           </el-table-column>
 
-          <el-table-column label="正股价格" prop="正股价格" width="80" sortable align="right" />
-          <el-table-column label="行权价" prop="千行权价" width="80" sortable align="right" />
-          <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="75" sortable align="right"> <TagPremium :value="row['溢价率']" /> </el-table-column>
-          <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="75" sortable align="right"><TagLeverage :value="row['杠杆']" /> </el-table-column>
-        </el-table-column>
+          <el-table-column label="希腊字母" align="center">
+            <el-table-column #default="{ row }" label="隐波" prop="隐波" width="75" sortable align="right">
+              <TagIv :value="row['隐波']" />
+            </el-table-column>
+            <el-table-column #default="{ row }" label="Delta" prop="Delta" width="85" sortable align="right">
+              <TagDelta :value="row['Delta']" />
+            </el-table-column>
 
-        <el-table-column label="希腊字母" align="center">
-          <el-table-column #default="{ row }" label="隐波" prop="隐波" width="75" sortable align="right">
-            <TagIv :value="row['隐波']" />
-          </el-table-column>
-          <el-table-column #default="{ row }" label="Delta" prop="Delta" width="85" sortable align="right">
-            <TagDelta :value="row['Delta']" />
-          </el-table-column>
+            <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
+              <TagGamma :value="row['Gamma']" />
+            </el-table-column>
 
-          <el-table-column #default="{ row }" label="Gamma" prop="Gamma" width="90" sortable align="right">
-            <TagGamma :value="row['Gamma']" />
+            <el-table-column #default="{ row }" label="Vega" prop="Vega" width="90" sortable align="right">
+              <TagVega :value="row['Vega']" />
+            </el-table-column>
           </el-table-column>
-
-          <el-table-column #default="{ row }" label="Vega" prop="Vega" width="90" sortable align="right">
-            <TagVega :value="row['Vega']" />
+          <el-table-column #default="{ row }" label="是否组合" prop="组合" width="60" sortable align="left">
+            {{ row["组合"] ? "是" : "" }}
           </el-table-column>
-        </el-table-column>
-        <el-table-column #default="{ row }" label="是否组合" prop="组合" width="60" sortable align="left">
-          {{ row["组合"] ? "是" : "" }}
-        </el-table-column>
-      </el-table>
+        </el-table>
+      </Capture>
     </div>
   </div>
 </template>
@@ -129,33 +131,5 @@ const filteredTableData = computed(() => {
   return filtered;
 });
 
-const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD")})`);
 const captureRef = ref(null);
-async function download() {
-  // 服务端直接返回
-  if (process.server) return;
-
-  // 动态引入（避免服务端打包报错）
-  const html2canvas = (await import("html2canvas")).default;
-
-  const el = captureRef.value;
-  if (!el) return;
-
-  try {
-    const canvas = await html2canvas(el, {
-      scale: 2, // 清晰度
-      useCORS: true, // 跨域图片
-      backgroundColor: "#ffffff",
-      logging: false,
-    });
-
-    // 转成图片并下载
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = `T型报价图${todayStr.value}.png`;
-    link.click();
-  } catch (e) {
-    console.error("截图失败", e);
-  }
-}
 </script>
