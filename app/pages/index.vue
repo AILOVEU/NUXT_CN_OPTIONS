@@ -1,7 +1,7 @@
 <!-- pages/index.vue -->
 <script setup>
 // 页面加载时自动重定向到 /home
-navigateTo("/hold", {
+navigateTo("/analysis", {
   redirect: true, // 强制重定向，忽略导航守卫的默认行为
   statusCode: 301, // 可选，指定重定向状态码
 });
