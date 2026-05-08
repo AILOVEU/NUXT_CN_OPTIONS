@@ -26,8 +26,8 @@
           <div v-if="customTextMap[item.date]" class="text-[24px] text-[red]">{{ customTextMap[item.date] }}</div>
           <div v-if="item.holidayName">{{ item.holidayName }}</div>
           <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
-          <div v-if="item.isQuarterOptions" class="text-[30px]">季交割</div>
-          <div v-else-if="item.isFourthWednesday">交割</div>
+          <div v-if="item.isQuarterOptions" class="text-[30px] text-[red]">ETF季交割</div>
+          <div v-else-if="item.isFourthWednesday" class="text-[red]">ETF交割</div>
           <div v-if="item.isGeneratedNewQuarterOptions" class="text-[30px]">🔖新季期权</div>
           <div v-if="item.isBirthday">🎂</div>
           <div v-if="item.isFirstMonday" class="relative translate-x-[-100%] w-full flex justify-center text-[30px]">
@@ -131,7 +131,25 @@ const days = ref(
 
 const customTextMap = ref({
   "2026-05-13": "白糖、玻璃、纯碱",
+  "2026-05-15": "股指交割",
   "2026-05-21": "铁矿石",
+  "2026-05-25": "螺纹",
+  "2026-06-11": "白糖、玻璃、纯碱",
+  "2026-06-16": "铁矿石、玉米、豆粕",
+  "2026-06-22": "股指交割",
+  "2026-06-24": "螺纹",
+
+  
+  "2026-07-13": "玻璃、纯碱",
+  "2026-08-12": "玻璃、纯碱",
+
+  "2026-08-25": "螺纹",
+  "2026-09-11": "纯碱",
+
+  "2026-09-23": "螺纹",
+  "2026-10-13": "纯碱",
+
+  "2026-12-11": "玻璃、纯碱",
 });
 
 const captureRef = ref(null);
