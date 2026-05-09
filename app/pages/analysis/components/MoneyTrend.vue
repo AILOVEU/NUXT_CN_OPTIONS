@@ -379,7 +379,7 @@ function get盈亏曲线日Option(盈亏曲线数据, yearStr) {
     tooltip: {
       trigger: "axis",
       axisPointer: {
-        type: "cross",
+        type: "shadow",
       },
       formatter: function (params) {
         const target = params[0];
@@ -473,7 +473,7 @@ const 盈亏曲线周Option = computed(() => {
     tooltip: {
       trigger: "axis",
       axisPointer: {
-        type: "cross",
+        type: "shadow",
       },
       formatter: function (params) {
         const data = params[0].data;
@@ -567,7 +567,7 @@ const 盈亏曲线月Option = computed(() => {
     tooltip: {
       trigger: "axis",
       axisPointer: {
-        type: "cross",
+        type: "shadow",
       },
       formatter: function (params) {
         const data = params[0].data;
@@ -632,7 +632,7 @@ const 盈亏曲线年Option = computed(() => {
     tooltip: {
       trigger: "axis",
       axisPointer: {
-        type: "cross",
+        type: "shadow",
       },
       formatter: function (params) {
         const data = params[0].data;
