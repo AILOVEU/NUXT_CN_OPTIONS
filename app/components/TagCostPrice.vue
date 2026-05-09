@@ -1,6 +1,6 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <span class="text-[9px]">本</span>
+    <div class="inline-block" style="font-size: 10px !important">本</div>
     <div class="inline-block ml-[1px]">{{ props.一手成本价 }}</div>
   </el-tag>
 </template>

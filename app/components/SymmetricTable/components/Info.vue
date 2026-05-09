@@ -5,11 +5,11 @@
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse max-md:items-start items-center gap-[1px] hold-print">
-      <div class="hold-print rounded-[6px] text-[white] font-semibold px-[4px] leading-[18px] h-[20px] flex items-start" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
-      <div class="hold-print whitespace-nowrap font-[600] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
-      <div class="hold-print ml-[2px] flex items-center" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
+      <div class="hold-print rounded-[6px] text-[white] font-semibold px-[2px] pb-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
+      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
+      <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
-    <div class="hold-print absolute top-[0px] right-[0px] rounded-[5px] h-[20px] leading-[18px] bg-[white] font-[600] px-[4px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
+    <div class="hold-print absolute top-[0px] right-[0px] rounded-[5px] bg-[white] font-[600] px-[4px] pb-[2px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
       <!-- br -->
       {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}
     </div>
@@ -34,7 +34,8 @@
         </div>
         <div class="whitespace-nowrap" v-if="(!props.indexVal.length || props.indexVal.includes('打和点')) && !isPrint">
           <el-tag type="info" size="small" effect="plain">
-            <span class="text-[9px]">和</span><span class="ml-[1px]">{{ current期权Item["打和点"] }}</span>
+            <div class="inline-block" style="font-size: 10px !important">和</div>
+            <div class="inline-block ml-[1px]">{{ current期权Item["打和点"] }}</div>
           </el-tag>
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('溢价率')">
@@ -61,7 +62,8 @@
       <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col" :style="{ width: props.innerWidth }" v-if="!isPrint">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <el-tag size="small" :effect="effect">
-            <span class="text-[9px]">持</span><span class="ml-[1px]">{{ 持仓量 }}</span>
+            <div class="inline-block" style="font-size: 10px !important">持</div>
+            <div class="inline-block ml-[1px]">{{ 持仓量 }}</div>
           </el-tag>
         </div>
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('增仓量')">
