@@ -32,7 +32,7 @@
     </div>
     <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col">
       <Capture title="日历" ref="captureRef" :style="{ margin: '0 auto' }">
-        <div class="flex justify-center py-[5px]">彩票</div>
+        <div class="flex justify-center py-[5px]">彩票{{todayStr}}</div>
         <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
         <div class="flex justify-center py-[5px]">短期</div>
         <FilterList :checkIsChance="checkIsChance短期" :showHold="false" />
@@ -53,6 +53,8 @@ import { useGlobal } from "~/stores/useGlobal.js";
 import FilterSymmetric from "./components/FilterSymmetric.vue";
 import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
+const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD_HH:mm:ss")})`);
+
 const { globalLoading } = useGlobal();
 
 const showType = ref("list");
