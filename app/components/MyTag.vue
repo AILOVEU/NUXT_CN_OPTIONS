@@ -36,12 +36,12 @@ const colorStyleMap = {
     background: "#0a8937",
   },
   orange: {
-    color: "#FF5F00",
+    color: "#FF9B00",
     background: "rgba(222,222,222,0.5)",
   },
   "bg-orange": {
     color: "white",
-    background: "#FF5F00",
+    background: "#FF9B00",
   },
   red: {
     color: "#fd000f",
