@@ -73,7 +73,7 @@
             <TagCostPrice :value="一手成本价" />
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
-            <TagPercent :value="仓位" :仓位占比="仓位率" />
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" />
           </div>
         </div>
       </div>

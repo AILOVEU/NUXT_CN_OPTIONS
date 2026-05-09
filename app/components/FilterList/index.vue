@@ -38,7 +38,7 @@
             <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="65" sortable />
             <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="60" sortable />
             <el-table-column label="仓位" :width="120" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
-              <TagPercent :value="row['仓位']" :仓位占比="row['仓位率']" />
+              <TagHoldPercent :value="row['仓位']" :仓位占比="row['仓位率']" />
             </el-table-column>
             <el-table-column label="收益率" :width="60" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
               <span :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</span>
