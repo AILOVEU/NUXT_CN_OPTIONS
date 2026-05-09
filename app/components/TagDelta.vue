@@ -1,9 +1,9 @@
 <template>
   <el-tag :type="type" size="small" :effect="effect">
-    <div class="font-[400] w-[50px] whitespace-nowrap">
-      <div class="inline-block whitespace-nowrap" style="font-size: 10px !important">Del</div>
-      <div class="inline-block ml-[1px] whitespace-nowrap">{{ (props.value * 100).toFixed(1) }}</div>
-    </div>
+    <!-- <div class="font-[400] w-[50px] whitespace-nowrap"> -->
+    <div class="inline-block whitespace-nowrap" style="font-size: 10px !important">Del</div>
+    <div class="inline-block ml-[1px] whitespace-nowrap">{{ (props.value * 100).toFixed(1) }}</div>
+    <!-- </div> -->
   </el-tag>
 </template>
 <script setup>

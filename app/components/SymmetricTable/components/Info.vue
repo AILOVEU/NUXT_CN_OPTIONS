@@ -176,7 +176,7 @@ const wrapperStyle = computed(() => {
     filter: "grayscale(0.25)",
   };
   const 实值Style = {
-    background: "#EF88AD",
+    background: "#BDA6CE",
     // filter: "grayscale(0.75)",
   };
   let style = {
@@ -203,7 +203,7 @@ const wrapperStyle = computed(() => {
     }
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
-      style = { ...style, background: "#FFE2AF" };
+      style = { ...style, background: "#BDA6CE" };
     } else if (props.onlyShowHold) {
       style = {
         display: "none",

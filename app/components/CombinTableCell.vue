@@ -16,7 +16,7 @@
     </div>
   </template>
   <template v-else>
-    <div @click="click">{{ format(props.value) }}</div>
+    <div @click="click" class='pb-[2px]'>{{ format(props.value) }}</div>
   </template>
 </template>
 

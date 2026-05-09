@@ -137,21 +137,44 @@ const captureRef = ref(null);
 /* 给你的 table 加个自定义 class，避免污染全局样式，比如 .my-table */
 :deep(.el-table th .cell) {
   white-space: nowrap; /* 文字强制不换行 */
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-start; */
 }
 
 /* 把排序图标改成绝对定位，不占用正常流宽度 */
 :deep(.el-table th .cell .el-table__sort) {
-  position: absolute;
-  right: 8px; /* 距离右侧的距离，根据需要调整 */
+  /* position: absolute;
+  right: 8px; /* 距离右侧的距离，根据需要调整
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%); */
 }
 
 /* 给文字加右边距，避免被图标挡住 */
 :deep(.el-table th .cell .el-table__cell-label) {
-  padding-right: 30px; /* 给排序图标留出空间 */
+  /* padding-right: 30px; //给排序图标留出空间 */
+}
+
+:deep(.el-table__header-wrapper) {
+  /* 表头整体的边框 */
+  .el-table__header {
+    .el-table__cell {
+      /* 加粗所有边框，你可以根据需要调整粗细和颜色 */
+      /* border-width: 1px !important; */
+      border-color: #333 !important;
+      font-size: 10px;
+      white-space: nowrap;
+      /* border-style: solid; */
+    }
+    /* 表头底部边框单独加粗，让表头和内容区分更明显 */
+    .el-table__row:last-child .el-table__cell {
+      /* border-bottom-width: 1px !important; */
+    }
+  }
+}
+:deep(.el-table__header .el-table__cell .cell) {
+  /* 关键：取消文字截断和省略号 */
+  text-overflow: clip !important;
+
 }
 </style>
