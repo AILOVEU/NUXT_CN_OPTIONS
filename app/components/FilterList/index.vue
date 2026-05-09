@@ -11,7 +11,7 @@
               </div>
             </template>
             <template #default="{ row, $index }">
-              <div class="text-[10px] leading-[1.2]">{{ $index + 1 }}</div>
+              <span class="text-[10px] leading-[1.2]">{{ $index + 1 }}</span>
             </template>
           </el-table-column>
           <el-table-column label="期权名称" prop="期权名称" width="140" sortable align="left" fixed="left" />
@@ -24,24 +24,24 @@
               <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
             </el-table-column>
           </el-table-column>
-          <el-table-column label="日盈亏" align="center" v-if="props.showHold">
-            <el-table-column label="日总涨跌" align="right" prop="今日总涨跌" width="110" sortable />
-            <el-table-column label="日单手涨跌" align="right" prop="今日单手涨跌" width="120" sortable />
+          <el-table-column label="今盈亏" align="center">
+            <el-table-column label="今总涨跌" v-if="props.showHold" align="right" prop="今日总涨跌" width="67" sortable />
+            <el-table-column label="今每手涨跌" align="right" prop="一手涨跌价" width="77" sortable />
           </el-table-column>
           <el-table-column label="总盈亏" align="center" v-if="props.showHold">
-            <el-table-column label="一手价" :width="props.isCombo ? 120 : 95" #default="{ row }" prop="一手价" align="right" sortable>
+            <el-table-column label="一手价" :width="props.isCombo ? 120 : 60" #default="{ row }" prop="一手价" align="right" sortable>
               <CombinTableCell :value="row['一手价']" :showDiff="true" />
             </el-table-column>
-            <el-table-column label="成本价" :width="props.isCombo ? 120 : 95" #default="{ row }" align="right" prop="一手成本价" sortable>
+            <el-table-column label="成本价" :width="props.isCombo ? 120 : 60" #default="{ row }" align="right" prop="一手成本价" sortable>
               <CombinTableCell :value="row['一手成本价']" :showDiff="true" />
             </el-table-column>
-            <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="110" sortable />
-            <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="95" sortable />
-            <el-table-column label="仓位" :width="95" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
-              <div>{{ row["仓位"] }}</div>
+            <el-table-column label="一手盈亏" prop="一手盈亏" align="right" :width="65" sortable />
+            <el-table-column label="总盈亏" prop="总盈亏" align="right" :width="60" sortable />
+            <el-table-column label="仓位" :width="120" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
+              <TagPercent :value="row['仓位']" :仓位占比="row['仓位率']" />
             </el-table-column>
-            <el-table-column label="收益率" :width="95" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
-              <div :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</div>
+            <el-table-column label="收益率" :width="60" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
+              <span :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</span>
             </el-table-column>
           </el-table-column>
           <el-table-column label="信息" align="center">
@@ -55,7 +55,7 @@
           </el-table-column>
 
           <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="30" sortable>
-            {{ row["持仓"] || "" }}
+            <TagHold :value="row['持仓']" />
           </el-table-column>
 
           <!-- <el-table-column label="基本信息" align="center">
@@ -73,7 +73,7 @@
 
             <el-table-column label="正股价" prop="正股价格" width="55" sortable align="right" />
             <el-table-column label="行权价" prop="千行权价" width="55" sortable align="right" />
-            <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="60" sortable align="right"> <TagPremium :value="row['溢价率']" /> </el-table-column>
+            <el-table-column #default="{ row }" label="溢价率" prop="溢价率" width="65" sortable align="right"> <TagPremium :value="row['溢价率']" /> </el-table-column>
             <el-table-column #default="{ row }" label="杠杆" prop="杠杆" width="60" sortable align="right"><TagLeverage :value="row['杠杆']" /> </el-table-column>
           </el-table-column>
 
@@ -81,7 +81,7 @@
             <el-table-column #default="{ row }" label="隐波" prop="隐波" width="60" sortable align="right">
               <TagIv :value="row['隐波']" />
             </el-table-column>
-            <el-table-column #default="{ row }" label="Delta" prop="Delta" width="60" sortable align="right">
+            <el-table-column #default="{ row }" label="Delta" prop="Delta" width="70" sortable align="right">
               <TagDelta :value="row['Delta']" />
             </el-table-column>
 
@@ -93,7 +93,7 @@
               <TagVega :value="row['Vega']" />
             </el-table-column>
           </el-table-column>
-          <el-table-column #default="{ row }" label="组合?" prop="组合" width="60" sortable align="left">
+          <el-table-column #default="{ row }" label="组合?" prop="组合" width="45" sortable align="left">
             {{ row["组合"] ? "是" : "" }}
           </el-table-column>
         </el-table>
@@ -127,7 +127,11 @@ const filteredTableData = computed(() => {
   let filtered = (props.data?.length ? props.data : tableData.tiledData).filter((el) => props.checkIsChance(el));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
-  filtered = _.sortBy(filtered, ["到期日", "沽购", "正股代码"]);
+  if (props.showHold) {
+    filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
+  } else {
+    filtered = _.orderBy(filtered, ["沽购", "杠杆"], ["desc", "desc"]);
+  }
   return filtered;
 });
 
@@ -175,6 +179,5 @@ const captureRef = ref(null);
 :deep(.el-table__header .el-table__cell .cell) {
   /* 关键：取消文字截断和省略号 */
   text-overflow: clip !important;
-
 }
 </style>

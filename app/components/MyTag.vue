@@ -1,8 +1,8 @@
 <template>
-  <div class="my-tag-wrapper whitespace-nowrap inline-block px-[2px] pb-[4px] rounded-md" :style="wrapperStyle">
-    <div class="my-tag-label whitespace-nowrap inline-block transform origin-left scale-[0.65]" :style="contentStyle">{{ props.label }}</div>
-    <div class="my-tag-value whitespace-nowrap inline-block ml-[1px]" v-if="isValidVal" :style="contentStyle"><slot></slot></div>
-    <div class="my-tag-value whitespace-nowrap inline-block ml-[1px]" v-else>--</div>
+  <div class="my-tag my-tag-wrapper whitespace-nowrap inline-block px-[2px] pb-[4px] rounded-md font-bold text-[14px]" :style="wrapperStyle">
+    <div class="my-tag my-tag-label whitespace-nowrap inline-block transform origin-left scale-[0.65]" :style="contentStyle">{{ props.label }}</div>
+    <div class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-if="isValidVal" :style="contentStyle"><slot></slot></div>
+    <div class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-else>--</div>
   </div>
 </template>
 
@@ -16,39 +16,39 @@ const isValidVal = computed(() => {
 const colorStyleMap = {
   black: {
     color: "black",
-    background: "#f4f4f5",
+    background: "#ffffff",
   },
   blue: {
     color: "#409eff",
-    background: "#f4f4f5",
+    background: "#ffffff",
   },
   "bg-blue": {
     color: "white",
     background: "#409eff",
   },
   green: {
-    color: "#70c646",
-    background: "#f4f4f5",
+    color: "#0a8937",
+    background: "#ffffff",
   },
   "bg-green": {
     color: "white",
-    background: "#70c646",
+    background: "#0a8937",
   },
   orange: {
     color: "#FF9D23",
-    background: "#f4f4f5",
+    background: "#ffffff",
   },
   "bg-orange": {
     color: "white",
     background: "#FF9D23",
   },
   red: {
-    color: "#f57171",
-    background: "#f4f4f5",
+    color: "#fd000f",
+    background: "#ffffff",
   },
   "bg-red": {
     color: "white",
-    background: "#f57171",
+    background: "#fd000f",
   },
 };
 const wrapperStyle = computed(() => {

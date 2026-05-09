@@ -44,7 +44,7 @@
           {{ props.row.value }}
         </div>
         <div v-if="!props.row._custom">({{ formatDecimal((100 * props.row.value) / 持仓总价, 1) }}%)</div>
-        <TagDiff v-if="!props.row._custom" :涨跌="props.row.涨跌" />
+        <TagDiff v-if="!props.row._custom" :value="props.row.涨跌" />
       </div>
     </el-table-column>
   </el-table>
@@ -248,7 +248,7 @@ const richTableData = computed(() => {
           一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
 
           今日总涨跌: 今日单手涨跌 * 组合持仓,
-          今日单手涨跌,
+          一手涨跌价,
 
           总价,
           总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
@@ -285,7 +285,7 @@ const richTableData = computed(() => {
           一手时间价: [权利期权Item["一手时间价"], 义务期权Item["一手时间价"]],
 
           今日总涨跌: 今日单手涨跌 * 组合持仓,
-          今日单手涨跌,
+          一手涨跌价,
 
           总盈亏,
           一手盈亏,
@@ -319,7 +319,7 @@ const richTableData = computed(() => {
           // Delta: 期权["Delta"],
 
           今日总涨跌: 期权["一手涨跌价"] * 持仓,
-          今日单手涨跌: 期权["一手涨跌价"],
+          一手涨跌价: 期权["一手涨跌价"],
           总价,
           一手盈亏,
           总盈亏,

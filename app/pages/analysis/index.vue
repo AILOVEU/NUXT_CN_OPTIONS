@@ -2,19 +2,19 @@
   <div v-loading="loading || globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div class="mt-[20px] flex flex-col gap-[20px] mx-[10px] pb-[200px]">
-      <Card :header="'非组合概览'">
+      <Card header="非组合概览_UnComboOverview">
         <UnComboOverview :tiledData="tiledData" :comboList="comboList" />
       </Card>
-      <Card header="组合概览" v-if="comboList.length">
+      <Card header="组合概览_ComboOverview" v-if="comboList.length">
         <ComboOverview :tiledData="tiledData" :comboList="comboList" />
       </Card>
-      <Card header="资金分析">
+      <Card header="资金分析_MoneyTrend">
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
-      <Card header="时间价值分析">
+      <Card header="时间价值分析_SankeyInfo">
         <SankeyInfo :tiledData="tiledData" :comboList="comboList" />
       </Card>
-      <Card header="持仓分析">
+      <Card header="持仓分析_BarInfo">
         <BarInfo :tiledData="tiledData" />
       </Card>
     </div>

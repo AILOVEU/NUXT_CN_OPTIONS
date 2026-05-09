@@ -1,14 +1,12 @@
 <template>
-  <el-tag type="info" size="small" effect="plain">
-    <div :style="{ color: 涨跌 > 0 ? 'red' : 'green' }">
-      {{ 涨跌 > 0 ? "涨" : "跌" }}:
-      {{ 涨跌 > 0 ? "↑ " + 涨跌 : "↓ " + Math.abs(涨跌) }}
-    </div>
-  </el-tag>
+  <MyTag :label="props.value > 0 ? '涨↑' : '跌↓'" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>
 <script setup>
-const props = defineProps(["涨跌", "正股代码"]);
-const 涨跌 = computed(() => {
-  return props.涨跌;
-});
+const props = defineProps(["value"]);
+const cfg = [
+  [-999999, -500, "bg-green"],
+  [-500, 0, "green"],
+  [0, 500, "red"],
+  [500, 999999, "bg-red"],
+];
 </script>

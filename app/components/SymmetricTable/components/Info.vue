@@ -9,20 +9,16 @@
       <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
       <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
-    <div class="hold-print absolute top-[0px] right-[0px] rounded-[5px] bg-[white] font-[600] px-[4px] pb-[2px]" :style="{ color: 一手涨跌价 > 0 ? 'red' : 'green' }">
+    <div class="hold-print absolute top-[0px] right-[0px]">
+      <TagDiff :value="一手涨跌价" />
       <!-- br -->
-      {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }}
+      <!-- {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }} -->
     </div>
-
-    <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">内:{{ current期权Item["一手内在价"] }}</div>
-    <div
-      v-if="!isPrint"
-      class="absolute bottom-[0px] right-[0px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px] text-[14px]"
-      :style="{
-        color: current期权Item['一手时间价'] > 最大建议买入时间价 ? '#f66602' : 'black',
-      }"
-    >
-      时:{{ current期权Item["一手时间价"] }}
+    <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
+      <TagPriceInner :value="current期权Item['一手内在价']" />
+    </div>
+    <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px]">
+      <TagPriceTime :value="current期权Item['一手时间价']" />
     </div>
     <div
       class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]"
@@ -57,7 +53,7 @@
         <div class="whitespace-nowrap" v-if="(!props.indexVal.length || props.indexVal.includes('Gamma')) && !isPrint">
           <TagGamma :value="current期权Item['Gamma']" />
         </div>
-        <div class="whitespace-nowrap ml-[4px]" v-if="!props.indexVal.length || props.indexVal.includes('单日损耗')">
+        <div class="whitespace-nowrap ml-[4px]" v-if="(!props.indexVal.length || props.indexVal.includes('单日损耗')) && !isPrint">
           <TagTheta :value="current期权Item['单日损耗']" />
         </div>
       </div>
@@ -78,7 +74,6 @@
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
             <TagPercent :value="仓位" :仓位占比="仓位率" />
-            <!-- <el-tag type="info" size="small" effect="plain">仓{{ 仓位 }}({{ formatDecimal(仓位占比, 1) }}%) </el-tag> -->
           </div>
         </div>
       </div>
@@ -275,12 +270,11 @@ const handleGlassStyle = (el, isEnable) => {
 /* 👇 打印模式文字放大样式 */
 .print-text-large,
 .print-text-large * {
-  font-size: 26px !important; /* 👈 可自行调整大小：14/16/18px */
-  /* line-height: 1.4 !important; */
-  .el-tag--small {
-    height: 26px;
-  }
+  font-size: 22px;
   .hold-print {
+    .my-tag {
+      font-size: 18px !important;
+    }
     font-size: 18px !important;
   }
 }

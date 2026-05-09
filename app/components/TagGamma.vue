@@ -1,7 +1,7 @@
 <!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
 
 <template>
-  <MyTag label="Gam" :value="props.value * 10" :cfg="cfg">{{ (props.value * 10).toFixed(1) }} </MyTag>
+  <MyTag label="Gam" :value="props.value * 10" :cfg="cfg">{{ Math.ceil((props.value * 10)) }} </MyTag>
 </template>
 <script setup>
 const props = defineProps(["value"]);

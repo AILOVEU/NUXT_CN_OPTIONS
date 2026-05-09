@@ -1,5 +1,5 @@
 <template>
-  <MyTag label="仓" :value="props.value" :cfg="cfg">{{ props.value }}({{ formatDecimal(props.仓位占比, 1) }}%)</MyTag>
+  <MyTag label="仓" :value="props.value" :cfg="cfg">({{ formatDecimal(props.仓位占比, 1) }}%)&nbsp;{{ props.value }}</MyTag>
 </template>
 <script setup>
 const props = defineProps(["value", "仓位占比"]);
