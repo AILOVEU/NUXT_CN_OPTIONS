@@ -28,10 +28,10 @@
       </div>
     </div>
     <div class="w-full flex justify-center">
-      <el-button @click="download" link>⬇</el-button>
+      <el-button @click="() => captureRef.download()" link>⬇</el-button>
     </div>
-    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col">
-      <div class="mx-auto" ref="captureRef">
+    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col mx-auto">
+      <Capture title="日历" ref="captureRef">
         <div class="flex justify-center py-[5px]">彩票</div>
         <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
         <div class="flex justify-center py-[5px]">短期</div>
@@ -40,7 +40,8 @@
         <FilterList :checkIsChance="checkIsChance中期" :showHold="false" />
         <div class="flex justify-center py-[5px]">远期</div>
         <FilterList :checkIsChance="checkIsChance远期" :showHold="false" />
-      </div>
+      </Capture>
+      <!-- <div class="mx-auto" ref="captureRef"></div> -->
     </div>
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
     <FilterList v-else-if="showType === 'all'" :checkIsChance="() => true" :showHold="false" />

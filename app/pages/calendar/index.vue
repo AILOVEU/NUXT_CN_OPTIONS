@@ -1,41 +1,44 @@
 <template>
-  <div v-loading="loading" class="max-md:w-[300%]" ref="captureRef">
+  <div v-loading="loading" class="max-md:w-[300%]">
     <Nav />
-    <el-affix :offset="32">
+    <Capture title="日历" ref="captureRef">
+      <el-affix :offset="32">
+        <div class="flex">
+          <div class="basis-[12.5%] flex justify-center items-center"><el-button @click="() => captureRef.download()" link>⬇</el-button></div>
+          <div class="grid grid-cols-7 bg-white w-full">
+            <div class="text-center">星期一</div>
+            <div class="text-center">星期二</div>
+            <div class="text-center">星期三</div>
+            <div class="text-center">星期四</div>
+            <div class="text-center">星期五</div>
+            <div class="text-center">星期六</div>
+            <div class="text-center">星期日</div>
+          </div>
+        </div>
+      </el-affix>
+
       <div class="flex">
-        <div class="basis-[12.5%] flex justify-center items-center"><el-button @click="download" link>⬇</el-button></div>
-        <div class="grid grid-cols-7 bg-white w-full">
-          <div class="text-center">星期一</div>
-          <div class="text-center">星期二</div>
-          <div class="text-center">星期三</div>
-          <div class="text-center">星期四</div>
-          <div class="text-center">星期五</div>
-          <div class="text-center">星期六</div>
-          <div class="text-center">星期日</div>
-        </div>
-      </div>
-    </el-affix>
-    <div class="flex">
-      <div class="basis-[12.5%]">&nbsp;</div>
-      <div class="basis-[87.5%] grid grid-cols-7 mt-[32px]">
-        <div v-for="item in days" class="text-[28px] relative border-[1px] border-[black] h-[119px] flex items-center justify-center flex-col" :style="getStyle(item)">
-          <div class="absolute left-[5px] top-[5px]">
-            <div v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
-            <div v-else>{{ item.showText }}</div>
-          </div>
-          <div v-if="customTextMap[item.date]" class="text-[24px] text-[red]">{{ customTextMap[item.date] }}</div>
-          <div v-if="item.holidayName">{{ item.holidayName }}</div>
-          <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
-          <div v-if="item.isQuarterOptions" class="text-[30px] text-[red]">ETF季交割</div>
-          <div v-else-if="item.isFourthWednesday" class="text-[red]">ETF交割</div>
-          <div v-if="item.isGeneratedNewQuarterOptions" class="text-[30px]">🔖新季期权</div>
-          <div v-if="item.isBirthday">🎂</div>
-          <div v-if="item.isFirstMonday" class="relative translate-x-[-100%] w-full flex justify-center text-[30px]">
-            {{ dayjs(item.date, "YYYY-MM-DD").format("M月") }}
+        <div class="basis-[12.5%]">&nbsp;</div>
+        <div class="basis-[87.5%] grid grid-cols-7 mt-[32px]">
+          <div v-for="item in days" class="text-[28px] relative border-[1px] border-[black] h-[119px] flex items-center justify-center flex-col" :style="getStyle(item)">
+            <div class="absolute left-[5px] top-[5px]">
+              <div v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
+              <div v-else>{{ item.showText }}</div>
+            </div>
+            <div v-if="customTextMap[item.date]" class="text-[24px] text-[red]">{{ customTextMap[item.date] }}</div>
+            <div v-if="item.holidayName">{{ item.holidayName }}</div>
+            <div v-if="item.isCurrent" class="text-[36px]">🚩</div>
+            <div v-if="item.isQuarterOptions" class="text-[30px] text-[red]">ETF季交割</div>
+            <div v-else-if="item.isFourthWednesday" class="text-[red]">ETF交割</div>
+            <div v-if="item.isGeneratedNewQuarterOptions" class="text-[30px]">🔖新季期权</div>
+            <div v-if="item.isBirthday">🎂</div>
+            <div v-if="item.isFirstMonday" class="relative translate-x-[-100%] w-full flex justify-center text-[30px]">
+              {{ dayjs(item.date, "YYYY-MM-DD").format("M月") }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Capture>
   </div>
 </template>
 <script setup>
@@ -139,7 +142,6 @@ const customTextMap = ref({
   "2026-06-22": "股指交割",
   "2026-06-24": "螺纹",
 
-
   "2026-07-13": "玻璃、纯碱",
   "2026-07-17": "股指交割",
   "2026-08-12": "玻璃、纯碱",
@@ -147,7 +149,6 @@ const customTextMap = ref({
   "2026-08-25": "螺纹",
   "2026-09-11": "纯碱",
   "2026-09-18": "股指交割",
-
 
   "2026-09-23": "螺纹",
   "2026-10-13": "纯碱",
@@ -157,31 +158,4 @@ const customTextMap = ref({
 });
 
 const captureRef = ref(null);
-async function download() {
-  // 服务端直接返回
-  if (process.server) return;
-
-  // 动态引入（避免服务端打包报错）
-  const html2canvas = (await import("html2canvas")).default;
-
-  const el = captureRef.value;
-  if (!el) return;
-
-  try {
-    const canvas = await html2canvas(el, {
-      scale: 2, // 清晰度
-      useCORS: true, // 跨域图片
-      backgroundColor: "#ffffff",
-      logging: false,
-    });
-
-    // 转成图片并下载
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = `${dayjs().format("YYYY")}日历.png`;
-    link.click();
-  } catch (e) {
-    console.error("截图失败", e);
-  }
-}
 </script>

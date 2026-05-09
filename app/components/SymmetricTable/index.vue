@@ -9,28 +9,30 @@
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-120px)] border-x-[10px] border-[black]" ref="captureRef">
-      <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-black">{{ dayStr }}</div>
-      <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-        <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
-          <template #header>
-            <div v-if="type" class="leading-[1.2]">
-              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
-              <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
-            </div>
-            <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="download">
-              <div>{{ label }}</div>
-              <el-button link>⬇</el-button>
-            </div>
-          </template>
-          <template #default="{ row }" v-if="label === '期权'">
-            <Center :row="row" />
-          </template>
-          <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" :onlyShowHold="props.onlyShowHold" />
-          </template>
-        </el-table-column>
-      </el-table>
+    <div class="h-[calc(100%-120px)]">
+      <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid black', 'border-right': '10px solid black' }">
+        <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-black">{{ dayStr }}</div>
+        <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+          <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
+            <template #header>
+              <div v-if="type" class="leading-[1.2]">
+                <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
+                <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
+              </div>
+              <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+                <div>{{ label }}</div>
+                <el-button link>⬇</el-button>
+              </div>
+            </template>
+            <template #default="{ row }" v-if="label === '期权'">
+              <Center :row="row" />
+            </template>
+            <template #default="{ row }" v-if="label !== '期权'">
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" :onlyShowHold="props.onlyShowHold" />
+            </template>
+          </el-table-column>
+        </el-table>
+      </Capture>
     </div>
   </div>
 </template>
@@ -120,35 +122,7 @@ watch(
   }
 );
 
-const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD")})`);
 const captureRef = ref(null);
-async function download() {
-  // 服务端直接返回
-  if (process.server) return;
-
-  // 动态引入（避免服务端打包报错）
-  const html2canvas = (await import("html2canvas")).default;
-
-  const el = captureRef.value;
-  if (!el) return;
-
-  try {
-    const canvas = await html2canvas(el, {
-      scale: 2, // 清晰度
-      useCORS: true, // 跨域图片
-      backgroundColor: "#ffffff",
-      logging: false,
-    });
-
-    // 转成图片并下载
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = `T型报价图${todayStr.value}.png`;
-    link.click();
-  } catch (e) {
-    console.error("截图失败", e);
-  }
-}
 </script>
 <style lang="less">
 .el-table--small .cell {
