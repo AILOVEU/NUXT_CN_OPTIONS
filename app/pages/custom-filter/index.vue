@@ -30,8 +30,8 @@
     <div class="w-full flex justify-center">
       <el-button @click="() => captureRef.download()" link>⬇</el-button>
     </div>
-    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col mx-auto">
-      <Capture title="日历" ref="captureRef">
+    <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col">
+      <Capture title="日历" ref="captureRef" :style="{ margin: '0 auto' }">
         <div class="flex justify-center py-[5px]">彩票</div>
         <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
         <div class="flex justify-center py-[5px]">短期</div>
