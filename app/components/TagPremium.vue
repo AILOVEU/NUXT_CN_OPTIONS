@@ -1,7 +1,7 @@
 <template>
   <el-tag :type="type" :effect="effect" size="small">
     <div class="inline-block" style="font-size: 10px !important">溢</div>
-    <div class="inline-block">{{ props.value.toFixed(2) }}%</div>
+    <div class="inline-block ml-[1px]">{{ props.value.toFixed(2) }}%</div>
   </el-tag>
 </template>
 <script setup>
