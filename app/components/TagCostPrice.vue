@@ -1,21 +1,13 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect">
-    <div class="inline-block" style="font-size: 10px !important">本</div>
-    <div class="inline-block ml-[1px]">{{ props.一手成本价 }}</div>
-  </el-tag>
+  <MyTag label="本" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>
 <script setup>
-const props = defineProps(["一手成本价", "正股代码"]);
-const type = computed(() => {
-  const 一手成本价 = props.一手成本价;
-  if (一手成本价 > 800) return "info";
-  if (一手成本价 >= 200 && 一手成本价 <= 800) return "success";
-  return "primary";
-});
-const effect = computed(() => {
-  const 一手成本价 = props.一手成本价;
-  if (一手成本价 > 800) return "plain";
-  if (一手成本价 >= 200 && 一手成本价 <= 800) return "plain";
-  return "plain";
-});
+const props = defineProps(["value"]);
+const cfg = [
+  [0, 150, "blue"],
+  [150, 500, "green"],
+  [500, 1000, "orange"],
+  [1000, 3000, "red"],
+  [3000, 999999, "bg-red"],
+];
 </script>

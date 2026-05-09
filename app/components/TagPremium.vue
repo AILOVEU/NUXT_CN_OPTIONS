@@ -1,22 +1,13 @@
 <template>
-  <el-tag :type="type" :effect="effect" size="small">
-    <div class="inline-block" style="font-size: 10px !important">溢</div>
-    <div class="inline-block ml-[1px]">{{ props.value.toFixed(2) }}%</div>
-  </el-tag>
+  <MyTag label="溢" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }}% </MyTag>
 </template>
 <script setup>
-const props = defineProps(["value", "正股代码"]);
-const effect = computed(() => {
-  const 溢价率 = props.value;
-  if (溢价率 > 10) return "plain";
-  if (溢价率 >= 5 && 溢价率 <= 10) return "plain";
-  if (溢价率 > 1 && 溢价率 < 5) return "light";
-  return "dark";
-});
-const type = computed(() => {
-  const 溢价率 = props.value;
-  if (溢价率 > 10) return "danger";
-  if (溢价率 >= 5 && 溢价率 <= 10) return "warning";
-  return "success";
-});
+const props = defineProps(["value"]);
+const cfg = [
+  [-999, 1, "bg-green"],
+  [1, 2, "green"],
+  [2, 5, "orange"],
+  [5, 8, "red"],
+  [8, 999, "bg-red"],
+];
 </script>

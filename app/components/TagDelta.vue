@@ -1,24 +1,15 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect">
-    <!-- <div class="font-[400] w-[50px] whitespace-nowrap"> -->
-    <div class="inline-block whitespace-nowrap" style="font-size: 10px !important">Del</div>
-    <div class="inline-block ml-[1px] whitespace-nowrap">{{ (props.value * 100).toFixed(1) }}</div>
-    <!-- </div> -->
-  </el-tag>
+  <MyTag label="Del" :value="props.value * 100" :cfg="cfg">{{ (props.value * 100).toFixed(1) }} </MyTag>
 </template>
 <script setup>
-const props = defineProps(["value", "正股代码"]);
-const effect = computed(() => {
-  const absDelta = Math.abs(props.value);
-  if (absDelta > 0.75) return "plain";
-  if (absDelta >= 0.35 && absDelta <= 0.75) return "light";
-  if (absDelta >= 0.25 && absDelta <= 0.35) return "light";
-  return "plain";
-});
-const type = computed(() => {
-  const absDelta = Math.abs(props.value);
-  if (absDelta > 0.75) return "success";
-  if (absDelta >= 0.25 && absDelta <= 0.75) return "success";
-  return "info";
-});
+const props = defineProps(["value"]);
+const cfg = [
+  [-100, -75, "bg-green"],
+  [-75, -25, "green"],
+  [-25, -10, "black"],
+  [-10, 10, "blue"],
+  [10, 25, "black"],
+  [25, 75, "red"],
+  [75, 100, "bg-red"],
+];
 </script>

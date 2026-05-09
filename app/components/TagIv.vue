@@ -1,24 +1,14 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect">
-    <div class="font-[400]">
-      <div class="inline-block" style="font-size: 10px !important">隐</div>
-      <div class="inline-block ml-[1px]">{{ props.value.toFixed(1) }}</div>
-    </div>
-  </el-tag>
+  <MyTag label="隐" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }} </MyTag>
 </template>
 <script setup>
-const props = defineProps(["value", "正股代码"]);
-const effect = computed(() => {
-  const 隐波 = props.value;
-  if (隐波 > 25) return "plain";
-  if (隐波 >= 16 && 隐波 <= 25) return "plain";
-  if (隐波 > 5 && 隐波 < 16) return "dark";
-  return "light";
-});
-const type = computed(() => {
-  const 隐波 = props.value;
-  if (隐波 > 25) return "danger";
-  if (隐波 >= 16 && 隐波 <= 25) return "warning";
-  return "success";
-});
+const props = defineProps(["value"]);
+const cfg = [
+  [0, 5, "black"],
+  [5, 15, "bg-green"],
+  [15, 20, "green"],
+  [20, 25, "orange"],
+  [25, 30, "red"],
+  [30, 999, "bg-red"],
+];
 </script>

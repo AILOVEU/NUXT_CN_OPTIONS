@@ -1,20 +1,14 @@
 <template>
-  <el-tag :type="type" size="small" :effect="effect">
-    <div class="inline-block" style="font-size: 10px !important">Veg</div>
-    <div class="inline-block ml-[1px]">{{ (props.value * 100).toFixed(0) }}</div>
-  </el-tag>
+  <MyTag label="Veg" :value="props.value * 100" :cfg="cfg">
+    {{ (props.value * 100).toFixed(0) }}
+  </MyTag>
 </template>
 <script setup>
 const props = defineProps(["value"]);
-const effect = computed(() => {
-  // const absGamma = Math.abs(props.value);
-  // if(absGamma > 2) return 'dark'
-  // if(absGamma > 1.5) return 'light'
-  return "plain";
-});
-const type = computed(() => {
-  // const absGamma = Math.abs(props.value);
-  // if(absGamma > 1.5) return 'success'
-  return "info";
-});
+const cfg = [
+  [-999, 10, "black"],
+  [10, 20, "orange"],
+  [20, 30, "red"],
+  [30, 999, "bg-red"],
+];
 </script>

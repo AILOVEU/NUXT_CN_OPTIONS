@@ -1,9 +1,12 @@
 <template>
-  <el-tag type="info" size="small" effect="plain">
-    <div class="inline-block" style="font-size: 10px !important">杠</div>
-    <div class="inline-block ml-[1px]">{{ props.value.toFixed(1) }}</div>
-  </el-tag>
+  <MyTag label="杠" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }} </MyTag>
 </template>
 <script setup>
-const props = defineProps(["value", "正股代码"]);
+const props = defineProps(["value"]);
+const cfg = [
+  [0, 10, "black"],
+  [10, 20, "orange"],
+  [20, 30, "red"],
+  [30, 999, "bg-red"],
+];
 </script>

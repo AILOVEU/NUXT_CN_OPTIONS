@@ -1,21 +1,15 @@
+<!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
+
 <template>
-  <!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
-  <el-tag :type="type" size="small" :effect="effect">
-    <div class="inline-block" style="font-size: 10px !important">Gam</div>
-    <div class="inline-block ml-[1px]">{{ (props.value * 10).toFixed(1) }}</div>
-  </el-tag>
+  <MyTag label="Gam" :value="props.value * 10" :cfg="cfg">{{ (props.value * 10).toFixed(1) }} </MyTag>
 </template>
 <script setup>
 const props = defineProps(["value"]);
-const effect = computed(() => {
-  const absGamma = Math.abs(props.value);
-  if (absGamma > 2) return "dark";
-  if (absGamma > 1.5) return "light";
-  return "plain";
-});
-const type = computed(() => {
-  const absGamma = Math.abs(props.value);
-  if (absGamma > 1.5) return "success";
-  return "info";
-});
+const cfg = [
+  [0, 15, "black"],
+  [15, 20, "black"],
+  [20, 30, "orange"],
+  [30, 40, "red"],
+  [40, 999, "bg-red"],
+];
 </script>
