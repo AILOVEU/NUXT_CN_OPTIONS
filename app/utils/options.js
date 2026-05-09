@@ -255,18 +255,20 @@ function formatRecord(_tiledData, 持仓JSON) {
     ].forEach((key) => {
       row[key] = row[key] ? +row[key] : 0;
     });
+    row["沽购"] = row["期权名称"].includes("购") ? "购" : "沽";
+
     row["Delta"] = formatDecimal(row["Delta"], 3);
     row["Gamma"] = formatDecimal(row["Gamma"], 3);
     row["Vega"] = formatDecimal(row["Vega"], 3);
 
     row["杠杆"] = formatDecimal(row["杠杆"], 1);
+    row["杠杆"] = row["沽购"] === "购" ? row["杠杆"] : -row["杠杆"];
     row["到期日"] = dayjs(row["到期日"] + "", "YYYYMMDD").format("YYYY-MM-DD");
     row["最新价"] = get_最新价(row);
     // 新字段
     row["合约单位"] = 10000;
     row["千行权价"] = row["行权价"] * 1000;
     row["is旧期权"] = row["期权名称"].includes("A") && !row["期权名称"].includes("A500");
-    row["沽购"] = row["期权名称"].includes("购") ? "购" : "沽";
     row["到期天数"] = dayjs(row["到期日"], "YYYY-MM-DD").diff(dayjs(), "days") + 1;
     row["到期月份"] = dayjs(row["到期日"], "YYYY-MM-DD").format("MM月");
     row["单日损耗"] = Math.floor((10 * row["Theta"] * row["合约单位"]) / 365) / 10;

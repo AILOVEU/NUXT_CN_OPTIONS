@@ -15,7 +15,7 @@
       <!-- {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }} -->
     </div>
     <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
-      <TagPriceInner :value="current期权Item['一手内在价']" />
+      <TagPriceInner :value="current期权Item['一手内在价'] || 0" />
     </div>
     <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px]">
       <TagPriceTime :value="current期权Item['一手时间价']" />

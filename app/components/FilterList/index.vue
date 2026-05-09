@@ -55,7 +55,7 @@
           </el-table-column>
 
           <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="30" sortable>
-            <TagHold :value="row['持仓']" />
+            <TagHold :value="row['持仓'] || ''" />
           </el-table-column>
 
           <!-- <el-table-column label="基本信息" align="center">

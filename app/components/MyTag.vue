@@ -1,9 +1,9 @@
 <template>
-  <div class="my-tag my-tag-wrapper whitespace-nowrap inline-block px-[2px] pb-[4px] rounded-md font-bold text-[14px]" :style="wrapperStyle">
-    <div class="my-tag my-tag-label whitespace-nowrap inline-block transform origin-left scale-[0.65]" :style="contentStyle">{{ props.label }}</div>
-    <div class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-if="isValidVal" :style="contentStyle"><slot></slot></div>
-    <div class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-else>--</div>
-  </div>
+  <span class="my-tag my-tag-wrapper whitespace-nowrap inline-block px-[2px] pt-[1px] pb-[3px] rounded-md font-bold text-[14px]" :style="wrapperStyle" v-if="props.label || isValidVal">
+    <span class="my-tag my-tag-label whitespace-nowrap inline-block transform origin-left scale-[0.65]" :style="contentStyle">{{ props.label }}</span>
+    <span class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-if="isValidVal" :style="contentStyle"><slot></slot></span>
+    <span class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-else>--</span>
+  </span>
 </template>
 
 <script setup>
@@ -11,16 +11,17 @@ const props = defineProps(["label", "value", "cfg"]);
 const isValidVal = computed(() => {
   if (isNaN(props.value)) return false;
   if (props.value == undefined) return false;
+  if (props.value === "") return false;
   return true;
 });
 const colorStyleMap = {
   black: {
     color: "black",
-    background: "#ffffff",
+    background: "rgba(222,222,222,0.5)",
   },
   blue: {
     color: "#409eff",
-    background: "#ffffff",
+    background: "rgba(222,222,222,0.5)",
   },
   "bg-blue": {
     color: "white",
@@ -28,23 +29,23 @@ const colorStyleMap = {
   },
   green: {
     color: "#0a8937",
-    background: "#ffffff",
+    background: "rgba(222,222,222,0.5)",
   },
   "bg-green": {
     color: "white",
     background: "#0a8937",
   },
   orange: {
-    color: "#FF9D23",
-    background: "#ffffff",
+    color: "#FF5F00",
+    background: "rgba(222,222,222,0.5)",
   },
   "bg-orange": {
     color: "white",
-    background: "#FF9D23",
+    background: "#FF5F00",
   },
   red: {
     color: "#fd000f",
-    background: "#ffffff",
+    background: "rgba(222,222,222,0.5)",
   },
   "bg-red": {
     color: "white",
