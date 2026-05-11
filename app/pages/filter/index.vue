@@ -1,7 +1,7 @@
 <template>
   <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
-    <div>
+    <div class="px-[50px]">
       <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <div>
           <el-form-item label="正股">

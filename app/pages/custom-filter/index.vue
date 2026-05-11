@@ -1,7 +1,7 @@
 <template>
   <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
-    <div class="mx-[20px]">
+    <div class="mx-[50px]">
       <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <div>
           <el-form-item label="正股">
@@ -32,7 +32,7 @@
     </div>
     <div v-if="showType === 'list'" class="max-md:h-[calc(200vh-300px)] mb-[100px] gap-[10px] flex flex-col">
       <Capture title="日历" ref="captureRef" :style="{ margin: '0 auto' }">
-        <div class="flex justify-center py-[5px]">彩票{{todayStr}}</div>
+        <div class="flex justify-center py-[5px]">彩票{{ todayStr }}</div>
         <FilterList :checkIsChance="checkIsChance彩票" :showHold="false" />
         <div class="flex justify-center py-[5px]">短期</div>
         <FilterList :checkIsChance="checkIsChance短期" :showHold="false" />

@@ -28,7 +28,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" :onlyShowHold="props.onlyShowHold" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" />
             </template>
           </el-table-column>
         </el-table>
@@ -43,7 +43,7 @@ import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
-const props = defineProps(["mode", "symmetricData", "tiledData", "onlyShowHold"]);
+const props = defineProps(["mode", "symmetricData", "tiledData"]);
 const dayStr = computed(() => dayjs().format("YYYY-MM-DD HH:mm:ss") || " ");
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
@@ -81,7 +81,6 @@ function getColumnWidth(label) {
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
     if (el._current || el._split) return true;
-    if (props.onlyShowHold && !el["is保留行"]) return false;
     if (el["is保留行"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;

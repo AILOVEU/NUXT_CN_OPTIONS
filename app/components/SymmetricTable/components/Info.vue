@@ -95,7 +95,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal", "innerWidth", "onlyShowHold"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal", "innerWidth"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",
@@ -196,10 +196,6 @@ const wrapperStyle = computed(() => {
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
       style = { ...style, background: "#F6FFDC" };
-    } else if (props.onlyShowHold) {
-      style = {
-        display: "none",
-      };
     }
   }
   return style;

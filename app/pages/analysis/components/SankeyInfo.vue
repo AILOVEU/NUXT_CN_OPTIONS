@@ -49,7 +49,7 @@
     </el-table-column>
   </el-table>
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">
-    <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="hold" :onlyShowHold="true" />
+    <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="hold" />
   </div>
 
   <div class="overflow-auto mt-[10px]">
@@ -66,8 +66,9 @@
 </template>
 
 <script setup>
-import { deadline_list, deadline_color_list, OPTIONS_MAP, 最大建议买入时间价 } from "~/data";
+import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
+import { filter是否保留行 } from "~/utils/options.js";
 import _ from "lodash";
 import dayjs from "dayjs";
 const showType = ref("list");
@@ -107,14 +108,17 @@ async function handleQuery() {
   tableData.loading = true;
   const [symmetricData, comboList, tiledData] = await queryGrid(OPTIONS_MAP.map((el) => el.code));
   tableData.symmetricData = symmetricData || [];
-  tableData.tiledData = tiledData.map((el) => ({
-    ...el,
-  }));
+  tableData.tiledData = tiledData;
   tableData.comboList = comboList;
   tableData.loading = false;
 }
 handleQuery();
-
+const filteredTiledData = computed(() => {
+  return tableData.tiledData.filter((el) => el["持仓"]);
+});
+const filteredSymmetricData = computed(() => {
+  return filter是否保留行(tableData.symmetricData, tableData.tiledData, filteredTiledData.value);
+});
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,

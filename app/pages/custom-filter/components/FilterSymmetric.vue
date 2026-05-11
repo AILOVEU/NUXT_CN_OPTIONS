@@ -7,9 +7,7 @@
     </div>
 
     <div class="h-[calc(100vh-200px)] max-md:h-[calc(220vh-200px)] flex justify-center">
-      <div class="mx-auto overflow-x-auto">
-        <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="custom" />
-      </div>
+      <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="custom" />
     </div>
   </div>
 </template>
