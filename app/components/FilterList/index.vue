@@ -1,6 +1,6 @@
 <template>
   <div v-loading="tableData.loading" class="flex justify-center">
-    <div class="mx-auto overflow-x-auto border-[5px] border-[black]">
+    <div class="mx-auto overflow-x-auto border-[5px] border-[#576a8f]">
       <Capture title="期权列表" ref="captureRef">
         <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
           <el-table-column label="序" width="40" align="center" fixed="left">

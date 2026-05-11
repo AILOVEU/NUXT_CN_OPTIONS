@@ -1,5 +1,5 @@
 <template>
-  <div v-if="props.row._split" class="bg-[black] h-[10px] text-[white] flex items-center justify-center">&nbsp;</div>
+  <div v-if="props.row._split" class="bg-[#576a8f] h-[10px] text-[white] flex items-center justify-center">&nbsp;</div>
   <div v-else-if="!props.row?._current">
     <div class="text-[17px] whitespace-nowrap">{{ 展示正股名称 }}</div>
     <div class="text-[17px] pt-[4px]">
