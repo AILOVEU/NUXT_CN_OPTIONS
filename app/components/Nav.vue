@@ -36,12 +36,12 @@ const navList = [
   },
   {
     href: "/custom-filter",
-    name: "★自定义",
+    name: "★筛选",
   },
-  // {
-  //   href: "/filter",
-  //   name: "机会",
-  // },
+  {
+    href: "/filter",
+    name: "排序",
+  },
   {
     href: "/spread",
     name: "价差",

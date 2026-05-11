@@ -103,7 +103,7 @@
 </template>
 <script setup>
 import _ from "lodash";
-import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
+import { deadline_list, OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 
 const props = defineProps(["checkIsChance", "data", "isCombo", "showHold"]);

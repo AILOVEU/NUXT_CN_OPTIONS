@@ -22,7 +22,11 @@
             </el-radio-group>
           </el-form-item>
           <template v-if="!formData.过滤持有">
-            <el-form-item label="一手价范围">
+            <!-- 一手价范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.一手价Range" label="一手价范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.一手价Range[0]" />
@@ -35,7 +39,12 @@
                 <el-input placeholder="最大值" v-model="formData.一手价Range[1]" />
               </el-col>
             </el-form-item>
-            <el-form-item label="一手时间价范围">
+
+            <!-- 一手时间价范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.一手价时间价Range" label="一手时间价范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.一手价时间价Range[0]" />
@@ -48,7 +57,12 @@
                 <el-input placeholder="最大值" v-model="formData.一手价时间价Range[1]" />
               </el-col>
             </el-form-item>
-            <el-form-item label="Delta范围">
+
+            <!-- Delta范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.DeltaRange" label="Delta范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.DeltaRange[0]" />
@@ -61,7 +75,12 @@
                 <el-input placeholder="最大值" v-model="formData.DeltaRange[1]" />
               </el-col>
             </el-form-item>
-            <el-form-item label="隐波范围">
+
+            <!-- 隐波范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.隐波Range" label="隐波范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.隐波Range[0]" />
@@ -74,7 +93,12 @@
                 <el-input placeholder="最大值" v-model="formData.隐波Range[1]" />
               </el-col>
             </el-form-item>
-            <el-form-item label="Gamma范围">
+
+            <!-- Gamma范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.GammaRange" label="Gamma范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.GammaRange[0]" />
@@ -87,7 +111,12 @@
                 <el-input placeholder="最大值" v-model="formData.GammaRange[1]" />
               </el-col>
             </el-form-item>
-            <el-form-item label="溢价范围">
+
+            <!-- 溢价范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.溢价Range" label="溢价范围" />
+              </template>
               <el-col :span="11">
                 <span class="text-gray-500">最小值</span>
                 <el-input placeholder="最小值" v-model="formData.溢价Range[0]" />
@@ -121,11 +150,12 @@
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
   </div>
 </template>
+
 <script setup>
 import _ from "lodash";
 import { useGlobal } from "~/stores/useGlobal.js";
 import FilterSymmetric from "./components/FilterSymmetric.vue";
-import { deadline_list, OPTIONS_MAP, 建议买入价, 最大建议买入时间价 } from "~/data";
+import { deadline_list, OPTIONS_MAP } from "~/data";
 
 const { globalLoading } = useGlobal();
 
@@ -134,36 +164,77 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
 }));
+
+// 表单数据 + 启用开关
 const formData = reactive({
+  // 启用开关（6个范围）
+  enable: {
+    一手价Range: true,
+    一手价时间价Range: true,
+    DeltaRange: false,
+    隐波Range: false,
+    GammaRange: false,
+    溢价Range: false,
+  },
+  // 范围值
   溢价Range: [-100, 10],
-  一手价Range: [0, 建议买入价],
-  一手价时间价Range: [0, 最大建议买入时间价],
-  DeltaRange: [0.05, 1],
-  隐波Range: [0, 30],
-  GammaRange: [0.01, 9999],
+  一手价Range: [0, 3000],
+  一手价时间价Range: [0, 3000],
+  DeltaRange: [0.25, 1],
+  隐波Range: [0, 20],
+  GammaRange: [0.5, 9999],
+  // 其他筛选
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
   过滤持有: false,
 });
 
+// 核心筛选逻辑
 function checkIsChance(target) {
   if (target["is旧期权"]) return false;
   if (!formData.沽购List.includes(target["沽购"])) return false;
   if (!formData.正股List.includes(target["正股代码"])) return false;
   if (!formData.到期日List.includes(target["到期日"])) return false;
+
   if (formData.过滤持有 === "权利" && !(target["持仓"] > 0)) return false;
   if (formData.过滤持有 === "义务" && !(target["持仓"] < 0)) return false;
   if (formData.过滤持有 === "持有" && !target["持仓"]) return false;
-  if (!(target["一手价"] <= formData.一手价Range[1] && target["一手价"] >= formData.一手价Range[0])) return false;
-  if (!(target["一手时间价"] <= formData.一手价时间价Range[1] && target["一手时间价"] >= formData.一手价时间价Range[0])) return false;
-  if (!(Math.abs(target["Delta"]) <= formData.DeltaRange[1] && Math.abs(target["Delta"]) >= formData.DeltaRange[0])) return false;
-  if (!(target["隐波"] <= formData.隐波Range[1] && target["隐波"] >= formData.隐波Range[0])) return false;
-  if (!(Math.abs(target["Gamma"]) <= formData.GammaRange[1] && Math.abs(target["Gamma"]) >= formData.GammaRange[0])) return false;
-  if (!(target["溢价率"] <= formData.溢价Range[1] && target["溢价率"] >= formData.溢价Range[0])) return false;
+
+  // 一手价范围（勾选才生效）
+  if (formData.enable.一手价Range) {
+    if (!(target["一手价"] <= formData.一手价Range[1] && target["一手价"] >= formData.一手价Range[0])) return false;
+  }
+
+  // 一手时间价范围（勾选才生效）
+  if (formData.enable.一手价时间价Range) {
+    if (!(target["一手时间价"] <= formData.一手价时间价Range[1] && target["一手时间价"] >= formData.一手价时间价Range[0])) return false;
+  }
+
+  // Delta范围（勾选才生效）
+  if (formData.enable.DeltaRange) {
+    if (!(Math.abs(target["Delta"]) <= formData.DeltaRange[1] && Math.abs(target["Delta"]) >= formData.DeltaRange[0])) return false;
+  }
+
+  // 隐波范围（勾选才生效）
+  if (formData.enable.隐波Range) {
+    if (!(target["隐波"] <= formData.隐波Range[1] && target["隐波"] >= formData.隐波Range[0])) return false;
+  }
+
+  // Gamma范围（勾选才生效）
+  if (formData.enable.GammaRange) {
+    if (!(Math.abs(target["Gamma"]) <= formData.GammaRange[1] && Math.abs(target["Gamma"]) >= formData.GammaRange[0])) return false;
+  }
+
+  // 溢价范围（勾选才生效）
+  if (formData.enable.溢价Range) {
+    if (!(target["溢价率"] <= formData.溢价Range[1] && target["溢价率"] >= formData.溢价Range[0])) return false;
+  }
+
   return true;
 }
 </script>
+
 <style scoped>
 .active {
   color: white;

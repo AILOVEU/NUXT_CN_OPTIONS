@@ -1,5 +1,4 @@
 <!-- 正股变动1000元 , Delta 变动 Gamma*10 -->
-
 <template>
   <MyTag label="Gam" :value="props.value * 10" :cfg="cfg">{{ Math.ceil((props.value * 10)) }} </MyTag>
 </template>
