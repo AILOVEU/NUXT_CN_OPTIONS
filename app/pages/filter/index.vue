@@ -58,6 +58,24 @@
               </el-col>
             </el-form-item>
 
+            <!-- 杠杆范围 + 勾选框 -->
+            <el-form-item>
+              <template #label>
+                <el-checkbox v-model="formData.enable.杠杆Range" label="杠杆范围" />
+              </template>
+              <el-col :span="11">
+                <span class="text-gray-500">最小值</span>
+                <el-input placeholder="最小值" v-model="formData.杠杆Range[0]" />
+              </el-col>
+              <el-col :span="2" class="text-center">
+                <span class="text-gray-500">-</span>
+              </el-col>
+              <el-col :span="11">
+                <span class="text-gray-500">最大值</span>
+                <el-input placeholder="最大值" v-model="formData.杠杆Range[1]" />
+              </el-col>
+            </el-form-item>
+
             <!-- Delta范围 + 勾选框 -->
             <el-form-item>
               <template #label>
@@ -171,12 +189,14 @@ const formData = reactive({
   enable: {
     一手价Range: true,
     一手价时间价Range: true,
+    杠杆Range: true,
     DeltaRange: false,
     隐波Range: false,
     GammaRange: false,
     溢价Range: false,
   },
   // 范围值
+  杠杆Range: [20, 9999],
   溢价Range: [-100, 10],
   一手价Range: [0, 3000],
   一手价时间价Range: [0, 3000],
@@ -209,6 +229,11 @@ function checkIsChance(target) {
   // 一手时间价范围（勾选才生效）
   if (formData.enable.一手价时间价Range) {
     if (!(target["一手时间价"] <= formData.一手价时间价Range[1] && target["一手时间价"] >= formData.一手价时间价Range[0])) return false;
+  }
+
+  // 杠杆范围（勾选才生效）
+  if (formData.enable.杠杆Range) {
+    if (!(Math.abs(target["杠杆"]) <= formData.杠杆Range[1] && Math.abs(target["杠杆"]) >= formData.杠杆Range[0])) return false;
   }
 
   // Delta范围（勾选才生效）

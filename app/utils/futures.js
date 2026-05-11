@@ -61,10 +61,10 @@ let fields_dict = {
   // zjsj: "昨收",
 };
 const 市场List = [
-  {
-    name: "广期所",
-    fs: 225,
-  },
+  // {
+  //   name: "广期所",
+  //   fs: 225,
+  // },
   {
     name: "上期所",
     fs: 113,
@@ -101,7 +101,12 @@ export async function get_all_http_data() {
     tiledData.push(line_dict);
   });
   let 非主连List = tiledData.filter((el) => !el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
-  let 主连List = tiledData.filter((el) => el.期货名称.includes("主连")).filter((el) => !el.期货名称.includes("次主连"));
+  let 主连List = tiledData
+    .filter((el) => !el.期货名称.includes("主连"))
+    .filter((el) => !el.期货名称.includes("次主连"))
+    .filter((el) => el.期货名称.includes("2606"))
+    .filter((el) => el.持仓量 > 10000)
+    .filter(el=> el.成交量 > 10000);
   主连List = 主连List.map((el) => ({
     ...el,
     期货标的名称: el.期货名称.replace("主连", ""),

@@ -13,7 +13,7 @@ function handleTData(dataList) {
 
     let record = {};
 
-    if (call_item?.["持仓"] || put_item?.["持仓"]) record["is行内有持仓"] = true;
+    if (call_item?.["持仓"] || put_item?.["持仓"]) record["is保留行"] = true;
 
     record["C" + "期权名称"] = call_item?.["期权名称"];
     record["P" + "期权名称"] = put_item?.["期权名称"];

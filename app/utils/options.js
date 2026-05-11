@@ -20,6 +20,74 @@ export function get_fist_季度月份(dataList) {
   return [month_list, month_index];
 }
 
+export function filter是否保留行(symmetricData, tiledData, filteredTiledData) {
+  // 第一步：预处理，为每个普通行计算flag值
+  const dataWithFlags = symmetricData.map(item => {
+    if (item._split || item._current) {
+      return { ...item, _flag: null }; // 特殊行标记flag为null
+    }
+    // 计算普通行的flag
+    const flag = filteredTiledData.some(el => item["行内期权名称List"].includes(el["期权名称"]));
+    return { ...item, _flag: flag };
+  });
+
+  // 第二步：按_split:true分割成多个数据块
+  const blocks = [];
+  let currentBlock = [];
+  
+  for (const item of dataWithFlags) {
+    if (item._split) {
+      // 遇到分割符，先保存当前块（如果有内容）
+      if (currentBlock.length > 0) {
+        blocks.push(currentBlock);
+        currentBlock = [];
+      }
+      // 分割符单独作为一个块
+      blocks.push([item]);
+    } else {
+      currentBlock.push(item);
+    }
+  }
+  // 处理最后一个块
+  if (currentBlock.length > 0) {
+    blocks.push(currentBlock);
+  }
+
+  // 第三步：处理每个数据块
+  const processedBlocks = blocks.map(block => {
+    // 如果是分割符块，直接保留
+    if (block.length === 1 && block[0]._split) {
+      return block;
+    }
+
+    // 找出块内所有普通行的flag为true的索引
+    const trueIndices = [];
+    block.forEach((item, index) => {
+      if (item._flag === true) {
+        trueIndices.push(index);
+      }
+    });
+
+    // 如果块内没有任何flag为true的普通行，整个块过滤掉
+    if (trueIndices.length === 0) {
+      return [];
+    }
+
+    // 找到第一个和最后一个true的位置
+    const firstTrueIndex = trueIndices[0];
+    const lastTrueIndex = trueIndices[trueIndices.length - 1];
+
+    // 保留从第一个true到最后一个true之间的所有行（包括_current和中间的false）
+    const filteredBlock = block.slice(firstTrueIndex, lastTrueIndex + 1);
+
+    // 移除我们添加的临时_flag属性（可选，根据你的需要）
+    return filteredBlock.map(({ _flag, ...rest }) => rest);
+  });
+
+  // 第四步：合并所有处理后的块并返回
+  return processedBlocks.flat();
+}
+
 function isTimeBetweenNoonMarketClosed() {
   const now = dayjs();
   const startTime = dayjs().hour(11).minute(30).second(0);
@@ -312,7 +380,8 @@ function formatRecord(_tiledData, 持仓JSON) {
       ...el,
       仓位率: formatDecimal((100 * (el["一手价"] * el["持仓"])) / 总仓位, 1),
     }))
-    .filter((el) => el["一手价"]);
+    .filter((el) => el["一手价"])
+    .filter((el) => !el["is旧期权"] || el["持仓"]);
   return tiledData;
 }
 // 请求入口

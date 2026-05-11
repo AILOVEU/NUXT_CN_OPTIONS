@@ -17,11 +17,11 @@ const isValidVal = computed(() => {
 const colorStyleMap = {
   black: {
     color: "black",
-    background: "rgba(222,222,222,0.5)",
+    background: "rgba(222,222,222,0.25)",
   },
   blue: {
     color: "#409eff",
-    background: "rgba(222,222,222,0.5)",
+    background: "rgba(222,222,222,0.25)",
   },
   "bg-blue": {
     color: "white",
@@ -29,7 +29,7 @@ const colorStyleMap = {
   },
   green: {
     color: "#0a8937",
-    background: "rgba(222,222,222,0.5)",
+    background: "rgba(222,222,222,0.25)",
   },
   "bg-green": {
     color: "white",
@@ -37,7 +37,7 @@ const colorStyleMap = {
   },
   orange: {
     color: "#FF9B00",
-    background: "rgba(222,222,222,0.5)",
+    background: "rgba(222,222,222,0.25)",
   },
   "bg-orange": {
     color: "white",
@@ -45,7 +45,7 @@ const colorStyleMap = {
   },
   red: {
     color: "#fd000f",
-    background: "rgba(222,222,222,0.5)",
+    background: "rgba(222,222,222,0.25)",
   },
   "bg-red": {
     color: "white",

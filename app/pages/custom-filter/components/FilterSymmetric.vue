@@ -8,7 +8,7 @@
 
     <div class="h-[calc(100vh-200px)] max-md:h-[calc(220vh-200px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
-        <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" mode="custom" />
+        <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="custom" />
       </div>
     </div>
   </div>
@@ -16,6 +16,7 @@
 <script setup>
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
+import { filter是否保留行 } from "~/utils/options.js";
 import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
@@ -42,14 +43,18 @@ async function handleQuery() {
   tableData.loading = true;
   const [symmetricData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
   tableData.symmetricData = symmetricData || [];
-  tableData.tiledData = tiledData.map((el) => ({
-    ...el,
-    _isChance: props.checkIsChance(el),
-  }));
+  tableData.tiledData = tiledData;
   tableData.comboList = comboList;
   tableData.loading = false;
 }
 handleQuery();
+
+const filteredTiledData = computed(() => {
+  return tableData.tiledData.filter((el) => props.checkIsChance(el));
+});
+const filteredSymmetricData = computed(() => {
+  return filter是否保留行(tableData.symmetricData, tableData.tiledData, filteredTiledData.value);
+});
 function handleStockCodeChange() {
   setTimeout(() => {
     handleQuery();

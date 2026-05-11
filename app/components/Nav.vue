@@ -31,10 +31,6 @@ const navList = [
     name: "持仓",
   },
   {
-    href: "/in-val",
-    name: "实值",
-  },
-  {
     href: "/custom-filter",
     name: "★筛选",
   },
