@@ -130,7 +130,7 @@ const filteredTableData = computed(() => {
   if (props.showHold) {
     filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
   } else {
-    filtered = _.orderBy(filtered, ["沽购", "杠杆"], ["desc", "desc"]);
+    filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
   }
   return filtered;
 });
