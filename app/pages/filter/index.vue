@@ -117,7 +117,7 @@
         {{ item.label }}
       </div>
     </div>
-    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold='false'/>
+    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold="false" />
     <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
   </div>
 </template>
@@ -135,12 +135,12 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   value: el.code,
 }));
 const formData = reactive({
-  溢价Range: [-100, 15],
+  溢价Range: [-100, 10],
   一手价Range: [0, 建议买入价],
   一手价时间价Range: [0, 最大建议买入时间价],
-  DeltaRange: [0.15, 1],
-  隐波Range: [0, 23],
-  GammaRange: [0.5, 9999],
+  DeltaRange: [0.05, 1],
+  隐波Range: [0, 30],
+  GammaRange: [0.01, 9999],
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
