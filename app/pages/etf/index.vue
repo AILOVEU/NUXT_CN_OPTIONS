@@ -87,7 +87,7 @@ const options = computed(() => {
   const gridHeight = (100 - 2 * padding - (rowNum.value - 1) * gap) / rowNum.value;
 
   // 关键：给每个网格预留上下边距比例，统一留白比例
-  const Y_SCALE_RATIO = 0.08; // 上下各留8%留白，可微调 0.05~0.15
+  const Y_SCALE_RATIO = 0.01; // 上下各留8%留白，可微调 0.05~0.15
 
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
@@ -124,16 +124,13 @@ const options = computed(() => {
         type: "category",
         data: xAxisData,
         axisLabel: {
-          rotate: 61, // 旋转角度
+          rotate: 10,
           fontSize: 10,
         },
-        // axisLabel: { show: false }, // 小格子隐藏x文字更整洁
       });
 
-      // ========== 核心：单格自己算最大最小 + 统一上下留白比例 ==========
-      const curMin = _.min(filteredData.map((el) => el.value));
-      const curMax = _.max(filteredData.map((el) => el.value));
-      // 按比例向外扩一点，避免K线顶到边框
+      const curMin = _.min(filteredData.map((el) => el.low));
+      const curMax = _.max(filteredData.map((el) => el.high));
       const yMin = curMin * (1 - Y_SCALE_RATIO);
       const yMax = curMax * (1 + Y_SCALE_RATIO);
 
@@ -142,11 +139,33 @@ const options = computed(() => {
         type: "value",
         min: yMin,
         max: yMax,
-        // axisLabel: { show: true }, // 小格子可隐藏y刻度，更干净
-        // splitLine: { show: true },
+        axisLabel: { show: false }, // 小格子可隐藏y刻度，更干净
+        splitLine: { show: false },
       });
 
+      // ====================== 新增：每月1号蓝色背景高亮（底层） ======================
+      const bgData = xAxisData.map((date) => {
+        if (date.endsWith("-01")) {
+          return yMax;
+        }
+        return null;
+      });
+
+      seriesArr.push({
+        type: "bar",
+        xAxisIndex: index,
+        yAxisIndex: index,
+        data: bgData,
+        barWidth: "100%",
+        itemStyle: {
+          color: "rgba(30, 144, 255, 0.15)", // 透明蓝色背景（可自行调整透明度）
+        },
+        z: 1, // 放在蜡烛下层，不覆盖K线
+      });
+      // ============================================================================
+
       const 季度List = ["一季度", "二季度", "三季度", "四季度"];
+
       seriesArr.push({
         name: `${stockCode.value}_${yearStr}_${季度List[col]}`,
         type: "candlestick",
@@ -154,7 +173,8 @@ const options = computed(() => {
         yAxisIndex: index,
         data: seriesData,
         itemStyle: { borderRadius: 1 },
-        barWidth: "100%",
+        barWidth: "100%", // 缩小一点，留出背景边距更好看
+        z: 2, // 确保K线在上层
         markLine: {
           symbol: "none",
           label: { show: true },
@@ -195,19 +215,25 @@ const options = computed(() => {
         type: "shadow",
       },
       formatter: function (params) {
-        const target = params[0];
-        const { name, value, marker } = target;
+        // 优先取蜡烛图数据
+        const target = params.find((p) => p.seriesType === "candlestick") || params[0];
+        if (!target || !target.data) return "";
+
+        const { name, marker } = target;
         const data = target.data;
         const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        const weekNumb = dayjs(data[5], "YYYY-MM-DD").day();
+        const weekNumb = dayjs(name).day();
+
         if (data[1] === undefined) return `${marker}${name} ${weekdays[weekNumb]}<br />`;
+
         const 收盘 = data[2];
-        // const 涨跌 = formatDecimal(data[2] - data[1], 4);
-        const 涨跌 = formatDecimal((100 * (data[2] - data[1])) / data[1], 2);
+        const 开盘 = data[1];
+        const 涨跌 = formatDecimal((100 * (收盘 - 开盘)) / 开盘, 2);
         const 涨跌幅度 = formatDecimal((100 * (data[4] - data[3])) / data[3], 2);
+
         return `${marker}${name} ${weekdays[weekNumb]}<br />
-        收盘：${formatNumberToWan(data[2])}<br/>
-        开盘：${formatNumberToWan(data[1])}<br/><br/>
+        收盘：${formatNumberToWan(收盘)}<br/>
+        开盘：${formatNumberToWan(开盘)}<br/><br/>
         <span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "涨" : "跌"}: ${涨跌}%</span>
         <br/>
         <span>波幅: ${涨跌幅度}%</span>
