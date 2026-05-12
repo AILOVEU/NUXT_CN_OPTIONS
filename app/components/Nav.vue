@@ -28,11 +28,11 @@ const updateTime = ref(localStorage.getItem("updateTime"));
 const navList = [
   {
     href: "/hold",
-    name: "持仓",
+    name: "总览",
   },
   {
     href: "/custom-filter",
-    name: "★筛选",
+    name: "★彩票",
   },
   {
     href: "/filter",

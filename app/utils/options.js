@@ -22,19 +22,19 @@ export function get_fist_季度月份(dataList) {
 
 export function filter是否保留行(symmetricData, tiledData, filteredTiledData) {
   // 第一步：预处理，为每个普通行计算flag值
-  const dataWithFlags = symmetricData.map(item => {
+  const dataWithFlags = symmetricData.map((item) => {
     if (item._split || item._current) {
       return { ...item, _flag: null }; // 特殊行标记flag为null
     }
     // 计算普通行的flag
-    const flag = filteredTiledData.some(el => item["行内期权名称List"].includes(el["期权名称"]));
+    const flag = filteredTiledData.some((el) => item["行内期权名称List"].includes(el["期权名称"]));
     return { ...item, _flag: flag };
   });
 
   // 第二步：按_split:true分割成多个数据块
   const blocks = [];
   let currentBlock = [];
-  
+
   for (const item of dataWithFlags) {
     if (item._split) {
       // 遇到分割符，先保存当前块（如果有内容）
@@ -54,7 +54,7 @@ export function filter是否保留行(symmetricData, tiledData, filteredTiledDat
   }
 
   // 第三步：处理每个数据块
-  const processedBlocks = blocks.map(block => {
+  const processedBlocks = blocks.map((block) => {
     // 如果是分割符块，直接保留
     if (block.length === 1 && block[0]._split) {
       return block;
@@ -354,6 +354,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["一手价"] = toPrice(row["最新价"], row["合约单位"]);
     row["一手昨收价"] = toPrice(row["昨收"], row["合约单位"]);
     row["一手涨跌价"] = toPrice(row["涨跌额"], row["合约单位"]);
+    row["涨跌率"] = formatDecimal((100 * (row["最新价"] - row["昨收"])) / row["昨收"], 1);
     row["一手时间价"] = toPrice(row["时间价值"], row["合约单位"]);
     row["一手内在价"] = toPrice(row["内在价值"], row["合约单位"]);
     row["代替正股价"] = formatDecimal(row["Delta"] * row["正股价格"] * row["合约单位"], 0);

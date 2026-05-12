@@ -3,7 +3,7 @@
     <span class="relative inline-blockh-[1em]">
       <span class="absolute left-0 bottom-0 transform origin-left scale-[0.5]">{{ props.仓位占比.toFixed(1) }}%</span>
     </span>
-    <div class="ml-[25px] inline-block">{{ props.value }}</div>
+    <div class="ml-[28px] inline-block">{{ props.value }}</div>
   </MyTag>
 </template>
 <script setup>

@@ -10,7 +10,7 @@
       <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
     </div>
     <div class="hold-print absolute top-[0px] right-[0px]">
-      <TagDiff :value="一手涨跌价" />
+      <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
       <!-- br -->
       <!-- {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }} -->
     </div>
@@ -22,7 +22,7 @@
     </div>
     <div
       class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]"
-      :style="{ transform: [1, 2].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : isMobile ? '300px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-10px' : '0px' }"
+      :style="{ transform: [1, 2].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isPrint ? '100px' : isMobile ? '300px' : '165px', marginTop: isPrint ? '10px' : '0px', marginLeft: isPrint ? '-25px' : '0px' }"
     >
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
@@ -138,6 +138,10 @@ const 一手成本价 = computed(() => {
 });
 const 一手涨跌价 = computed(() => {
   return current期权Item.value["一手涨跌价"];
+});
+
+const 涨跌率 = computed(() => {
+  return current期权Item.value["涨跌率"];
 });
 
 const 收益率 = computed(() => {
