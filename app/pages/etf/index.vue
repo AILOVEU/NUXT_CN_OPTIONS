@@ -124,8 +124,13 @@ const options = computed(() => {
         type: "category",
         data: xAxisData,
         axisLabel: {
-          rotate: 10,
-          fontSize: 10,
+          rotate: 0,
+          fontSize: 16,
+          interval: 0, // 强制显示所有标签（核心）
+          // 核心：只显示 -01 结尾的日期
+          formatter: (value) => {
+            return value.endsWith("-01") ? value : "";
+          },
         },
       });
 
