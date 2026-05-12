@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 30) + 'vh', width: isMobile ? '300vw' : '200vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 45) + 'vh', width: isMobile ? '150vw' : '100vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -69,8 +69,8 @@ const options = computed(() => {
   if (!fundData.value?.length) return {};
 
   let monthLen = Array.from(new Set(fundData.value.map((el) => dayjs(el["date"], "YYYY-MM-DD").format("YYYY-MM"))))?.length;
-  const colNum = 4;
-  rowNum.value = Math.floor(monthLen / 3 / colNum) + 1;
+  const colNum = 1;
+  rowNum.value = Math.floor(monthLen / 12) + 1;
   setTimeout(() => {
     echartRef.value?.resize();
   });
@@ -92,14 +92,27 @@ const options = computed(() => {
   for (let row = 0; row < rowNum.value; row++) {
     for (let col = 0; col < colNum; col++) {
       let index = row * colNum + col;
-      if (row * colNum * 3 + col + 1 > fundData.value.length) continue;
+      if (row * 12 + col + 1 > fundData.value.length) continue;
       const yearStr = BEND - row;
-      const monthVal = col * 3 + 1;
+      const monthVal = col * 12 + 1;
       function getZeroNumber(month) {
         return month < 10 ? "0" + month : month;
       }
-      const curYearMonthStrList = [`${yearStr}-${getZeroNumber(monthVal)}-`, `${yearStr}-${getZeroNumber(monthVal + 1)}-`, `${yearStr}-${getZeroNumber(monthVal + 2)}-`];
-      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[2], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
+      const curYearMonthStrList = [
+        `${yearStr}-${getZeroNumber(monthVal)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 1)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 2)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 3)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 4)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 5)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 6)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 7)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 8)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 9)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 10)}-`,
+        `${yearStr}-${getZeroNumber(monthVal + 11)}-`,
+      ];
+      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[11], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
       const curYearFilteredData = fundData.value?.filter((el) => el.date.startsWith(yearStr + "-"));
       let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr)));
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date });
