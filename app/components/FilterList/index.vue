@@ -15,7 +15,9 @@
             </template>
           </el-table-column>
           <el-table-column label="期权名称" prop="期权名称" width="140" sortable align="left" fixed="left" />
-          <el-table-column #default="{ row }" label="一手价" prop="一手价" width="60" sortable align="right" />
+          <el-table-column #default="{ row }" label="一手价" prop="一手价" width="60" sortable align="right">
+            <TagPrice :value="row['一手价']" />
+          </el-table-column>
           <el-table-column label="一手价格构成" align="center">
             <el-table-column label="时间" #default="{ row }" align="right" :width="props.isCombo ? 140 : 50" prop="一手时间价" sortable>
               <CombinTableCell :value="row['一手时间价']" :showDiff="false" />
@@ -26,7 +28,9 @@
           </el-table-column>
           <el-table-column label="今盈亏" align="center">
             <el-table-column label="今总涨跌" v-if="props.showHold" align="right" prop="今日总涨跌" width="67" sortable />
-            <el-table-column label="今每手涨跌" align="right" prop="一手涨跌价" width="77" sortable />
+            <el-table-column label="今每手涨跌" #default="{ row }" align="right" prop="一手涨跌价" width="80" sortable>
+              <TagDiff :value="row['一手涨跌价']" :涨跌率="row['涨跌率']" />
+            </el-table-column>
           </el-table-column>
           <el-table-column label="总盈亏" align="center" v-if="props.showHold">
             <el-table-column label="一手价" :width="props.isCombo ? 120 : 60" #default="{ row }" prop="一手价" align="right" sortable>

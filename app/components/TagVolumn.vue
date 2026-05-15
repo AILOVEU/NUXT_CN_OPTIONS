@@ -11,7 +11,6 @@ const val = computed(() => {
 });
 const cfg = [
   [0, 25000, "black"],
-  [10000, 25000, "orange"],
   [25000, 50000, "red"],
   [50000, 999999, "bg-red"],
 ];

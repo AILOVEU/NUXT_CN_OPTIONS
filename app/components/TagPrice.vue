@@ -5,9 +5,8 @@
 const props = defineProps(["value"]);
 const cfg = [
   [0, 150, "blue"],
-  [150, 250, "green"],
-  [250, 500, "orange"],
-  [500, 3000, "red"],
+  [150, 700, "green"],
+  [700, 3000, "red"],
   [3000, 999999, "bg-red"],
 ];
 </script>

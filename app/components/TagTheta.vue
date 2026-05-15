@@ -6,8 +6,8 @@
 <script setup>
 const props = defineProps(["value"]);
 const cfg = [
-  [-999, 15, "black"],
-  [15, 30, "orange"],
+  [-999, 10, "blue"],
+  [10, 30, "black"],
   [30, 50, "red"],
   [50, 999, "bg-red"],
 ];

@@ -6,9 +6,9 @@
 <script setup>
 const props = defineProps(["value"]);
 const cfg = [
-  [-999, 10, "black"],
-  [10, 20, "orange"],
-  [20, 30, "red"],
-  [30, 999, "bg-red"],
+  [-999, 10, "blue"],
+  [10, 20, "black"],
+  [20, 50, "red"],
+  [50, 999, "bg-red"],
 ];
 </script>
