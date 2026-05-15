@@ -13,7 +13,7 @@
       <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
         <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ dayStr }}</div>
         <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getColumnWidth(label)">
+          <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
               <div v-if="type" class="leading-[1.2]">
                 <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
@@ -28,7 +28,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInfoColumnWidth()" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInnerColumnWidth()" />
             </template>
           </el-table-column>
         </el-table>
@@ -69,14 +69,14 @@ const showColumns = computed(() => {
   if (!columnVal.value.length) return tableData.columns;
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
-function getInfoColumnWidth() {
+function getInnerColumnWidth() {
   if (isMobile) return "90px";
-  return showTypeVal.value === "打印" ? "300px" : "152px";
+  return showTypeVal.value === "打印" ? "380px" : "160px";
 }
-function getColumnWidth(label) {
+function getWrapperColumnWidth(label) {
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
-  return showTypeVal.value === "打印" ? "300px" : "169px";
+  return showTypeVal.value === "打印" ? "300px" : "172px";
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
