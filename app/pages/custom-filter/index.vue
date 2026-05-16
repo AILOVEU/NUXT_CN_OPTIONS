@@ -7,8 +7,14 @@
           <el-form-item label="正股">
             <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
           </el-form-item>
+          <el-form-item label="到期日" clearable>
+            <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
+          </el-form-item>
           <el-form-item label="沽购" clearable>
             <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
+          </el-form-item>
+          <el-form-item label="档位" clearable>
+            <TabSelectMult :options="档位名称List.map((el) => ({ label: el, value: el }))" v-model="formData.档位名称List" />
           </el-form-item>
         </div>
       </el-form>
@@ -62,6 +68,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
 }));
+const 档位名称List = ref(["实5档", "实4档", "实3档", "实2档", "实1档", "平值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"]);
 const formData = reactive({
   溢价Range: [-100, 15],
   一手价Range: [0, 建议买入价],
@@ -72,6 +79,7 @@ const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["购", "沽"],
+  档位名称List: [],
   过滤持有: false,
 });
 function checkIsChance彩票(target) {
@@ -80,15 +88,17 @@ function checkIsChance彩票(target) {
   if (!formData.正股List.includes(target["正股代码"])) return false;
 
   // if (target["到期天数"] > 10) return false;
-  if (target["一手价"] >= 200) return false;
+  if (target["一手价"] >= 300) return false;
   if (target["溢价率"] >= 1.5) return false;
   return true;
 }
 // 短期不关注隐波，只关注溢价率和价格
 function checkIsChance短期(target) {
   if (target["is旧期权"]) return false;
-  if (!formData.沽购List.includes(target["沽购"])) return false;
-  if (!formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.沽购List.length && !formData.沽购List.includes(target["沽购"])) return false;
+  if (formData.正股List.length && !formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.到期日List.length && !formData.到期日List.includes(target["到期日"])) return false;
+  if (formData.档位名称List.length && !formData.档位名称List.includes(target["档位名称"])) return false;
 
   if (target["到期天数"] > 45 || target["到期天数"] <= 10) return false;
   if (target["一手价"] >= 500) return false;
@@ -100,8 +110,10 @@ function checkIsChance短期(target) {
 function checkIsChance中期(target) {
   const OpsItem = OPTIONS_MAP.find((item) => item.code === target["正股代码"]);
   if (target["is旧期权"]) return false;
-  if (!formData.沽购List.includes(target["沽购"])) return false;
-  if (!formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.沽购List.length && !formData.沽购List.includes(target["沽购"])) return false;
+  if (formData.正股List.length && !formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.到期日List.length && !formData.到期日List.includes(target["到期日"])) return false;
+  if (formData.档位名称List.length && !formData.档位名称List.includes(target["档位名称"])) return false;
   // if (target["沽购"] === "购") {
   //   if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
   // }
@@ -117,8 +129,10 @@ function checkIsChance中期(target) {
 function checkIsChance远期(target) {
   const OpsItem = OPTIONS_MAP.find((item) => item.code === target["正股代码"]);
   if (target["is旧期权"]) return false;
-  if (!formData.沽购List.includes(target["沽购"])) return false;
-  if (!formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.沽购List.length && !formData.沽购List.includes(target["沽购"])) return false;
+  if (formData.正股List.length && !formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.到期日List.length && !formData.到期日List.includes(target["到期日"])) return false;
+  if (formData.档位名称List.length && !formData.档位名称List.includes(target["档位名称"])) return false;
   // if (target["沽购"] === "购") {
   //   if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
   // }
