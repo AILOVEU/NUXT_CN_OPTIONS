@@ -338,28 +338,36 @@ function processOptionData(optionData) {
       const diffIndex = strikeIndex - atmIndex;
 
       let level;
+      let levelNo;
       if (item.沽购 === "购") {
         // 认购期权：行权价>正股价=虚值，<正股价=实值
         if (diffIndex === 0) {
           level = "平值";
+          levelNo = 0;
         } else if (diffIndex > 0) {
           level = `虚${diffIndex}档`;
+          levelNo = -Math.abs(diffIndex);
         } else {
           level = `实${Math.abs(diffIndex)}档`;
+          levelNo = Math.abs(diffIndex);
         }
       } else {
         // 沽
         // 认沽期权：行权价<正股价=虚值，>正股价=实值
         if (diffIndex === 0) {
           level = "平值";
+          levelNo = 0;
         } else if (diffIndex < 0) {
           level = `虚${Math.abs(diffIndex)}档`;
+          levelNo = -Math.abs(diffIndex);
         } else {
           level = `实${diffIndex}档`;
+          levelNo = Math.abs(diffIndex);
         }
       }
 
-      item.档位 = level;
+      item.档位名称 = level;
+      item.档位 = levelNo;
     });
   });
 

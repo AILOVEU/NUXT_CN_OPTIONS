@@ -13,6 +13,9 @@
           <el-form-item label="沽购" clearable>
             <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
           </el-form-item>
+          <el-form-item label="档位" clearable>
+            <TabSelectMult :options="档位名称List.map((el) => ({ label: el, value: el }))" v-model="formData.档位名称List" />
+          </el-form-item>
           <el-form-item label="过滤持有">
             <el-radio-group v-model="formData.过滤持有">
               <el-radio :value="'权利'">仅权利</el-radio>
@@ -182,7 +185,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
 }));
-
+const 档位名称List = ref(["实5档", "实4档", "实3档", "实2档", "实1档", "平值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"]);
 // 表单数据 + 启用开关
 const formData = reactive({
   // 启用开关（6个范围）
@@ -207,15 +210,16 @@ const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
+  档位名称List: [],
   过滤持有: false,
 });
-
 // 核心筛选逻辑
 function checkIsChance(target) {
   if (target["is旧期权"]) return false;
-  if (!formData.沽购List.includes(target["沽购"])) return false;
-  if (!formData.正股List.includes(target["正股代码"])) return false;
-  if (!formData.到期日List.includes(target["到期日"])) return false;
+  if (formData.沽购List.length && !formData.沽购List.includes(target["沽购"])) return false;
+  if (formData.正股List.length && !formData.正股List.includes(target["正股代码"])) return false;
+  if (formData.到期日List.length && !formData.到期日List.includes(target["到期日"])) return false;
+  if (formData.档位名称List.length && !formData.档位名称List.includes(target["档位名称"])) return false;
 
   if (formData.过滤持有 === "权利" && !(target["持仓"] > 0)) return false;
   if (formData.过滤持有 === "义务" && !(target["持仓"] < 0)) return false;
