@@ -1,3 +1,4 @@
+<!-- Delta -->
 <template>
   <MyTag label="Del" :value="props.value * 100" :cfg="cfg">{{ (props.value * 100).toFixed(1) }} </MyTag>
 </template>

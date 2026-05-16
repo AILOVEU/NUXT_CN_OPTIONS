@@ -1,3 +1,4 @@
+<!-- 沽购 -->
 <template>
   <span v-if="props.value === '沽'" class="rounded-[4px] bg-[#0a8937] px-[2px] pb-[4px] text-white font-semibold">沽</span>
   <span v-if="props.value === '购'" class="rounded-[4px] bg-[#fd000f] px-[2px] pb-[4px] text-white font-semibold">购</span>

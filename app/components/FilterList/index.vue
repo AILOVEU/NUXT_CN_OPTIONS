@@ -26,6 +26,7 @@
               <CombinTableCell :value="row['一手内在价']" :showDiff="false" />
             </el-table-column>
           </el-table-column>
+          <el-table-column label="档位" align="right" prop="档位" width="67" sortable />
           <el-table-column label="今盈亏" align="center">
             <el-table-column label="今总涨跌" v-if="props.showHold" align="right" prop="今日总涨跌" width="67" sortable />
             <el-table-column label="今每手涨跌" #default="{ row }" align="right" prop="一手涨跌价" width="90" sortable>

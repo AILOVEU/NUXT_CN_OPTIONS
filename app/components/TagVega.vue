@@ -1,3 +1,4 @@
+<!-- Vega -->
 <template>
   <MyTag label="Veg" :value="props.value * 100" :cfg="cfg">
     {{ (props.value * 100).toFixed(0) }}

@@ -46,6 +46,7 @@
     </div>
     <!-- 中间 -->
     <div v-else class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ height: isMobile ? '300px' : '165px' }">
+      {{ 档位 }}
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -150,6 +151,9 @@ const 日增量 = computed(() => {
 });
 const 持仓量 = computed(() => {
   return current期权Item.value["持仓量"];
+});
+const 档位 = computed(() => {
+  return current期权Item.value["档位"];
 });
 const 一手价 = computed(() => {
   return current期权Item.value["一手价"];

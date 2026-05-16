@@ -1,3 +1,4 @@
+<!-- 溢价率 -->
 <template>
   <MyTag label="溢" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }}% </MyTag>
 </template>

@@ -1,3 +1,4 @@
+<!-- 内在价值 -->
 <template>
   <MyTag label="内" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>

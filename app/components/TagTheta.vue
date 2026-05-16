@@ -1,3 +1,4 @@
+<!-- 日损 -->
 <template>
   <MyTag label="损" :value="props.value" :cfg="cfg">
     {{ props.value }}

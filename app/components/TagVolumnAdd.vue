@@ -1,3 +1,4 @@
+<!-- 期权增减仓 -->
 <template>
   <MyTag :label="props.value > 0 ? '增' : '减'" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>

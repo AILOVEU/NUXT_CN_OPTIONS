@@ -1,3 +1,4 @@
+<!-- 杠杆 -->
 <template>
   <MyTag label="杠" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }} </MyTag>
 </template>

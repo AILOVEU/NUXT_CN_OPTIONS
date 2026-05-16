@@ -1,3 +1,4 @@
+<!-- 隐波 -->
 <template>
   <MyTag label="隐" :value="props.value" :cfg="cfg"> {{ props.value.toFixed(1) }} </MyTag>
 </template>

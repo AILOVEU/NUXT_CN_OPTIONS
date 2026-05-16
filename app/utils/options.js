@@ -294,6 +294,78 @@ function get盈亏比(el) {
   // }
   return [formatDecimal(盈 / 亏, 2), formatDecimal(盈 * 10000), formatDecimal(亏 * 10000)];
 }
+
+// 处理期权数据，添加档位字段
+function processOptionData(optionData) {
+  // 按正股代码分组处理
+  const groupedData = {};
+
+  // 第一步：分组并提取每个正股的唯一行权价
+  optionData.forEach((item) => {
+    const code = item.正股代码;
+    if (!groupedData[code]) {
+      groupedData[code] = {
+        items: [],
+        strikePrices: new Set(),
+        underlyingPrice: item.正股价格,
+      };
+    }
+    groupedData[code].items.push(item);
+    groupedData[code].strikePrices.add(item.行权价);
+  });
+
+  // 第二步：为每个正股计算档位
+  Object.keys(groupedData).forEach((code) => {
+    const group = groupedData[code];
+    // 将行权价转换为数组并排序
+    const sortedStrikes = Array.from(group.strikePrices).sort((a, b) => a - b);
+    const underlyingPrice = group.underlyingPrice;
+
+    // 找到平值行权价（最接近正股价格的行权价）
+    let atmIndex = 0;
+    let minDiff = Infinity;
+    sortedStrikes.forEach((strike, index) => {
+      const diff = Math.abs(strike - underlyingPrice);
+      if (diff < minDiff) {
+        minDiff = diff;
+        atmIndex = index;
+      }
+    });
+
+    // 为该组每条记录添加档位字段
+    group.items.forEach((item) => {
+      const strikeIndex = sortedStrikes.indexOf(item.行权价);
+      const diffIndex = strikeIndex - atmIndex;
+
+      let level;
+      if (item.沽购 === "购") {
+        // 认购期权：行权价>正股价=虚值，<正股价=实值
+        if (diffIndex === 0) {
+          level = "平值";
+        } else if (diffIndex > 0) {
+          level = `虚${diffIndex}档`;
+        } else {
+          level = `实${Math.abs(diffIndex)}档`;
+        }
+      } else {
+        // 沽
+        // 认沽期权：行权价<正股价=虚值，>正股价=实值
+        if (diffIndex === 0) {
+          level = "平值";
+        } else if (diffIndex < 0) {
+          level = `虚${Math.abs(diffIndex)}档`;
+        } else {
+          level = `实${diffIndex}档`;
+        }
+      }
+
+      item.档位 = level;
+    });
+  });
+
+  // 返回处理后的完整数据
+  return optionData;
+}
 function formatRecord(_tiledData, 持仓JSON) {
   debug(_tiledData);
   let tiledData = [];
@@ -383,6 +455,21 @@ function formatRecord(_tiledData, 持仓JSON) {
     }))
     .filter((el) => el["一手价"])
     .filter((el) => !el["is旧期权"] || el["持仓"]);
+  // console.log(
+  //   "xxx",
+  //   JSON.stringify(
+  //     tiledData
+  //       .map((el) => ({
+  //         正股代码: el["正股代码"],
+  //         到期日: el["正股代码"],
+  //         行权价: el["行权价"],
+  //         正股价格: el["正股价格"],
+  //         沽购: el["沽购"],
+  //       }))
+  //       .filter((el) => ["510050", "510300"].includes(el["正股代码"]))
+  //   )
+  // );
+  tiledData = processOptionData(tiledData);
   return tiledData;
 }
 // 请求入口

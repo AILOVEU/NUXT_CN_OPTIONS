@@ -1,3 +1,4 @@
+<!-- 价格 -->
 <template>
   <MyTag label="价" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>

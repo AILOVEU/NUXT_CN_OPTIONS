@@ -1,3 +1,4 @@
+<!-- 时间价值 -->
 <template>
   <MyTag label="时" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>

@@ -1,3 +1,4 @@
+<!-- 持仓盈亏（收益率） -->
 <template>
   <MyTag :label="props.value > 0 ? '盈' : '亏'" :value="props.收益率" :cfg="cfg">
     <span style="font-size: 0.6em">{{ props.收益率.toFixed(0) }}%</span>

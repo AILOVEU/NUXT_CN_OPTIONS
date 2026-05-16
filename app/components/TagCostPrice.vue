@@ -1,3 +1,4 @@
+<!-- 一手成本价 -->
 <template>
   <MyTag label="本" :value="props.value" :cfg="cfg"> {{ props.value }} </MyTag>
 </template>
