@@ -1,6 +1,6 @@
 <template>
   <MyTag :label="props.value > 0 ? '盈' : '亏'" :value="props.收益率" :cfg="cfg">
-    <span class="transform origin-center [zoom:0.6]">{{ props.收益率.toFixed(0) }}%</span>
+    <span style="font-size: 0.6em">{{ props.收益率.toFixed(0) }}%</span>
     <div class="inline-block">{{ props.value }}</div>
   </MyTag>
 </template>

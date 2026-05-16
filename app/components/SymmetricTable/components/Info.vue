@@ -4,23 +4,23 @@
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px] flex flex-row max-md:flex-col-reverse max-md:items-start items-center gap-[1px] hold-print">
-      <div class="hold-print rounded-[6px] text-[white] font-semibold px-[2px] pb-[4px]" :style="{ backgroundColor: 持仓 > 0 ? 'red' : 'green' }">{{ 持仓 }}</div>
-      <div class="hold-print whitespace-nowrap font-[600]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">{{ 盈亏 > 0 ? "盈" : "亏" }}{{ 盈亏 }}</div>
-      <div class="hold-print ml-[2px]" :style="{ color: 盈亏 > 0 ? 'red' : 'green' }">({{ 收益率 }}%)</div>
+    <div v-if="持仓" class="absolute top-[0px] left-[0px] rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
+      <TagHold :value="持仓" />
     </div>
-    <div class="hold-print absolute top-[0px] right-[0px]">
+    <div v-if="持仓" class="absolute" :class="{ bottomLeft: !isPrint, topLeft: isPrint }">
+      <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
+    </div>
+    <div class="absolute top-[0px] right-[0px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
-      <!-- br -->
-      <!-- {{ 一手涨跌价 > 0 ? "涨" : "跌" }}:{{ 一手涨跌价 > 0 ? "↑" + 一手涨跌价 : "↓" + Math.abs(一手涨跌价) }} -->
     </div>
-    <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
+
+    <!-- <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
       <TagPriceInner :value="current期权Item['一手内在价'] || 0" />
     </div>
     <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px]">
       <TagPriceTime :value="current期权Item['一手时间价']" />
-    </div>
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ height: '75px', marginTop: '13px', marginLeft: '-45px' }">
+    </div> -->
+    <div v-if="isPrint" class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ height: '77px', marginTop: '15px', marginLeft: '-45px' }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
@@ -292,11 +292,26 @@ const handleGlassStyle = (el, isEnable) => {
 .print-text-large,
 .print-text-large * {
   font-size: 23px;
-  .hold-print {
-    .my-tag {
-      font-size: 18px !important;
-    }
-    font-size: 18px !important;
-  }
+}
+.bottomLeft {
+  bottom: 0px;
+  left: 0px;
+}
+.topLeft {
+  top: 0px;
+  left: 35px;
+}
+/* 添加到你的全局样式或组件样式中 */
+.my-tag-wrapper {
+  /* 关键：让相邻标签的圆角重叠，覆盖中间的三角形空白 */
+  margin-right: -1px;
+  margin-left: -1px;
+  
+  /* 可选：提高z-index，让hover状态的标签显示在最上层 */
+  position: relative;
+}
+
+.my-tag-wrapper:hover {
+  z-index: 1;
 }
 </style>

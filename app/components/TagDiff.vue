@@ -1,17 +1,15 @@
 <template>
-  <MyTag :label="props.value > 0 ? '涨↑' : '跌↓'" :value="props.涨跌率" :cfg="cfg">
-    <div class="relative">
-      <div>{{ props.value }}</div>
-      <!-- <div v-if="!props.hiddenPercent" class="absolute right-0 bottom-[-120%] transform origin-top-right scale-[0.65]" :style="{ color: props.value > 0 ? 'red' : 'green' }">{{ props.涨跌率 }}%</div> -->
-    </div>
+  <MyTag :label="props.value > 0 ? '涨' : '跌'" :value="props.涨跌率 || props.value" :cfg="cfg">
+    <div v-if="!props.hiddenPercent && !!props.涨跌率" class="inline-block mr-[2px]" style="font-size: 0.6em">{{ props.涨跌率 }}%</div>
+    <div class="inline-block">{{ props.value }}</div>
   </MyTag>
 </template>
 <script setup>
 const props = defineProps(["value", "涨跌率", "hiddenPercent"]);
 const cfg = [
-  [-999999, -25, "bg-green"],
+  [-999999, -50, "bg-green"],
   [-50, 0, "green"],
-  [0, 50, "red"],
-  [50, 999999, "bg-red"],
+  [0, 100, "red"],
+  [100, 999999, "bg-red"],
 ];
 </script>

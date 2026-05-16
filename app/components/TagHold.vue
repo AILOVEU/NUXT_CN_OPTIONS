@@ -1,3 +1,4 @@
+<!-- 持仓量 -->
 <template>
   <MyTag label="" :value="props.value" :cfg="cfg">
     {{ props.value || "" }}
