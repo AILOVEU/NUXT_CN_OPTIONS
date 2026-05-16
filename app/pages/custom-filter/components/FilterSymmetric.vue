@@ -5,9 +5,8 @@
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
-
     <div class="h-[calc(100vh-200px)] max-md:h-[calc(220vh-200px)] flex justify-center">
-      <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="custom" />
+      <SymmetricTable tableTitle="彩票" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="custom" />
     </div>
   </div>
 </template>

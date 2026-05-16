@@ -49,7 +49,7 @@
     </el-table-column>
   </el-table>
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">
-    <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="hold" />
+    <SymmetricTable tableTitle="持仓" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="hold" />
   </div>
 
   <div class="overflow-auto mt-[10px]">

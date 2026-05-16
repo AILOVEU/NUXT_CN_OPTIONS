@@ -23,8 +23,11 @@ export function get_fist_季度月份(dataList) {
 export function filter是否保留行(symmetricData, tiledData, filteredTiledData) {
   // 第一步：预处理，为每个普通行计算flag值
   const dataWithFlags = symmetricData.map((item) => {
-    if (item._split || item._current) {
-      return { ...item, _flag: null }; // 特殊行标记flag为null
+    if (item._split) {
+      return { ...item, _flag: "_split" }; // 特殊行标记flag为null
+    }
+    if (item._current) {
+      return { ...item, _flag: "_current" }; // 特殊行标记flag为null
     }
     // 计算普通行的flag
     const flag = filteredTiledData.some((el) => item["行内期权名称List"].includes(el["期权名称"]));
@@ -63,13 +66,13 @@ export function filter是否保留行(symmetricData, tiledData, filteredTiledDat
     // 找出块内所有普通行的flag为true的索引
     const trueIndices = [];
     block.forEach((item, index) => {
-      if (item._flag === true) {
+      if ([true, "_current"].includes(item._flag)) {
         trueIndices.push(index);
       }
     });
 
     // 如果块内没有任何flag为true的普通行，整个块过滤掉
-    if (trueIndices.length === 0) {
+    if (trueIndices.length <= 1) {
       return [];
     }
 
@@ -284,16 +287,6 @@ function debug(_tiledData) {
     _.unionBy(_tiledData, (row) => row["f333"])
   );
 }
-function get盈亏比(el) {
-  let 盈 = 0;
-  let 亏 = el["一手价"];
-  // if (到期天数 < 10) {
-  //   // 涨1.5%
-  // } else {
-  //   //
-  // }
-  return [formatDecimal(盈 / 亏, 2), formatDecimal(盈 * 10000), formatDecimal(亏 * 10000)];
-}
 
 // 处理期权数据，添加档位字段
 function processOptionData(optionData) {
@@ -374,6 +367,11 @@ function processOptionData(optionData) {
   // 返回处理后的完整数据
   return optionData;
 }
+function checkIs彩票(target) {
+  if (target["一手价"] >= 300) return false;
+  if (target["溢价率"] >= 1.5) return false;
+  return true;
+}
 function formatRecord(_tiledData, 持仓JSON) {
   debug(_tiledData);
   let tiledData = [];
@@ -445,7 +443,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
     row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
     row["is非法持仓"] = getIs非法持仓(row);
-    row["盈亏比"] = get盈亏比(row);
+    row["is彩票"] = checkIs彩票(row);
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     tiledData.push(row);
   });

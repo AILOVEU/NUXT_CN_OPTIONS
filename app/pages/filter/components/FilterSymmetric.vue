@@ -7,7 +7,7 @@
     </div>
 
     <div class="h-[calc(100vh-100px)] max-md:h-[calc(220vh-200px)] flex justify-center">
-      <SymmetricTable :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="chance" />
+      <SymmetricTable tableTitle="定制筛选" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="chance" />
     </div>
   </div>
 </template>

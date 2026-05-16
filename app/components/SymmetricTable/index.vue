@@ -11,7 +11,7 @@
     </div>
     <div class="h-[calc(100%-120px)]">
       <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
-        <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ dayStr }}</div>
+        <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ props.tableTitle || "" }}{{ dayStr }}</div>
         <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
@@ -43,8 +43,8 @@ import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
-const props = defineProps(["mode", "symmetricData", "tiledData"]);
-const dayStr = computed(() => dayjs().format("YYYY-MM-DD HH:mm:ss") || " ");
+const props = defineProps(["mode", "symmetricData", "tiledData", "tableTitle"]);
+const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = ["精简", "打印"].map((el) => ({ label: el, value: el }));

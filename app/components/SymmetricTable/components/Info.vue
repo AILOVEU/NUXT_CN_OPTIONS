@@ -3,25 +3,25 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe; height: 22px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer max-md:h-[360px] relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px] rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
       <TagHold :value="持仓" />
     </div>
     <div v-if="持仓" class="absolute" :class="{ bottomLeft: !isPrint, topLeft: isPrint }">
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
-    <div class="absolute top-[0px] right-[0px]">
+    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
 
     <!-- <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
       <TagPriceInner :value="current期权Item['一手内在价'] || 0" />
     </div> -->
-    <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px]">
+    <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]">
       <TagRealLevel :value="档位" :档位名称="档位名称" />
       <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ height: '77px', marginTop: '15px', marginLeft: '-45px' }">
+    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ height: '77px', marginTop: '15px', marginLeft: '-45px' }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
@@ -46,7 +46,7 @@
       </div>
     </div>
     <!-- 中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ height: isMobile ? '300px' : '165px' }">
+    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ height: isMobile ? '345px' : '165px' }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -57,11 +57,11 @@
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('溢价率')">
           <TagPremium :value="current期权Item['溢价率']" />
         </div>
+      </div>
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('杠杆')">
           <TagLeverage :value="current期权Item['杠杆']" />
         </div>
-      </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('隐波')">
           <TagIv :value="current期权Item['隐波']" :正股="current期权Item['正股代码']" />
         </div>
@@ -204,7 +204,7 @@ const wrapperStyle = computed(() => {
     // filter: "grayscale(0.75)",
   };
   let style = {
-    height: isPrint.value ? "83px" : isMobile ? "310px" : "170px",
+    height: isPrint.value ? "83px" : isMobile ? "340px" : "170px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
@@ -325,6 +325,11 @@ const handleGlassStyle = (el, isEnable) => {
 .scale2 {
   .my-tag-wrapper {
     font-size: 2.5em;
+  }
+  @media not all and (min-width: 768px) {
+    .my-tag-wrapper {
+      font-size: 1.5em;
+    }
   }
 }
 </style>

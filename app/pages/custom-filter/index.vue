@@ -87,10 +87,7 @@ function checkIsChance彩票(target) {
   if (!formData.沽购List.includes(target["沽购"])) return false;
   if (!formData.正股List.includes(target["正股代码"])) return false;
 
-  // if (target["到期天数"] > 10) return false;
-  if (target["一手价"] >= 300) return false;
-  if (target["溢价率"] >= 1.5) return false;
-  return true;
+  return target["is彩票"];
 }
 // 短期不关注隐波，只关注溢价率和价格
 function checkIsChance短期(target) {
