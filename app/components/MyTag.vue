@@ -1,5 +1,5 @@
 <template>
-  <span class="my-tag my-tag-wrapper whitespace-nowrap inline-block px-[2px] pt-[1px] pb-[4px] rounded-md font-medium text-[14px]" :style="wrapperStyle" v-if="props.label || isValidVal">
+  <span class="my-tag my-tag-wrapper whitespace-nowrap inline-block px-[3px] pt-[1px] pb-[4px] rounded-md font-medium text-[14px]" :style="wrapperStyle" v-if="props.label || isValidVal">
     <span v-if="props.label" class="my-tag my-tag-label whitespace-nowrap inline-block mr-[2px]" style="font-size: 0.6em" :style="contentStyle">{{ props.label }}</span>
     <span class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-if="isValidVal" :style="contentStyle"><slot></slot></span>
     <span class="my-tag my-tag-value whitespace-nowrap inline-block ml-[1px]" v-else>--</span>

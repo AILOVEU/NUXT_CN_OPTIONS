@@ -45,7 +45,7 @@
       </div>
     </div>
     <!-- 中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :style="{ transform: [1, 2].includes(props.indexVal.length) ? `scale(1.5)` : '', height: isMobile ? '300px' : '165px' }">
+    <div v-else class="flex flex-col justify-center mx-auto max-md:h-[350px] max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ height: isMobile ? '300px' : '165px' }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <TagVolumn :value="持仓量" />
         </div>
@@ -89,7 +89,7 @@
         </div>
       </div>
       <div v-if="持仓">
-        <div class="flex justify-center flex-nowrap max-md:flex-col gap-[1px]" :style="{ width: props.innerWidth }">
+        <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]" :style="{ width: props.innerWidth }">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
             <TagCostPrice :value="一手成本价" />
           </div>
@@ -226,6 +226,7 @@ const wrapperStyle = computed(() => {
   return style;
 });
 function handleShowBs() {
+  return;
   // bsModalData.optionInfo = {
   //   正股价格: current期权Item.value["正股价格"],
   //   行权价: current期权Item.value["行权价"],
@@ -306,12 +307,17 @@ const handleGlassStyle = (el, isEnable) => {
   /* 关键：让相邻标签的圆角重叠，覆盖中间的三角形空白 */
   margin-right: -1px;
   margin-left: -1px;
-  
+
   /* 可选：提高z-index，让hover状态的标签显示在最上层 */
   position: relative;
 }
 
 .my-tag-wrapper:hover {
   z-index: 1;
+}
+.scale2 {
+  .my-tag-wrapper {
+    font-size: 2.5em;
+  }
 }
 </style>

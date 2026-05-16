@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-col h-full">
-    <div class="w-full pb-[12px] h-[30px]">
+    <div class="w-full pb-[12px] h-[30px]" v-if="!isMobile">
       <TabSelect :options="typeOptions" v-model="showTypeVal" />
     </div>
     <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="columnOptions" v-model="columnVal" />
     </div>
-    <div class="w-full pb-[12px] h-[30px]">
+    <div class="w-full pb-[12px] h-[30px]" v-if="showTypeVal !== '打印'">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
     <div class="h-[calc(100%-120px)]">
