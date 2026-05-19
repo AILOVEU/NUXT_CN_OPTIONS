@@ -34,6 +34,9 @@
             <el-table-column label="今每手涨跌" #default="{ row }" align="right" prop="一手涨跌价" width="90" sortable>
               <TagDiff :value="row['一手涨跌价']" :涨跌率="row['涨跌率']" />
             </el-table-column>
+            <el-table-column label="今总损耗" #default="{ row }" align="right" prop="单日总损耗" width="75" sortable>
+              <TagAllTheta :value="row['单日总损耗']" />
+            </el-table-column>
           </el-table-column>
           <el-table-column label="总盈亏" align="center" v-if="props.showHold">
             <el-table-column label="一手价" :width="props.isCombo ? 120 : 60" #default="{ row }" prop="一手价" align="right" sortable>
