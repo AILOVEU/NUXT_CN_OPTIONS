@@ -114,7 +114,7 @@ async function handleQuery() {
 }
 handleQuery();
 const filteredTiledData = computed(() => {
-  return tableData.tiledData.filter((el) => el["持仓"]);
+  return tableData.tiledData.filter((el) => checkIsHold(el) && el["持仓"]);
 });
 const filteredSymmetricData = computed(() => {
   return filter是否保留行(tableData.symmetricData, tableData.tiledData, filteredTiledData.value);
