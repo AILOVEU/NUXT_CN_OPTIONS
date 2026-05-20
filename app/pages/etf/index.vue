@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-full overflow-auto h-[calc(100vh-100px)] max-md:h-[calc(300vh-100px)]">
-      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 45) + 'vh', width: isMobile ? '150vw' : '100vw', margin: 'auto' }" />
+      <VChart :option="options" ref="echartRef" :style="{ height: rowNum * (isMobile ? 60 : 45) + 'vh', width: isMobile ? '280vw' : '100vw', margin: 'auto' }" />
     </div>
   </div>
 </template>
@@ -137,7 +137,7 @@ const options = computed(() => {
         type: "category",
         data: xAxisData,
         axisLabel: {
-          rotate: 0,
+          rotate: 45,
           fontSize: 16,
           interval: 0, // 强制显示所有标签（核心）
           // 核心：只显示 -01 结尾的日期
