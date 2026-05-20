@@ -67,6 +67,10 @@ const navList = [
     href: "/calendar",
     name: "日历",
   },
+  {
+    href: "/timeline",
+    name: "事件",
+  },
 ];
 
 const activePath = ref(route.path || "/");

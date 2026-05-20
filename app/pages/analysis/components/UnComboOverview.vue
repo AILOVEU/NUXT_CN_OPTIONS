@@ -67,6 +67,8 @@
     <Statistic title="总杠杆" :value="总杠杆" :style="{ backgroundColor: '#ece7d1' }" />
     <div class="mx-[2px]">&nbsp;</div>
     <Statistic title="总单日损耗" :value="总单日损耗" :style="{ backgroundColor: '#ece7d1' }" />
+    <div class="mx-[2px]">&nbsp;</div>
+    <Statistic title="日损进度" :value="总单日损耗占比 + '%'" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
   <br /><br />
   <div class="w-full mx-auto">
@@ -245,7 +247,7 @@ const 认购总杠杆 = computed(() => {
   return formatDecimal(val, 2);
 });
 const 认沽总杠杆 = computed(() => {
-  let val = 代替正股总和.value / 认沽持仓总和.value;
+  let val = 认沽代替正股总和.value / 认沽持仓总和.value;
   return formatDecimal(val, 2);
 });
 
@@ -339,6 +341,10 @@ const 总单日损耗 = computed(() => {
   return 认购单日损耗.value + 认沽单日损耗.value;
 });
 
+const 总单日损耗占比 = computed(() => {
+  return formatDecimal((100 * 总单日损耗.value) / (代替正股总和.value || 1), 0);
+});
+
 const 认购平均溢价 = computed(() => {
   let 溢价率 = 0;
   非组合TiledData.value
@@ -413,7 +419,7 @@ const 沽购代替正股List = computed(() => {
 });
 
 function commonInfoFormatter(el) {
-  return `${el["展示期权名称"]}\n${el["持仓"]}手\t价:${el["一手价"]}\t溢:${el['溢价率']}%\n\n`;
+  return `${el["展示期权名称"]}\n${el["持仓"]}手\t价:${el["一手价"]}\t溢:${el["溢价率"]}%\n\n`;
 }
 const 沽购持仓价格分布Option = computed(() => {
   const 认沽list = 非组合TiledData.value.filter((el) => el["沽购"] === "沽");
