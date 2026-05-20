@@ -35,10 +35,10 @@ export default {
           time: "2026-05-20",
         },
         {
-          type: "normal",
-          title: "",
-          desc: "",
-          time: "",
+          type: "important",
+          title: "2000重塑单笔交易",
+          desc: "清理仓位,不做短线双买,call看跌就卖出,call看涨就买入",
+          time: "2026-05-20",
         },
         // {
         //   type: "normal",
