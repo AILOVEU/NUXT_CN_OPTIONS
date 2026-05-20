@@ -71,20 +71,24 @@
     <Statistic title="日损进度" :value="总单日损耗占比 + '%'" :style="{ backgroundColor: '#ece7d1' }" />
   </div>
   <br /><br />
-  <div class="w-full mx-auto">
-    <CPScatter :option="沽购持仓价格分布Option" />
-  </div>
-  <br /><br />
-  <div class="w-full mx-auto">
-    <CPScatter :option="沽购溢价率分布Option" />
-  </div>
-  <br /><br />
-  <div class="w-full mx-auto">
-    <CPScatter :option="沽购代替正股分布Option" />
-  </div>
-  <br /><br />
-  <div class="w-full mx-auto">
-    <CPScatter :option="沽购仓位分布Option" />
+  <div class="w-full">
+    <el-carousel height="310px" style="width: 100%" :autoplay="false">
+      <el-carousel-item style="width: 100%">
+        <CPScatter :option="沽购持仓价格分布Option" />
+      </el-carousel-item>
+
+      <el-carousel-item style="width: 100%">
+        <CPScatter :option="沽购溢价率分布Option" />
+      </el-carousel-item>
+
+      <el-carousel-item style="width: 100%">
+        <CPScatter :option="沽购代替正股分布Option" />
+      </el-carousel-item>
+
+      <el-carousel-item style="width: 100%">
+        <CPScatter :option="沽购仓位分布Option" />
+      </el-carousel-item>
+    </el-carousel>
   </div>
 </template>
 <script setup>
@@ -342,7 +346,7 @@ const 总单日损耗 = computed(() => {
 });
 
 const 总单日损耗占比 = computed(() => {
-  return formatDecimal((100 * 总单日损耗.value) / (代替正股总和.value || 1), 0);
+  return formatDecimal((100 * 总单日损耗.value) / (持仓总和.value || 1), 0);
 });
 
 const 认购平均溢价 = computed(() => {

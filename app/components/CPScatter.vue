@@ -1,5 +1,5 @@
 <template>
-  <VChart :option="option" style="height: 300px; width: 100%; margin: auto" />
+  <VChart :option="option" style="height: 300px; width: 100vw; margin: auto" />
 </template>
 <script setup>
 const props = defineProps(["option"]);
