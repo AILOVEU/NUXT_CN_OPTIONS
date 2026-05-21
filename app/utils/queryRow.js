@@ -26,8 +26,8 @@ function handleTData(dataList) {
   });
   const 正股代码List = Array.from(new Set(tiledData.map((el) => el.正股代码)));
   const 到期日List = Array.from(new Set(tiledData.map((el) => el.到期日)));
-  const 行权价List = Array.from(new Set(tiledData.map((el) => el.行权价)));
-  行权价List.sort();
+  // const 行权价List = Array.from(new Set(tiledData.map((el) => el.行权价)));
+  // 行权价List.sort();
   正股代码List.forEach((正股代码) => {
     到期日List.forEach((到期日) => {
       tiledData.push({
@@ -40,7 +40,7 @@ function handleTData(dataList) {
         _split: true,
         正股代码,
         到期日,
-        行权价: 行权价List[行权价List.length - 1],
+        行权价: 20,
       });
     });
   });
