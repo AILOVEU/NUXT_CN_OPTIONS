@@ -2,7 +2,7 @@ import _ from "lodash";
 import { getValidExerciseDate } from "~/utils/utils";
 import dayjs from "dayjs";
 
-const 前一日贷款 = 6000;
+const 前一日贷款 = 1000;
 const 当日贷款 = 0;
 export const 金额 = {
   第一目标: 5 * 10000,
@@ -13,13 +13,13 @@ export const 金额 = {
   //
   基础金额: 10000,
   //
-  场内现金: 3027,
+  场内现金: 791,
   占用保证金: 0, // 单笔保证金50 -> 15 了
   贷款: 前一日贷款 + 当日贷款,
-  出金: 65000, // 转出后不可转入，转入是贷款
+  出金: 60000, // 转出后不可转入，转入是贷款
   // 👇不参与计算👇
-  现转股票: 100000,
-  现转期货: 5000,
+  现转股票: 70000,
+  现转期货: 10000,
   POLYMARKET: 686,
 };
 export const 建议买入价 = 380;
@@ -141,6 +141,7 @@ export const deadline_map = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260525", 64930],
     ["20260522", 81174],
     ["20260521", 122641],
     ["20260520", 69006],

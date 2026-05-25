@@ -1,7 +1,7 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #e5effe; height: 22px">&nbsp;</div>
+  <div v-else-if="props.row._current" style="background-color: #8BDFDD; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px] rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">

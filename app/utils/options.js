@@ -372,6 +372,156 @@ function checkIs彩票(target) {
   if (target["溢价率"] >= 1.5) return false;
   return true;
 }
+/**
+ * 期权高盈亏比打分计算器（100分制）
+ * 核心优先级：涨跌2%盈亏比 > 涨跌1%盈亏比 > 资金效率 > 低成本 > 高胜率 > 合理期限 > 低隐波
+ * @param {Object} option - 期权参数对象
+ * @param {number} option.正股价格 - 正股当前价格 S
+ * @param {number} option.行权价 - 期权行权价 K
+ * @param {number} option.最新价 - 期权当前价格 OptP
+ * @param {number} option.Delta - 期权Delta值（认购为正，认沽为负）
+ * @param {number} option.到期天数 - 剩余到期天数 T
+ * @param {number} option.隐波 - 隐含波动率 IV（%，如20%填20）
+ * @param {number} option.溢价率 - 溢价率 Prem（%，如5%填5）
+ * @param {number} option.杠杆 - 真实杠杆 Lev
+ * @returns {Object} 包含总分、各因子得分、关键计算指标的完整结果
+ */
+function calculateOptionScore(option) {
+  // 解构输入参数
+  let { 正股价格: S, 行权价: K, 最新价: OptP, 到期天数: T, 隐波: IV, 溢价率: Prem, 杠杆: Lev, Delta } = option;
+
+  // --------------------------
+  // 第一步：实战过滤规则（垃圾期权直接打0分）
+  // --------------------------
+  // 深度虚值期权（Delta绝对值<0.1）胜率极低，直接排除
+  // if (Math.abs(Delta) < 0.1) {
+  //     return {
+  //         totalScore: 0,
+  //         rating: "劣质（深度虚值，直接放弃）",
+  //         filterReason: "Delta绝对值<0.1，胜率极低",
+  //         factorScores: {},
+  //         keyMetrics: {}
+  //     };
+  // }
+
+  // // 期权价格为0或负数，数据异常
+  // if (OptP <= 0) {
+  //     return {
+  //         totalScore: 0,
+  //         rating: "劣质（数据异常）",
+  //         filterReason: "期权价格≤0，数据错误",
+  //         factorScores: {},
+  //         keyMetrics: {}
+  //     };
+  // }
+
+  // --------------------------
+  // 第二步：核心基础计算（涨跌1%/2%盈亏比）
+  // --------------------------
+  // 涨跌后正股价格
+  const S_plus1 = S * 1.01;
+  const S_minus1 = S * 0.99;
+  const S_plus2 = S * 1.02;
+  const S_minus2 = S * 0.98;
+
+  // 涨跌后期权理论价格（Delta线性近似法）
+  const OptP_plus1 = OptP + Delta * (S_plus1 - S);
+  const OptP_minus1 = OptP + Delta * (S_minus1 - S);
+  const OptP_plus2 = OptP + Delta * (S_plus2 - S);
+  const OptP_minus2 = OptP + Delta * (S_minus2 - S);
+
+  // 计算涨跌1%/2%的收益和亏损（自动适配认购/认沽）
+  // 认购：涨赚跌亏；认沽：跌赚涨亏（Delta正负自动处理）
+  const profit_1 = Math.max(0, OptP_plus1 - OptP, OptP_minus1 - OptP);
+  const loss_1 = Math.min(OptP, Math.max(0, OptP - OptP_plus1, OptP - OptP_minus1));
+
+  const profit_2 = Math.max(0, OptP_plus2 - OptP, OptP_minus2 - OptP);
+  const loss_2 = Math.min(OptP, Math.max(0, OptP - OptP_plus2, OptP - OptP_minus2));
+
+  // 计算盈亏比（收益/亏损，避免除以0）
+  const WR_1 = loss_1 > 0 ? profit_1 / loss_1 : 0;
+  const WR_2 = loss_2 > 0 ? profit_2 / loss_2 : 0;
+
+  // --------------------------
+  // 第三步：七大打分因子计算（权重严格按需求）
+  // --------------------------
+  // 因子1：涨跌2%盈亏比（权重35分）
+  const Score_WR2 = Math.min(35, WR_2 * 7);
+
+  // 因子2：涨跌1%盈亏比（权重25分）
+  const Score_WR1 = Math.min(25, WR_1 * 5);
+
+  // 因子3：资金效率（权重15分）
+  const FE = (Lev * profit_2) / OptP;
+  const Score_FE = Math.min(15, FE * 2);
+
+  // 因子4：综合成本（权重10分，负向因子）
+  const costValue = Prem + (OptP / S) * 100;
+  const Score_Cost = Math.max(0, 10 - costValue / 3);
+
+  // 因子5：胜率因子（权重7分，平值胜率最高）
+  const deltaDeviation = Math.abs(Math.abs(Delta) - 0.5);
+  const Score_Win = Math.max(0, 7 - deltaDeviation * 14);
+
+  // 因子6：到期时间（权重5分，7~60天最优）
+  let Score_Time;
+  if (T >= 7 && T <= 60) {
+    Score_Time = 5;
+  } else if (T < 7) {
+    Score_Time = 5 * (T / 7);
+  } else {
+    Score_Time = 5 * (60 / T);
+  }
+
+  // 因子7：隐含波动率（权重3分，负向因子）
+  const Score_IV = Math.max(0, 3 - IV / 20);
+
+  // --------------------------
+  // 第四步：计算总分和评级
+  // --------------------------
+  const totalScore = Score_WR2 + Score_WR1 + Score_FE + Score_Cost + Score_Win + Score_Time + Score_IV;
+
+  // 评级判定
+  let rating;
+  if (totalScore >= 80) {
+    rating = "极品（优先开仓，盈亏比拉满）";
+  } else if (totalScore >= 60) {
+    rating = "优质（稳健开仓，符合所有要求）";
+  } else if (totalScore >= 40) {
+    rating = "一般（轻仓观望）";
+  } else {
+    rating = "劣质（直接放弃）";
+  }
+
+  // --------------------------
+  // 第五步：返回完整结果
+  // --------------------------
+  return formatDecimal(totalScore, 2);
+  // return {
+  //     totalScore: parseFloat(totalScore.toFixed(2)),
+  //     rating,
+  //     factorScores: {
+  //         涨跌2%盈亏比: parseFloat(Score_WR2.toFixed(2)),
+  //         涨跌1%盈亏比: parseFloat(Score_WR1.toFixed(2)),
+  //         资金效率: parseFloat(Score_FE.toFixed(2)),
+  //         综合成本: parseFloat(Score_Cost.toFixed(2)),
+  //         胜率因子: parseFloat(Score_Win.toFixed(2)),
+  //         到期时间: parseFloat(Score_Time.toFixed(2)),
+  //         隐含波动率: parseFloat(Score_IV.toFixed(2))
+  //     },
+  //     keyMetrics: {
+  //         涨跌1%盈亏比: parseFloat(WR_1.toFixed(2)),
+  //         涨跌2%盈亏比: parseFloat(WR_2.toFixed(2)),
+  //         涨1%收益: parseFloat(profit_1.toFixed(4)),
+  //         跌1%亏损: parseFloat(loss_1.toFixed(4)),
+  //         涨2%收益: parseFloat(profit_2.toFixed(4)),
+  //         跌2%亏损: parseFloat(loss_2.toFixed(4)),
+  //         资金效率值: parseFloat(FE.toFixed(2)),
+  //         综合成本值: parseFloat(costValue.toFixed(2))
+  //     }
+  // };
+}
+
 function formatRecord(_tiledData, 持仓JSON) {
   debug(_tiledData);
   let tiledData = [];
@@ -478,8 +628,13 @@ function formatRecord(_tiledData, 持仓JSON) {
   //   )
   // );
   tiledData = processOptionData(tiledData);
+  tiledData = tiledData.map((el) => ({
+    ...el,
+    评分: calculateOptionScore(el),
+  }));
   return tiledData;
 }
+
 // 请求入口
 // 一般只请求持仓的数据，若需要请求所有数据，不提供切回只展示持仓的模式
 export async function get_http_data(
