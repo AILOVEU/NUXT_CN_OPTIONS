@@ -612,7 +612,8 @@ function formatRecord(_tiledData, 持仓JSON) {
       仓位率: formatDecimal((100 * (el["一手价"] * el["持仓"])) / 总仓位, 1),
     }))
     .filter((el) => el["一手价"])
-    .filter((el) => !el["is旧期权"] || el["持仓"]);
+    .filter((el) => !el["is旧期权"] || el["持仓"])
+    .filter((el) => !(el["到期天数"] <= 1 && dayjs().day() === 3 && dayjs().hour() >= 15));
   // console.log(
   //   "xxx",
   //   JSON.stringify(
