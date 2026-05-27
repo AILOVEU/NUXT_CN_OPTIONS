@@ -58,8 +58,8 @@
       <Capture title="持仓分布" ref="captureRef">
         <VChart :option="持仓分布Option" style="height: 900px; width: 100%" />
       </Capture>
-      <VChart :option="盈利分布Option" style="height: 450px; width: 100%" />
-      <VChart :option="亏损分布Option" style="height: 450px; width: 100%" />
+      <!-- <VChart :option="盈利分布Option" style="height: 450px; width: 100%" />
+      <VChart :option="亏损分布Option" style="height: 450px; width: 100%" /> -->
     </div>
   </div>
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />

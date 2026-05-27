@@ -2,7 +2,7 @@
   <div v-loading="tableData.loading" class="flex justify-center">
     <div class="mx-auto overflow-x-auto border-[5px] border-[#576a8f]">
       <Capture title="期权列表" ref="captureRef">
-        <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef" show-summary>
+        <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef" show-summary :summary-method="getSummary">
           <el-table-column label="序" width="40" align="center" fixed="left">
             <template #header>
               <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
@@ -35,7 +35,7 @@
             <el-table-column label="今每手涨跌" #default="{ row }" align="right" prop="一手涨跌价" width="90" sortable>
               <TagDiff :value="row['一手涨跌价']" :涨跌率="row['涨跌率']" />
             </el-table-column>
-            <el-table-column label="今总损耗" #default="{ row }" align="right" prop="单日总损耗" width="75" sortable>
+            <el-table-column label="单日总损耗" #default="{ row }" align="right" prop="单日总损耗" width="75" sortable>
               <TagAllTheta :value="row['单日总损耗']" />
             </el-table-column>
           </el-table-column>
@@ -68,7 +68,6 @@
           <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="30" sortable>
             <TagHold :value="row['持仓'] || ''" />
           </el-table-column>
-
           <!-- <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
@@ -145,6 +144,24 @@ const filteredTableData = computed(() => {
   }
   return filtered;
 });
+// ==========================================
+
+// 通用合计方法（永远不用改）
+const getSummary = ({ columns, data }) => {
+  const summaryProps = ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓"];
+  return columns.map((col, index) => {
+    // 第一列显示“合计”
+    if (index === 0) return "合计";
+
+    // 当前列在合计列表里 → 求和
+    if (summaryProps.includes(col.property)) {
+      return data.reduce((sum, row) => sum + (row[col.property] || 0), 0);
+    }
+
+    // 不在列表 → 空
+    return "";
+  });
+};
 
 const captureRef = ref(null);
 </script>
