@@ -589,7 +589,7 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["代替正股价"] = formatDecimal(row["Delta"] * row["正股价格"] * row["合约单位"], 0);
     // 持仓字段
     row["持仓"] = get_持仓(持仓JSON, row);
-    row["单日总损耗"] = formatDecimal(row["单日损耗"] * row["持仓"], 0);
+    row["单日总损耗"] = row["持仓"] ? formatDecimal(row["单日损耗"] * row["持仓"], 0) : NaN;
     row["仓位"] = row["一手价"] * row["持仓"];
     row["成本价"] = get_成本价(row, 持仓JSON);
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
