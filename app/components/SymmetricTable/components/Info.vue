@@ -1,7 +1,7 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #8BDFDD; height: 22px">&nbsp;</div>
+  <div v-else-if="props.row._current" style="background-color: #8bdfdd; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px] rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
@@ -40,7 +40,7 @@
             <TagCostPrice :value="一手成本价" />
           </div>
           <div v-if="持仓" class="whitespace-nowrap">
-            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" />
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
             <TagCostPrice :value="一手成本价" />
           </div>
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('仓位')">
-            <TagHoldPercent :value="仓位" :仓位占比="仓位率" />
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
           </div>
         </div>
       </div>
@@ -166,6 +166,10 @@ const 一手成本价 = computed(() => {
 });
 const 一手涨跌价 = computed(() => {
   return current期权Item.value["一手涨跌价"];
+});
+
+const 总投入 = computed(() => {
+  return current期权Item.value["总投入"];
 });
 
 const 涨跌率 = computed(() => {

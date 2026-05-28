@@ -52,6 +52,7 @@
             <el-table-column label="仓位" :width="120" #default="{ row }" align="right" prop="仓位" sortable v-if="!props.isCombo">
               <TagHoldPercent :value="row['仓位']" :仓位占比="row['仓位率']" />
             </el-table-column>
+            <el-table-column label="总投入" prop="总投入" align="right" :width="65" sortable />
             <el-table-column label="收益率" :width="60" #default="{ row }" align="right" prop="收益率" sortable v-if="!props.isCombo">
               <span :style="{ color: row['收益率'] > 0 ? 'red' : 'green' }">{{ row["收益率"] }}%</span>
             </el-table-column>
@@ -149,7 +150,7 @@ const filteredTableData = computed(() => {
 
 // 通用合计方法（永远不用改）
 const getSummary = ({ columns, data }) => {
-  const summaryProps = ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓"].filter((el) => props.showHold && el === "单日总损耗" );
+  const summaryProps = props.showHold ? ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓"] : [];
   return columns.map((col, index) => {
     // 第一列显示“合计”
     if (index === 0) return "合计";

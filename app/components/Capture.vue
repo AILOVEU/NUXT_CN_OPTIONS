@@ -1,5 +1,5 @@
 <template>
-  <div ref="captureRef" :style="props.style"><slot> </slot></div>
+  <div class="p-[10px]" ref="captureRef" :style="props.style"><slot> </slot></div>
 </template>
 <script setup>
 import dayjs from "dayjs";

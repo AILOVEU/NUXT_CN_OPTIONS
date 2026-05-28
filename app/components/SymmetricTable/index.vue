@@ -71,12 +71,12 @@ const showColumns = computed(() => {
 });
 function getInnerColumnWidth() {
   if (isMobile) return "90px";
-  return showTypeVal.value === "打印" ? "380px" : "160px";
+  return showTypeVal.value === "打印" ? "390px" : "160px";
 }
 function getWrapperColumnWidth(label) {
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
-  return showTypeVal.value === "打印" ? "300px" : "172px";
+  return showTypeVal.value === "打印" ? "320px" : "172px";
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
