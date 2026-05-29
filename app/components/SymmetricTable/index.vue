@@ -71,7 +71,7 @@ const showColumns = computed(() => {
 });
 function getInnerColumnWidth() {
   if (isMobile) return "90px";
-  return showTypeVal.value === "打印" ? "390px" : "160px";
+  return showTypeVal.value === "打印" ? "308px" : "160px";
 }
 function getWrapperColumnWidth(label) {
   if (label === "期权") return "80px";

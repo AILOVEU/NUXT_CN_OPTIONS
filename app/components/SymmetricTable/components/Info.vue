@@ -30,8 +30,8 @@
       <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
     <!-- 打印-中间 -->
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ marginLeft: '-45px' }">
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
         </div>
@@ -41,7 +41,7 @@
         <div class="whitespace-nowrap">
           <TagPremium :value="current期权Item['溢价率']" />
         </div>
-        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
           <div class="whitespace-nowrap">
             <TagIv :value="current期权Item['隐波']" />
           </div>
@@ -55,8 +55,8 @@
       </div>
     </div>
     <!-- 普通-中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }">
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
         </div>
@@ -67,7 +67,7 @@
           <TagPremium :value="current期权Item['溢价率']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('杠杆')">
           <TagLeverage :value="current期权Item['杠杆']" />
         </div>
@@ -78,7 +78,7 @@
           <TagDelta :value="current期权Item['Delta']" :正股="current期权Item['正股代码']" />
         </div>
       </div>
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('Vega')">
           <TagVega :value="current期权Item['Vega']" />
         </div>
@@ -89,8 +89,7 @@
           <TagTheta :value="current期权Item['单日损耗']" />
         </div>
       </div>
-
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
+      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('持仓量')">
           <TagVolumn :value="持仓量" />
         </div>
@@ -99,7 +98,7 @@
         </div>
       </div>
       <div v-if="持仓">
-        <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]" :style="{ width: props.innerWidth }">
+        <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]">
           <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手成本价')">
             <TagCostPrice :value="一手成本价" />
           </div>
