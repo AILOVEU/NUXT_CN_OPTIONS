@@ -3,7 +3,7 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #8bdfdd; height: 22px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
       <TagIcon :value="期权名称" :is彩票="is彩票" />
     </div>
@@ -29,7 +29,8 @@
       <TagRealLevel :value="档位" :档位名称="档位名称" />
       <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ height: '77px', marginTop: '15px', marginLeft: '-45px' }">
+    <!-- 打印-中间 -->
+    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ marginLeft: '-45px' }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
@@ -53,8 +54,8 @@
         </div>
       </div>
     </div>
-    <!-- 中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ height: isMobile ? '345px' : '165px' }">
+    <!-- 普通-中间 -->
+    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col" :style="{ width: props.innerWidth }">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -220,7 +221,8 @@ const wrapperStyle = computed(() => {
     // filter: "grayscale(0.75)",
   };
   let style = {
-    height: isPrint.value ? "83px" : isMobile ? "340px" : "170px",
+    padding: isPrint.value ? "35px 0 5px 0" : "25px 0",
+    height: isPrint.value ? "83px" : isMobile ? "340px" : "165px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
