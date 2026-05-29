@@ -30,7 +30,7 @@
       <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
     <!-- 打印-中间 -->
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]" :style="{ width: props.innerWidth }">
+    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
@@ -55,7 +55,7 @@
       </div>
     </div>
     <!-- 普通-中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }" :style="{ width: props.innerWidth }">
+    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -125,7 +125,7 @@ const bsModalData = reactive({
   optionInfo: {},
 });
 const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal", "innerWidth"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",

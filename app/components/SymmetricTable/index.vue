@@ -28,7 +28,7 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" :innerWidth="getInnerColumnWidth()" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" />
             </template>
           </el-table-column>
         </el-table>
@@ -69,14 +69,10 @@ const showColumns = computed(() => {
   if (!columnVal.value.length) return tableData.columns;
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
-function getInnerColumnWidth() {
-  if (isMobile) return "90px";
-  return showTypeVal.value === "打印" ? "308px" : "160px";
-}
 function getWrapperColumnWidth(label) {
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
-  return showTypeVal.value === "打印" ? "320px" : "172px";
+  return showTypeVal.value === "打印" ? "340px" : "172px";
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
