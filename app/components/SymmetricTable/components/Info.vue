@@ -4,12 +4,20 @@
   <div v-else-if="props.row._current" style="background-color: #8bdfdd; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px] rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
-      <TagHold :value="持仓" />
+    <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
+      <TagIcon :value="期权名称" :is彩票="is彩票" />
     </div>
-    <div v-if="持仓" class="absolute" :class="{ bottomLeft: !isPrint, topLeft: isPrint }">
+    <div v-if="持仓" class="absolute top-[0px] left-[0px]">
+      <TagIcon :value="期权名称" :is彩票="is彩票" />
+      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
+        <TagHold :value="持仓" />
+      </div>
+      <TagHoldDiffPercent v-if="isPrint" :value="盈亏" :收益率="收益率" />
+    </div>
+    <div v-if="持仓 && !isPrint" class="absolute left-0 bottom-0">
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
+    <!-- 右上 -->
     <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
@@ -168,6 +176,10 @@ const 一手涨跌价 = computed(() => {
   return current期权Item.value["一手涨跌价"];
 });
 
+const is彩票 = computed(() => {
+  return current期权Item.value["is彩票"];
+});
+
 const 总投入 = computed(() => {
   return current期权Item.value["总投入"];
 });
@@ -231,7 +243,7 @@ const wrapperStyle = computed(() => {
     }
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
-      style = { ...style, background: "#F6FFDC" };
+      style = { ...style, background: "rgba(246, 255, 220, 0.35)" };
     }
   }
   return style;
@@ -304,14 +316,6 @@ const handleGlassStyle = (el, isEnable) => {
 .print-text-large,
 .print-text-large * {
   font-size: 23px;
-}
-.bottomLeft {
-  bottom: 0px;
-  left: 0px;
-}
-.topLeft {
-  top: 0px;
-  left: 35px;
 }
 /* 添加到你的全局样式或组件样式中 */
 .my-tag-wrapper {
