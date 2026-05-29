@@ -165,13 +165,13 @@ function get组合名称(权利Item, 义务Item) {
   const 到期月 = dayjs(权利Item["到期日"], "YYYY-MM-DD").format("M月");
   return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
 }
-function getIs非法持仓(row) {
-  if (row["持仓"]) {
-    if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
-    if (row["到期天数"] < 15) return true;
-  }
-  return false;
-}
+// function getIs非法持仓(row) {
+//   if (row["持仓"]) {
+//     if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
+//     if (row["到期天数"] < 15) return true;
+//   }
+//   return false;
+// }
 export function 构建组合(tiledData) {
   const { set保证金 } = useMoneyStore();
   const 持仓List = tiledData.filter((el) => el["持仓"]);
@@ -583,8 +583,8 @@ function formatRecord(_tiledData, 持仓JSON) {
 
     row["一手成本价"] = row["成本价"] ? toPrice(row["成本价"], row["合约单位"]) : undefined;
     row["总投入"] = row["一手成本价"] * row["持仓"];
+    row["is禁止加仓"] = row["总投入"] > 2000;
     row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
-    row["is非法持仓"] = getIs非法持仓(row);
     row["is彩票"] = checkIs彩票(row);
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     tiledData.push(row);

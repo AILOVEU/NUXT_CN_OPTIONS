@@ -5,10 +5,10 @@
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
-      <TagIcon :value="期权名称" :is彩票="is彩票" />
+      <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
     </div>
     <div v-if="持仓" class="absolute top-[0px] left-[0px]">
-      <TagIcon :value="期权名称" :is彩票="is彩票" />
+      <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
         <TagHold :value="持仓" />
       </div>
@@ -178,6 +178,10 @@ const 一手涨跌价 = computed(() => {
 
 const is彩票 = computed(() => {
   return current期权Item.value["is彩票"];
+});
+
+const is禁止加仓 = computed(() => {
+  return current期权Item.value["is禁止加仓"];
 });
 
 const 总投入 = computed(() => {

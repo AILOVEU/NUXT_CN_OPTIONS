@@ -777,7 +777,6 @@ const filterHandler = (value, row, column) => {
   return row[property] === value;
 };
 function getInRowStyle({ row }) {
-  if (row["is非法持仓"]) return { background: "#FFE2AF" };
 }
 
 const captureRef = ref(null);

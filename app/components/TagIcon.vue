@@ -5,15 +5,14 @@
   </span>
 </template>
 <script setup>
-const props = defineProps(["value", "is彩票"]);
-const 禁加仓期权List = ["50ETF购6月3100"];
+const props = defineProps(["value", "is彩票", "is禁止加仓"]);
 const 重点关注期权List = [];
-const 零成本期权List = ["300ETF购6月5250","创业板ETF沽6月3500"];
+const 零成本期权List = ["300ETF购6月5250", "创业板ETF沽6月3500"];
 
 const label = computed(() => {
   let str = "";
   if (props.is彩票) str += "🎯";
-  if (禁加仓期权List.includes(props.value)) str += "🚫";
+  if (props.is禁止加仓) str += "🚫";
   if (重点关注期权List.includes(props.value)) str += "⭐️";
   if (零成本期权List.includes(props.value)) str += "0️⃣";
   return str;
