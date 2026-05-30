@@ -15,7 +15,8 @@
             </template>
           </el-table-column>
           <el-table-column label="期权名称" prop="期权名称" width="140" sortable align="left" fixed="left" />
-          <el-table-column label="评分" prop="评分" width="80" sortable align="left" fixed="left" />
+          <!-- <el-table-column label="评分" prop="评分" width="80" sortable align="left" fixed="left" /> -->
+
           <el-table-column #default="{ row }" label="一手价" prop="一手价" width="60" sortable align="right">
             <TagPrice :value="row['一手价']" />
           </el-table-column>
