@@ -80,7 +80,7 @@ function getBarOps({ stockCodeList, name, dataList, title, dataMap }) {
                 // 名称
                 el["期权名称"],
                 el["持仓"],
-                seriesName === "代替正股" ? formatNumberToWan(formatDecimal(el["排序字段"] / el["持仓"], 0)) : (el["排序字段"] / el["持仓"]).toFixed(1)
+                ["代替正股", "内在价值", "时间价值"].includes(seriesName) ? formatNumberToWan(formatDecimal(el["排序字段"] / el["持仓"], 0)) : (el["排序字段"] / el["持仓"]).toFixed(3)
               )}`
           )
           .join("");
