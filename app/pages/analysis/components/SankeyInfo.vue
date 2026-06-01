@@ -55,6 +55,7 @@
   <div class="overflow-auto mt-[10px]">
     <div class="min-w-[1000px] mx-auto">
       <div class="flex justify-center" @click="() => captureRef.download()"><el-button link>⬇</el-button></div>
+      <VChart :option="投入分布Option" style="height: 900px; width: 100%" />
       <Capture title="持仓分布" ref="captureRef">
         <VChart :option="持仓分布Option" style="height: 900px; width: 100%" />
       </Capture>
@@ -135,6 +136,7 @@ const 组合期权持仓 = computed(() => {
   let 时间收益组合持仓Value = 0;
   let 时间收益组合涨跌 = 0;
   let 时间损耗组合涨跌 = 0;
+  let 组合总投入 = 0;
 
   const 时间收益组合List = [];
   const 时间损耗组合List = [];
@@ -143,6 +145,7 @@ const 组合期权持仓 = computed(() => {
     const [权利Name, 义务Name, 组合持仓, 组合名称] = el;
     const 权利期权Item = props.tiledData.find((el) => el["期权名称"] === 权利Name);
     const 义务期权Item = props.tiledData.find((el) => el["期权名称"] === 义务Name);
+    组合总投入 += 权利期权Item["总投入"] - 义务期权Item["总投入"];
     // 时间收益
     if (权利期权Item["内在价值"] && 权利期权Item["一手时间价"] < 义务期权Item["一手时间价"]) {
       时间收益组合List.push([权利期权Item, 义务期权Item, 组合持仓, 组合名称]);
@@ -158,6 +161,7 @@ const 组合期权持仓 = computed(() => {
     }
   });
   return {
+    组合总投入,
     时间收益组合List,
     时间收益组合Value: Math.floor(时间收益组合Value),
     时间收益组合涨跌: Math.floor(时间收益组合涨跌),
@@ -184,15 +188,22 @@ const 单腿期权持仓 = computed(() => {
   持仓List = 持仓List.filter((el) => el["持仓"]);
   持仓List = _.sortBy(持仓List, ["正股代码", "到期日", "行权价"]);
   let value = 0;
+  let 总投入 = 0;
+
   持仓List.forEach((el) => {
+    总投入 += el["总投入"];
     value += el["一手价"] * el["持仓"];
     涨跌 += el["一手涨跌价"] * el["持仓"];
   });
-  return { list: 持仓List, value: Math.floor(value), 涨跌: Math.floor(涨跌) };
+  return { list: 持仓List, value: Math.floor(value), 涨跌: Math.floor(涨跌), 总投入 };
 });
 
 const 持仓总价 = computed(() => {
   return 组合期权持仓.value.时间收益组合持仓Value + 组合期权持仓.value.时间损耗组合Value + 单腿期权持仓.value.value || 1;
+});
+
+const 持仓总投入 = computed(() => {
+  return 组合期权持仓.value.组合总投入 + 单腿期权持仓.value.总投入 || 1;
 });
 
 const richTableData = computed(() => {
@@ -230,6 +241,7 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间收益组合涨跌,
       children: 组合期权持仓.value.时间收益组合List.map(([权利期权Item, 义务期权Item, 组合持仓, 组合名称]) => {
         const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+        let 总投入 = 权利期权Item["总投入"] - 义务期权Item["总投入"];
         const 一手盈亏 = 权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"]);
         const 总盈亏 = 一手盈亏 * 组合持仓;
         const 今日单手涨跌 = 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"];
@@ -254,6 +266,7 @@ const richTableData = computed(() => {
           今日总涨跌: 今日单手涨跌 * 组合持仓,
           一手涨跌价,
 
+          总投入,
           总价,
           总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
           总盈亏,
@@ -268,6 +281,7 @@ const richTableData = computed(() => {
       涨跌: 组合期权持仓.value.时间损耗组合涨跌,
       children: 组合期权持仓.value.时间损耗组合List.map(([权利期权Item, 义务期权Item, 组合持仓, 组合名称]) => {
         const 总价 = (权利期权Item["一手价"] - 义务期权Item["一手价"]) * 组合持仓;
+        let 总投入 = 权利期权Item["总投入"] - 义务期权Item["总投入"];
         const 一手盈亏 = 权利期权Item["一手价"] - 权利期权Item["一手成本价"] - (义务期权Item["一手价"] - 义务期权Item["一手成本价"]);
         const 总盈亏 = 一手盈亏 * 组合持仓;
         const 今日单手涨跌 = 权利期权Item["一手涨跌价"] - 义务期权Item["一手涨跌价"];
@@ -293,6 +307,7 @@ const richTableData = computed(() => {
 
           总盈亏,
           一手盈亏,
+          总投入,
           总价,
           总价占比: formatDecimal((100 * 总价) / 持仓总价.value, 1),
         };
@@ -400,13 +415,28 @@ function getSortedLegenList({ sourceToTargetList, 总和标识 }) {
 function getSpaceBetween2Div($1, $2) {
   return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;"><div>${$1}</div><div>${$2}</div></div>`;
 }
+function getSpaceBetween3Div($1, $2, $3) {
+  return `<div style="font-size: 20px;display:flex;justify-content: space-between;column-gap: 30px;height: 24px;"><div>${$1}</div><div style='width: 170px;text-align:right;display:inline-block;'>${$2}/${$3}<div style="text-align:right;width:60px;display:inline-block;font-size: 0.8em;color: ${
+    $2 - $3 > 0 ? "red" : "green"
+  }">${$2 - $3 > 0 ? "" : ""}${$2 - $3}</div></div></div>`;
+}
 function getSpaceBetween4Div($1, $2, $3, $4, $5) {
   return `<div style="font-size: 20px;display:flex;justify-content: space-between;align-items: center;column-gap: 5px;height: 24px;">
               <div style='width: 75px;border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;text-align: right;;margin-right: 20px;'>${$2}</div>
               <div style='width:230px'>${$3}</div>
               <div style='width: 50px;font-size:12px; text-align:right;color: #607cdd;'>${$5}</div>
               <div style='width: 60px;color: #409eff;border-radius: 3px;text-align: right;'>${$4}手</div>
-              <div style='width: 70px;text-align:right;'>${$1}</div>
+              <div style='width: 140px;text-align:right;'>${$1}</div>
+            </div>
+          </div>`;
+}
+function getSpaceBetween7Div($1, $2, $3, $4, $5, $6) {
+  return `<div style="font-size: 20px;display:flex;justify-content: space-between;align-items: center;column-gap: 5px;height: 24px;">
+              <div style='width: 75px;border: 1px solid #409eff;padding: 2px;color: #409eff;border-radius: 3px;text-align: right;;margin-right: 20px;'>${$2}</div>
+              <div style='width:230px'>${$3}</div>
+              <div style='width: 50px;font-size:12px; text-align:right;color: #607cdd;'>${$5}</div>
+              <div style='width: 60px;color: #409eff;border-radius: 3px;text-align: right;'>${$4}手</div>
+              <div style='width: 170px;text-align:right;display:inline-block;'>${$1}/${$6}<div style="text-align:right;width:60px;display:inline-block;font-size: 0.8em;color: ${$1 - $6 > 0 ? "red" : "green"}">${$1 - $6 > 0 ? "" : ""}${$1 - $6}</div></div>
             </div>
           </div>`;
 }
@@ -452,9 +482,15 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
         let targetName = "";
         let listStr = "";
         let targetValue = 亏损符号 * value;
-        let 展示字段 = 总和标识 === "持" ? "总价" : "今日总涨跌";
-        let sumValue = 0;
 
+        let 展示字段 = {
+          持: "总价",
+          投: "总投入",
+          盈: "今日总涨跌",
+          亏: "今日总涨跌",
+        }[总和标识];
+        let sumValue = 0;
+        let sum价 = 0;
         if (dataType === "node") {
           targetName = getStockCodeName(data.name);
           list = getFilterDataByDataName(data.name, 所有持仓期权TableData);
@@ -467,24 +503,37 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
         }
 
         list.forEach((el) => (sumValue += el[展示字段]));
+        list.forEach((el) => (sum价 += el["总价"]));
         list = _.sortBy(list, (el) => -Math.abs(el[展示字段]));
         listStr += list
-          .map(
-            (el) =>
-              `${getSpaceBetween4Div(
-                //
-                el[展示字段],
-                // 百分比
-                formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%",
-                // 名称
-                el["期权名称"],
-                el["持仓"],
-                formatDecimal(el[展示字段] / el["持仓"], 0)
-              )}`
+          .map((el) =>
+            总和标识 === "投"
+              ? `${getSpaceBetween7Div(
+                  //
+                  el["总价"],
+                  // 百分比
+                  formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%",
+                  // 名称
+                  el["期权名称"],
+                  el["持仓"],
+                  el["一手价"] + "/" + formatDecimal(el[展示字段] / el["持仓"], 0),
+                  el[展示字段]
+                )}`
+              : `${getSpaceBetween4Div(
+                  //
+                  el[展示字段],
+                  // 百分比
+                  formatDecimal((10000 * el[展示字段]) / sumValue / 100, 1).toFixed(1) + "%",
+                  // 名称
+                  el["期权名称"],
+                  el["持仓"],
+                  formatDecimal(el[展示字段] / el["持仓"], 0)
+                )}`
           )
           .join("");
         if (listStr) listStr += "<br />";
-        return `${listStr}${getSpaceBetween2Div(targetName, targetValue)}`;
+        let bottomStr = 总和标识 === "投" ? `${getSpaceBetween3Div(targetName, sum价, targetValue)}` : `${getSpaceBetween2Div(targetName, targetValue)}`;
+        return `${listStr}${bottomStr}`;
       },
     },
     grid: {
@@ -645,6 +694,72 @@ const 持仓分布Option = computed(() => {
   });
 });
 
+const 投入分布Option = computed(() => {
+  const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
+  let 沽购to正股Map = {};
+  ["沽", "购"].forEach((type) => {
+    OPTIONS_MAP.forEach((item) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["正股代码"] === item.code && el["沽购"] === type) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + item.code + type;
+          沽购to正股Map[key] = {
+            // list: [...(沽购to正股Map[key]?.list || []),el],
+            source: type,
+            target: item.code + 组合Str,
+            stock_code: item.code,
+            value: (沽购to正股Map[key]?.value || 0) + (el?.总投入 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 到日期to沽购Map = {};
+  deadline_list.forEach((date) => {
+    ["沽", "购"].forEach((type) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["沽购"] === type && el["到期日"] === date) {
+          const key = date + type;
+          到日期to沽购Map[key] = {
+            source: dayjs(date, "YYYY-MM-DD").format("M月"),
+            target: type + " ",
+            value: (到日期to沽购Map[key]?.value || 0) + (el?.总投入 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期Map = {};
+  deadline_list.forEach((date) => {
+    OPTIONS_MAP.forEach((item) => {
+      单腿期权TableData.forEach((el) => {
+        if (el["正股代码"] === item.code && el["到期日"] === date) {
+          const 组合Str = el["isCombo"] ? "[组合]" : "";
+          const key = 组合Str + item.code + date;
+          正股to到日期Map[key] = {
+            stock_code: item.code,
+            source: item.code + 组合Str,
+            target: dayjs(date, "YYYY-MM-DD").format("M月"),
+            value: (正股to到日期Map[key]?.value || 0) + (el?.总投入 || 0),
+          };
+        }
+      });
+    });
+  });
+  let 正股to到日期 = Object.values(正股to到日期Map).filter((el) => el.value);
+  let 到日期to沽购 = Object.values(到日期to沽购Map).filter((el) => el.value);
+  let 沽购to正股 = Object.values(沽购to正股Map).filter((el) => el.value);
+  const sourceToTargetList = [...沽购to正股, ...正股to到日期, ...到日期to沽购];
+
+  return getSankeyOption({
+    沽购to正股,
+    sourceToTargetList,
+    sumValue: 持仓总投入.value,
+    title: "投入分布",
+    总和标识: "投",
+  });
+});
+
 const 盈利分布Option = computed(() => {
   const 单腿期权TableData = [...richTableData.value?.[1]?.children, ...richTableData.value?.[2]?.children, ...richTableData.value?.[3]?.children];
   let 沽购to正股Map = {};
@@ -776,8 +891,7 @@ const filterHandler = (value, row, column) => {
   const property = column["property"];
   return row[property] === value;
 };
-function getInRowStyle({ row }) {
-}
+function getInRowStyle({ row }) {}
 
 const captureRef = ref(null);
 </script>
