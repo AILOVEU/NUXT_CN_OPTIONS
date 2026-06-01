@@ -50,9 +50,22 @@
 import _ from "lodash";
 import dayjs from "dayjs";
 import { getFourThursdayOfMonth, getFourWednesdayOfMonth, getLastMondayOfPreMonth, getDatesBetween, getFirstMondayOfMonth, getWeekMonday } from "~/utils/utils";
+import updateLocale from "dayjs/plugin/updateLocale";
+import "dayjs/locale/zh-cn";
+
+// 注册 updateLocale 插件
+dayjs.extend(updateLocale);
+// 设置中文语言包，并将一周起始日设为周一（weekStart: 1）
+dayjs.locale("zh-cn");
+dayjs.updateLocale("zh-cn", {
+  weekStart: 1,
+});
+const dateRange = ref([getLastMondayOfPreMonth().format("YYYY-MM-DD"), "2026-12-31"]);
 
 function getStyle(item) {
-  const styleCfg = {};
+  const styleCfg = {
+    height: (450 * 9) / Math.ceil(dayjs(dateRange.value[1], "YYYY-MM-DD").diff(dayjs(dateRange.value[0], "YYYY-MM-DD"), "day") / 7) + "px",
+  };
   if (item.isCurrent) styleCfg.border = "6px solid red";
   // if (item.isGeneratedNewQuarterOptions) styleCfg.border = "6px solid green";
   if (item.isBirthday) styleCfg.border = "6px solid orange";
@@ -110,7 +123,6 @@ const HOLIDAY = [
 ];
 const WORKDAY = ["2026-01-04", "2026-02-14", "2026-02-28", "2026-05-09", "2026-09-20", "2026-10-10"];
 
-const dateRange = ref([getLastMondayOfPreMonth().format("YYYY-MM-DD"), "2026-12-31"]);
 const days = computed(() => {
   return getDatesBetween(getWeekMonday(dayjs(dateRange.value[0]), "YYYY-MM-DD"), dayjs(dateRange.value[1], "YYYY-MM-DD")).map((el) => {
     const day = dayjs(el, "YYYY-MM-DD");

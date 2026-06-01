@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     // 关键：默认中文
     defaultLocale: "zh-cn",
     // 确保消息/弹窗类方法也生效
-    installMethods: ["ElMessage", "ElMessageBox", "ElNotification", "ElLoading", "ElDatePicker"],
+    // installMethods: ["ElMessage", "ElMessageBox", "ElNotification", "ElLoading", "ElDatePicker"],
   },
   // echarts: {
   //   charts: ["BarChart"],
