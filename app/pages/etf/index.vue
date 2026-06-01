@@ -114,7 +114,12 @@ const options = computed(() => {
       ];
       const monthFourthWednesdayList = curYearMonthStrList.map((curYearMonthStr) => getFourWednesdayOfMonth(curYearMonthStr + "01"));
 
-      const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[11], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
+      const curYearMonthDayList = getDatesBetween(
+        dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"),
+        dayjs(curYearMonthStrList[curYearMonthStrList.length - 1], "YYYY-MM-")
+          .endOf("month")
+          .format("YYYY-MM-DD")
+      );
       const curYearFilteredData = fundData.value?.filter((el) => el.date.startsWith(yearStr + "-"));
       let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr)));
       filteredData = curYearMonthDayList.map((date) => filteredData.find((item) => item.date === date) || { date });
