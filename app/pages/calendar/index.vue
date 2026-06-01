@@ -3,6 +3,9 @@
     <Nav />
     <Capture title="日历" ref="captureRef">
       <el-affix :offset="32">
+        <div>
+          <el-date-picker v-model="dateRange" show-week-number value-format="YYYY-MM-DD" type="daterange" range-separator="To" start-placeholder="Start date" end-placeholder="End date" />
+        </div>
         <div class="flex">
           <div class="basis-[12.5%] flex justify-center items-center"><el-button @click="() => captureRef.download()" link>⬇</el-button></div>
           <div class="grid grid-cols-7 bg-white w-full">
@@ -20,7 +23,7 @@
       <div class="flex">
         <div class="basis-[12.5%]">&nbsp;</div>
         <div class="basis-[87.5%] grid grid-cols-7 mt-[32px]">
-          <div v-for="item in days" class="text-[28px] relative border-[1px] border-[black] h-[119px] flex items-center justify-center flex-col" :style="getStyle(item)">
+          <div v-for="item in days" class="text-[28px] relative border-[1px] border-[black] h-[450px] flex items-center justify-center flex-col" :style="getStyle(item)">
             <div class="absolute z-50 bg-white right-[3px] bottom-[3px]">
               <div v-if="!item.isMonthFirstDay">{{ item.showText }}</div>
               <div v-else>{{ item.showText }}</div>
@@ -46,7 +49,7 @@
 <script setup>
 import _ from "lodash";
 import dayjs from "dayjs";
-import { getFourThursdayOfMonth, getFourWednesdayOfMonth, getLastMondayOfPreMonth, getDatesBetween, getFirstMondayOfMonth } from "~/utils/utils";
+import { getFourThursdayOfMonth, getFourWednesdayOfMonth, getLastMondayOfPreMonth, getDatesBetween, getFirstMondayOfMonth, getWeekMonday } from "~/utils/utils";
 
 function getStyle(item) {
   const styleCfg = {};
@@ -107,8 +110,9 @@ const HOLIDAY = [
 ];
 const WORKDAY = ["2026-01-04", "2026-02-14", "2026-02-28", "2026-05-09", "2026-09-20", "2026-10-10"];
 
-const days = ref(
-  getDatesBetween(getLastMondayOfPreMonth(), dayjs("2026-12-31", "YYYY-MM-DD")).map((el) => {
+const dateRange = ref([getLastMondayOfPreMonth().format("YYYY-MM-DD"), "2026-12-31"]);
+const days = computed(() => {
+  return getDatesBetween(getWeekMonday(dayjs(dateRange.value[0]), "YYYY-MM-DD"), dayjs(dateRange.value[1], "YYYY-MM-DD")).map((el) => {
     const day = dayjs(el, "YYYY-MM-DD");
     let showText = day.format("DD");
     if (day.format("DD") === "01") {
@@ -131,8 +135,8 @@ const days = ref(
       isFirstMonday: getFirstMondayOfMonth(el) === el,
       isMonthFirstDay: dayjs(el, "YYYY-MM-DD").format("DD") === "01",
     };
-  })
-);
+  });
+});
 
 const 商品期权到期Map = ref({
   "2026-05-12": "碳酸锂,工业硅,多晶硅,铂,钯",

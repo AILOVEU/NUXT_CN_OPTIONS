@@ -30,6 +30,12 @@ export default defineNuxtConfig({
     charts: ["SankeyChart", "LineChart", "BarChart", "MapChart", "PieChart", "ScatterChart", "SunburstChart", "CandlestickChart "],
     components: ["TitleComponent", "DatasetComponent", "GridComponent", "TooltipComponent", "ToolboxComponent", "LegendComponent", "GeoComponent", "VisualMapComponent", "MarkLineComponent", "MarkAreaComponent", "MarkPointComponent", "GraphicComponent", "DataZoomComponent"],
   },
+  elementPlus: {
+    // 关键：默认中文
+    defaultLocale: "zh-cn",
+    // 确保消息/弹窗类方法也生效
+    installMethods: ["ElMessage", "ElMessageBox", "ElNotification", "ElLoading", "ElDatePicker"],
+  },
   // echarts: {
   //   charts: ["BarChart"],
   //   components: ["DatasetComponent", "GridComponent", "TooltipComponent"],

@@ -160,6 +160,28 @@ export function getLastMondayOfPreMonth() {
 }
 
 /**
+ * 根据日期字符串(YYYY-MM-DD)获取当周周一
+ * @param {string} dateStr - 格式 YYYY-MM-DD
+ * @returns {string} 周一日期 YYYY-MM-DD
+ */
+export function getWeekMonday(dateStr) {
+  const date = new Date(dateStr);
+  // 复制日期，避免修改原对象
+  const target = new Date(date);
+  // getDay(): 0=周日,1=周一...6=周六
+  const day = target.getDay();
+  // 计算偏移天数：周日向前减6天，其他向前减(day-1)天
+  const offset = day === 0 ? -6 : -(day - 1);
+  target.setDate(target.getDate() + offset);
+
+  // 补零格式化
+  const y = target.getFullYear();
+  const m = String(target.getMonth() + 1).padStart(2, '0');
+  const d = String(target.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/**
  * 获取指定月份（默认当前月）的第一个星期一
  * @param {string|number|Date|dayjs.Dayjs} [date=当前日期] - 指定日期（用于定位月份）
  * @returns {dayjs.Dayjs} 当月第一个星期一的 dayjs 实例
