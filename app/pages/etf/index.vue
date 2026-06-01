@@ -112,6 +112,8 @@ const options = computed(() => {
         `${yearStr}-${getZeroNumber(monthVal + 10)}-`,
         `${yearStr}-${getZeroNumber(monthVal + 11)}-`,
       ];
+      const monthFourthWednesdayList = curYearMonthStrList.map((curYearMonthStr) => getFourWednesdayOfMonth(curYearMonthStr + "01"));
+
       const curYearMonthDayList = getDatesBetween(dayjs(curYearMonthStrList[0], "YYYY-MM-").startOf("month").format("YYYY-MM-DD"), dayjs(curYearMonthStrList[11], "YYYY-MM-").endOf("month").format("YYYY-MM-DD"));
       const curYearFilteredData = fundData.value?.filter((el) => el.date.startsWith(yearStr + "-"));
       let filteredData = fundData.value?.filter((el) => curYearMonthStrList.some((curYearMonthStr) => el.date.startsWith(curYearMonthStr)));
@@ -179,6 +181,33 @@ const options = computed(() => {
           color: "rgba(30, 144, 255, 0.15)", // 透明蓝色背景（可自行调整透明度）
         },
         z: 1, // 放在蜡烛下层，不覆盖K线
+        markLine: {
+          symbol: "none",
+          label: {
+            show: false,
+          },
+          // 标记线整体样式
+          lineStyle: {
+            color: "rgba(254, 217, 131,0.6)", // 红色高亮
+            width: 1, // 线宽
+            type: "solid", // 实线
+          },
+          // 标记线数据：定位到2024-05-09的垂直标记线
+          data: [
+            // {
+            //   name: yearStr + "-03-04",
+            //   xAxis: yearStr + "-03-04",
+            // },
+            // {
+            //   name: yearStr + "-03-14",
+            //   xAxis: yearStr + "-03-14",
+            // },
+            ...monthFourthWednesdayList.map((curMonthFourthWednesday) => ({
+              name: curMonthFourthWednesday,
+              xAxis: curMonthFourthWednesday,
+            })),
+          ],
+        },
       });
       // ============================================================================
 
