@@ -65,6 +65,7 @@
             <el-table-column label="沽购" #default="{ row }" prop="沽购" align="right" width="45" sortable>
               <TagCallPut :value="row['沽购']" />
             </el-table-column>
+            <el-table-column label="月份" prop="到期月份icon" align="right" width="55" sortable />
             <el-table-column label="天数" prop="到期天数" align="right" width="45" sortable />
           </el-table-column>
 

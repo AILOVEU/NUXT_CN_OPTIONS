@@ -1,4 +1,4 @@
-import { fields_dict, OPTIONS_MAP, 金额, 最大建议买入时间价 } from "~/data";
+import { fields_dict, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -595,6 +595,8 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["is旧期权"] = row["期权名称"].includes("A") && !row["期权名称"].includes("A500");
     row["到期天数"] = dayjs(row["到期日"], "YYYY-MM-DD").diff(dayjs(), "days") + 1;
     row["到期月份"] = dayjs(row["到期日"], "YYYY-MM-DD").format("MM月");
+    row["到期月份icon"] = row["到期月份"] + MONTH_ICON[row["到期月份"]];
+
     row["单日损耗"] = Math.floor((10 * row["Theta"] * row["合约单位"]) / 365) / 10;
 
     row["涨跌额"] = row["最新价"] - row["昨收"];
