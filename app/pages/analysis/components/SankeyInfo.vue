@@ -19,23 +19,28 @@
     </div>
   </div>
 
-  <el-table v-if="showType === 'list'" size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
-    <el-table-column type="expand">
-      <template #default="props">
-        <div>
-          <FilterList :checkIsChance="checkIsHold" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
+  <template v-if="showType === 'list'">
+    <div class="flex justify-center items-center">持仓列表</div>
+    <el-table size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
+      <el-table-column type="expand">
+        <template #default="props">
+          <div>
+            <FilterList :checkIsChance="checkIsHold" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="名" prop="title" />
+      <el-table-column label="值" prop="value" #default="props">
+        <div class="flex items-center gap-[12px]">
+          <div>{{ props.row.value }}</div>
+          <div v-if="!props.row._custom">({{ formatDecimal((100 * props.row.value) / 持仓总价, 1) }}%)</div>
+          <TagDiff v-if="!props.row._custom" :value="props.row.涨跌" />
         </div>
-      </template>
-    </el-table-column>
-    <el-table-column label="名" prop="title" />
-    <el-table-column label="值" prop="value" #default="props">
-      <div class="flex items-center gap-[12px]">
-        <div>{{ props.row.value }}</div>
-        <div v-if="!props.row._custom">({{ formatDecimal((100 * props.row.value) / 持仓总价, 1) }}%)</div>
-        <TagDiff v-if="!props.row._custom" :value="props.row.涨跌" />
-      </div>
-    </el-table-column>
-  </el-table>
+      </el-table-column>
+    </el-table>
+    <div v-if="持仓变化Table.length" class="flex justify-center items-center">清仓列表</div>
+    <FilterList :checkIsChance="() => true" :data="持仓变化Table" :showHold="false" />
+  </template>
 
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">
     <SymmetricTable tableTitle="持仓" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="hold" />
@@ -338,6 +343,11 @@ const richTableData = computed(() => {
       }),
     },
   ];
+});
+
+const 持仓变化Table = computed(() => {
+  let 持仓List = props.tiledData?.filter((el) => !el["持仓"] && el["持仓变化"]) || [];
+  return 持仓List;
 });
 
 // 有效表格数据

@@ -66,4 +66,9 @@ body {
 // .el-table .el-table__cell {
 //   box-sizing: border-content !important;
 // }
+
+/* 兼容部分场景（如果变量不生效，追加这个类名样式） */
+.el-table__body tr:hover > td {
+  background-color: #C4E2F5 !important;
+}
 </style>

@@ -11,6 +11,9 @@
       <Card header="资金分析_MoneyTrend">
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
+      <Card header="成交时间_OrderTimeline">
+        <OrderTimeline :orderList="orderList" />
+      </Card>
       <Card header="时间价值分析_SankeyInfo">
         <SankeyInfo :tiledData="tiledData" :comboList="comboList" />
       </Card>
@@ -25,6 +28,7 @@ import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
 import BarInfo from "./components/BarInfo";
+import OrderTimeline from "./components/OrderTimeline";
 import SankeyInfo from "./components/SankeyInfo";
 import MoneyTrend from "./components/MoneyTrend";
 import UnComboOverview from "./components/UnComboOverview";
@@ -33,12 +37,14 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 const tiledData = ref([]);
 const comboList = ref([]);
+const orderList = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  const [data, list] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
+  const [data, list, , order] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   comboList.value = list;
   tiledData.value = data;
+  orderList.value = order;
   loading.value = false;
 }
 handleQuery();

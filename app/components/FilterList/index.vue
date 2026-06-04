@@ -72,6 +72,13 @@
           <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="30" sortable>
             <TagHold :value="row['持仓'] || ''" />
           </el-table-column>
+          <el-table-column label="持变" #default="{ row }" prop="持仓变化" align="right" width="40" sortable>
+            <TagHold :value="row['持仓变化'] || ''" :showPlus="true" />
+          </el-table-column>
+          <el-table-column label="持变金额" #default="{ row }" prop="持仓金额变化" align="right" width="55" sortable>
+            {{ row["持仓金额变化"] || "" }}
+          </el-table-column>
+
           <!-- <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">

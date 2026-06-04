@@ -122,6 +122,24 @@ function get_最新价(row) {
   if (最新价 > 卖一 || 最新价 < 买一) return 中间价;
   return 最新价;
 }
+function get_持仓金额变化(成交Json, row) {
+  let targetList = 成交Json.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
+  if (!targetList.length) return 0;
+  let 持仓金额变化 = 0;
+  targetList.forEach((item) => {
+    持仓金额变化 += +item["持仓变化"] * item["成交价格"] * row["合约单位"];
+  });
+  return 持仓金额变化;
+}
+function get_持仓变化(成交Json, row) {
+  let targetList = 成交Json.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
+  if (!targetList.length) return 0;
+  let 持仓变化 = 0;
+  targetList.forEach((item) => {
+    持仓变化 += +item["持仓变化"];
+  });
+  return 持仓变化;
+}
 
 function get_持仓(持仓JSON, row) {
   let targetList = 持仓JSON.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
@@ -550,7 +568,7 @@ class OptionScorer {
 // 创建评分器实例（使用默认参数）
 const scorer = new OptionScorer();
 
-function formatRecord(_tiledData, 持仓JSON) {
+function formatRecord(_tiledData, 持仓JSON, 成交Json) {
   debug(_tiledData);
   let tiledData = [];
   _tiledData.forEach((_) => {
@@ -619,6 +637,8 @@ function formatRecord(_tiledData, 持仓JSON) {
     row["代替正股价"] = formatDecimal(row["Delta"] * row["正股价格"] * row["合约单位"], 0);
     // 持仓字段
     row["持仓"] = get_持仓(持仓JSON, row);
+    row["持仓变化"] = get_持仓变化(成交Json, row);
+    row["持仓金额变化"] = get_持仓金额变化(成交Json, row);
     row["单日总损耗"] = row["持仓"] ? formatDecimal(row["单日损耗"] * row["持仓"], 0) : NaN;
     row["仓位"] = row["一手价"] * row["持仓"];
     row["成本价"] = get_成本价(row, 持仓JSON);
@@ -662,7 +682,6 @@ function formatRecord(_tiledData, 持仓JSON) {
   // );
   tiledData = processOptionData(tiledData);
   tiledData = tiledData.map((el) => {
-    console.log(el["Gamma"]);
     return {
       ...el,
       评分: Math.abs(el["Delta"]) > 0.65 ? formatDecimal((el["正股价格"] * Math.abs(el["Delta"])) / (el["内在价值"] + el["时间价值"] * Math.abs(el["Delta"])), 1) : Math.abs(el["杠杆"]),
@@ -678,6 +697,17 @@ function formatRecord(_tiledData, 持仓JSON) {
   });
   return tiledData;
 }
+export function format成交Json(成交Json) {
+  let 期权List = Array.from(new Set(成交Json.map((el) => el["名称"])));
+  return 期权List
+    .map((期权名称) => {
+      const targetList = 成交Json.filter((item) => item["名称"] === 期权名称) || [];
+      return {
+        期权名称,
+        list: targetList,
+      };
+    });
+}
 
 // 请求入口
 // 一般只请求持仓的数据，若需要请求所有数据，不提供切回只展示持仓的模式
@@ -688,6 +718,7 @@ export async function get_http_data(
 ) {
   let _tiledData = [];
   let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
+  let 成交Json = await $fetch("/api/queryOrderJsonByQianlong");
   if (useCatch) {
     try {
       _tiledData = await $fetch("/api/queryDataJson");
@@ -729,7 +760,7 @@ export async function get_http_data(
       });
   }
 
-  let tiledData = formatRecord(_tiledData, 持仓JSON);
+  let tiledData = formatRecord(_tiledData, 持仓JSON, 成交Json);
   let filteredOptionsList = OPTIONS_MAP.filter((el) => Array.from(new Set(tiledData.map((el) => el["正股代码"]))).includes(el.code));
   tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"])); // 缓存数据过滤
   const comboList = 构建组合(tiledData);
@@ -740,5 +771,6 @@ export async function get_http_data(
     };
   });
   console.log("[tiledData, comboList,filteredOptionsList]", [tiledData, comboList, filteredOptionsList]);
-  return [tiledData, comboList, filteredOptionsList];
+  let orderList = format成交Json(成交Json);
+  return [tiledData, comboList, filteredOptionsList, orderList];
 }
