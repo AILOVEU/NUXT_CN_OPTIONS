@@ -44,7 +44,7 @@ async function handleQuery() {
   const [data, list, , order] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   comboList.value = list;
   tiledData.value = data;
-  orderList.value = order;
+  orderList.value = _.sortBy(order, (el) => el["期权名称"]);
   loading.value = false;
 }
 handleQuery();
