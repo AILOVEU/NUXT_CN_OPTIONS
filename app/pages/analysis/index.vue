@@ -41,10 +41,22 @@ const orderList = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  const [data, list, , order] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
+  let [data, list, , order] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   comboList.value = list;
   tiledData.value = data;
-  orderList.value = _.sortBy(order, (el) => el["期权名称"]);
+  order.sort(function (a, b) {
+    if (a["正股代码"] === b["正股代码"]) {
+      // a["正股代码"] === "510500" && a["_split"] && console.log(a["行权价"], b["行权价"]);
+      if (a["行权价"] === b["行权价"]) {
+        return a["到期月"] - b["到期月"];
+      }
+      return a["行权价"] - b["行权价"];
+    }
+    const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["正股代码"]);
+    const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
+    return aSort - bSort;
+  });
+  orderList.value = order;
   loading.value = false;
 }
 handleQuery();

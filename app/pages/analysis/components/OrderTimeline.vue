@@ -12,6 +12,7 @@
   <div class="mx-auto overflow-x-auto">
     <el-table :data="props.orderList" size="small" border stripe height="100%" :highlight-current-row="false">
       <el-table-column label="期权名称" prop="期权名称" width="140" align="left" fixed="left" />
+      <el-table-column label="正股" prop="正股ShowName" width="60" align="left" fixed="left" />
       <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="35" align="center">
         <div v-for="item in (row.list || [])?.filter((el) => isInNext5Minutes(time, el['成交时间']))">
           <!-- <div v-for="item in (row.list || [])?.filter((el) => dayjs(el['成交时间'], 'HH:mm:ss').format('HH:mm') === time)"> -->
@@ -20,6 +21,12 @@
             <div>{{ item.成交价格 * 10000 }}</div>
           </div>
           <div class="font-semibold">{{ item.持仓变化 * item.成交价格 * 10000 }}</div>
+        </div>
+      </el-table-column>
+      <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right">
+        <div class="px-[2px] mx-auto">
+          <div class="text-[gray] text-center">{{ row.持仓变化sum }}</div>
+          <div class="text-center font-semibold">{{ formatDecimal(row.成交金额sum * 10000, 0) }}</div>
         </div>
       </el-table-column>
     </el-table>

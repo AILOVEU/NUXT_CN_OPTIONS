@@ -24,13 +24,13 @@ export async function get_持仓JSON() {
                 return list;
               })
               .map((el) => ({
-                名称: el[3],
+                期权名称: el[3],
                 成交时间: el[1],
                 持仓变化: 操作Map[el[4]] * +el[8], // 正值
                 成交价格: +el[7],
                 正股代码: el[15],
               }))
-              .filter((el) => el["名称"])
+              .filter((el) => el["期权名称"])
           );
         })
         .catch(() => {

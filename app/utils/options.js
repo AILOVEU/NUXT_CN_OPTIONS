@@ -123,7 +123,7 @@ function get_最新价(row) {
   return 最新价;
 }
 function get_持仓金额变化(成交Json, row) {
-  let targetList = 成交Json.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
+  let targetList = 成交Json.filter((item) => [item["期权名称"], "XD" + item["期权名称"]].some((el) => el === row["期权名称"]));
   if (!targetList.length) return 0;
   let 持仓金额变化 = 0;
   targetList.forEach((item) => {
@@ -132,7 +132,7 @@ function get_持仓金额变化(成交Json, row) {
   return 持仓金额变化;
 }
 function get_持仓变化(成交Json, row) {
-  let targetList = 成交Json.filter((item) => [item["名称"], "XD" + item["名称"]].some((el) => el === row["期权名称"]));
+  let targetList = 成交Json.filter((item) => [item["期权名称"], "XD" + item["期权名称"]].some((el) => el === row["期权名称"]));
   if (!targetList.length) return 0;
   let 持仓变化 = 0;
   targetList.forEach((item) => {
@@ -698,15 +698,32 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
   return tiledData;
 }
 export function format成交Json(成交Json) {
-  let 期权List = Array.from(new Set(成交Json.map((el) => el["名称"])));
-  return 期权List
-    .map((期权名称) => {
-      const targetList = 成交Json.filter((item) => item["名称"] === 期权名称) || [];
-      return {
-        期权名称,
-        list: targetList,
-      };
+  let 期权List = Array.from(new Set(成交Json.map((el) => el["期权名称"])));
+  return 期权List.map((期权名称) => {
+    const targetList = 成交Json.filter((item) => item["期权名称"] === 期权名称) || [];
+    let 成交金额sum = 0;
+    let 持仓变化sum = 0;
+    targetList.forEach((el) => {
+      成交金额sum += el["持仓变化"] * el["成交价格"];
+      持仓变化sum += el["持仓变化"];
     });
+    const regex = /(\d+)月.*?(\d+(?:\.\d+)?)/;
+    const match = targetList[0]["期权名称"].match(regex);
+    const month = match[1]; // 到期月份
+    const price = match[2]; // 行权价
+    let 正股代码 = targetList[0]["正股代码"];
+    const 正股ShowName = OPTIONS_MAP.find((el) => el["code"] === 正股代码)?.showName;
+    return {
+      正股ShowName,
+      到期月: +month,
+      行权价: +price,
+      正股代码,
+      期权名称,
+      list: targetList,
+      成交金额sum,
+      持仓变化sum,
+    };
+  });
 }
 
 // 请求入口
@@ -774,3 +791,5 @@ export async function get_http_data(
   let orderList = format成交Json(成交Json);
   return [tiledData, comboList, filteredOptionsList, orderList];
 }
+
+export function format() {}
