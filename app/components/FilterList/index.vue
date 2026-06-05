@@ -75,6 +75,9 @@
           <el-table-column label="持变" #default="{ row }" prop="持仓变化" align="right" width="40" sortable>
             <TagHold :value="row['持仓变化'] || ''" :showPlus="true" />
           </el-table-column>
+          <el-table-column label="持变单价" #default="{ row }" prop="持仓金额变化单价" align="right" width="55" sortable>
+            {{ row["持仓金额变化单价"] || "" }}
+          </el-table-column>
           <el-table-column label="持变金额" #default="{ row }" prop="持仓金额变化" align="right" width="55" sortable>
             {{ row["持仓金额变化"] || "" }}
           </el-table-column>

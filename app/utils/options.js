@@ -639,6 +639,8 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
     row["持仓"] = get_持仓(持仓JSON, row);
     row["持仓变化"] = get_持仓变化(成交Json, row);
     row["持仓金额变化"] = get_持仓金额变化(成交Json, row);
+    row["持仓金额变化单价"] = row["持仓变化"] ? formatDecimal(row["持仓金额变化"] / row["持仓变化"], 0) : undefined;
+
     row["单日总损耗"] = row["持仓"] ? formatDecimal(row["单日损耗"] * row["持仓"], 0) : NaN;
     row["仓位"] = row["一手价"] * row["持仓"];
     row["成本价"] = get_成本价(row, 持仓JSON);

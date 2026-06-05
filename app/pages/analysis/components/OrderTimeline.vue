@@ -12,9 +12,16 @@
       </el-form-item>
     </el-form>
   </div>
-  <div class="mx-auto overflow-x-auto">
-    <el-table :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary">
-      <el-table-column label="期权名称" prop="期权名称" width="140" align="left" fixed="left" />
+  <Capture title="期权列表" ref="captureRef">
+    <el-table style="width: 100%" :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary" :cell-style="getSpecialTimeStyle">
+      <el-table-column prop="期权名称" width="140" align="left" fixed="left">
+        <template #header>
+          <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+            <div>期权名称</div>
+            <el-button link>⬇</el-button>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="正股" prop="正股ShowName" width="60" align="center" fixed="left" />
       <el-table-column label="沽购" #default="{ row }" prop="沽购" align="center" width="30" fixed="left">
         <TagCallPut :value="row['沽购']" />
@@ -36,13 +43,14 @@
         </div>
       </el-table-column>
     </el-table>
-  </div>
+  </Capture>
 </template>
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
+const captureRef = ref(null);
 /**
  * 生成指定时间段内每隔1分钟的时间数组
  * @param {string} start - 开始时间，如 '09:30'
@@ -68,6 +76,18 @@ function generateMinuteList(start, end) {
 
   return result;
 }
+// 判断是否是整点/半点（9:30/10:00/10:30...），并返回样式
+const getSpecialTimeStyle = (data) => {
+  const { column } = data;
+  if (!column) return {};
+  const minute = column.property.split(":")?.[1];
+  // 分钟是 00 或 30 → 蓝色背景
+  if (minute === "00" || minute === "30") {
+    return { backgroundColor: "#e8f3ff" }; // 浅蓝底+蓝色字
+  }
+  return {};
+};
+
 // 生成时间段内 每隔5分钟 的时间数组
 function generateTimeList(start, end) {
   const result = [];
@@ -154,6 +174,16 @@ const getSummary = ({ columns, data }) => {
           if (isInNext5Minutes(col.property, order["成交时间"])) {
             sum += order["持仓变化"] * order["成交价格"] * 10000;
           }
+        });
+      });
+      if (sum) return formatDecimal(sum, 0);
+      return "";
+    }
+    if (col.property === "成交金额sum") {
+      let sum = 0;
+      data.forEach((row) => {
+        row.list.forEach((order) => {
+          sum += order["持仓变化"] * order["成交价格"] * 10000;
         });
       });
       if (sum) return formatDecimal(sum, 0);
