@@ -4,23 +4,29 @@
       <el-form-item label="正股">
         <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
       </el-form-item>
-      <el-form-item label="到期日">
+      <!-- <el-form-item label="到期日">
         <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
+      </el-form-item> -->
+      <el-form-item label="沽购">
+        <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
       </el-form-item>
     </el-form>
   </div>
   <div class="mx-auto overflow-x-auto">
-    <el-table :data="props.orderList" size="small" border stripe height="100%" :highlight-current-row="false">
+    <el-table :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary">
       <el-table-column label="期权名称" prop="期权名称" width="140" align="left" fixed="left" />
-      <el-table-column label="正股" prop="正股ShowName" width="60" align="left" fixed="left" />
-      <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="35" align="center">
+      <el-table-column label="正股" prop="正股ShowName" width="60" align="center" fixed="left" />
+      <el-table-column label="沽购" #default="{ row }" prop="沽购" align="center" width="30" fixed="left">
+        <TagCallPut :value="row['沽购']" />
+      </el-table-column>
+      <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="40" align="center">
         <div v-for="item in (row.list || [])?.filter((el) => isInNext5Minutes(time, el['成交时间']))">
           <!-- <div v-for="item in (row.list || [])?.filter((el) => dayjs(el['成交时间'], 'HH:mm:ss').format('HH:mm') === time)"> -->
           <div class="flex border-bottom-[1px] justify-between gap-[5px] border-[red] text-[gray] px-[2px]">
             <div>{{ item.持仓变化 }}</div>
-            <div>{{ item.成交价格 * 10000 }}</div>
+            <div>{{ formatDecimal(item.成交价格 * 10000, 0) }}</div>
           </div>
-          <div class="font-semibold">{{ item.持仓变化 * item.成交价格 * 10000 }}</div>
+          <div class="font-semibold">{{ formatDecimal(item.持仓变化 * item.成交价格 * 10000, 0) }}</div>
         </div>
       </el-table-column>
       <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right">
@@ -37,7 +43,6 @@ import { formatNumberToWan, formatDecimal } from "~/utils/utils";
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-
 /**
  * 生成指定时间段内每隔1分钟的时间数组
  * @param {string} start - 开始时间，如 '09:30'
@@ -115,6 +120,17 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
 const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
+  沽购List: ["沽", "购"],
+});
+
+// 过滤与校验
+const filterTableData = computed(() => {
+  return (
+    props.orderList
+      .filter((el) => formData.正股List.includes(el["正股代码"]))
+      // .filter((el) => formData.到期日List.includes(el["到期日"]))
+      .filter((el) => formData.沽购List.includes(el["沽购"]))
+  );
 });
 
 // 生成你需要的两个时间段
@@ -123,4 +139,29 @@ const afternoonList = generateTimeList("13:00", "15:00");
 
 // 合并成一个完整数组（按需使用）
 const totalTimeList = ref([...morningList, ...afternoonList]);
+
+// 通用合计方法（永远不用改）
+const getSummary = ({ columns, data }) => {
+  // const summaryProps = props.showHold ? ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓", "持仓金额变化"] : ["持仓金额变化"];
+  return columns.map((col, index) => {
+    // 第一列显示“合计”
+    if (index === 0) return "合计";
+    // 当前列在合计列表里 → 求和
+    if (col.property.includes(":")) {
+      let sum = 0;
+      data.forEach((row) => {
+        row.list.forEach((order) => {
+          if (isInNext5Minutes(col.property, order["成交时间"])) {
+            sum += order["持仓变化"] * order["成交价格"] * 10000;
+          }
+        });
+      });
+      if (sum) return formatDecimal(sum, 0);
+      return "";
+    }
+
+    // 不在列表 → 空
+    return "";
+  });
+};
 </script>

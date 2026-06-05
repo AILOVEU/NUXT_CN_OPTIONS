@@ -129,7 +129,7 @@ function get_持仓金额变化(成交Json, row) {
   targetList.forEach((item) => {
     持仓金额变化 += +item["持仓变化"] * item["成交价格"] * row["合约单位"];
   });
-  return 持仓金额变化;
+  return formatDecimal(持仓金额变化, 0);
 }
 function get_持仓变化(成交Json, row) {
   let targetList = 成交Json.filter((item) => [item["期权名称"], "XD" + item["期权名称"]].some((el) => el === row["期权名称"]));
@@ -713,7 +713,9 @@ export function format成交Json(成交Json) {
     const price = match[2]; // 行权价
     let 正股代码 = targetList[0]["正股代码"];
     const 正股ShowName = OPTIONS_MAP.find((el) => el["code"] === 正股代码)?.showName;
+    const 沽购 = targetList[0]["期权名称"].includes("购") ? "购" : "沽";
     return {
+      沽购,
       正股ShowName,
       到期月: +month,
       行权价: +price,
