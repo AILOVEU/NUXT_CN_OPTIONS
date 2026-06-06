@@ -1,5 +1,5 @@
 <template>
-  <Capture title="期权列表" ref="captureRef">
+  <Capture :title="props.dayStr + '交割单'" ref="captureRef">
     <div class="flex justify-center pb-[5px] cursor-pointer" @click="() => captureRef.download()">{{ props.dayStr }}交割单 <el-button link>⬇</el-button></div>
     <el-table style="width: 100%" :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary" :cell-style="getSpecialTimeStyle">
       <el-table-column label="期权名称" prop="期权名称" width="135" align="left" fixed="left"> </el-table-column>
