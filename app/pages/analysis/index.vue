@@ -11,7 +11,7 @@
       <Card header="资金分析_MoneyTrend">
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
-      <Card header="成交时间_OrderTimeline">
+      <Card header="交割单_OrderTimeline">
         <OrderTimeline :orderList="orderList" />
       </Card>
       <Card header="时间价值分析_SankeyInfo">

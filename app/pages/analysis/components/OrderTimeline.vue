@@ -12,186 +12,68 @@
       </el-form-item>
     </el-form>
   </div>
-  <Capture title="期权列表" ref="captureRef">
-    <el-table style="width: 100%" :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary" :cell-style="getSpecialTimeStyle">
-      <el-table-column prop="期权名称" width="140" align="left" fixed="left">
-        <template #header>
-          <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
-            <div>期权名称</div>
-            <el-button link>⬇</el-button>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="正股" prop="正股ShowName" width="60" align="center" fixed="left" />
-      <el-table-column label="沽购" #default="{ row }" prop="沽购" align="center" width="30" fixed="left">
-        <TagCallPut :value="row['沽购']" />
-      </el-table-column>
-      <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="40" align="center">
-        <div v-for="item in (row.list || [])?.filter((el) => isInNext5Minutes(time, el['成交时间']))">
-          <!-- <div v-for="item in (row.list || [])?.filter((el) => dayjs(el['成交时间'], 'HH:mm:ss').format('HH:mm') === time)"> -->
-          <div class="flex border-bottom-[1px] justify-between gap-[5px] border-[red] text-[gray] px-[2px]">
-            <div>{{ item.持仓变化 }}</div>
-            <div>{{ formatDecimal(item.成交价格 * 10000, 0) }}</div>
-          </div>
-          <div class="font-semibold">{{ formatDecimal(item.持仓变化 * item.成交价格 * 10000, 0) }}</div>
-        </div>
-      </el-table-column>
-      <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right">
-        <div class="px-[2px] mx-auto">
-          <div class="text-[gray] text-center">{{ row.持仓变化sum }}</div>
-          <div class="text-center font-semibold">{{ formatDecimal(row.成交金额sum * 10000, 0) }}</div>
-        </div>
-      </el-table-column>
-    </el-table>
-  </Capture>
+  <OrderTable :formData="formData" :orderList="props.orderList" dayStr="2026-06-05" />
+  <OrderTable v-for="item in LIST" :formData="formData" :orderList="item.data" :dayStr="item.day" />
 </template>
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import _ from "lodash";
-const captureRef = ref(null);
-/**
- * 生成指定时间段内每隔1分钟的时间数组
- * @param {string} start - 开始时间，如 '09:30'
- * @param {string} end - 结束时间，如 '11:30'
- * @returns {string[]} 时间数组，格式 ['09:30', '09:31', ...]
- */
-function generateMinuteList(start, end) {
-  const result = [];
-
-  // 解析开始时间（无需插件）
-  const [startHour, startMinute] = start.split(":").map(Number);
-  const [endHour, endMinute] = end.split(":").map(Number);
-
-  let current = dayjs().startOf("day").hour(startHour).minute(startMinute);
-
-  const endTime = dayjs().startOf("day").hour(endHour).minute(endMinute);
-
-  // 循环生成每分钟
-  while (current.isBefore(endTime) || current.isSame(endTime)) {
-    result.push(current.format("HH:mm"));
-    current = current.add(1, "minute");
-  }
-
-  return result;
-}
-// 判断是否是整点/半点（9:30/10:00/10:30...），并返回样式
-const getSpecialTimeStyle = (data) => {
-  const { column } = data;
-  if (!column) return {};
-  const minute = column.property.split(":")?.[1];
-  // 分钟是 00 或 30 → 蓝色背景
-  if (minute === "00" || minute === "30") {
-    return { backgroundColor: "#e8f3ff" }; // 浅蓝底+蓝色字
-  }
-  return {};
-};
-
-// 生成时间段内 每隔5分钟 的时间数组
-function generateTimeList(start, end) {
-  const result = [];
-  const [startHour, startMinute] = start.split(":").map(Number);
-  const [endHour, endMinute] = end.split(":").map(Number);
-
-  // 初始化时间
-  let current = dayjs().startOf("day").hour(startHour).minute(startMinute);
-
-  const endTime = dayjs().startOf("day").hour(endHour).minute(endMinute);
-
-  // 循环：每次 +5 分钟
-  while (current.isBefore(endTime) || current.isSame(endTime)) {
-    result.push(current.format("HH:mm"));
-    current = current.add(5, "minute");
-  }
-
-  return result;
-}
-
-/**
- * 判断 checkTime 是否在 targetTime 之后的5分钟内（左闭右开）
- * @param {string} targetTime - 目标时间 HH:mm
- * @param {string} checkTime - 要检查的时间 HH:mm:ss
- * @returns {boolean}
- */
-function isInNext5Minutes(targetTime, checkTime) {
-  const base = dayjs().startOf("day");
-
-  // 解析目标时间（时分）
-  const [tH, tM] = targetTime.split(":").map(Number);
-  const target = base.hour(tH).minute(tM).second(0);
-
-  // 解析检查时间（时分秒）
-  const [cH, cM, cS] = checkTime.split(":").map(Number);
-  const check = base.hour(cH).minute(cM).second(cS);
-
-  // 结束时间 = 目标 +5分钟
-  const end = target.add(5, "minute");
-
-  // 左闭右开：check >= target 且 check < end
-  return (check.isSame(target) || check.isAfter(target)) && check.isBefore(end);
-}
 const props = defineProps(["orderList"]);
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
 }));
-
 const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   到期日List: [...deadline_list],
   沽购List: ["沽", "购"],
 });
 
-// 过滤与校验
-const filterTableData = computed(() => {
-  return (
-    props.orderList
-      .filter((el) => formData.正股List.includes(el["正股代码"]))
-      // .filter((el) => formData.到期日List.includes(el["到期日"]))
-      .filter((el) => formData.沽购List.includes(el["沽购"]))
-  );
-});
-
-// 生成你需要的两个时间段
-const morningList = generateTimeList("09:30", "11:30");
-const afternoonList = generateTimeList("13:00", "15:00");
-
-// 合并成一个完整数组（按需使用）
-const totalTimeList = ref([...morningList, ...afternoonList]);
-
-// 通用合计方法（永远不用改）
-const getSummary = ({ columns, data }) => {
-  // const summaryProps = props.showHold ? ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓", "持仓金额变化"] : ["持仓金额变化"];
-  return columns.map((col, index) => {
-    // 第一列显示“合计”
-    if (index === 0) return "合计";
-    // 当前列在合计列表里 → 求和
-    if (col.property.includes(":")) {
-      let sum = 0;
-      data.forEach((row) => {
-        row.list.forEach((order) => {
-          if (isInNext5Minutes(col.property, order["成交时间"])) {
-            sum += order["持仓变化"] * order["成交价格"] * 10000;
-          }
-        });
-      });
-      if (sum) return formatDecimal(sum, 0);
-      return "";
-    }
-    if (col.property === "成交金额sum") {
-      let sum = 0;
-      data.forEach((row) => {
-        row.list.forEach((order) => {
-          sum += order["持仓变化"] * order["成交价格"] * 10000;
-        });
-      });
-      if (sum) return formatDecimal(sum, 0);
-      return "";
-    }
-
-    // 不在列表 → 空
-    return "";
-  });
-};
+const LIST = [
+  {
+    day: "2026-06-05",
+    data: [
+      { 沽购: "购", 正股ShowName: "50ETF🧊", 到期月: 7, 行权价: 3000, 正股代码: "510050", 期权名称: "50ETF购7月3000", list: [{ 期权名称: "50ETF购7月3000", 成交时间: "14:30:31", 持仓变化: 1, 成交价格: 0.047, 正股代码: "510050" }], 成交金额sum: 0.047, 持仓变化sum: 1 },
+      { 沽购: "购", 正股ShowName: "50ETF🧊", 到期月: 7, 行权价: 3100, 正股代码: "510050", 期权名称: "50ETF购7月3100", list: [{ 期权名称: "50ETF购7月3100", 成交时间: "14:43:27", 持仓变化: 1, 成交价格: 0.02, 正股代码: "510050" }], 成交金额sum: 0.02, 持仓变化sum: 1 },
+      { 沽购: "沽", 正股ShowName: "300ETF🍆", 到期月: 6, 行权价: 4500, 正股代码: "510300", 期权名称: "300ETF沽6月4500", list: [{ 期权名称: "300ETF沽6月4500", 成交时间: "14:51:41", 持仓变化: -2, 成交价格: 0.0088, 正股代码: "510300" }], 成交金额sum: -0.0176, 持仓变化sum: -2 },
+      { 沽购: "沽", 正股ShowName: "300ETF🍆", 到期月: 7, 行权价: 4500, 正股代码: "510300", 期权名称: "300ETF沽7月4500", list: [{ 期权名称: "300ETF沽7月4500", 成交时间: "14:28:57", 持仓变化: -1, 成交价格: 0.0301, 正股代码: "510300" }], 成交金额sum: -0.0301, 持仓变化sum: -1 },
+      { 沽购: "沽", 正股ShowName: "300ETF🍆", 到期月: 6, 行权价: 4600, 正股代码: "510300", 期权名称: "300ETF沽6月4600", list: [{ 期权名称: "300ETF沽6月4600", 成交时间: "14:52:27", 持仓变化: -1, 成交价格: 0.0152, 正股代码: "510300" }], 成交金额sum: -0.0152, 持仓变化sum: -1 },
+      { 沽购: "沽", 正股ShowName: "300ETF🍆", 到期月: 7, 行权价: 4600, 正股代码: "510300", 期权名称: "300ETF沽7月4600", list: [{ 期权名称: "300ETF沽7月4600", 成交时间: "14:28:11", 持仓变化: -1, 成交价格: 0.0482, 正股代码: "510300" }], 成交金额sum: -0.0482, 持仓变化sum: -1 },
+      { 沽购: "沽", 正股ShowName: "300ETF🍆", 到期月: 6, 行权价: 4700, 正股代码: "510300", 期权名称: "300ETF沽6月4700", list: [{ 期权名称: "300ETF沽6月4700", 成交时间: "14:04:35", 持仓变化: -1, 成交价格: 0.0281, 正股代码: "510300" }], 成交金额sum: -0.0281, 持仓变化sum: -1 },
+      {
+        沽购: "沽",
+        正股ShowName: "300ETF🍆",
+        到期月: 6,
+        行权价: 4800,
+        正股代码: "510300",
+        期权名称: "300ETF沽6月4800",
+        list: [
+          { 期权名称: "300ETF沽6月4800", 成交时间: "14:55:55", 持仓变化: -1, 成交价格: 0.0675, 正股代码: "510300" },
+          { 期权名称: "300ETF沽6月4800", 成交时间: "14:03:26", 持仓变化: -1, 成交价格: 0.0554, 正股代码: "510300" },
+        ],
+        成交金额sum: -0.12290000000000001,
+        持仓变化sum: -2,
+      },
+      { 沽购: "购", 正股ShowName: "300ETF🍆", 到期月: 7, 行权价: 5250, 正股代码: "510300", 期权名称: "300ETF购7月5250", list: [{ 期权名称: "300ETF购7月5250", 成交时间: "14:30:32", 持仓变化: 1, 成交价格: 0.0195, 正股代码: "510300" }], 成交金额sum: 0.0195, 持仓变化sum: 1 },
+      {
+        沽购: "沽",
+        正股ShowName: "沪500🦁",
+        到期月: 6,
+        行权价: 7750,
+        正股代码: "510500",
+        期权名称: "500ETF沽6月7750",
+        list: [
+          { 期权名称: "500ETF沽6月7750", 成交时间: "10:19:58", 持仓变化: 2, 成交价格: 0.0225, 正股代码: "510500" },
+          { 期权名称: "500ETF沽6月7750", 成交时间: "09:34:02", 持仓变化: 1, 成交价格: 0.0329, 正股代码: "510500" },
+          { 期权名称: "500ETF沽6月7750", 成交时间: "09:32:03", 持仓变化: -1, 成交价格: 0.035, 正股代码: "510500" },
+        ],
+        成交金额sum: 0.042899999999999994,
+        持仓变化sum: 2,
+      },
+      { 沽购: "购", 正股ShowName: "深500🐯", 到期月: 7, 行权价: 3600, 正股代码: "159922", 期权名称: "中证500ETF购7月3600", list: [{ 期权名称: "中证500ETF购7月3600", 成交时间: "14:17:45", 持仓变化: 1, 成交价格: 0.0301, 正股代码: "159922" }], 成交金额sum: 0.0301, 持仓变化sum: 1 },
+    ],
+  },
+];
 </script>
