@@ -4,14 +4,13 @@
   <div v-else-if="props.row._current" style="background-color: #8bdfdd; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
+    <!-- <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
       <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
-    </div>
+    </div> -->
     <div v-if="持仓" class="absolute top-[0px] left-[0px]">
-      <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
-      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }">
-        <TagHold :value="持仓" />
-      </div>
+      <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "=>" }}</span>
+      <!-- <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" /> -->
+      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
       <TagHoldDiffPercent v-if="isPrint" :value="盈亏" :收益率="收益率" />
     </div>
     <div v-if="持仓 && !isPrint" class="absolute left-0 bottom-0">
@@ -153,6 +152,9 @@ const current期权Item = computed(() => {
 });
 const 持仓 = computed(() => {
   return current期权Item.value["持仓"];
+});
+const 持仓变化 = computed(() => {
+  return current期权Item.value["持仓变化"];
 });
 const 日增量 = computed(() => {
   return current期权Item.value["日增"];
