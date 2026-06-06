@@ -1,6 +1,6 @@
 <!-- 持仓量 -->
 <template>
-  <MyTag label="" :value="props.value" :cfg="cfg"> {{ showPlus && props.value > 0 ? "+" : "" }}{{ props.value || "" }} </MyTag>
+  <MyTag label="" :value="props.value" :cfg="cfg"> {{ showPlus && props.value > 0 ? "+" : "" }}{{ showVal }} </MyTag>
 </template>
 <script setup>
 const props = defineProps(["value", "showPlus"]);
@@ -12,4 +12,8 @@ const cfg = [
   [10, 30, "red"],
   [30, 999, "bg-red"],
 ];
+const showVal = computed(() => {
+  if (props.value === 0) return "0";
+  return props.value || "0";
+});
 </script>

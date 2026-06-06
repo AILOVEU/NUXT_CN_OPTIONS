@@ -7,13 +7,13 @@
     <!-- <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
       <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
     </div> -->
-    <div v-if="持仓" class="absolute top-[0px] left-[0px]">
+    <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
       <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "=>" }}</span>
       <!-- <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" /> -->
-      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
-      <TagHoldDiffPercent v-if="isPrint" :value="盈亏" :收益率="收益率" />
+      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
+      <TagHoldDiffPercent v-if="isPrint && 持仓" :value="盈亏" :收益率="收益率" />
     </div>
-    <div v-if="持仓 && !isPrint" class="absolute left-0 bottom-0">
+    <div v-if="isShow持仓 && !isPrint" class="absolute left-0 bottom-0">
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
     <!-- 右上 -->
@@ -156,6 +156,12 @@ const 持仓 = computed(() => {
 const 持仓变化 = computed(() => {
   return current期权Item.value["持仓变化"];
 });
+
+const isShow持仓 = computed(() => {
+  if (持仓.value) return true;
+  if (!持仓.value && 持仓变化.value) return true;
+  return false;
+});
 const 日增量 = computed(() => {
   return current期权Item.value["日增"];
 });
@@ -251,6 +257,8 @@ const wrapperStyle = computed(() => {
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
       style = { ...style, background: "rgba(246, 255, 220, 0.35)" };
+    } else if (current期权Item.value["持仓变化"]) {
+      style = { ...style, background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
     }
   }
   return style;

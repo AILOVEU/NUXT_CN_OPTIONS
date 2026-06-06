@@ -25,7 +25,7 @@
       <el-table-column type="expand">
         <template #default="props">
           <div>
-            <FilterList :checkIsChance="checkIsHold" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
+            <FilterList :checkIsChance="checkIsFilter" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
           </div>
         </template>
       </el-table-column>
@@ -130,7 +130,7 @@ handleQuery();
 
 // 过滤数据
 const filteredTiledData = computed(() => {
-  return tableData.tiledData.filter((el) => checkIsHold(el) && el["持仓"]);
+  return tableData.tiledData.filter((el) => checkIsFilter(el) && (el["持仓"] || (!el["持仓"] && el["持仓变化"])));
 });
 
 const filteredSymmetricData = computed(() => {
@@ -366,7 +366,7 @@ function filterTableData(tableData) {
     .filter((el) => formData.沽购List.includes(el["沽购"]));
 }
 
-function checkIsHold(el) {
+function checkIsFilter(el) {
   return formData.正股List.includes(el["正股代码"]) && formData.到期日List.includes(el["到期日"]) && formData.沽购List.includes(el["沽购"]);
 }
 
