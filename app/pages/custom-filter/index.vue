@@ -91,6 +91,12 @@ function checkIsChance彩票(target) {
 }
 // 短期不关注隐波，只关注溢价率和价格
 function checkIsChance短期(target) {
+  function get短期溢价Max(到期天数) {
+    if (到期天数 > 30) return 7;
+    if (到期天数 > 15) return 5.5;
+    if (到期天数 > 10) return 4;
+    return 3.5;
+  }
   if (target["is旧期权"]) return false;
   if (formData.沽购List.length && !formData.沽购List.includes(target["沽购"])) return false;
   if (formData.正股List.length && !formData.正股List.includes(target["正股代码"])) return false;
@@ -101,7 +107,7 @@ function checkIsChance短期(target) {
   if (target["一手价"] >= 500) return false;
   if (target["一手时间价"] >= 400) return false;
   if (target["一手内在价"] >= 400) return false;
-  if (target["溢价率"] >= 3 && Math.abs(target["Delta"]) < 0.2) return false;
+  if (target["溢价率"] >= get短期溢价Max(target["到期天数"])) return false;
   return true;
 }
 function checkIsChance中期(target) {
@@ -115,12 +121,10 @@ function checkIsChance中期(target) {
   //   if (target["千行权价"] >= OpsItem.行权价Range[1]) return false;
   // }
 
-  if (target["到期天数"] <= 45 || target["到期天数"] >= 90) return false;
+  if (target["到期天数"] < 45 || target["到期天数"] >= 90) return false;
   if (target["一手价"] >= 1000) return false;
-  if (target["一手时间价"] >= 500) return false;
+  if (target["一手时间价"] >= 750) return false;
   if (target["溢价率"] >= 10) return false;
-  // 实值不关注隐波
-  if (target["隐波"] >= OpsItem.隐波Max && target["一手时间价"] >= 500 && target["一手内在价"] > 0) return false;
   return true;
 }
 function checkIsChance远期(target) {
@@ -135,11 +139,11 @@ function checkIsChance远期(target) {
   // }
 
   if (target["到期天数"] < 90) return false;
-  if (target["一手价"] >= 1500) return false;
-  if (target["一手时间价"] >= 1000) return false;
-  if (target["溢价率"] >= 20) return false;
+  if (target["一手价"] >= 750) return false;
+  if (target["一手时间价"] >= 750) return false;
+  if (target["溢价率"] >= 15) return false;
   // 实值不关注隐波
-  if (target["隐波"] >= OpsItem.隐波Max && target["一手时间价"] >= 500 && target["一手内在价"] > 0) return false;
+  // if (target["隐波"] >= OpsItem.隐波Max && target["一手时间价"] >= 500 && target["一手内在价"] > 0) return false;
   return true;
 }
 

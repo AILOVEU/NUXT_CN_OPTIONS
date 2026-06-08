@@ -12,8 +12,8 @@
       </el-form-item>
     </el-form>
   </div>
-  <!-- <OrderTable :formData="formData" :orderList="props.orderList" dayStr="2026-06-05" /> -->
-  <OrderTable v-for="item in LIST" :formData="formData" :orderList="item.data" :dayStr="item.day" />
+  <OrderTable :formData="formData" :orderList="props.orderList" dayStr="2026-06-05" />
+  <!-- <OrderTable v-for="item in LIST" :formData="formData" :orderList="item.data" :dayStr="item.day" /> -->
 </template>
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";

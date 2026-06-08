@@ -1,7 +1,7 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #8bdfdd; height: 22px">&nbsp;</div>
+  <div v-else-if="props.row._current" style="background-color: #DFF1F1; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <!-- <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
@@ -30,7 +30,7 @@
     </div>
     <!-- 打印-中间 -->
     <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]">
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+      <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
         </div>
@@ -40,16 +40,16 @@
         <div class="whitespace-nowrap">
           <TagPremium :value="current期权Item['溢价率']" />
         </div>
-        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-          <div class="whitespace-nowrap">
-            <TagIv :value="current期权Item['隐波']" />
-          </div>
-          <div v-if="持仓" class="whitespace-nowrap">
-            <TagCostPrice :value="一手成本价" />
-          </div>
-          <div v-if="持仓" class="whitespace-nowrap">
-            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
-          </div>
+        <div class="whitespace-nowrap">
+          <TagIv :value="current期权Item['隐波']" />
+        </div>
+      </div>
+      <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
+        <div v-if="持仓" class="whitespace-nowrap">
+          <TagCostPrice :value="一手成本价" />
+        </div>
+        <div v-if="持仓" class="whitespace-nowrap">
+          <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
         </div>
       </div>
     </div>
