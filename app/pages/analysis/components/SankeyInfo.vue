@@ -39,7 +39,7 @@
       </el-table-column>
     </el-table>
     <div v-if="持仓变化Table.length" class="flex justify-center items-center">清仓列表</div>
-    <FilterList :checkIsChance="() => true" :data="持仓变化Table" :showHold="false" />
+    <FilterList v-if="持仓变化Table.length" :checkIsChance="() => true" :data="持仓变化Table" :showHold="false" />
   </template>
 
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">
@@ -347,6 +347,7 @@ const richTableData = computed(() => {
 
 const 持仓变化Table = computed(() => {
   let 持仓List = props.tiledData?.filter((el) => !el["持仓"] && el["持仓变化"]) || [];
+  console.log("持仓List", 持仓List);
   return 持仓List;
 });
 
