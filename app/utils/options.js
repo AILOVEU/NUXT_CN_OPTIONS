@@ -703,6 +703,7 @@ export function format成交Json(成交Json) {
   let 期权List = Array.from(new Set(成交Json.map((el) => el["期权名称"])));
   return 期权List.map((期权名称) => {
     const targetList = 成交Json.filter((item) => item["期权名称"] === 期权名称) || [];
+    return targetList;
     let 成交金额sum = 0;
     let 持仓变化sum = 0;
     targetList.forEach((el) => {
