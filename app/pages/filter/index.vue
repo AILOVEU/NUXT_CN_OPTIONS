@@ -191,18 +191,18 @@ const formData = reactive({
   // 启用开关（6个范围）
   enable: {
     一手价Range: true,
-    一手价时间价Range: true,
+    一手价时间价Range: false,
     杠杆Range: true,
     DeltaRange: false,
     隐波Range: false,
     GammaRange: false,
-    溢价Range: false,
+    溢价Range: true,
   },
   // 范围值
   杠杆Range: [20, 9999],
-  溢价Range: [-100, 10],
-  一手价Range: [0, 3000],
-  一手价时间价Range: [0, 3000],
+  溢价Range: [-100, 7.5],
+  一手价Range: [0, 750],
+  一手价时间价Range: [0, 750],
   DeltaRange: [0.25, 1],
   隐波Range: [0, 20],
   GammaRange: [0.5, 9999],
