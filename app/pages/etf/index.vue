@@ -1,4 +1,5 @@
 <template>
+  <MouseXLine />
   <div class="max-md:w-[300%]">
     <div>
       <Nav />

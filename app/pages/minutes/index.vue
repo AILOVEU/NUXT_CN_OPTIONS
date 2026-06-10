@@ -6,7 +6,7 @@
       <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
     </div>
   </div>
-  <div class="w-full p-2 box-border" :key="stockCode">
+  <div class="w-full p-2 box-border h-[calc(100vh-150px)] overflow-y-auto" v-if="show">
     <div v-for="(item, index) in dailyKlineData" :key="index" class="mb-6 bg-white rounded-lg shadow-md overflow-hidden">
       <h3 class="m-0 p-3 bg-[#f7f8fa] border-b border-[#eee] flex items-baseline gap-4">
         <span class="text-base font-semibold text-[#1f2329]">{{ item.date }}</span>
@@ -29,7 +29,7 @@
       <VChart
         :option="getEchartsKlineOption(item.data, item.preClose, item.high, item.low)"
         :style="{
-          height: `${(item.yMax - item.yMin) * 1000}px`,
+          height: `${((item.yMax - item.yMin) / item.yMin) * 10000}px`,
           width: '100%',
           margin: '0 auto',
         }"
@@ -46,21 +46,23 @@ const stockCodeOptions = computed(() => {
     value: el.code,
     label: el.showName,
   }));
-  return [...ops, { value: "all", label: "全" }];
+  return [...ops];
 });
 
 const chartWidth = ref(window.innerWidth);
 const dailyKlineData = ref([]);
 const stockCode = ref(stockCodeOptions.value[0].value);
-
+const show = ref(true);
 async function handleQuery() {
   try {
+    show.value = false;
     const _tiledData = await $fetch("/api/queryMinutesData", {
       method: "get",
       params: {
         fundCode: stockCode.value,
       },
     });
+    show.value = true;
     dailyKlineData.value = transformToDailyKline(_tiledData);
   } catch (error) {
   } finally {
@@ -124,6 +126,10 @@ function transformToDailyKline(aaa) {
     const current = dayEntries[i];
     if (current.hasData) {
       current.preClose = lastValidClose ?? current.open;
+      let _high = Math.max(current.high, current.preClose);
+      let _low = Math.min(current.low, current.preClose);
+      current.amplitude = ((_high - _low) / current.preClose) * 100;
+
       current.change = current.close - current.preClose;
       current.changePercent = (current.change / current.preClose) * 100;
 
@@ -170,8 +176,25 @@ const getEchartsKlineOption = (data, preClose, dayHigh, dayLow) => {
       axisPointer: { type: "cross" },
       formatter: (params) => {
         const timeStr = xAxisData[params[0].dataIndex];
-        const d = params[0].data;
-        return `${timeStr}<br/>开盘：${d[0]}<br/>收盘：${d[1]}<br/>最低：${d[2]}<br/>最高：${d[3]}`;
+        const data = params[0].data;
+
+        if (data[1] === undefined) return ``;
+
+        const 收盘 = data[2];
+        const 开盘 = data[1];
+        const 涨跌 = formatDecimal((100 * (收盘 - 开盘)) / 开盘, 2);
+        const 涨跌幅度 = formatDecimal((100 * (data[4] - data[3])) / data[3], 2);
+
+        return `${timeStr}<br />
+          收盘：${formatNumberToWan(收盘)}&nbsp;
+          开盘：${formatNumberToWan(开盘)}<br/>
+          <span style="color: ${涨跌 > 0 ? "red" : "green"}">${涨跌 > 0 ? "涨" : "跌"}: ${涨跌}%</span>
+          <br/>
+          <span>波幅: ${涨跌幅度}%</span>
+          <br/>
+          最高：${formatNumberToWan(data[4])}&nbsp;
+          最低：${formatNumberToWan(data[3])}`;
+        // return `${timeStr}<br/>开盘：${d[1]}<br/>收盘：${d[2]}<br/>最低：${d[3]}<br/>最高：${d[4]}`;
       },
     },
     grid: { left: "10%", right: "10%", top: "15%", bottom: "15%" },

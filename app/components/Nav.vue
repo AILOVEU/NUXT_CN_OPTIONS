@@ -60,6 +60,10 @@ const navList = [
     name: "ETF",
   },
   {
+    href: "/minutes",
+    name: "分钟",
+  },
+  {
     href: "/futures",
     name: "期货",
   },
