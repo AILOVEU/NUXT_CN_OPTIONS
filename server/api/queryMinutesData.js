@@ -2,11 +2,14 @@
 import csvtojson from "csvtojson";
 import fs from "node:fs";
 const isDeno = process.env.NITRO_PRESET;
-let csvPath = isDeno ? "../public/510500_minutes.csv" : "./public/510500_minutes.csv";
-export async function get_dataJSON() {
+
+export async function get_dataJSON(fundCode) {
+  function getPath(fundCode) {
+    return isDeno ? `../public/minutes_${fundCode}.csv` : `./public/minutes_${fundCode}.csv`;
+  }
   return new Promise((resolve) => {
     try {
-      const converterStream = fs.createReadStream(csvPath);
+      const converterStream = fs.createReadStream(getPath(fundCode));
       csvtojson()
         .fromStream(converterStream)
         .then((res) => {
@@ -21,8 +24,9 @@ export async function get_dataJSON() {
     }
   });
 }
+
 export default eventHandler(async (event) => {
-  const dataJSON = await get_dataJSON();
+  const dataJSON = await get_dataJSON(getQuery(event).fundCode);
   if (!dataJSON?.length) return [];
   return dataJSON;
 });
