@@ -36,7 +36,7 @@ const navList = [
   },
   {
     href: "/filter",
-    name: "排序",
+    name: "过滤",
   },
   {
     href: "/spread",
