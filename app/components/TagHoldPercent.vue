@@ -1,7 +1,7 @@
 <!-- 仓位（仓位占比） -->
 <template>
   <MyTag label="仓" :value="props.value" :cfg="cfg">
-    <div class="inline-block mr-[2px]" style="font-size: 0.6em">{{ props.仓位占比.toFixed(1) }}%</div>
+    <div v-if="props.仓位占比" class="inline-block mr-[2px]" style="font-size: 0.6em">{{ props.仓位占比.toFixed(1) }}%</div>
     <div class="inline-block">
       {{ props.value }}<span v-if="props.总投入" style="font-size: 0.6em">/{{ props.总投入 }}</span>
     </div>

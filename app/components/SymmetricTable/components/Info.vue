@@ -1,14 +1,14 @@
 <template>
   <div v-if="false">{{ props.row }}</div>
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
-  <div v-else-if="props.row._current" style="background-color: #DFF1F1; height: 22px">&nbsp;</div>
-
+  <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <!-- <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
       <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
     </div> -->
+    
     <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-      <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "=>" }}</span>
+      <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "=>" }}</span>
       <!-- <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" /> -->
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
       <TagHoldDiffPercent v-if="isPrint && 持仓" :value="盈亏" :收益率="收益率" />
@@ -17,7 +17,7 @@
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
     <!-- 右上 -->
-    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+    <div v-if="props.showTypeVal !== '空白'" class="absolute top-[0px] right-[0px] max-md:top-[20px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
 
@@ -28,8 +28,14 @@
       <TagRealLevel :value="档位" :档位名称="档位名称" />
       <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
+
+    <div v-if="props.showTypeVal === '空白'" class="flex gap-[5px]">
+      <TagPrice :value="一手价" />
+      <!-- <TagPremium :value="current期权Item['溢价率']" /> -->
+      <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
+    </div>
     <!-- 打印-中间 -->
-    <div v-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]">
+    <div v-if="isPrint && props.showTypeVal !== '空白'" class="flex flex-col justify-center mx-auto gap-[2px]">
       <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />
@@ -54,7 +60,7 @@
       </div>
     </div>
     <!-- 普通-中间 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }">
+    <div v-else-if="!isPrint" class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: [1, 2, 3, 4].includes(props.indexVal.length) }">
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
         <div class="whitespace-nowrap" v-if="!props.indexVal.length || props.indexVal.includes('一手价')">
           <TagPrice :value="一手价" />
@@ -141,7 +147,7 @@ const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexV
 //   千行权价: 3200,
 //   is旧期权: false,
 // };
-const isPrint = computed(() => props.showTypeVal === "打印");
+const isPrint = computed(() => props.showTypeVal === "打印" || props.showTypeVal === "空白");
 const 期权名称 = computed(() => {
   const type = props.isCall ? "C" : "P";
   const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
@@ -259,6 +265,9 @@ const wrapperStyle = computed(() => {
       style = { ...style, background: "rgba(246, 255, 220, 0.35)" };
     } else if (current期权Item.value["持仓变化"]) {
       style = { ...style, background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
+      if (props.showTypeVal === "空白") {
+        style = { display: "none" };
+      }
     }
   }
   return style;
