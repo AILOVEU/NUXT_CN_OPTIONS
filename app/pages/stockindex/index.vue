@@ -1,4 +1,5 @@
 <template>
+  <Nav />
   <!-- <el-table :data="tiledData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
     <el-table-column v-for="col in Object.values(stock_index_fields_dict)" :label="col" align="center" fixed="left" #default="{ $index, row }">
       {{ row[col] }}
@@ -6,6 +7,14 @@
   </el-table> -->
   <!-- {{ tableData.data }} -->
   <el-button @click="handleQuery">获取</el-button>
+  <div class="flex flex-col gap-[5px] py-[15px] text-[2em]">
+    <div class="flex">
+      <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
+    </div>
+    <div class="flex">
+      <div>沽代替正股: {{ formatNumberToWan(持仓Info.沽代替正股) }}</div>
+    </div>
+  </div>
   <el-table :data="tableData.data" size="small" border height="100%" :highlight-current-row="false" ref="tableRef">
     <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center">
       <template #header>
@@ -27,6 +36,7 @@
   </el-table>
 </template>
 <script setup>
+import { formatNumberToWan, formatDecimal } from "~/utils/utils";
 import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict } from "~/data";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
@@ -54,5 +64,29 @@ async function handleQuery() {
   tiledData.value = _data;
   loading.value = false;
 }
+
+const 持仓Info = computed(() => {
+  const 持仓List = tiledData.value.filter((el) => el["持仓"]);
+  let 购代替正股 = 0;
+  持仓List
+    .filter((el) => el["沽购"] === "购")
+    .forEach((el) => {
+      购代替正股 += el["正股价格"] * el["合约单位"] * el["Delta"];
+    });
+  购代替正股 = formatDecimal(购代替正股, 0);
+
+  let 沽代替正股 = 0;
+  持仓List
+    .filter((el) => el["沽购"] === "沽")
+    .forEach((el) => {
+      沽代替正股 += el["正股价格"] * el["合约单位"] * el["Delta"];
+    });
+  沽代替正股 = formatDecimal(沽代替正股, 0);
+
+  return {
+    购代替正股,
+    沽代替正股,
+  };
+});
 // handleQuery();
 </script>

@@ -137,6 +137,7 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
     Object.keys(stock_index_fields_dict).forEach((key) => {
       row[stock_index_fields_dict[key]] = _[key];
     });
+    row["沽购"] = row["期权名称"].includes("沽") ? "沽" : "购";
     row["合约单位"] = 100;
     row["到期年月"] = getYearMonth(row["期权名称"]);
     row["正股代码"] = row["正股"];

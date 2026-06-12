@@ -7,7 +7,7 @@
     <div v-if="持仓" class="absolute top-[0px] left-[0px]">
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
     </div>
-    <div class="py-[30px] flex flex-col gap-[10px] flex-wrap justify-center">
+    <div class="py-[10px] flex flex-col gap-[10px] flex-wrap justify-center scale2">
       <TagPrice :value="一手价" />
       <TagDelta :value="current期权Item['Delta']" />
       <TagIv :value="current期权Item['隐波']" />
@@ -252,7 +252,7 @@ const handleGlassStyle = (el, isEnable) => {
 }
 .scale2 {
   .my-tag-wrapper {
-    font-size: 2.5em;
+    font-size: 1.5em;
   }
   @media not all and (min-width: 768px) {
     .my-tag-wrapper {
