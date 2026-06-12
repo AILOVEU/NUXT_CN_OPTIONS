@@ -31,6 +31,10 @@ const navList = [
     name: "总览",
   },
   {
+    href: "/stockindex",
+    name: "股指",
+  },
+  {
     href: "/custom-filter",
     name: "★彩票",
   },
