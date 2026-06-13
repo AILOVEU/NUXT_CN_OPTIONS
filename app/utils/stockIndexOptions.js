@@ -232,13 +232,15 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
 
   return tiledData;
 }
-export async function get_http_data_stock_index() {
-  // const _tiledData = await get_target_http_data([], "m:11");
+export async function get_http_data_stock_index(正股代码List) {
+  // const _tiledData = await get_target_http_data(正股代码List, "m:11");
   // console.log(JSON.stringify(_tiledData))
   let _tiledData = STOCK_MOCK;
   let 持仓JSON = [];
   let 成交Json = [];
   console.log(_tiledData);
   let tiledData = formatRecord(_tiledData, 持仓JSON, 成交Json);
+  tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"]));
+  console.log("tiledData", tiledData);
   return [tiledData];
 }

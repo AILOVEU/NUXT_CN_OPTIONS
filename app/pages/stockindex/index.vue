@@ -1,39 +1,46 @@
 <template>
-  <Nav />
   <!-- <el-table :data="tiledData" style="width: 100%" size="small" border stripe height="100%" :highlight-current-row="false" ref="tableRef">
     <el-table-column v-for="col in Object.values(stock_index_fields_dict)" :label="col" align="center" fixed="left" #default="{ $index, row }">
       {{ row[col] }}
     </el-table-column>
   </el-table> -->
   <!-- {{ tableData.data }} -->
-  <el-button @click="handleQuery">获取</el-button>
-  <div class="flex flex-col gap-[5px] py-[15px] text-[2em]">
-    <div class="flex">
-      <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
+  <div class="max-md:w-[355%]" v-loading="loading">
+    <Nav />
+    <el-button @click="handleQuery">获取</el-button>
+    <div class="flex flex-col gap-[5px] py-[15px] text-[2em] items-center">
+      <div class="flex">
+        <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
+      </div>
+      <div class="flex">
+        <div>沽代替正股: {{ formatNumberToWan(持仓Info.沽代替正股) }}</div>
+      </div>
     </div>
-    <div class="flex">
-      <div>沽代替正股: {{ formatNumberToWan(持仓Info.沽代替正股) }}</div>
+    <div class="w-full pb-[12px]">
+      <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
     </div>
+    <Capture title="股指T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
+      <el-table :data="tableData.data" size="small" border height="100%" :highlight-current-row="false" ref="tableRef">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center">
+          <template #header>
+            <div v-if="type" class="leading-[1.2]">
+              <div class="leading-[1.2]">{{ type }}{{ label }}</div>
+            </div>
+            <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+              <div>{{ label }}</div>
+              <el-button link>⬇</el-button>
+            </div>
+          </template>
+          <template #default="{ row }" v-if="label === '期权'">
+            <Center :row="row" />
+          </template>
+          <template #default="{ row }" v-if="label !== '期权'">
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tiledData" mode="hold" :indexVal="[]" showTypeVal="精简" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </Capture>
   </div>
-  <el-table :data="tableData.data" size="small" border height="100%" :highlight-current-row="false" ref="tableRef">
-    <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center">
-      <template #header>
-        <div v-if="type" class="leading-[1.2]">
-          <div class="leading-[1.2]">{{ type }}{{ label }}</div>
-        </div>
-        <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
-          <div>{{ label }}</div>
-          <el-button link>⬇</el-button>
-        </div>
-      </template>
-      <template #default="{ row }" v-if="label === '期权'">
-        <Center :row="row" />
-      </template>
-      <template #default="{ row }" v-if="label !== '期权'">
-        <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tiledData" mode="hold" :indexVal="[]" showTypeVal="精简" />
-      </template>
-    </el-table-column>
-  </el-table>
 </template>
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";
@@ -42,7 +49,18 @@ import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
 import Info from "./components/Info";
 import _ from "lodash";
+const captureRef = ref();
+const tableRef = ref();
 const deadline_list = ["2606", "2607", "2608", "2609", "2612", "2703"];
+const stockCodeOptions = computed(() => {
+  let ops = STOCK_INDEX_OPTIONS_MAP.map((el) => ({
+    value: el.code,
+    label: el.code,
+  }));
+  return ops;
+  return [...ops, { value: "all", label: "全" }];
+});
+const stockCode = ref(stockCodeOptions.value[0].value);
 const reversed_deadline_list = _.reverse([...deadline_list]);
 const tableData = reactive({
   columns: [
@@ -59,7 +77,7 @@ const tiledData = ref([]);
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  let [data, _data] = await queryStockIndexGrid([STOCK_INDEX_OPTIONS_MAP.map((el) => el["code"])]);
+  let [data, _data] = await queryStockIndexGrid([stockCode.value]);
   tableData.data = data;
   tiledData.value = _data;
   loading.value = false;
@@ -88,5 +106,11 @@ const 持仓Info = computed(() => {
     沽代替正股,
   };
 });
-// handleQuery();
+handleQuery();
+function handleStockCodeChange() {
+  tableRef.value.setScrollTop(0);
+  setTimeout(() => {
+    handleQuery();
+  });
+}
 </script>
