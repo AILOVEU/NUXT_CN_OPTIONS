@@ -8,9 +8,10 @@
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
     </div>
     <div class="flex flex-col gap-[5px] flex-wrap justify-end scale2">
-      <TagPrice :value="一手价" />
+      <!-- <TagPrice :value="一手价" />
       <TagDelta :value="current期权Item['Delta']" />
-      <TagIv :value="current期权Item['隐波']" />
+      <TagIv :value="current期权Item['隐波']" /> -->
+      {{ current期权Item }}
     </div>
   </div>
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
@@ -138,7 +139,7 @@ const wrapperStyle = computed(() => {
   };
   let style = {
     padding: isPrint.value ? "35px 0 5px 0" : "25px 0",
-    height: isPrint.value ? "83px" : isMobile ? "105px" : "105px",
+    height: isPrint.value ? "83px" : isMobile ? "105px" : "405px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
