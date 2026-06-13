@@ -3,10 +3,11 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
+import { downloadPrintPdf } from "~/utils/downloadPdf";
 const props = defineProps(["title", "style"]);
 const todayStr = computed(() => `(${dayjs().format("YYYY-MM-DD_HH:mm:ss")})`);
 const captureRef = ref(null);
-async function download() {
+async function getDataURL() {
   // 服务端直接返回
   if (process.server) return;
 
@@ -24,11 +25,22 @@ async function download() {
       logging: false,
     });
 
-    // 转成图片并下载
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = `${props.title}${todayStr.value}.png`;
-    link.click();
+    return canvas.toDataURL("image/jpeg", 0.97);
+  } catch (e) {
+    console.error("截图失败", e);
+  }
+}
+async function download() {
+  try {
+    let dataUrl = await getDataURL();
+    // downloadPrintPdf([dataUrl, dataUrl]);
+    if (dataUrl) {
+      // 转成图片并下载
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `${props.title}${todayStr.value}.png`;
+      link.click();
+    }
   } catch (e) {
     console.error("截图失败", e);
   }
@@ -36,5 +48,6 @@ async function download() {
 
 defineExpose({
   download,
+  getDataURL,
 });
 </script>

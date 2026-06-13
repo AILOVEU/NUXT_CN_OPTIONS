@@ -19,6 +19,7 @@
     "html2canvas": "^1.4.1",
     "iconv-lite": "^0.7.0",
     "json2csv": "6.0.0-alpha.2",
+    "jspdf": "^4.2.1",
     "lodash": "^4.17.21",
     "nuxt": "^4.2.1",
     "nuxt-charts": "^0.2.4",

@@ -2,6 +2,7 @@
   <el-affix :offset="0">
     <div class="flex justify-between text-[12px] mb-[12px] gap-[20px] bg-white">
       <div class="flex gap-[12px] items-center">
+        <el-button @click="() => handleDownload()" class="flex-1" type="primary" :disabled="isMobile"> 下载 </el-button>
         <el-button @click="() => handleQuery(false)" class="flex-1" type="primary" :disabled="isMobile"> 刷新持仓 </el-button>
         <el-button @click="() => handleQuery(true)" class="flex-1" :disabled="isMobile"> 全部刷新 </el-button>
         <div>更新时间<br />{{ updateTime }}</div>
@@ -21,6 +22,7 @@ import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
 import dayjs from "dayjs";
+const emits = defineEmits(["download"]);
 const { setGlobalLoading, isMobile } = useGlobal();
 const route = useRoute();
 const router = useRouter();
@@ -109,6 +111,9 @@ function handleQuery(catchAll = false) {
     .finally(() => {
       setGlobalLoading(false);
     });
+}
+function handleDownload() {
+  emits("download");
 }
 </script>
 <style scoped>
