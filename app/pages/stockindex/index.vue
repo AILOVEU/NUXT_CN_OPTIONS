@@ -140,7 +140,7 @@ const 持仓Info = computed(() => {
 // 切换代码
 function handleStockCodeChange() {
   tableList.value = [stockCode.value];
-  handleQuery();
+  // handleQuery();
 }
 
 // 收集子组件ref

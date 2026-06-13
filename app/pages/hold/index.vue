@@ -10,7 +10,7 @@
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
       <div class="mx-auto">
         <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型">
-          <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+          <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="filterTableDataByStockCode(item)" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
         </Capture>
       </div>
     </div>
@@ -49,7 +49,7 @@ const stockCodeOptions = computed(() => {
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [symmetricData, comboList, tiledData, filteredOptionsList] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  const [symmetricData, comboList, tiledData, filteredOptionsList] = await queryGrid(OPTIONS_MAP.map((el) => el.code));
   tableData.symmetricData = symmetricData || [];
   tableData.tiledData = tiledData;
   tableData.comboList = comboList;
@@ -59,9 +59,14 @@ async function handleQuery() {
 handleQuery();
 function handleStockCodeChange() {
   tableList.value = [stockCode.value];
-  setTimeout(() => {
-    handleQuery();
-  });
+  // setTimeout(() => {
+  //   handleQuery();
+  // });
+}
+// 根据代码过滤表格数据
+function filterTableDataByStockCode(code) {
+  if (stockCode.value === "all") return tableData.symmetricData;
+  return tableData.symmetricData.filter((el) => el["正股代码"] === code);
 }
 
 const itemRefs = ref([]);
@@ -73,7 +78,7 @@ async function handleDownload() {
   itemRefs.value = [];
   // 赋值全量列表
   tableList.value = OPTIONS_MAP.map((el) => el.code);
-
+  stockCode.value = "";
   // 等待DOM&组件完全渲染完成
   await nextTick();
 
@@ -84,6 +89,7 @@ async function handleDownload() {
   // 切回当前选中项
   tableList.value = [stockCode.value];
   showTypeVal.value = "";
+  stockCode.value = "all";
 }
 </script>
 <style lang="less">
