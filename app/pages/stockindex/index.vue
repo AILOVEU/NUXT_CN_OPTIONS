@@ -160,7 +160,6 @@ async function handleDownload() {
   // 等待DOM&组件完全渲染完成
   await nextTick();
 
-  console.log(itemRefs.value);
   // 导出base64并下载PDF
   const base64List = await Promise.all(itemRefs.value.map((c) => c.getDataURL()));
   await downloadPrintPdf(base64List);

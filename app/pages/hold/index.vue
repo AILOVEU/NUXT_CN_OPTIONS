@@ -1,15 +1,17 @@
 <template>
   <div v-loading="tableData.loading || globalLoading.value" :style="{ width: isMobile && mode === 'hold' ? '255%' : '100%' }">
     <div>
-      <Nav v-if="mode === 'hold'" />
+      <Nav v-if="mode === 'hold'" @download="handleDownload" />
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
 
     <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
-      <div class="mx-auto overflow-x-auto">
-        <SymmetricTable :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+      <div class="mx-auto">
+        <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型">
+          <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="tableData.symmetricData" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+        </Capture>
       </div>
     </div>
   </div>
@@ -19,6 +21,7 @@ import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import { queryGrid } from "~/utils/queryGrid.js";
 import { useGlobal } from "~/stores/useGlobal.js";
+const showTypeVal = ref();
 const { globalLoading, isMobile } = useGlobal();
 
 // formData ： 筛选条件
@@ -55,9 +58,32 @@ async function handleQuery() {
 }
 handleQuery();
 function handleStockCodeChange() {
+  tableList.value = [stockCode.value];
   setTimeout(() => {
     handleQuery();
   });
+}
+
+const itemRefs = ref([]);
+const tableList = ref([stockCode.value]);
+// 批量下载PDF：改用nextTick，重置ref，时序更稳定
+async function handleDownload() {
+  showTypeVal.value = "打印";
+  // 清空旧引用，防止脏数据
+  itemRefs.value = [];
+  // 赋值全量列表
+  tableList.value = OPTIONS_MAP.map((el) => el.code);
+
+  // 等待DOM&组件完全渲染完成
+  await nextTick();
+
+  // 导出base64并下载PDF
+  const base64List = await Promise.all(itemRefs.value.map((c) => c.getDataURL()));
+  await downloadPrintPdf(base64List);
+
+  // 切回当前选中项
+  tableList.value = [stockCode.value];
+  showTypeVal.value = "";
 }
 </script>
 <style lang="less">

@@ -43,12 +43,21 @@ import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
-const props = defineProps(["mode", "symmetricData", "tiledData", "tableTitle"]);
+const props = defineProps(["mode", "symmetricData", "tiledData", "tableTitle", "showTypeVal"]);
 const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = ["精简", "打印", "空白"].map((el) => ({ label: el, value: el }));
 const showTypeVal = ref("精简");
+watch(
+  () => props.showTypeVal,
+  () => {
+    showTypeVal.value = props.showTypeVal;
+  },
+  {
+    immediate: true,
+  }
+);
 const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位", "持仓量", "增仓量"].map((el) => ({ label: el, value: el }));
 const indexVal = ref([]);
 const columnVal = ref([]);
@@ -72,7 +81,7 @@ const showColumns = computed(() => {
 function getWrapperColumnWidth(label) {
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
-  return showTypeVal.value === "打印" ||  showTypeVal.value === "空白" ? "340px" : "172px";
+  return showTypeVal.value === "打印" || showTypeVal.value === "空白" ? "340px" : "172px";
 }
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
