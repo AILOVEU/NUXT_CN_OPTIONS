@@ -30,6 +30,7 @@ function handleHoldData(dataList, 正股代码List) {
     let 到期年月 = dayjs(item["到期年月"], "YYMM").format("YY年M月");
     month_list.forEach((yearmonth) => {
       let 实际年月 = dayjs(yearmonth, "YYMM").format("YY年M月");
+      console.log("实际年月", 实际年月);
       let call_期权名称 = item["期权名称"].replace(到期年月, 实际年月);
       let put_期权名称 = item["期权名称"].replace(到期年月, 实际年月).replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
