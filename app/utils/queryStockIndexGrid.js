@@ -2,6 +2,12 @@ import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import { STOCK_INDEX_OPTIONS_MAP } from "~/data";
+function formatYm(str) {
+  // 截取前两位=年，后两位=月
+  const year = str.slice(0, 2);
+  const month = Number(str.slice(2, 4));
+  return `${year}年${month}月`;
+}
 
 function handleHoldData(dataList, 正股代码List) {
   // const [month_list, month_index] = get_fist_季度月份(dataList);
@@ -27,10 +33,9 @@ function handleHoldData(dataList, 正股代码List) {
     //   P3月期权名称: "50ETF沽3月3000",
     //   C6月期权名称: "50ETF购6月3000",
     //   P6月期权名称: "50ETF沽6月3000",
-    let 到期年月 = dayjs(item["到期年月"], "YYMM").format("YY年M月");
+    let 到期年月 = formatYm(item["到期年月"]);
     month_list.forEach((yearmonth) => {
-      let 实际年月 = dayjs(yearmonth, "YYMM").format("YY年M月");
-      console.log("实际年月", 实际年月);
+      let 实际年月 = formatYm(yearmonth);
       let call_期权名称 = item["期权名称"].replace(到期年月, 实际年月);
       let put_期权名称 = item["期权名称"].replace(到期年月, 实际年月).replace("购", "沽");
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
