@@ -47,10 +47,16 @@ const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexV
 //   千行权价: 3200,
 //   is旧期权: false,
 // };
+function formatYm(str) {
+  // 截取前两位=年，后两位=月
+  const year = str.slice(0, 2);
+  const month = Number(str.slice(2, 4));
+  return `${year}年${month}月`;
+}
 const isPrint = computed(() => props.showTypeVal === "打印");
 const 期权名称 = computed(() => {
   const type = props.isCall ? "C" : "P";
-  const month = dayjs(props.date, "YYMM").format("YY年M月");
+  const month = formatYm(props.date);
   return props.row[type + month + "期权名称"];
 });
 const current期权Item = computed(() => {
