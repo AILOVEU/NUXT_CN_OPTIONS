@@ -163,6 +163,8 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
     ].forEach((key) => {
       row[key] = row[key] ? +row[key] : 0;
     });
+    row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
+
     // row["沽购"] = row["期权名称"].includes("购") ? "购" : "沽";
 
     // row["Delta"] = formatDecimal(row["Delta"], 3);
@@ -225,10 +227,10 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
   //       总仓位 += el["一手价"] * el["持仓"];
   //     }
   //   });
-  tiledData = tiledData.filter((row) => {
-    const 溢价 = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
-    return Math.abs(溢价) < 10;
-  });
+  // tiledData = tiledData.filter((row) => {
+  //   const 溢价 = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
+  //   return Math.abs(溢价) < 10;
+  // });
 
   return tiledData;
 }
