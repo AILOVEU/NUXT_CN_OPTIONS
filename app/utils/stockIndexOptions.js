@@ -238,9 +238,7 @@ export async function get_http_data_stock_index(正股代码List) {
   let _tiledData = STOCK_MOCK;
   let 持仓JSON = [];
   let 成交Json = [];
-  console.log(_tiledData);
   let tiledData = formatRecord(_tiledData, 持仓JSON, 成交Json);
   tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"]));
-  console.log("tiledData", tiledData);
   return [tiledData];
 }

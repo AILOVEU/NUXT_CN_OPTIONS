@@ -84,11 +84,11 @@ function handleHoldData(dataList, 正股代码List) {
     const bSort = STOCK_INDEX_OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
     return aSort - bSort;
   });
-  console.log("tableData", tableData);
   return tableData;
 }
 export async function queryStockIndexGrid(正股代码List, useCatch) {
   const [tiledData] = await get_http_data_stock_index(正股代码List, useCatch);
   const tableData = handleHoldData(tiledData, 正股代码List);
+  console.log("tableData - tiledData", tableData, tiledData);
   return [tableData, tiledData];
 }
