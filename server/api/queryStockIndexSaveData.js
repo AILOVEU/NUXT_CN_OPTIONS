@@ -1,0 +1,18 @@
+import fs from "node:fs";
+import { Parser } from "json2csv";
+const isDeno = process.env.NITRO_PRESET;
+let csvPath = isDeno ? "../public/stockindexdata.csv" : "./public/stockindexdata.csv";
+export default eventHandler(async (event) => {
+  const body = await readBody(event);
+  const jsonObj = body.data;
+  const parse = new Parser();
+  let content = parse.parse(jsonObj);
+  fs.writeFile(csvPath, content, "utf8", function (err) {
+    if (err) {
+      console.warn("An error occured while writing JSON Object to File.");
+      return console.warn(err);
+    }
+    console.log("JSON file has been saved.");
+  });
+  return {};
+});

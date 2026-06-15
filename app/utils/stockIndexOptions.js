@@ -16,7 +16,7 @@ function sleep(time) {
 async function get_target_http_data(持仓JSON, fs) {
   return new Promise(async (resolve, reject) => {
     let curr_page = 1;
-    const pz = 100;
+    const pz = 20;
     let tiledData = [];
     while (curr_page < 50) {
       // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
@@ -56,7 +56,7 @@ async function get_target_http_data(持仓JSON, fs) {
         reject(false);
       });
       console.log("fs query", fs, curr_page);
-      await sleep(getRandomInt(0.5, 1) * 1000);
+      await sleep(getRandomInt(2, 4) * 1000);
       if (!res?.["data"]) {
         console.log(fs + "请求完成" + tiledData.length);
         break;
@@ -89,44 +89,19 @@ function getYearMonth(str) {
 
 const 持仓JSON = [
   {
-    期权名称: "沪深300购26年6月4800",
+    期权名称: "上证50购26年6月3000",
     持仓: 1,
-  },
-  {
-    期权名称: "沪深300购26年6月4850",
-    持仓: 2,
-  },
-  {
-    期权名称: "沪深300购26年6月4900",
-    持仓: 3,
-  },
-  {
-    期权名称: "沪深300沽26年6月4600",
-    持仓: 1,
-  },
-  {
-    期权名称: "沪深300沽26年6月4550",
-    持仓: 2,
-  },
-  {
-    期权名称: "上证50购26年6月2900",
-    持仓: 2,
-  },
-  {
-    期权名称: "上证50购26年6月2950",
-    持仓: 2,
+    成本: 400,
   },
   {
     期权名称: "上证50购26年6月3050",
-    持仓: 1,
+    持仓: 6,
+    成本: 250,
   },
   {
-    期权名称: "上证50沽26年6月2800",
-    持仓: 2,
-  },
-  {
-    期权名称: "中证1000购26年6月8600",
-    持仓: 1,
+    期权名称: "沪深300购26年6月5100",
+    持仓: 4,
+    成本: 180,
   },
 ];
 function formatRecord(_tiledData, _持仓JSON, 成交Json) {
@@ -143,24 +118,28 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
     row["正股代码"] = row["正股"];
     row["一手价"] = formatDecimal(row["最新价"] * row["合约单位"], 0);
     row["持仓"] = 持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["持仓"] || undefined;
-    [
-      // 旧字段格式化
-      //   "最新价",
-      //   "昨收",
-      //   "买一",
-      //   "卖一",
-      //   "持仓量",
-      //   "行权价",
-      //   "日增",
-      //   "隐波",
-      //   "溢价率",
-      //   "杠杆",
-      //   "Delta",
-      //   "Gamma",
-      //   "Vega",
-      //   "Theta",
-      "正股价格",
-    ].forEach((key) => {
+    row["一手成本价"] = 持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["成本"] || undefined;
+    row["一手成本价"] = row["一手成本价"] ? row["一手成本价"] + 30 : undefined;
+    row["一手涨跌价"] = formatDecimal(row["涨跌额"] * row["合约单位"], 0);
+    row["盈亏"] = (row["一手价"] - row["一手成本价"]) * row["持仓"];
+    row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
+
+    // 旧字段格式化
+    //   "最新价",
+    //   "昨收",
+    //   "买一",
+    //   "卖一",
+    //   "持仓量",
+    //   "行权价",
+    //   "日增",
+    //   "隐波",
+    //   "溢价率",
+    //   "杠杆",
+    //   "Delta",
+    //   "Gamma",
+    //   "Vega",
+    //   "Theta",
+    ["涨跌幅", "正股价格", "隐波"].forEach((key) => {
       row[key] = row[key] ? +row[key] : 0;
     });
     row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
@@ -234,10 +213,22 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
 
   return tiledData;
 }
-export async function get_http_data_stock_index(正股代码List) {
-  // const _tiledData = await get_target_http_data(正股代码List, "m:11");
-  // console.log(JSON.stringify(_tiledData))
-  let _tiledData = STOCK_MOCK;
+export async function get_http_data_stock_index(正股代码List, useCatch) {
+  let _tiledData = [];
+  if (useCatch) {
+    try {
+      _tiledData = await $fetch("/api/queryStockIndexDataJson");
+    } catch (e) {
+      console.warn("e", e);
+      _tiledData = [];
+    }
+  } else {
+    _tiledData = await get_target_http_data(正股代码List, "m:11");
+    $fetch("/api/queryStockIndexSaveData", {
+      method: "post",
+      body: { data: _tiledData },
+    });
+  }
   let 持仓JSON = [];
   let 成交Json = [];
   let tiledData = formatRecord(_tiledData, 持仓JSON, 成交Json);

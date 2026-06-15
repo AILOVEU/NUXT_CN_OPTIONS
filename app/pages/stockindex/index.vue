@@ -1,7 +1,7 @@
 <template>
   <div class="max-md:w-[355%]" v-loading="loading">
     <Nav @download="handleDownload" />
-    <el-button @click="handleQuery">获取</el-button>
+    <el-button @click="() => handleQuery(false)">获取</el-button>
     <div class="flex flex-col gap-[5px] py-[15px] items-center">
       <div class="flex text-[2em]">
         <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
@@ -18,12 +18,15 @@
     <div class="w-full pb-[12px]">
       <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
     </div>
-    <div class="w-full pb-[12px] flex gap-[10px] items-center"><div class='w-[80px]'>最大溢价:</div><el-input v-model="max溢价Val" /></div>
+    <div class="w-full pb-[12px] flex gap-[10px] items-center">
+      <div class="w-[80px]">最大溢价:</div>
+      <el-input v-model="max溢价Val" />
+    </div>
 
     <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
-    <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
-      <el-table :data="filterTableDataByStockCode(item)" size="small" border height="100%" :highlight-current-row="false" ref="tableRef">
-        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center">
+    <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', margin: '0 auto', maxWidth: '100%' }">
+      <el-table :data="filterTableDataByStockCode(item)" size="small" border height="100%" :highlight-current-row="false" ref="tableRef" style="margin: 0 auto">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="'130px'">
           <template #header>
             <div v-if="type" class="leading-[1.2]">
               <div class="leading-[1.2]">{{ type }}{{ label }}</div>
@@ -91,10 +94,10 @@ const loading = ref(false);
 const itemRefs = ref([]);
 
 // 查询数据
-async function handleQuery() {
+async function handleQuery(useCatch = true) {
   loading.value = true;
   const allCodeList = STOCK_INDEX_OPTIONS_MAP.map((el) => el["code"]);
-  let [data, _data] = await queryStockIndexGrid(allCodeList);
+  let [data, _data] = await queryStockIndexGrid(allCodeList, useCatch);
   tableData.data = data;
   tiledData.value = _data;
   loading.value = false;
@@ -102,7 +105,12 @@ async function handleQuery() {
 
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {
-  return tableData.data.filter((el) => el["正股代码"] === code).filter((el) => Math.abs(el["行权价溢价"]) < max溢价Val.value);
+  return tableData.data
+    .filter((el) => el["正股代码"] === code)
+    .filter((el) => {
+      if (el["_split"] || el["_current"]) return true;
+      return Math.abs(el["行权价溢价"]) < max溢价Val.value;
+    });
 }
 
 // 持仓统计计算：优化重复遍历，只遍历一次原始列表
@@ -173,3 +181,11 @@ async function handleDownload() {
 // 初始加载
 handleQuery();
 </script>
+<style lang="less">
+.el-table--small .cell {
+  padding: 0 0px !important;
+}
+.el-table--small .el-table__cell {
+  padding: 0px 0 !important;
+}
+</style>

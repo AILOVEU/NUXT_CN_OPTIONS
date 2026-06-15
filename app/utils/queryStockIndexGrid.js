@@ -95,6 +95,5 @@ function handleHoldData(dataList, 正股代码List) {
 export async function queryStockIndexGrid(正股代码List, useCatch) {
   const [tiledData] = await get_http_data_stock_index(正股代码List, useCatch);
   const tableData = handleHoldData(tiledData, 正股代码List);
-  console.log("tableData - tiledData", tableData, tiledData);
   return [tableData, tiledData];
 }
