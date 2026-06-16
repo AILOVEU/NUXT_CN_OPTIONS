@@ -12,7 +12,7 @@
     <div class="h-[calc(100%-120px)]">
       <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
         <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ props.tableTitle || "" }}{{ dayStr }}</div>
-        <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+        <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary :summary-method="getSummary">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
               <div v-if="type" class="leading-[1.2]">
@@ -125,6 +125,45 @@ watch(
   }
 );
 
+// 通用合计方法（永远不用改）
+const getSummary = ({ columns, data }) => {
+  const summaryProps = [];
+  return columns.map((col, index) => {
+    // 第一列显示“合计”
+    // if (index === 0) return "合计";
+    console.log("col", col, data);
+    const type = col.property?.includes("C") ? "C" : "P";
+    const 到期时间 = col.property.replace("C", "").replace("P", "");
+    const month = dayjs(到期时间, "YYYY-MM-DD").format("M月");
+    const propName = type + month + "期权名称";
+    // props.tiledData
+    const curColOptionNameList = [];
+    data.forEach((el) => {
+      el[propName] && curColOptionNameList.push(el[propName]);
+    });
+    const curColOptionList = props.tiledData?.filter((el) => curColOptionNameList.includes(el["期权名称"]));
+    let sum = 0;
+    curColOptionList
+      .filter((el) => el["持仓"])
+      .forEach((el) => {
+        sum += el["仓位"];
+      });
+    return sum || "";
+    //     const 期权名称 = computed(() => {
+    //   const type = props.isCall ? "C" : "P";
+    //   const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
+    //   return props.row[type + month + "期权名称"];
+    // });
+    // 当前列在合计列表里 → 求和
+    // if (summaryProps.includes(col.property)) {
+    //   return data.reduce((sum, row) => sum + (row[col.property] || 0), 0);
+    // }
+
+    // 不在列表 → 空
+    return "";
+  });
+};
+
 const captureRef = ref(null);
 </script>
 <style lang="less">
@@ -140,6 +179,12 @@ const captureRef = ref(null);
 }
 .el-radio-button {
   flex: 1;
+}
+// 新增：合计行全局放大字体
+.el-table__footer-wrapper .cell {
+  font-size: 24px; // 按需调整大小
+  font-weight: 600; // 可选加粗
+  height: 30px;
 }
 // .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
 //   border: 0;
