@@ -3,39 +3,34 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <!-- <div v-if="!持仓" class="absolute top-[0px] left-[0px]">
-      <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" />
-    </div> -->
-    
+    <!-- 左上 -->
     <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
       <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "=>" }}</span>
-      <!-- <TagIcon :value="期权名称" :is彩票="is彩票" :is禁止加仓="is禁止加仓" /> -->
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
       <TagHoldDiffPercent v-if="isPrint && 持仓" :value="盈亏" :收益率="收益率" />
     </div>
+    <!-- 普通-左下 -->
     <div v-if="isShow持仓 && !isPrint" class="absolute left-0 bottom-0">
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
-    <!-- 右上 -->
+    <!-- 普通|| 打印 - 右上 -->
     <div v-if="props.showTypeVal !== '空白'" class="absolute top-[0px] right-[0px] max-md:top-[20px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
-
-    <!-- <div v-if="!isPrint" class="absolute bottom-[1px] left-[0px]">
-      <TagPriceInner :value="current期权Item['一手内在价'] || 0" />
-    </div> -->
+    <!-- 普通右下 -->
     <div v-if="!isPrint" class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]">
       <TagRealLevel :value="档位" :档位名称="档位名称" />
-      <!-- <TagPriceTime :value="current期权Item['一手时间价']" /> -->
     </div>
-
-    <div v-if="props.showTypeVal === '空白'" class="flex gap-[5px]">
+    <div v-if="current期权Item['_限制展示']">
       <TagPrice :value="一手价" />
-      <!-- <TagPremium :value="current期权Item['溢价率']" /> -->
+    </div>
+    <!-- 空白-中间 -->
+    <div v-else-if="props.showTypeVal === '空白'" class="flex gap-[5px]">
+      <TagPrice :value="一手价" />
       <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
     </div>
     <!-- 打印-中间 -->
-    <div v-if="isPrint && props.showTypeVal !== '空白'" class="flex flex-col justify-center mx-auto gap-[2px]">
+    <div v-else-if="isPrint && props.showTypeVal !== '空白'" class="flex flex-col justify-center mx-auto gap-[2px]">
       <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
         <div class="whitespace-nowrap">
           <TagPrice :value="一手价" />

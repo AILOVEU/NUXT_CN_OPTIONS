@@ -30,7 +30,7 @@ export function filter是否保留行(symmetricData, tiledData, filteredTiledDat
       return { ...item, _flag: "_current" }; // 特殊行标记flag为null
     }
     // 计算普通行的flag
-    const flag = filteredTiledData.some((el) => item["行内期权名称List"].includes(el["期权名称"]));
+    const flag = filteredTiledData.filter((el) => !el["_限制展示"]).some((el) => item["行内期权名称List"].includes(el["期权名称"]));
     return { ...item, _flag: flag };
   });
 

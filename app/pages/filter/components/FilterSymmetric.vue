@@ -7,7 +7,7 @@
     </div>
 
     <div class="h-[calc(100vh-100px)] max-md:h-[calc(220vh-200px)] flex justify-center">
-      <SymmetricTable tableTitle="定制筛选" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="chance" />
+      <SymmetricTable tableTitle="杠杆>20筛选" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData" mode="chance" />
     </div>
   </div>
 </template>
@@ -47,7 +47,13 @@ async function handleQuery() {
 }
 handleQuery();
 const filteredTiledData = computed(() => {
-  return tableData.tiledData.filter((el) => props.checkIsChance(el));
+  return tableData.tiledData.map((el) => {
+    if (props.checkIsChance(el)) return el;
+    return {
+      ...el,
+      _限制展示: true,
+    };
+  });
 });
 const filteredSymmetricData = computed(() => {
   return filter是否保留行(tableData.symmetricData, tableData.tiledData, filteredTiledData.value);

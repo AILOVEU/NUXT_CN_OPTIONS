@@ -37,12 +37,8 @@ const navList = [
     name: "股指",
   },
   {
-    href: "/custom-filter",
-    name: "★彩票",
-  },
-  {
     href: "/filter",
-    name: "过滤",
+    name: "筛选",
   },
   {
     href: "/spread",

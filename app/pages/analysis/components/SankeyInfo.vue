@@ -130,7 +130,13 @@ handleQuery();
 
 // 过滤数据
 const filteredTiledData = computed(() => {
-  return tableData.tiledData.filter((el) => checkIsFilter(el) && (el["持仓"] || (!el["持仓"] && el["持仓变化"])));
+  return tableData.tiledData.map((el) => {
+    if (checkIsFilter(el) && (el["持仓"] || (!el["持仓"] && el["持仓变化"]))) return el;
+    return {
+      ...el,
+      _限制展示: true,
+    };
+  });
 });
 
 const filteredSymmetricData = computed(() => {
