@@ -12,7 +12,7 @@
     <div class="h-[calc(100%-120px)]">
       <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
         <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ props.tableTitle || "" }}{{ dayStr }}</div>
-        <el-table :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary :summary-method="getSummary">
+        <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary :summary-method="getSummary">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
               <div v-if="type" class="leading-[1.2]">
@@ -181,10 +181,12 @@ const captureRef = ref(null);
   flex: 1;
 }
 // 新增：合计行全局放大字体
-.el-table__footer-wrapper .cell {
-  font-size: 24px; // 按需调整大小
-  font-weight: 600; // 可选加粗
-  height: 30px;
+.symmetic-table {
+  .el-table__footer-wrapper .cell {
+    font-size: 24px; // 按需调整大小
+    font-weight: 600; // 可选加粗
+    height: 30px;
+  }
 }
 // .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
 //   border: 0;
