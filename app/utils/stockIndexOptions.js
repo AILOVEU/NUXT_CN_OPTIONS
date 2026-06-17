@@ -113,6 +113,11 @@ const 持仓JSON = [
     持仓: 1,
     成本: 860,
   },
+  {
+    期权名称: "中证1000沽26年6月8400",
+    持仓: 1,
+    成本: 1060,
+  },
 ];
 function formatRecord(_tiledData, _持仓JSON, 成交Json) {
   let tiledData = [];
