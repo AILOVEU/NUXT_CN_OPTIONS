@@ -143,7 +143,10 @@ const 单日损耗Val = computed(() => optionItem.value["单日损耗"]);
 // 持仓相关
 const 持仓 = computed(() => optionItem.value["持仓"]);
 const 持仓变化 = computed(() => optionItem.value["持仓变化"]);
-const isShow持仓 = computed(() => !!持仓.value || !!持仓变化.value);
+const isShow持仓 = computed(() => {
+  if (props.showTypeVal === "空白" && !持仓.value) return false;
+  return !!持仓.value || !!持仓变化.value;
+});
 const 盈亏 = computed(() => (一手价.value - 一手成本价.value) * (持仓.value || 0));
 const 盈亏百分比 = computed(() => (持仓.value ? (一手价.value - 一手成本价.value) / 一手成本价.value : 0));
 const 仓位 = computed(() => (持仓.value || 0) * (一手价.value || 0));
@@ -209,7 +212,7 @@ const wrapperStyle = computed(() => {
         finalStyle = { ...finalStyle, ...holdBgStyle };
       } else if (item["持仓变化"]) {
         finalStyle = { ...finalStyle, ...holdChangeStyle };
-        if (props.showTypeVal === "空白") finalStyle.display = "none";
+        if (props.showTypeVal === "空白") finalStyle = { ...baseStyle };
       }
       break;
   }
