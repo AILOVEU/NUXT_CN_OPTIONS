@@ -176,8 +176,8 @@ export function getWeekMonday(dateStr) {
 
   // 补零格式化
   const y = target.getFullYear();
-  const m = String(target.getMonth() + 1).padStart(2, '0');
-  const d = String(target.getDate()).padStart(2, '0');
+  const m = String(target.getMonth() + 1).padStart(2, "0");
+  const d = String(target.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 

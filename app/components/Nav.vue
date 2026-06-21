@@ -70,7 +70,7 @@ const navList = [
     name: "期货",
   },
   {
-    href: "/calendar",
+    href: "/calendar2",
     name: "日历",
   },
   {
