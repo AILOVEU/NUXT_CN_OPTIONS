@@ -6,11 +6,16 @@
   </MyTag>
 </template>
 <script setup>
-const props = defineProps(["value", "涨跌率", "hiddenPercent"]);
-const cfg = [
-  [-999999, -50, "bg-green"],
-  [-50, 0, "green"],
-  [0, 100, "red"],
-  [100, 999999, "bg-red"],
-];
+const props = defineProps(["value", "涨跌率", "hiddenPercent", "isGray"]);
+const cfg = computed(() => {
+  if (props.isGray) {
+    return [[-999999, 999999, "gray"]];
+  }
+  return [
+    [-999999, -50, "bg-green"],
+    [-50, 0, "green"],
+    [0, 100, "red"],
+    [100, 999999, "bg-red"],
+  ];
+});
 </script>

@@ -136,7 +136,7 @@ const tableData = reactive({
   loading: false,
 });
 async function handleQuery() {
-  if (props.data?.length) {
+  if (Array.isArray(props.data)) {
     tableData.tiledData = props.data;
     return;
   }

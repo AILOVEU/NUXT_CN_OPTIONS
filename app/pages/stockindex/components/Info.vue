@@ -3,21 +3,24 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative border-[1px] border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px]">
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
       <div class="inline-block text-[12px]">{{ 盈亏 }}</div>
       <!-- <TagHoldDiffPercent :value="盈亏" :收益率="收益率" /> -->
     </div>
-    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]" v-if="!current期权Item['_限制展示']">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
-    <div class="flex flex-col gap-[5px] flex-wrap justify-end scale2">
+    <div class="flex flex-col gap-[5px] flex-wrap justify-end stockindex_scale2" v-if="!current期权Item['_限制展示']">
       <TagPrice :value="一手价" />
       <div class="flex gap-[5px] flex-nowrap justify-center">
         <TagDelta :value="current期权Item['Delta']" />
         <TagIv :value="current期权Item['隐波']" />
       </div>
+    </div>
+    <div class="flex flex-col gap-[5px] flex-wrap justify-center stockindex_scale2 px-[15px]" v-else>
+      <TagPrice :value="一手价" :isGray="true" />
     </div>
   </div>
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
@@ -151,7 +154,7 @@ const wrapperStyle = computed(() => {
   };
   let style = {
     padding: isPrint.value ? "35px 0 5px 0" : "25px 0",
-    height: isMobile ? "100px" : "100px",
+    height: isMobile ? "75px" : "75px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
   if (props.mode === "custom") {
@@ -263,7 +266,7 @@ const handleGlassStyle = (el, isEnable) => {
 .my-tag-wrapper:hover {
   z-index: 1;
 }
-.scale2 {
+.stockindex_scale2 {
   .my-tag-wrapper {
     font-size: 1.3em;
   }

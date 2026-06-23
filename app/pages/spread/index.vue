@@ -19,30 +19,36 @@
             <el-option v-for="diff in diff_list" :key="diff" :label="diff" :value="diff" />
           </el-select>
         </el-form-item>
+        <el-form-item label="溢价">
+          <el-input v-model="formData.溢价Val" />
+        </el-form-item>
       </el-form>
     </div>
     <div class="flex justify-center">
-      <div class="mx-auto h-[calc(100vh-200px)] max-md:h-[calc(355vh-200px)] max-md:w-[255vw]">
-        <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
-            <template #header>
-              <div v-if="type" :style="getHeaderStyle(diff, dayjs(label, 'YYYY-MM-DD').diff(dayjs(), 'days') + 1)">
-                <div>{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
-                <div>({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
-                <div>{{ diff }}</div>
-              </div>
-              <div v-else>
-                {{ label }}
-              </div>
-            </template>
-            <template #default="{ row }" v-if="label === '期权'">
-              <Center :row="row" />
-            </template>
-            <template #default="{ row }" v-if="label !== '期权'">
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :comboList="tableData.comboList" :diffValue="diff" />
-            </template>
-          </el-table-column>
-        </el-table>
+      <div class="mx-auto max-md:h-[calc(355vh-200px)] max-md:w-[255vw]">
+        <Capture title="价差" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
+          <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+            <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
+              <template #header>
+                <div v-if="type" :style="getHeaderStyle(diff, dayjs(label, 'YYYY-MM-DD').diff(dayjs(), 'days') + 1)">
+                  <div>{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
+                  <div>({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
+                  <div>{{ diff }}</div>
+                </div>
+                <div v-else class="flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+                  <div>{{ label }}</div>
+                  <el-button link>⬇</el-button>
+                </div>
+              </template>
+              <template #default="{ row }" v-if="label === '期权'">
+                <Center :row="row" />
+              </template>
+              <template #default="{ row }" v-if="label !== '期权'">
+                <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :comboList="tableData.comboList" :diffValue="diff" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </Capture>
       </div>
     </div>
   </div>
@@ -56,12 +62,13 @@ import Info from "./components/Info.vue";
 import { queryGrid } from "~/utils/queryGrid.js";
 import { getColorSplitHander } from "~/utils/color";
 import { useGlobal } from "~/stores/useGlobal.js";
-
+const captureRef = ref();
 const { globalLoading, isMobile } = useGlobal();
 const diff_list = [100, 200, 250, 300, 400, 500];
 const formData = reactive({
   到期日List: [...deadline_list],
   价差List: [100],
+  溢价Val: 15,
 });
 
 const tableRef = ref();
@@ -118,8 +125,8 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [holdData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
-  tableData.data = holdData || [];
+  const [_tableData, comboList, tiledData] = await queryGrid(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
+  tableData.data = _tableData || [];
   tableData.tiledData = tiledData;
   tableData.comboList = comboList;
   tableData.loading = false;
@@ -136,9 +143,11 @@ const filteredTableData = computed(() => {
     if (el["is保留行"]) return true;
     if (el._current || el._split) return true;
     if (el["is旧期权"]) return false;
+    console.log('el["行权价溢价"]', el["行权价溢价"]);
+    if (Math.abs(el["行权价溢价"]) > formData.溢价Val) return false;
     return true;
-    const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
-    return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
+    // const targetRangeArr = OPTIONS_MAP.find((item) => item.code === el["正股代码"]).行权价Range;
+    // return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
 

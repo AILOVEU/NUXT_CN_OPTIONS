@@ -1,17 +1,15 @@
 <template>
   <div v-if="props.row._split" class="bg-[black]">&nbsp;</div>
   <div v-else-if="!props.row?._current">
-    <div>{{ 正股名称 }}</div>
-    <div>
+    <div class="text-[17px]">{{ 正股名称 }}</div>
+    <div class="text-[17px]">
       {{ 千行权价 }}
     </div>
-    <div>
-      (
+    <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap">
       <span class="font-normal" :style="{ color: 溢价 > 0 ? 'red' : 'green' }"> {{ formatDecimal(溢价, 2) }}% </span>
-      )
     </div>
   </div>
-  <div v-else class="h-[24px] leading-[24px] text-[18px]">
+  <div v-else class="h-[22px] leading-[22px] text-[20px]">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>

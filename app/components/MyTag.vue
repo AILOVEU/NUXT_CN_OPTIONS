@@ -17,11 +17,11 @@ const isValidVal = computed(() => {
 const colorStyleMap = {
   black: {
     color: "black",
-    background: "rgba(222,222,222,0.25)",
+    background: "rgba(222,222,222,0.1)",
   },
   blue: {
     color: "#409eff",
-    background: "rgba(222,222,222,0.25)",
+    background: "rgba(222,222,222,0.1)",
   },
   "bg-blue": {
     color: "white",
@@ -29,19 +29,23 @@ const colorStyleMap = {
   },
   green: {
     color: "#0a8937",
-    background: "rgba(222,222,222,0.25)",
+    background: "rgba(222,222,222,0.1)",
   },
   "bg-green": {
-    color: "white",
-    background: "#0a8937",
+    color: "#0a8937",
+    background: "rgba(10, 137, 55,0.15)",
   },
   red: {
     color: "#fd000f",
-    background: "rgba(222,222,222,0.25)",
+    background: "rgba(222,222,222,0.1)",
   },
   "bg-red": {
-    color: "white",
-    background: "#fd000f",
+    color: "#fd000f",
+    background: "rgba(253, 0, 15,0.15)",
+  },
+  gray: {
+    color: "rgba(128, 128, 128,0.65)",
+    background: "rgba(222,222,222,0.1)",
   },
 };
 const wrapperStyle = computed(() => {

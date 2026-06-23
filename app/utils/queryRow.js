@@ -18,9 +18,10 @@ function handleTData(dataList) {
     record["C" + "期权名称"] = call_item?.["期权名称"];
     record["P" + "期权名称"] = put_item?.["期权名称"];
     // 公共字段
-    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权", "到期日"].forEach((key) => {
+    ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权", "到期日",'行权价溢价'].forEach((key) => {
       record[key] = call_item[key];
     });
+
     正股价格_dict[record["正股代码"]] = record["正股价格"];
     tiledData.push(record);
   });

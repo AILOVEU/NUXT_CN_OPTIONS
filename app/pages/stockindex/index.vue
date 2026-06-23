@@ -1,7 +1,7 @@
 <template>
   <div class="max-md:w-[355%]" v-loading="loading">
     <Nav @download="handleDownload" />
-    <el-button @click="() => handleQuery(false)">获取</el-button>
+    <el-button @click="() => handleQuery(false)" :disabled="isMobile">获取</el-button>
     <div class="flex flex-col gap-[5px] py-[15px] items-center">
       <div class="flex text-[2em]">
         <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
@@ -26,11 +26,22 @@
       <div class="w-[80px]">最大一手价:</div>
       <el-input v-model="max一手价Val" />
     </div>
-
     <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
-    <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', margin: '0 auto', maxWidth: '100%' }">
-      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" style="margin: 0 auto">
-        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="'130px'">
+    <Capture
+      v-for="(item, idx) in tableList"
+      :key="idx"
+      :ref="(el) => el && (itemRefs[idx] = el)"
+      title="股指T型"
+      :style="{
+        'border-left': '10px solid #576a8f',
+        'border-right': '10px solid #576a8f',
+        width: 'fit-content',
+        //  minWidth: 133 * 13 + 'px'
+      }"
+    >
+      <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ item }}{{ dayStr }}</div>
+      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" width="130px">
           <template #header>
             <div v-if="type" class="leading-[1.2]">
               <div class="leading-[1.2]">{{ type }}{{ label }}</div>
@@ -61,10 +72,14 @@ import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
 import Info from "./components/Info";
 import _ from "lodash";
-import { ref, computed, reactive, nextTick } from "vue";
+import dayjs from "dayjs";
+import { useGlobal } from "~/stores/useGlobal.js";
+const { isMobile } = useGlobal();
 
-const max溢价Val = ref(10);
-const max一手价Val = ref(5000);
+const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
+
+const max溢价Val = ref(12);
+const max一手价Val = ref(3000);
 // 全局表格ref（保留原有）
 const captureRef = ref();
 const tableRef = ref();
@@ -109,11 +124,36 @@ async function handleQuery(useCatch = true) {
 }
 
 const filteredTiledData = computed(() => {
-  return tiledData.value.filter((el) => {
-    if (el["持仓"]) return true;
-    return el["一手价"] <= max一手价Val.value;
+  return tiledData.value.map((el) => {
+    if (el["持仓"]) return el;
+    if (el["一手价"] >= max一手价Val.value) {
+      return {
+        ...el,
+        _限制展示: true,
+      };
+    }
+    return el;
   });
 });
+
+function getCellStyle({ column, row }) {
+  if (row["_split"] || row["_current"]) return {};
+  if (column?.["property"] === "期权") return { backgroundColor: "#CBDCEB", fontWeight: "600", border: "1px solid white" };
+  // 红 | 绿
+  // -------
+  // 绿 | 红
+  const 实值style = { border: "2px solid rgb(255, 220, 220)", background: "white" };
+  const 虚值style = { border: "2px solid rgb(190, 220, 190)", background: "white" };
+  if (row["行权价"] > row["正股价格"]) {
+    return column?.["property"]?.includes("C") ? 虚值style : 实值style;
+  } else {
+    return column?.["property"]?.includes("C") ? 实值style : 虚值style;
+  }
+  return { backgroundColor: "white" };
+}
+function getRowStyle({ row }) {
+  return {};
+}
 
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {

@@ -21,7 +21,7 @@
 
     <!-- 右上涨跌标签 -->
     <div v-if="showTypeNotBlank" class="absolute top-[0px] right-[0px] max-md:top-[20px]">
-      <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
+      <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
     </div>
 
     <!-- 右档位标签（非打印） -->
@@ -31,7 +31,7 @@
 
     <!-- 限制展示：仅显示一手价 -->
     <div v-if="optionLimitShow">
-      <TagPrice :value="一手价" />
+      <TagPrice :value="一手价" :isGray="true" />
     </div>
 
     <!-- 空白模式中间区域 -->

@@ -651,6 +651,8 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
     row["收益率"] = row["一手成本价"] ? formatDecimal((100 * (row["一手价"] - row["一手成本价"])) / row["一手成本价"], 0) : undefined;
     row["is彩票"] = checkIs彩票(row);
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
+    row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
+
     tiledData.push(row);
   });
   let 总仓位 = 0;
