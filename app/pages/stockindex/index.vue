@@ -18,14 +18,18 @@
     <div class="w-full pb-[12px]">
       <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
     </div>
-    <div class="w-full pb-[12px] flex gap-[10px] items-center">
+    <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
       <div class="w-[80px]">最大溢价:</div>
       <el-input v-model="max溢价Val" />
+    </div>
+    <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
+      <div class="w-[80px]">最大一手价:</div>
+      <el-input v-model="max一手价Val" />
     </div>
 
     <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
     <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', margin: '0 auto', maxWidth: '100%' }">
-      <el-table :data="filterTableDataByStockCode(item)" size="small" border height="100%" :highlight-current-row="false" ref="tableRef" style="margin: 0 auto">
+      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" style="margin: 0 auto">
         <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" :width="'130px'">
           <template #header>
             <div v-if="type" class="leading-[1.2]">
@@ -42,7 +46,7 @@
             <Center :row="row" />
           </template>
           <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tiledData" mode="hold" :indexVal="[]" showTypeVal="精简" />
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" mode="hold" :indexVal="[]" showTypeVal="精简" />
           </template>
         </el-table-column>
       </el-table>
@@ -52,7 +56,7 @@
 
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";
-import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict } from "~/data";
+import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict, STOCK_INDEX_MONTH_LIST } from "~/data";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
 import Info from "./components/Info";
@@ -60,11 +64,12 @@ import _ from "lodash";
 import { ref, computed, reactive, nextTick } from "vue";
 
 const max溢价Val = ref(10);
+const max一手价Val = ref(5000);
 // 全局表格ref（保留原有）
 const captureRef = ref();
 const tableRef = ref();
 
-const deadline_list = ["2606", "2607", "2608", "2609", "2612", "2703"];
+const deadline_list = STOCK_INDEX_MONTH_LIST;
 const stockCodeOptions = computed(() => {
   const ops = STOCK_INDEX_OPTIONS_MAP.map((el) => ({
     value: el.code,
@@ -103,6 +108,13 @@ async function handleQuery(useCatch = true) {
   loading.value = false;
 }
 
+const filteredTiledData = computed(() => {
+  return tiledData.value.filter((el) => {
+    if (el["持仓"]) return true;
+    return el["一手价"] <= max一手价Val.value;
+  });
+});
+
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {
   return tableData.data
@@ -115,7 +127,7 @@ function filterTableDataByStockCode(code) {
 
 // 持仓统计计算：优化重复遍历，只遍历一次原始列表
 const 持仓Info = computed(() => {
-  const 持仓List = tiledData.value.filter((el) => el["持仓"]);
+  const 持仓List = filteredTiledData.value.filter((el) => el["持仓"]);
   const currentCode = stockCode.value;
 
   let 购代替正股 = 0;

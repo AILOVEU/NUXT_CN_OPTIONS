@@ -1,7 +1,7 @@
 import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
-import { STOCK_INDEX_OPTIONS_MAP } from "~/data";
+import { STOCK_INDEX_OPTIONS_MAP, STOCK_INDEX_MONTH_LIST } from "~/data";
 function formatYm(str) {
   // 截取前两位=年，后两位=月
   const year = str.slice(0, 2);
@@ -12,7 +12,7 @@ function formatYm(str) {
 function handleHoldData(dataList, 正股代码List) {
   // const [month_list, month_index] = get_fist_季度月份(dataList);
 
-  const month_list = ["2606", "2607", "2608", "2609", "2612", "2703"];
+  const month_list = STOCK_INDEX_MONTH_LIST;
   const month_index = 0;
   let tableData = [];
   let 正股价格_dict = {};

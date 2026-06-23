@@ -3,7 +3,7 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
 
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative border-[2px] border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative border-[1px] border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <div v-if="持仓" class="absolute top-[0px] left-[0px]">
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
       <div class="inline-block text-[12px]">{{ 盈亏 }}</div>
@@ -12,10 +12,12 @@
     <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
-    <div class="flex flex-col gap-[5px] flex-wrap justify-end scale2 px-[15px]">
+    <div class="flex flex-col gap-[5px] flex-wrap justify-end scale2">
       <TagPrice :value="一手价" />
-      <TagDelta :value="current期权Item['Delta']" />
-      <TagIv :value="current期权Item['隐波']" />
+      <div class="flex gap-[5px] flex-nowrap justify-center">
+        <TagDelta :value="current期权Item['Delta']" />
+        <TagIv :value="current期权Item['隐波']" />
+      </div>
     </div>
   </div>
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
@@ -263,11 +265,11 @@ const handleGlassStyle = (el, isEnable) => {
 }
 .scale2 {
   .my-tag-wrapper {
-    font-size: 1.5em;
+    font-size: 1.3em;
   }
   @media not all and (min-width: 768px) {
     .my-tag-wrapper {
-      font-size: 1.5em;
+      font-size: 1.3em;
     }
   }
 }

@@ -102,7 +102,6 @@ export const OPTIONS_MAP = [
     color: "#73c0de",
     showName: "50ETF🧊", // 顶部tab筛选会用到
     极简Name: "🧊",
-    // 行权价Range: [2900, 3200],
     隐波Max: 15,
     fs: "m:10+c:510050",
   },
@@ -113,21 +112,19 @@ export const OPTIONS_MAP = [
     color: "#91cc75",
     showName: "300ETF🍆",
     极简Name: "🍆",
-    // 行权价Range: [4500, 5000],
     隐波Max: 15,
     fs: "m:10+c:510300",
   },
-  {
-    code: "510500",
-    name: "沪500ETF",
-    linkName: ["中证500ETF"],
-    color: "#fac858",
-    showName: "沪500🦁",
-    极简Name: "🦁",
-    // 行权价Range: [8000, 9500],
-    隐波Max: 22,
-    fs: "m:10+c:510500",
-  },
+  // {
+  //   code: "510500",
+  //   name: "沪500ETF",
+  //   linkName: ["中证500ETF"],
+  //   color: "#fac858",
+  //   showName: "沪500🦁",
+  //   极简Name: "🦁",
+  //   隐波Max: 22,
+  //   fs: "m:10+c:510500",
+  // },
   {
     code: "159922",
     name: "深500ETF", // 中文名无关，特殊处理了
@@ -135,32 +132,29 @@ export const OPTIONS_MAP = [
     color: "#fc8452",
     showName: "深500🐯",
     极简Name: "🐯",
-    // 行权价Range: [3000, 3500],
     隐波Max: 22,
     fs: "m:12+c:159922",
   },
-  {
-    code: "159915",
-    name: "创业板ETF",
-    linkName: ["创业板ETF易方达"],
-    color: "#ea7ccc",
-    showName: "创业板🦑",
-    极简Name: "🦑",
-    // 行权价Range: [3000, 3500],
-    隐波Max: 22,
-    fs: "m:12+c:159915",
-  },
-  {
-    code: "588000",
-    name: "科50ETF",
-    linkName: ["科创50ETF"],
-    color: "#9a60b4",
-    showName: "科50🐸",
-    极简Name: "🐸",
-    // 行权价Range: [1200, 1600],
-    隐波Max: 22,
-    fs: "m:10+c:588000",
-  },
+  // {
+  //   code: "159915",
+  //   name: "创业板ETF",
+  //   linkName: ["创业板ETF易方达"],
+  //   color: "#ea7ccc",
+  //   showName: "创业板🦑",
+  //   极简Name: "🦑",
+  //   隐波Max: 22,
+  //   fs: "m:12+c:159915",
+  // },
+  // {
+  //   code: "588000",
+  //   name: "科50ETF",
+  //   linkName: ["科创50ETF"],
+  //   color: "#9a60b4",
+  //   showName: "科50🐸",
+  //   极简Name: "🐸",
+  //   隐波Max: 22,
+  //   fs: "m:10+c:588000",
+  // },
 ];
 export const STOCK_INDEX_OPTIONS_MAP = [
   {
@@ -173,6 +167,7 @@ export const STOCK_INDEX_OPTIONS_MAP = [
     code: "中证1000",
   },
 ];
+export const STOCK_INDEX_MONTH_LIST = ["2607", "2608", "2609", "2612", "2703", "2706"];
 export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {
