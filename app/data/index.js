@@ -14,12 +14,12 @@ export const 金额 = {
   // 初始入金，盈亏计算要减去它，如果现金0，贷款0，出金0，则为亏损1万
   基础金额: 10000,
   //
-  场内现金: 133,
+  场内现金: 653,
   占用保证金: 0, // 单笔保证金50 -> 15 了
   贷款: 前一日贷款 + 当日贷款,
   出金: 65000, // 转出后不可转入，转入是贷款，新增东财逻辑
   // 👇不参与计算👇
-  现转股票: 90000,
+  现转股票: 100000,
   现转期货: -15000,
   POLYMARKET: 686,
 };
@@ -115,16 +115,16 @@ export const OPTIONS_MAP = [
     隐波Max: 15,
     fs: "m:10+c:510300",
   },
-  // {
-  //   code: "510500",
-  //   name: "沪500ETF",
-  //   linkName: ["中证500ETF"],
-  //   color: "#fac858",
-  //   showName: "沪500🦁",
-  //   极简Name: "🦁",
-  //   隐波Max: 22,
-  //   fs: "m:10+c:510500",
-  // },
+  {
+    code: "510500",
+    name: "沪500ETF",
+    linkName: ["中证500ETF"],
+    color: "#fac858",
+    showName: "沪500🦁",
+    极简Name: "🦁",
+    隐波Max: 22,
+    fs: "m:10+c:510500",
+  },
   {
     code: "159922",
     name: "深500ETF", // 中文名无关，特殊处理了
@@ -135,26 +135,26 @@ export const OPTIONS_MAP = [
     隐波Max: 22,
     fs: "m:12+c:159922",
   },
-  // {
-  //   code: "159915",
-  //   name: "创业板ETF",
-  //   linkName: ["创业板ETF易方达"],
-  //   color: "#ea7ccc",
-  //   showName: "创业板🦑",
-  //   极简Name: "🦑",
-  //   隐波Max: 22,
-  //   fs: "m:12+c:159915",
-  // },
-  // {
-  //   code: "588000",
-  //   name: "科50ETF",
-  //   linkName: ["科创50ETF"],
-  //   color: "#9a60b4",
-  //   showName: "科50🐸",
-  //   极简Name: "🐸",
-  //   隐波Max: 22,
-  //   fs: "m:10+c:588000",
-  // },
+  {
+    code: "159915",
+    name: "创业板ETF",
+    linkName: ["创业板ETF易方达"],
+    color: "#ea7ccc",
+    showName: "创业板🦑",
+    极简Name: "🦑",
+    隐波Max: 22,
+    fs: "m:12+c:159915",
+  },
+  {
+    code: "588000",
+    name: "科50ETF",
+    linkName: ["科创50ETF"],
+    color: "#9a60b4",
+    showName: "科50🐸",
+    极简Name: "🐸",
+    隐波Max: 22,
+    fs: "m:10+c:588000",
+  },
 ];
 export const STOCK_INDEX_OPTIONS_MAP = [
   {
@@ -200,6 +200,7 @@ export const MONTH_ICON = {
 };
 export const 盈亏曲线数据 = _.unionBy(
   _.reverse([
+    ["20260624", 55177],
     ["20260623", 54133],
     ["20260622", 75371],
     ["20260618", 47491],
