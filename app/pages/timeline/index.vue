@@ -53,6 +53,12 @@ export default {
           desc: "",
           time: "2026-06-18",
         },
+        {
+          type: "important",
+          title: "期权盈利观点",
+          desc: "在便宜的价格买入可能变为实值的合约",
+          time: "2026-06-24",
+        },
         // {
         //   type: "normal",
         //   title: "任务开始",
