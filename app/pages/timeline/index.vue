@@ -1,4 +1,5 @@
 <template>
+  <Nav />
   <div class="max-w-xl mx-auto px-5 py-6">
     <!-- 时间轴列表 -->
     <div v-for="(item, index) in list" :key="index" class="flex mb-8 relative">
@@ -29,16 +30,28 @@ export default {
       // 你只需要改这里的数据！
       list: [
         {
-          type: "normal",
+          type: "ignore",
           title: "10万炒股",
           desc: "超出10万部分,存入招商银行的月月宝(最好按1万整存)",
           time: "2026-05-20",
         },
         {
-          type: "important",
+          type: "ignore",
           title: "2000重塑单笔交易",
           desc: "清理仓位,不做短线双买,call看跌就卖出,call看涨就买入",
           time: "2026-05-20",
+        },
+        {
+          type: "important",
+          title: "钱的单位是5000",
+          desc: "每月5000资金还房贷，还信用卡。每月目标赚5000",
+          time: "2026-05-25",
+        },
+        {
+          type: "important",
+          title: "仓位乱就清仓",
+          desc: "",
+          time: "2026-06-18",
         },
         // {
         //   type: "normal",

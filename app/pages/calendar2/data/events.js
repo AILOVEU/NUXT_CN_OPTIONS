@@ -5,6 +5,7 @@ export const eventTypeClassMap = {
   假期: "bg-[#ffdfc6] text-[black]",
   金融期权: "bg-[#fac4d4] text-[black]",
   商品期权: "bg-[#fdcac7] text-[black]",
+  定期存款: "bg-gray-300 text-[black]",
   经济事件: "bg-[#fff1ce] text-[black]",
   提醒: "bg-[#ade24c] text-[black]",
   八字: "bg-[#e9f9cc] text-[black]",
@@ -20,6 +21,14 @@ const 假期2026 = [
   { startTime: "2026-10-01", endTime: "2026-10-07", title: "国庆假期", type: "假期" },
 ];
 const 事件2026 = [
+  { startTime: "2026-07-09", endTime: "2026-07-09", title: "10000", type: "定期存款" },
+  { startTime: "2026-07-01", endTime: "2026-07-01", title: "20000", type: "定期存款" },
+  { startTime: "2026-07-10", endTime: "2026-07-10", title: "5000", type: "定期存款" },
+
+  { startTime: "2026-07-27", endTime: "2026-07-27", title: "5000", type: "定期存款" },
+  { startTime: "2026-08-26", endTime: "2026-08-26", title: "5000", type: "定期存款" },
+  { startTime: "2026-10-16", endTime: "2026-10-16", title: "5000", type: "定期存款" },
+
   { startTime: "2026-06-11", endTime: "2026-07-20", title: "世界杯", type: "体育" },
   { startTime: "2026-07-07", endTime: "2026-07-18", title: "石油杯", type: "电竞" },
   { startTime: "2026-08-13", endTime: "2026-08-23", title: "TI", type: "电竞" },

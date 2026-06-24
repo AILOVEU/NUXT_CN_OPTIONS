@@ -23,7 +23,7 @@
             :key="dayIdx"
             class="relative border-r border-b border-[#e0e0e0] p-0 min-h-[200px] box-border overflow-visible [&:nth-child(7n)]:border-r-0"
             :class="{
-              'bg-gray-50 text-gray-300': !day.isInRange,
+              'bg-gray-300 text-gray-300': !day.isInRange,
               'bg-green-100': day.isWeekendOrHoliday && !day.isPast,
               'bg-gray-300': day.isPast && day.isInRange,
               '!bg-white': day.isWorkAdjust && !day.isPast,
