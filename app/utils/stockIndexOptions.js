@@ -1,4 +1,4 @@
-import { stock_index_fields_dict, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价 } from "~/data";
+import { stock_index_fields_dict, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价, 股指持仓JSON } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -87,39 +87,7 @@ function getYearMonth(str) {
   return year + month;
 }
 
-const 持仓JSON = [
-  // {
-  //   期权名称: "上证50购26年6月3000",
-  //   持仓: 1,
-  //   成本: 400,
-  // },
-  // {
-  //   期权名称: "上证50购26年6月3050",
-  //   持仓: 6,
-  //   成本: 250,
-  // },
-  // {
-  //   期权名称: "沪深300沽26年6月4750",
-  //   持仓: 1,
-  //   成本: 700,
-  // },
-  // {
-  //   期权名称: "沪深300购26年6月5100",
-  //   持仓: 4,
-  //   成本: 180,
-  // },
-  // {
-  //   期权名称: "中证1000沽26年6月8100",
-  //   持仓: 1,
-  //   成本: 860,
-  // },
-  // {
-  //   期权名称: "中证1000沽26年6月8400",
-  //   持仓: 1,
-  //   成本: 1060,
-  // },
-];
-function formatRecord(_tiledData, _持仓JSON, 成交Json) {
+function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
   let tiledData = [];
   _tiledData.forEach((_) => {
     // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
@@ -132,8 +100,8 @@ function formatRecord(_tiledData, _持仓JSON, 成交Json) {
     row["到期年月"] = getYearMonth(row["期权名称"]);
     row["正股代码"] = row["正股"];
     row["一手价"] = formatDecimal(row["最新价"] * row["合约单位"], 0);
-    row["持仓"] = 持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["持仓"] || undefined;
-    row["一手成本价"] = 持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["成本"] || undefined;
+    row["持仓"] = 股指持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["持仓"] || undefined;
+    row["一手成本价"] = 股指持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["成本"] || undefined;
     row["一手成本价"] = row["一手成本价"] ? row["一手成本价"] + 30 : undefined;
     row["一手涨跌价"] = formatDecimal(row["涨跌额"] * row["合约单位"], 0);
     row["盈亏"] = (row["一手价"] - row["一手成本价"]) * row["持仓"];
@@ -244,9 +212,8 @@ export async function get_http_data_stock_index(正股代码List, useCatch) {
       body: { data: _tiledData },
     });
   }
-  let 持仓JSON = [];
   let 成交Json = [];
-  let tiledData = formatRecord(_tiledData, 持仓JSON, 成交Json);
+  let tiledData = formatRecord(_tiledData, 股指持仓JSON, 成交Json);
   tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"]));
   return [tiledData];
 }

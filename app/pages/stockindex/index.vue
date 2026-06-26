@@ -36,6 +36,7 @@
         'border-left': '10px solid #576a8f',
         'border-right': '10px solid #576a8f',
         width: 'fit-content',
+        margin: '0 auto',
         //  minWidth: 133 * 13 + 'px'
       }"
     >
