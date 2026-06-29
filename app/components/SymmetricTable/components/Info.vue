@@ -30,8 +30,10 @@
     </div>
 
     <!-- 限制展示：仅显示一手价 -->
-    <div v-if="optionLimitShow" class="text-limit-show-mode">
+    <div v-if="optionLimitShow" class="flex gap-[5px] text-limit-show-mode">
       <TagPrice :value="一手价" :isGray="true" />
+      <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
+
     </div>
 
     <!-- 空白模式中间区域 -->
@@ -183,7 +185,7 @@ const wrapperStyle = computed(() => {
   const baseStyle = {
     padding: isPrint.value ? "35px 0 5px 0" : "25px 0",
     height: isPrint.value ? "83px" : isMobile ? "340px" : "165px",
-    border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
+    border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
   };
   // if (!optionLimitShow.value && props.mode === "hold") {
   //   baseStyle.border = 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "";
@@ -282,7 +284,7 @@ const handleGlassStyle = (el, isEnable) => {
     border: 0 !important;
 
     filter: grayscale(1);
-    font-size: 0.75em !important;
+    font-size: 0.85em !important;
     // backdrop-filter: blur(40px);
     // -webkit-backdrop-filter: blur(40px);
     // background-color: white;

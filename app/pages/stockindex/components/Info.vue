@@ -12,7 +12,7 @@
     <div class="absolute top-[0px] right-[0px] max-md:top-[20px]" v-if="!current期权Item['_限制展示']">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
-    <div class="flex flex-col gap-[5px] flex-wrap justify-end stockindex_scale2" v-if="!current期权Item['_限制展示']">
+    <div class="flex flex-col gap-[2px] flex-wrap justify-end stockindex_scale2" v-if="!current期权Item['_限制展示']">
       <TagPrice :value="一手价" />
       <div class="flex gap-[5px] flex-nowrap justify-center">
         <TagDelta :value="current期权Item['Delta']" />
@@ -153,9 +153,9 @@ const wrapperStyle = computed(() => {
     // filter: "grayscale(0.75)",
   };
   let style = {
-    padding: isPrint.value ? "35px 0 5px 0" : "25px 0",
-    height: isMobile ? "75px" : "75px",
-    border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
+    padding: isPrint.value ? "32px 0 5px 0" : "22px 0",
+    height: isMobile ? "70px" : "70px",
+    border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
   };
   if (props.mode === "custom") {
     if (!current期权Item.value["_isChance"]) {
@@ -177,7 +177,7 @@ const wrapperStyle = computed(() => {
     }
   } else if (props.mode === "hold") {
     if (current期权Item.value["持仓"]) {
-      style = { ...style, background: "rgba(246, 255, 220, 0.35)" };
+      // style = { ...style, background: "rgba(246, 255, 220, 0.35)" };
     } else if (current期权Item.value["持仓变化"]) {
       style = { ...style, background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
     }

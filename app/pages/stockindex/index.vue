@@ -35,14 +35,13 @@
       :style="{
         'border-left': '10px solid #576a8f',
         'border-right': '10px solid #576a8f',
-        width: 'fit-content',
         margin: '0 auto',
         //  minWidth: 133 * 13 + 'px'
       }"
     >
       <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ item }}{{ dayStr }}</div>
       <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
-        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" width="130px">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" width="138px">
           <template #header>
             <div v-if="type" class="leading-[1.2]">
               <div class="leading-[1.2]">{{ type }}{{ label }}</div>
@@ -126,8 +125,7 @@ async function handleQuery(useCatch = true) {
 
 const filteredTiledData = computed(() => {
   return tiledData.value.map((el) => {
-    if (el["持仓"]) return el;
-    if (el["一手价"] >= max一手价Val.value) {
+    if (el["一手价"] >= max一手价Val.value || Math.abs(el["行权价溢价"]) > max溢价Val.value) {
       return {
         ...el,
         _限制展示: true,
@@ -139,7 +137,7 @@ const filteredTiledData = computed(() => {
 
 function getCellStyle({ column, row }) {
   if (row["_split"] || row["_current"]) return {};
-  if (column?.["property"] === "期权") return { fontWeight: "600", border: "1px solid white" };
+  if (column?.["property"] === "期权") return { backgroundColor: "#CBDCEB", fontWeight: "600", border: "1px solid white" };
   // 红 | 绿
   // -------
   // 绿 | 红

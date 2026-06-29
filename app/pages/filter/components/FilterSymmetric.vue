@@ -62,7 +62,19 @@ const filteredTiledData = computed(() => {
   });
 });
 const filteredSymmetricData = computed(() => {
-  return filter是否保留行(tableData.symmetricData, tableData.tiledData, filteredTiledData.value);
+  const symmetricTableData = tableData.symmetricData.map((el) => {
+    if (!el["行内期权名称List"]) return el;
+    const 行内期权List = tableData.tiledData.filter((item) => el["行内期权名称List"].includes(item["期权名称"]));
+    const is非限制展示 = 行内期权List.some((item) => props.checkIsChance(item));
+    if (!is非限制展示) {
+      return {
+        ...el,
+        _行限制展示: true,
+      };
+    }
+    return el;
+  });
+  return filter是否保留行(symmetricTableData, tableData.tiledData, filteredTiledData.value);
 });
 
 function handleStockCodeChange() {

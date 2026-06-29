@@ -26,7 +26,7 @@
     </div>
     <div class="flex justify-center">
       <div class="mx-auto max-md:h-[calc(355vh-200px)] max-md:w-[255vw]">
-        <Capture title="价差" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
+        <Capture title="价差" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
           <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
             <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
               <template #header>
