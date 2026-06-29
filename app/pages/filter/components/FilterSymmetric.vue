@@ -48,6 +48,12 @@ async function handleQuery() {
 handleQuery();
 const filteredTiledData = computed(() => {
   return tableData.tiledData.map((el) => {
+    if (!props.checkIsChance(el) && el["持仓"]) {
+      return {
+        ...el,
+        _限制展示2: true,
+      };
+    }
     if (props.checkIsChance(el)) return el;
     return {
       ...el,

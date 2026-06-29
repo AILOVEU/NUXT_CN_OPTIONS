@@ -139,7 +139,7 @@ const filteredTiledData = computed(() => {
 
 function getCellStyle({ column, row }) {
   if (row["_split"] || row["_current"]) return {};
-  if (column?.["property"] === "期权") return { backgroundColor: "#CBDCEB", fontWeight: "600", border: "1px solid white" };
+  if (column?.["property"] === "期权") return { fontWeight: "600", border: "1px solid white" };
   // 红 | 绿
   // -------
   // 绿 | 红
@@ -158,12 +158,19 @@ function getRowStyle({ row }) {
 
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {
-  return tableData.data
+  let res = tableData.data
     .filter((el) => el["正股代码"] === code)
     .filter((el) => {
-      if (el["_split"] || el["_current"]) return true;
+      if (el["_split"] || el["_current"] || el["is保留行"]) return true;
       return Math.abs(el["行权价溢价"]) < max溢价Val.value;
     });
+  return res.map((el) => {
+    if (Math.abs(el["行权价溢价"]) < max溢价Val.value) return el;
+    return {
+      ...el,
+      _行限制展示: true,
+    };
+  });
 }
 
 // 持仓统计计算：优化重复遍历，只遍历一次原始列表

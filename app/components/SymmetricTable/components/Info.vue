@@ -8,9 +8,9 @@
   <!-- 期权卡片主体 -->
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
     <!-- 左上 -->
-    <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-      <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "=>" }}</span>
-      <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
+    <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
+      <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "→" }}</span>
+      <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
       <TagHoldDiffPercent v-if="isPrint && 持仓" :value="盈亏" :收益率="收益率" />
     </div>
 
@@ -20,7 +20,7 @@
     </div>
 
     <!-- 右上涨跌标签 -->
-    <div v-if="showTypeNotBlank" class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+    <div v-if="showTypeNotBlank" class="absolute top-[0px] right-[0px] max-md:top-[20px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
     </div>
 
@@ -30,7 +30,7 @@
     </div>
 
     <!-- 限制展示：仅显示一手价 -->
-    <div v-if="optionLimitShow">
+    <div v-if="optionLimitShow" class="text-limit-show-mode">
       <TagPrice :value="一手价" :isGray="true" />
     </div>
 
@@ -126,7 +126,7 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 期权单项快捷取值（减少重复访问current期权Item.value）
 const optionItem = computed(() => current期权Item.value);
-const optionLimitShow = computed(() => !!optionItem.value["_限制展示"]);
+const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示2"]);
 const indexValMatchScale = computed(() => [1, 2, 3, 4].includes(props.indexVal.length));
 
 // 标的基础字段
@@ -185,6 +185,9 @@ const wrapperStyle = computed(() => {
     height: isPrint.value ? "83px" : isMobile ? "340px" : "165px",
     border: 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "",
   };
+  // if (!optionLimitShow.value && props.mode === "hold") {
+  //   baseStyle.border = 持仓.value > 0 ? "1px solid red" : 持仓.value < 0 ? "1px solid green" : "";
+  // }
   const grayStyle = { background: "white", filter: "grayscale(0.25)" };
   const 实值Style = { background: "#F6FFDC" };
   const holdBgStyle = { background: "rgba(246, 255, 220, 0.35)" };
@@ -271,5 +274,27 @@ const handleGlassStyle = (el, isEnable) => {
       font-size: 1.5em;
     }
   }
+}
+.print-text-large {
+  .text-limit-show-mode * {
+    color: gray !important;
+    // background: white;
+    border: 0 !important;
+
+    filter: grayscale(1);
+    font-size: 0.75em !important;
+    // backdrop-filter: blur(40px);
+    // -webkit-backdrop-filter: blur(40px);
+    // background-color: white;
+    // border: 1px solid #acbac4;
+    // box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+  }
+}
+
+.borderRed {
+  border: 1px solid red;
+}
+.borderGreen {
+  border: 1px solid green;
 }
 </style>
