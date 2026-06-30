@@ -1,19 +1,22 @@
 <template>
-  <div class="max-md:w-[355%]" v-loading="loading">
-    <Nav @download="handleDownload" />
-    <el-button @click="() => handleQuery(false)" :disabled="isMobile">获取</el-button>
-    <div class="flex flex-col gap-[5px] py-[15px] items-center">
+  <div class="max-md:w-[355%] h-min-[100vh]" v-loading="loading">
+    <Nav @download="handleDownload" @query="() => handleQuery(false)" />
+    <div class="flex justify-evenly gap-[5px] py-[10px] items-center">
       <div class="flex text-[2em]">
         <div>购代替正股: {{ formatNumberToWan(持仓Info.购代替正股) }}</div>
       </div>
       <div class="flex text-[2em]">
         <div>沽代替正股: {{ formatNumberToWan(持仓Info.沽代替正股) }}</div>
       </div>
-      <div class="flex gap-[5px] text-[1.2em]">
-        <div>{{ 持仓Info.当前正股 }}:</div>
-        <div>购代替正股: {{ formatNumberToWan(持仓Info.当前购代替正股) }}</div>
-        <div>沽代替正股:{{ formatNumberToWan(持仓Info.当前沽代替正股) }}</div>
+      <div class="flex text-[2em]">
+        <div>总盈亏: {{ formatNumberToWan(持仓Info.总盈亏) }}</div>
       </div>
+    </div>
+    <div class="flex gap-[10px] text-[1.2em] my-[5px] justify-center">
+      <div>{{ 持仓Info.当前正股 }}:</div>
+      <div>购代替正股: {{ formatNumberToWan(持仓Info.当前购代替正股) }}</div>
+      <div>沽代替正股:{{ formatNumberToWan(持仓Info.当前沽代替正股) }}</div>
+      <div>盈亏:{{ formatNumberToWan(持仓Info.当前盈亏) }}</div>
     </div>
     <div class="w-full pb-[12px]">
       <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
@@ -36,6 +39,7 @@
         'border-left': '10px solid #576a8f',
         'border-right': '10px solid #576a8f',
         margin: '0 auto',
+        width: 'fit-content',
         //  minWidth: 133 * 13 + 'px'
       }"
     >
@@ -181,22 +185,33 @@ const 持仓Info = computed(() => {
   let 当前购代替正股 = 0;
   let 当前沽代替正股 = 0;
 
+  let 总盈亏 = 0;
+  let 当前盈亏 = 0;
   for (const item of 持仓List) {
     const baseVal = item["正股价格"] * item["合约单位"] * item["Delta"];
+    let 盈亏 = (item["一手价"] - item["一手成本价"]) * item["持仓"];
     if (item["沽购"] === "购") {
       购代替正股 += baseVal;
+      总盈亏 += 盈亏;
       if (item["正股代码"] === currentCode) {
         当前购代替正股 += baseVal;
+        当前盈亏 += 盈亏;
       }
     } else if (item["沽购"] === "沽") {
       沽代替正股 += baseVal;
+      总盈亏 += 盈亏;
+
       if (item["正股代码"] === currentCode) {
         当前沽代替正股 += baseVal;
+        当前盈亏 += 盈亏;
       }
     }
   }
 
   return {
+    总盈亏: formatDecimal(总盈亏, 0),
+    当前盈亏: formatDecimal(当前盈亏, 0),
+
     购代替正股: formatDecimal(购代替正股, 0),
     沽代替正股: formatDecimal(沽代替正股, 0),
     当前购代替正股: formatDecimal(当前购代替正股, 0),

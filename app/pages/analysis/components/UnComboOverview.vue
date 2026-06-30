@@ -196,7 +196,6 @@ const 认沽代替正股总和 = computed(() => {
     });
   return formatDecimal(sum, 0);
 });
-
 const 认沽对冲占比 = computed(() => {
   let val = (认沽代替正股总和.value / (Math.abs(认购代替正股总和.value) + Math.abs(认沽代替正股总和.value))) * 100;
   return Math.abs(val);

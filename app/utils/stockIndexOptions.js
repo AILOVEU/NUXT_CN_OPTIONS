@@ -13,7 +13,7 @@ function sleep(time) {
     }, time);
   });
 }
-async function get_target_http_data(持仓JSON, fs) {
+async function get_target_http_data(正股代码List, fs) {
   return new Promise(async (resolve, reject) => {
     let curr_page = 1;
     const pz = 20;
