@@ -16,7 +16,7 @@
         </el-form-item>
         <el-form-item label="价差">
           <el-select v-model="formData.价差List" multiple>
-            <el-option v-for="diff in diff_list" :key="diff" :label="diff" :value="diff" />
+            <el-option v-for="item in diff_list_ops" :key="item.label" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="溢价">
@@ -26,7 +26,7 @@
     </div>
     <div class="flex justify-center">
       <div class="mx-auto max-md:h-[calc(355vh-200px)] max-md:w-[255vw]">
-        <Capture title="价差" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f' }">
+        <Capture title="价差" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
           <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
             <el-table-column v-for="{ label, type, width, diff } in columns" :key="type + label + diff" :prop="type + label + diff" align="center" :width="getColumnWidth(label)">
               <template #header>
@@ -64,7 +64,10 @@ import { getColorSplitHander } from "~/utils/color";
 import { useGlobal } from "~/stores/useGlobal.js";
 const captureRef = ref();
 const { globalLoading, isMobile } = useGlobal();
-const diff_list = [100, 200, 250, 300, 400, 500];
+const diff_list_ops = [50, 100, 200, 250, 300, 400, 500].map((el) => ({
+  label: el === 100 ? "100(250)" : el,
+  value: el,
+}));
 const formData = reactive({
   到期日List: [...deadline_list],
   价差List: [100],

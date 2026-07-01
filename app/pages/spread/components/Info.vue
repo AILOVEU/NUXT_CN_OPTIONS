@@ -4,7 +4,7 @@
   </div>
   <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
-  <div v-else-if="spread期权Item && show" class="p-[2px] h-[125px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div v-else-if="spread期权Item && show" class="p-[2px] h-[105px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[1px]" v-if="组合持仓">
       <div class="bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]">
         {{ 组合持仓 }}
@@ -61,7 +61,11 @@ const 千行权价 = computed(() => {
 });
 
 const spread期权名称 = computed(() => {
-  const diff = props.isCall ? props.diffValue : -props.diffValue;
+  let diff = props.isCall ? props.diffValue : -props.diffValue;
+
+  if (千行权价.value >= 5000 && props.diffValue === 100) {
+    diff = 250;
+  }
   const spread千行权价 = 千行权价.value + diff;
   return 期权名称.value?.replace(千行权价.value + "", spread千行权价 + "");
 });
@@ -78,9 +82,9 @@ function is50Multiple(val) {
   return val % 100 === 50;
 }
 const show = computed(() => {
-  if (is50Multiple(current期权Item.value["千行权价"]) && is50Multiple(spread期权Item.value["千行权价"])) {
-    return false;
-  }
+  // if (is50Multiple(current期权Item.value["千行权价"]) && is50Multiple(spread期权Item.value["千行权价"])) {
+  //   return false;
+  // }
   if (spread期权Item.value["一手价"] < 100) {
     return false;
   }

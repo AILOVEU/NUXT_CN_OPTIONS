@@ -6,6 +6,9 @@
       <div class="text-[17px] pt-[4px]">
         {{ 千行权价 }}
       </div>
+      <div class="text-[12px] pt-[4px]" v-if="props.row['正股代码'] === '159922'">
+        ({{ formatDecimal(千行权价 * 2.513 / 1000,  2) }})
+      </div>
       <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap">
         <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
           {{ formatDecimal(溢价, 2) + "%" }}
