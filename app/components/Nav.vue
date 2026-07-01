@@ -1,7 +1,7 @@
 <template>
   <el-affix :offset="0">
-    <div class="flex justify-between text-[12px] mb-[12px] gap-[20px] bg-white">
-      <div class="flex gap-[12px] items-center">
+    <div class="flex text-[12px] mb-[12px] gap-[20px] bg-white">
+      <div class="flex gap-[12px] items-center basis-[400px]">
         <el-button @click="() => handleDownload()" class="flex-1" type="primary"> 批量下载 </el-button>
         <!-- <el-button @click="() => handleQuery(false)" class="flex-1" type="primary" :disabled="isMobile"> 刷新持仓 </el-button> -->
         <el-button v-if="CAN_REFRES_NAV_LIST.includes(activePath)" @click="() => handleQuery(true)" class="flex-1" :disabled="isMobile"> 全部刷新 </el-button>

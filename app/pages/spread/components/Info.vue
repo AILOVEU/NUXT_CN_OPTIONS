@@ -23,9 +23,21 @@
       <TagDiffPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
     </div>
     <div class="text-[gray] mb-[5px]">
-      <div class="mx-auto">{{ dayjs(current期权Item?.["到期日"], "YYYY-MM-DD").format("M月") }}&nbsp; {{ current期权Item?.["千行权价"] }}&nbsp;&nbsp;{{ spread期权Item?.["千行权价"] }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
-      <div class="mx-auto">Delta {{ current期权Item?.["Delta"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["Delta"] }}</div>
-      <div class="mx-auto">隐波 {{ current期权Item?.["隐波"] }}&nbsp;&nbsp;&nbsp;{{ spread期权Item?.["隐波"] }}</div>
+      <div class="mx-auto flex items-center whitespace-nowrap">
+        <div class="basis-1/3 text-center">{{ monthStr }}</div>
+        <div class="basis-1/3 text-center">{{ current期权Item?.["千行权价"] }}</div>
+        <div class="basis-1/3 text-center">{{ spread期权Item?.["千行权价"] }}</div>
+      </div>
+      <div class="mx-auto flex items-center whitespace-nowrap mt-1">
+        <div class="basis-1/3 text-center">Delta</div>
+        <div class="basis-1/3 text-center">{{ current期权Item?.["Delta"].toFixed(2) }}</div>
+        <div class="basis-1/3 text-center">{{ spread期权Item?.["Delta"].toFixed(2) }}</div>
+      </div>
+      <div class="mx-auto flex items-center whitespace-nowrap mt-1">
+        <div class="basis-1/3 text-center">隐波</div>
+        <div class="basis-1/3 text-center">{{ current期权Item?.["隐波"].toFixed(1) }}</div>
+        <div class="basis-1/3 text-center">{{ spread期权Item?.["隐波"].toFixed(1) }}</div>
+      </div>
     </div>
     <div class="mx-auto w-full flex gap-[4px] items-center justify-around" v-if="组合持仓">
       <TagDiffCostPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
@@ -34,6 +46,7 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
+import { MONTH_ICON } from "~/data";
 const props = defineProps(["row", "isCall", "date", "tiledData", "diffValue", "comboList"]);
 // props.row 示例
 // {
@@ -77,7 +90,11 @@ const spread期权Item = computed(() => {
 const current期权Item = computed(() => {
   return props.tiledData?.find((el) => el["期权名称"] === 期权名称.value);
 });
-
+const monthStr = computed(() => {
+  const month = dayjs(current期权Item.value?.["到期日"], "YYYY-MM-DD").format("MM月");
+  return month;
+  return month + MONTH_ICON[month];
+});
 function is50Multiple(val) {
   return val % 100 === 50;
 }
