@@ -8,7 +8,6 @@
         <el-button v-else-if="CUSTOM_QUERY_NAV_LIST.includes(activePath)" @click="handleEmitQuery" class="flex-1" :disabled="isMobile"> 全部刷新 </el-button>
         <div v-if="CAN_REFRES_NAV_LIST.includes(activePath)">更新时间<br />{{ updateTime }}</div>
       </div>
-      {{activePath}}
       <div class="flex items-center flex-1 justify-between px-[50px] bg-[#fafafa]">
         <div :class="{ navActive: activePath === item.href }" v-for="item in navList" @click="() => handleClick(item.href)" class="cursor-pointer">
           {{ item.name }}
