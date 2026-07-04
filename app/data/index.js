@@ -230,7 +230,7 @@ export const 股指持仓JSON = [
     持仓: 1,
     成本: 960,
   },
-  // 中证1000 
+  // 中证1000
   // 1000 - 购
   {
     期权名称: "中证1000购26年7月9300",
@@ -243,7 +243,16 @@ export const 股指持仓JSON = [
     成本: 1020,
   },
 ];
-export const STOCK_INDEX_MONTH_LIST = ["2607", "2608", "2609", "2612", "2703", "2706"];
+export const STOCK_INDEX_DAY_MAP = {
+  2607: "2026-07-17",
+  2608: "2026-08-21",
+  2609: "2026-09-18",
+  2612: "2026-12-18",
+  2703: "2027-03-19",
+  2706: "2027-06-18",
+};
+export const STOCK_INDEX_MONTH_LIST = Object.keys(STOCK_INDEX_DAY_MAP);
+
 export const deadline_list = getValidExerciseDate(dayjs().format("YYYY-MM-DD"));
 export const deadline_color_list = ["#809b48", "#6a5286", "#40699d", "#9f413e"];
 export const deadline_map = {

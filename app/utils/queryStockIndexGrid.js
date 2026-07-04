@@ -93,7 +93,8 @@ function handleHoldData(dataList, 正股代码List) {
   return tableData;
 }
 export async function queryStockIndexGrid(正股代码List, useCatch) {
-  const [tiledData] = await get_http_data_stock_index(正股代码List, useCatch);
+  const [tiledData, gammaFlipResult] = await get_http_data_stock_index(正股代码List, useCatch);
   const tableData = handleHoldData(tiledData, 正股代码List);
-  return [tableData, tiledData];
+  console.log('gammaFlipResult',gammaFlipResult)
+  return [tableData, tiledData, gammaFlipResult];
 }

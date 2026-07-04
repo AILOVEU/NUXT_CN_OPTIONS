@@ -29,6 +29,7 @@
       <div class="w-[80px]">最大一手价:</div>
       <el-input v-model="max一手价Val" />
     </div>
+    <Flip :gammaFlipData="gammaFlipData" />
     <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
     <Capture
       v-for="(item, idx) in tableList"
@@ -75,6 +76,7 @@ import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict, STOCK_INDEX_MONTH_LIS
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
 import Info from "./components/Info";
+import Flip from "./components/Flip";
 import _ from "lodash";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
@@ -114,6 +116,7 @@ const tableData = reactive({
 });
 
 const tiledData = ref([]);
+const gammaFlipData = ref({});
 const loading = ref(false);
 const itemRefs = ref([]);
 
@@ -121,9 +124,10 @@ const itemRefs = ref([]);
 async function handleQuery(useCatch = true) {
   loading.value = true;
   const allCodeList = STOCK_INDEX_OPTIONS_MAP.map((el) => el["code"]);
-  let [data, _data] = await queryStockIndexGrid(allCodeList, useCatch);
+  let [data, _data, flip] = await queryStockIndexGrid(allCodeList, useCatch);
   tableData.data = data;
   tiledData.value = _data;
+  gammaFlipData.value = flip;
   loading.value = false;
 }
 

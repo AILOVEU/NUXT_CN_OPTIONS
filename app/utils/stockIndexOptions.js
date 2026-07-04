@@ -1,4 +1,4 @@
-import { stock_index_fields_dict, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价, 股指持仓JSON } from "~/data";
+import { stock_index_fields_dict, STOCK_INDEX_DAY_MAP, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价, 股指持仓JSON } from "~/data";
 import dayjs from "dayjs";
 import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
@@ -6,6 +6,7 @@ import { ElMessage } from "element-plus";
 import _ from "lodash";
 import { blackScholesOptionPrice } from "~/utils/bs";
 import { STOCK_MOCK } from "/utils/mock";
+import { calculateGammaFlip } from "./options";
 function sleep(time) {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -98,6 +99,7 @@ function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
     row["沽购"] = row["期权名称"].includes("沽") ? "沽" : "购";
     row["合约单位"] = 100;
     row["到期年月"] = getYearMonth(row["期权名称"]);
+    row["到期日"] = STOCK_INDEX_DAY_MAP[row["到期年月"]];
     row["正股代码"] = row["正股"];
     row["一手价"] = formatDecimal(row["最新价"] * row["合约单位"], 0);
     row["持仓"] = 股指持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["持仓"] || undefined;
@@ -122,11 +124,10 @@ function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
     //   "Gamma",
     //   "Vega",
     //   "Theta",
-    ["涨跌幅", "正股价格", "隐波"].forEach((key) => {
+    ["涨跌幅", "正股价格", "隐波", "行权价", "最新价", "持仓量"].forEach((key) => {
       row[key] = row[key] ? +row[key] : 0;
     });
     row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
-
     // row["沽购"] = row["期权名称"].includes("购") ? "购" : "沽";
 
     // row["Delta"] = formatDecimal(row["Delta"], 3);
@@ -214,6 +215,7 @@ export async function get_http_data_stock_index(正股代码List, useCatch) {
   }
   let 成交Json = [];
   let tiledData = formatRecord(_tiledData, 股指持仓JSON, 成交Json);
+  let gammaFlipResult = calculateGammaFlip(tiledData, { riskFreeRate: 0.015, contractMultiplier: 100, priceRange: 0.3, stepRatio: 0.001, minPriceGap: 0.001 });
   tiledData = tiledData.filter((el) => 正股代码List.includes(el["正股代码"]));
-  return [tiledData];
+  return [tiledData, gammaFlipResult];
 }

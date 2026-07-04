@@ -1,7 +1,6 @@
 <template>
-  {{props.gammaFlipData}}
   <div class="w-full p-5 box-border bg-[#f5f7fa] rounded-lg">
-    <div class="grid grid-cols-3 grid-rows-2 grid-flow-col gap-4 max-md:grid-cols-2 max-md:grid-rows-none max-md:auto-rows-fr">
+    <div class="grid grid-cols-3 grid-rows-1 grid-flow-col gap-4 max-md:grid-cols-2 max-md:grid-rows-none max-md:auto-rows-fr">
       <div v-for="item in gammaFlipData" :key="item.code" class="bg-white rounded-lg p-4 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-0.5">
         <!-- 标的名称头部 -->
         <div class="mb-3">
@@ -68,7 +67,7 @@ const gammaFlipData = computed(() => {
     const item = props.gammaFlipData[key];
     res.push({
       ...item,
-      stockName: OPTIONS_MAP.find((el) => el.code === key)?.showName,
+      stockName: OPTIONS_MAP.find((el) => el.code === key)?.showName || key,
       code: key,
       currentPrice: item.currentPrice?.toFixed(3) ?? "--",
     });

@@ -744,7 +744,7 @@ export function format成交Json(成交Json) {
  * @param {number} options.minPriceGap - 翻转点最小间隔阈值，过滤误差伪多点，默认0.001
  * @returns {Object} 键为正股代码，值包含现价、最近翻转点、全部翻转点位列表、翻转数量
  */
-function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001, minPriceGap = 0.001 } = {}) {
+export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001, minPriceGap = 0.001 } = {}) {
   // -------------------------- 工具函数 --------------------------
   // 标准正态分布概率密度 N'(x)
   const normalPDF = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
@@ -874,9 +874,9 @@ function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultipli
     result[code] = {
       currentPrice,
       // 兼容旧字段：最近翻转点信息，无则null
-      gammaFlipPrice: nearestFlipInfo?.flipPrice ?? null,
-      priceChange: nearestFlipInfo?.priceChange ?? null,
-      changePercent: nearestFlipInfo?.changePercent ?? null,
+      // gammaFlipPrice: nearestFlipInfo?.flipPrice ?? null,
+      // priceChange: nearestFlipInfo?.priceChange ?? null,
+      // changePercent: nearestFlipInfo?.changePercent ?? null,
       // 新增多点完整数据
       flipCount: flipPointsDetail.length,
       flipPointsDetail,
