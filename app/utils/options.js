@@ -734,31 +734,36 @@ export function format成交Json(成交Json) {
 }
 
 /**
- * 计算每个正股对应的Gamma Flip点位及涨跌幅度
- * @param {Array} optionList - 期权数据数组，格式与示例一致
+ * 计算每个正股对应的所有Gamma Flip点位及涨跌幅度（支持多翻转点）
+ * @param {Array} optionList - 期权数据数组，每条包含：正股代码、正股价格、行权价、到期日、隐波、沽购、持仓量
  * @param {Object} options - 可选配置
- * @param {number} options.riskFreeRate - 年化无风险利率，默认0.02（2%）
+ * @param {number} options.riskFreeRate - 年化无风险利率，默认0.015（1.5%）
  * @param {number} options.contractMultiplier - 合约乘数（股/张），ETF期权默认10000
  * @param {number} options.priceRange - 价格扫描范围比例，默认0.3（±30%）
  * @param {number} options.stepRatio - 价格步长比例，默认0.001（千分之一）
- * @returns {Object} 键为正股代码，值为包含flip价、涨跌额、涨跌幅的对象
+ * @param {number} options.minPriceGap - 翻转点最小间隔阈值，过滤误差伪多点，默认0.001
+ * @returns {Object} 键为正股代码，值包含现价、最近翻转点、全部翻转点位列表、翻转数量
  */
-function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001 } = {}) {
+function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001, minPriceGap = 0.001 } = {}) {
   // -------------------------- 工具函数 --------------------------
+  // 标准正态分布概率密度 N'(x)
   const normalPDF = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
 
+  // BS模型 d1
   const calcD1 = (S, K, T, r, sigma) => {
     const numerator = Math.log(S / K) + (r + 0.5 * sigma * sigma) * T;
     const denominator = sigma * Math.sqrt(T);
     return denominator === 0 ? 0 : numerator / denominator;
   };
 
+  // 期权Gamma
   const calcGamma = (S, K, T, r, sigma) => {
     if (T <= 0 || sigma <= 0 || S <= 0) return 0;
     const d1 = calcD1(S, K, T, r, sigma);
     return normalPDF(d1) / (S * sigma * Math.sqrt(T));
   };
 
+  // 计算剩余到期年化时间
   const getTimeToMaturity = (expiryStr) => {
     const now = new Date();
     const expiry = new Date(expiryStr);
@@ -767,6 +772,7 @@ function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultipli
     return Math.max(days / 365, 0.0001);
   };
 
+  // 单合约GEX敞口
   const getContractGEX = (opt, S) => {
     const T = getTimeToMaturity(opt.到期日);
     const sigma = opt.隐波 / 100;
@@ -775,52 +781,105 @@ function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultipli
     return gamma * opt.持仓量 * contractMultiplier * S * S * 0.01 * sign;
   };
 
+  // 单标的全合约总GEX
   const getTotalGEX = (options, S) => {
     return options.reduce((sum, opt) => sum + getContractGEX(opt, S), 0);
   };
 
-  const findSingleFlip = (options) => {
-    if (!options.length) return null;
+  /**
+   * 过滤间隔过近的点位，去除扫描误差产生的伪翻转点
+   * @param {number[]} sortedList 升序价格数组
+   * @param {number} gap 最小价格间隔
+   * @returns {number[]} 过滤后点位
+   */
+  const filterMinGapPoints = (sortedList, gap) => {
+    const result = [];
+    for (const p of sortedList) {
+      if (result.length === 0 || p - result[result.length - 1] > gap) {
+        result.push(p);
+      }
+    }
+    return result;
+  };
+
+  /**
+   * 扫描区间找出全部Gamma翻转价格（支持多点）
+   * @param {Array} options 单标的期权分组
+   * @returns {number[]} 升序、去重、过滤近距离后的所有flip价格
+   */
+  const findAllFlipPoints = (options) => {
+    if (!options.length) return [];
     const basePrice = options[0].正股价格;
     const minPrice = basePrice * (1 - priceRange);
     const maxPrice = basePrice * (1 + priceRange);
     const step = basePrice * stepRatio;
 
+    const flipList = [];
     let prevS = minPrice;
     let prevGEX = getTotalGEX(options, prevS);
 
     for (let S = minPrice + step; S <= maxPrice; S += step) {
       const currGEX = getTotalGEX(options, S);
-      if (prevGEX * currGEX <= 0) {
-        const ratio = Math.abs(prevGEX) / Math.abs(currGEX - prevGEX);
-        const flipPrice = prevS + ratio * (S - prevS);
-        return Number(flipPrice.toFixed(4));
+      // 仅保留正负穿越（剔除仅单点贴0但不换向的无效零点）
+      const crossZero = (prevGEX > 0 && currGEX < 0) || (prevGEX < 0 && currGEX > 0);
+      if (crossZero) {
+        // 线性插值精确零点
+        const deltaGEX = currGEX - prevGEX;
+        const ratio = Math.abs(prevGEX) / Math.abs(deltaGEX);
+        const flipPrice = Number((prevS + ratio * (S - prevS)).toFixed(4));
+        flipList.push(flipPrice);
       }
       prevS = S;
       prevGEX = currGEX;
     }
-    return null;
+
+    // 去重 + 升序 + 过滤近距离伪点位
+    const uniqueSorted = [...new Set(flipList)].sort((a, b) => a - b);
+    return filterMinGapPoints(uniqueSorted, minPriceGap);
   };
 
-  // -------------------------- 主逻辑 --------------------------
-  // 按正股代码分组
+  // -------------------------- 主逻辑：按标的分组计算 --------------------------
+  // 1. 按正股代码分组
   const groups = {};
   for (const opt of optionList) {
     if (!groups[opt.正股代码]) groups[opt.正股代码] = [];
     groups[opt.正股代码].push(opt);
   }
 
-  // 逐个计算并组装结果
+  // 2. 逐标的计算所有翻转点并组装结果
   const result = {};
   for (const [code, options] of Object.entries(groups)) {
     const currentPrice = options[0].正股价格;
-    const flipPrice = findSingleFlip(options);
+    const flipPrices = findAllFlipPoints(options);
+
+    // 组装每个翻转点的涨跌详情
+    const flipPointsDetail = flipPrices.map((price) => {
+      const priceChange = Number((price - currentPrice).toFixed(4));
+      const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
+      return {
+        flipPrice: price,
+        priceChange,
+        changePercent,
+      };
+    });
+
+    // 找到距离现价最近的翻转点（兼容旧业务单点位字段）
+    let nearestFlipInfo = null;
+    if (flipPointsDetail.length > 0) {
+      nearestFlipInfo = flipPointsDetail.reduce((a, b) => {
+        return Math.abs(a.flipPrice - currentPrice) < Math.abs(b.flipPrice - currentPrice) ? a : b;
+      }, flipPointsDetail[0]);
+    }
 
     result[code] = {
       currentPrice,
-      gammaFlipPrice: flipPrice,
-      priceChange: flipPrice !== null ? Number((flipPrice - currentPrice).toFixed(4)) : null,
-      changePercent: flipPrice !== null ? Number((((flipPrice - currentPrice) / currentPrice) * 100).toFixed(2)) : null,
+      // 兼容旧字段：最近翻转点信息，无则null
+      gammaFlipPrice: nearestFlipInfo?.flipPrice ?? null,
+      priceChange: nearestFlipInfo?.priceChange ?? null,
+      changePercent: nearestFlipInfo?.changePercent ?? null,
+      // 新增多点完整数据
+      flipCount: flipPointsDetail.length,
+      flipPointsDetail,
     };
   }
 

@@ -7,42 +7,48 @@
           <span class="text-base font-semibold text-[#303133]">{{ item.stockName }}</span>
         </div>
 
-        <!-- 整行左右布局：左侧价格文字 | 最右侧涨跌幅 -->
-        <div class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-start max-md:gap-3">
-          <!-- 左侧：现价 = 零Gamma价 涨跌额 -->
-          <div class="whitespace-nowrap tracking-[0.5px] text-[18px] font-bold text-[#303133]">
-            {{ item.currentPrice ?? "--" }}
-            <span
-              class="text-[18px]"
-              :class="{
-                'text-[#f56c6c]': item.priceChange > 0,
-                'text-[#67c23a]': item.priceChange < 0,
-                'text-[#909399]': item.priceChange == null,
-              }"
-            >
-              {{ formatChange(item.priceChange) }}
-            </span>
-            <span class="text-[18px] font-normal text-[#606266] mx-1">=</span>
-            <span class="text-[22px] font-bold">
-              {{ item.gammaFlipPrice !== null ? item.gammaFlipPrice.toFixed(3) : "--" }}
-            </span>
-          </div>
+        <!-- 现价标题行 -->
+        <div class="text-sm text-[#909399] mb-2">
+          当前现价：<span class="text-[18px] font-bold text-[#303133]">{{ item.currentPrice ?? "--" }}</span>
+        </div>
 
-          <!-- 最右侧：重点放大涨跌幅 -->
-          <div class="flex flex-col items-end gap-1 pr-[10px]">
-            <span class="text-xs text-[#909399]">涨跌幅</span>
-            <span
-              class="text-[20px] font-bold"
-              :class="{
-                'text-[#f56c6c]': item.changePercent > 0,
-                'text-[#67c23a]': item.changePercent < 0,
-                'text-[#909399]': item.changePercent == null,
-              }"
-            >
-              {{ formatPercent(item.changePercent) }}
-            </span>
+        <!-- 多组Gamma翻转点位列表 -->
+        <div v-if="item.flipPointsDetail && item.flipPointsDetail.length" class="space-y-3">
+          <div v-for="point in item.flipPointsDetail" :key="point.flipPrice" class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-start max-md:gap-2 border-t border-[#eee] pt-3 first:border-t-0 first:pt-0">
+            <!-- 左侧：翻转价 + 涨跌额 -->
+            <div class="whitespace-nowrap tracking-[0.5px]">
+              <span class="text-[22px] font-bold">{{ point.flipPrice !== null ? point.flipPrice.toFixed(3) : "--" }}</span>
+              <span
+                class="text-[18px] ml-1"
+                :class="{
+                  'text-[#f56c6c]': point.priceChange > 0,
+                  'text-[#67c23a]': point.priceChange < 0,
+                  'text-[#909399]': point.priceChange == null,
+                }"
+              >
+                {{ formatChange(point.priceChange) }}
+              </span>
+            </div>
+
+            <!-- 右侧：涨跌幅 -->
+            <div class="flex flex-col items-end gap-1 pr-[10px]">
+              <span class="text-xs text-[#909399]">涨跌幅</span>
+              <span
+                class="text-[20px] font-bold"
+                :class="{
+                  'text-[#f56c6c]': point.changePercent > 0,
+                  'text-[#67c23a]': point.changePercent < 0,
+                  'text-[#909399]': point.changePercent == null,
+                }"
+              >
+                {{ formatPercent(point.changePercent) }}
+              </span>
+            </div>
           </div>
         </div>
+
+        <!-- 无点位数据占位 -->
+        <div v-else class="text-[#909399] text-sm py-2">暂无Gamma翻转点位数据</div>
       </div>
     </div>
   </div>
@@ -62,7 +68,7 @@ const gammaFlipData = computed(() => {
       ...item,
       stockName: OPTIONS_MAP.find((el) => el.code === key)?.showName,
       code: key,
-      currentPrice: item.currentPrice.toFixed(3),
+      currentPrice: item.currentPrice?.toFixed(3) ?? "--",
     });
   });
   res.sort(function (a, b) {
