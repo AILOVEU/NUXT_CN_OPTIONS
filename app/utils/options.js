@@ -733,6 +733,125 @@ export function format成交Json(成交Json) {
   });
 }
 
+/**
+ * 计算每个正股对应的Gamma Flip点位及涨跌幅度
+ * @param {Array} optionList - 期权数据数组，格式与示例一致
+ * @param {Object} options - 可选配置
+ * @param {number} options.riskFreeRate - 年化无风险利率，默认0.02（2%）
+ * @param {number} options.contractMultiplier - 合约乘数（股/张），ETF期权默认10000
+ * @param {number} options.priceRange - 价格扫描范围比例，默认0.3（±30%）
+ * @param {number} options.stepRatio - 价格步长比例，默认0.001（千分之一）
+ * @returns {Object} 键为正股代码，值为包含flip价、涨跌额、涨跌幅的对象
+ */
+function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001 } = {}) {
+  // -------------------------- 工具函数 --------------------------
+  const normalPDF = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+
+  const calcD1 = (S, K, T, r, sigma) => {
+    const numerator = Math.log(S / K) + (r + 0.5 * sigma * sigma) * T;
+    const denominator = sigma * Math.sqrt(T);
+    return denominator === 0 ? 0 : numerator / denominator;
+  };
+
+  const calcGamma = (S, K, T, r, sigma) => {
+    if (T <= 0 || sigma <= 0 || S <= 0) return 0;
+    const d1 = calcD1(S, K, T, r, sigma);
+    return normalPDF(d1) / (S * sigma * Math.sqrt(T));
+  };
+
+  const getTimeToMaturity = (expiryStr) => {
+    const now = new Date();
+    const expiry = new Date(expiryStr);
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const days = (expiry - now) / msPerDay;
+    return Math.max(days / 365, 0.0001);
+  };
+
+  const getContractGEX = (opt, S) => {
+    const T = getTimeToMaturity(opt.到期日);
+    const sigma = opt.隐波 / 100;
+    const gamma = calcGamma(S, opt.行权价, T, riskFreeRate, sigma);
+    const sign = opt.沽购 === "购" ? 1 : -1;
+    return gamma * opt.持仓量 * contractMultiplier * S * S * 0.01 * sign;
+  };
+
+  const getTotalGEX = (options, S) => {
+    return options.reduce((sum, opt) => sum + getContractGEX(opt, S), 0);
+  };
+
+  const findSingleFlip = (options) => {
+    if (!options.length) return null;
+    const basePrice = options[0].正股价格;
+    const minPrice = basePrice * (1 - priceRange);
+    const maxPrice = basePrice * (1 + priceRange);
+    const step = basePrice * stepRatio;
+
+    let prevS = minPrice;
+    let prevGEX = getTotalGEX(options, prevS);
+
+    for (let S = minPrice + step; S <= maxPrice; S += step) {
+      const currGEX = getTotalGEX(options, S);
+      if (prevGEX * currGEX <= 0) {
+        const ratio = Math.abs(prevGEX) / Math.abs(currGEX - prevGEX);
+        const flipPrice = prevS + ratio * (S - prevS);
+        return Number(flipPrice.toFixed(4));
+      }
+      prevS = S;
+      prevGEX = currGEX;
+    }
+    return null;
+  };
+
+  // -------------------------- 主逻辑 --------------------------
+  // 按正股代码分组
+  const groups = {};
+  for (const opt of optionList) {
+    if (!groups[opt.正股代码]) groups[opt.正股代码] = [];
+    groups[opt.正股代码].push(opt);
+  }
+
+  // 逐个计算并组装结果
+  const result = {};
+  for (const [code, options] of Object.entries(groups)) {
+    const currentPrice = options[0].正股价格;
+    const flipPrice = findSingleFlip(options);
+
+    result[code] = {
+      currentPrice,
+      gammaFlipPrice: flipPrice,
+      priceChange: flipPrice !== null ? Number((flipPrice - currentPrice).toFixed(4)) : null,
+      changePercent: flipPrice !== null ? Number((((flipPrice - currentPrice) / currentPrice) * 100).toFixed(2)) : null,
+    };
+  }
+
+  return result;
+}
+
+// -------------------------- 使用示例 --------------------------
+// 代入你提供的示例数据
+// const demoData = [
+//   {
+//     Delta: -0.852,
+//     Gamma: 0.491,
+//     Theta: -0.3113,
+//     Vega: 0.362,
+//     到期日: "2026-08-26",
+//     持仓量: 359,
+//     日增: 23,
+//     最新价: 0.6363,
+//     期权名称: "创业板ETF沽8月4600",
+//     正股代码: "159915",
+//     正股价格: 4.037,
+//     沽购: "沽",
+//     行权价: 4.6,
+//     隐波: 41.2
+//   }
+//   // ... 更多合约
+// ];
+
+// const gammaFlipResult = calculateGammaFlip(demoData);
+// console.log(gammaFlipResult);
+
 // 请求入口
 // 一般只请求持仓的数据，若需要请求所有数据，不提供切回只展示持仓的模式
 export async function get_http_data(
@@ -794,9 +913,10 @@ export async function get_http_data(
       组合: comboList.some((item) => item.includes(el["期权名称"])),
     };
   });
-  console.log("[tiledData, comboList,filteredOptionsList]", [tiledData, comboList, filteredOptionsList]);
+  const gammaFlipResult = calculateGammaFlip(tiledData);
+  console.log("[tiledData, comboList,filteredOptionsList,gammaFlipResult]", [tiledData, comboList, filteredOptionsList, gammaFlipResult]);
   let orderList = format成交Json(成交Json);
-  return [tiledData, comboList, filteredOptionsList, orderList];
+  return [tiledData, comboList, filteredOptionsList, orderList, gammaFlipResult];
 }
 
 export function format() {}

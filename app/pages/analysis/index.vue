@@ -8,6 +8,7 @@
       <Card header="组合概览_ComboOverview" v-if="comboList.length">
         <ComboOverview :tiledData="tiledData" :comboList="comboList" />
       </Card>
+      <Card header="Gamma翻转_Flip"> <Flip :gammaFlipData="gammaFlipData" /> </Card>
       <Card header="资金分析_MoneyTrend">
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
@@ -33,15 +34,17 @@ import SankeyInfo from "./components/SankeyInfo";
 import MoneyTrend from "./components/MoneyTrend";
 import UnComboOverview from "./components/UnComboOverview";
 import ComboOverview from "./components/ComboOverview";
+import Flip from "./components/Flip";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 const tiledData = ref([]);
 const comboList = ref([]);
 const orderList = ref([]);
+const gammaFlipData = ref({});
 const loading = ref(false);
 async function handleQuery() {
   loading.value = true;
-  let [data, list, , order] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
+  let [data, list, , order, flip] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
   comboList.value = list;
   tiledData.value = data;
   order.sort(function (a, b) {
@@ -57,6 +60,7 @@ async function handleQuery() {
     return aSort - bSort;
   });
   orderList.value = order;
+  gammaFlipData.value = flip;
   loading.value = false;
 }
 handleQuery();
