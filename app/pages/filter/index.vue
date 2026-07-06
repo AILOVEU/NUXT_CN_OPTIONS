@@ -199,9 +199,9 @@ const formData = reactive({
     溢价Range: true,
   },
   // 范围值
-  杠杆Range: [20, 9999],
+  杠杆Range: [15, 9999],
   溢价Range: [-100, 7.5],
-  一手价Range: [0, 750],
+  一手价Range: [0, 650],
   一手价时间价Range: [0, 750],
   DeltaRange: [0.25, 1],
   隐波Range: [0, 20],

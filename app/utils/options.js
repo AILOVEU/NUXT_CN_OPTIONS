@@ -734,7 +734,7 @@ export function format成交Json(成交Json) {
 }
 
 /**
- * 计算每个正股对应的所有Gamma Flip点位及涨跌幅度（支持多翻转点）
+ * 计算每个正股对应的所有Gamma Flip点位及涨跌幅度（支持多翻转点 + 近月单独计算）
  * @param {Array} optionList - 期权数据数组，每条包含：正股代码、正股价格、行权价、到期日、隐波、沽购、持仓量
  * @param {Object} options - 可选配置
  * @param {number} options.riskFreeRate - 年化无风险利率，默认0.015（1.5%）
@@ -745,7 +745,7 @@ export function format成交Json(成交Json) {
  * @returns {Object} 键为正股代码，值包含现价、最近翻转点、全部翻转点位列表、翻转数量
  */
 export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractMultiplier = 10000, priceRange = 0.3, stepRatio = 0.001, minPriceGap = 0.001 } = {}) {
-  // -------------------------- 工具函数 --------------------------
+  // -------------------------- 工具函数（完全复用原逻辑） --------------------------
   // 标准正态分布概率密度 N'(x)
   const normalPDF = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
 
@@ -838,7 +838,7 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
     return filterMinGapPoints(uniqueSorted, minPriceGap);
   };
 
-  // -------------------------- 主逻辑：按标的分组计算 --------------------------
+  // -------------------------- 主逻辑：按标的分组 + 近月/全期限分别计算 --------------------------
   // 1. 按正股代码分组
   const groups = {};
   for (const opt of optionList) {
@@ -846,22 +846,56 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
     groups[opt.正股代码].push(opt);
   }
 
-  // 2. 逐标的计算所有翻转点并组装结果
+  // 2. 逐标的计算
   const result = {};
   for (const [code, options] of Object.entries(groups)) {
     const currentPrice = options[0].正股价格;
-    const flipPrices = findAllFlipPoints(options);
 
-    // 组装每个翻转点的涨跌详情
-    const flipPointsDetail = flipPrices.map((price) => {
+    // ========== 新增：筛选最近到期日合约 ==========
+    // 提取所有未到期的到期日，按时间升序
+    const validExpiryList = [...new Set(options.map(o => o.到期日))]
+      .map(dateStr => ({ str: dateStr, date: new Date(dateStr) }))
+      .filter(item => item.date > new Date())
+      .sort((a, b) => a.date - b.date);
+    
+    const nearestExpiry = validExpiryList[0]?.str;
+    // 最近到期日的合约子集
+    const nearExpiryOptions = nearestExpiry 
+      ? options.filter(opt => opt.到期日 === nearestExpiry) 
+      : [];
+
+    // ========== 分别计算近月、全期限翻转点 ==========
+    const nearFlipPrices = findAllFlipPoints(nearExpiryOptions); // 近月单独计算
+    const fullFlipPrices = findAllFlipPoints(options);          // 原逻辑：全到期日合并计算
+
+    // ========== 组装翻转点详情：近月在前，全期限在后 ==========
+    // 近月翻转点详情
+    const nearFlipDetail = nearFlipPrices.map(price => {
       const priceChange = Number((price - currentPrice).toFixed(4));
       const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
       return {
         flipPrice: price,
         priceChange,
         changePercent,
+        expiryType: 'near',       // 标记：近月到期
+        expiryDate: nearestExpiry // 对应到期日
       };
     });
+
+    // 全期限翻转点详情（原逻辑结果）
+    const fullFlipDetail = fullFlipPrices.map(price => {
+      const priceChange = Number((price - currentPrice).toFixed(4));
+      const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
+      return {
+        flipPrice: price,
+        priceChange,
+        changePercent,
+        expiryType: 'full'        // 标记：全期限合并
+      };
+    });
+
+    // 最终数组：近月排第一位起，全期限接在后面
+    const flipPointsDetail = [...nearFlipDetail, ...fullFlipDetail];
 
     // 找到距离现价最近的翻转点（兼容旧业务单点位字段）
     let nearestFlipInfo = null;
@@ -873,11 +907,7 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
 
     result[code] = {
       currentPrice,
-      // 兼容旧字段：最近翻转点信息，无则null
-      // gammaFlipPrice: nearestFlipInfo?.flipPrice ?? null,
-      // priceChange: nearestFlipInfo?.priceChange ?? null,
-      // changePercent: nearestFlipInfo?.changePercent ?? null,
-      // 新增多点完整数据
+      nearestExpiryDate: nearestExpiry || null, // 新增：该标的最近到期日
       flipCount: flipPointsDetail.length,
       flipPointsDetail,
     };

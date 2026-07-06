@@ -1,5 +1,4 @@
 <template>
-  {{props.gammaFlipData}}
   <div class="w-full p-5 box-border bg-[#f5f7fa] rounded-lg">
     <div class="grid grid-cols-3 grid-rows-2 grid-flow-col gap-4 max-md:grid-cols-2 max-md:grid-rows-none max-md:auto-rows-fr">
       <div v-for="item in gammaFlipData" :key="item.code" class="bg-white rounded-lg p-4 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-0.5">
@@ -18,9 +17,8 @@
           <div v-for="point in item.flipPointsDetail" :key="point.flipPrice" class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-start max-md:gap-2 border-t border-[#eee] pt-3 first:border-t-0 first:pt-0">
             <!-- 左侧：翻转价 + 涨跌额 -->
             <div class="whitespace-nowrap tracking-[0.5px]">
-              <span class="text-[22px] font-bold">{{ point.flipPrice !== null ? point.flipPrice.toFixed(3) : "--" }}</span>
               <span
-                class="text-[18px] ml-1"
+                class="text-[18px]"
                 :class="{
                   'text-[#f56c6c]': point.priceChange > 0,
                   'text-[#67c23a]': point.priceChange < 0,
@@ -29,6 +27,7 @@
               >
                 {{ formatChange(point.priceChange) }}
               </span>
+              <span class="text-[22px] font-bold ml-1">{{ point.flipPrice !== null ? point.flipPrice.toFixed(3) : "--" }}</span>
             </div>
 
             <!-- 右侧：涨跌幅 -->

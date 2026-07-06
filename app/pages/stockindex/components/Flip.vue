@@ -17,9 +17,8 @@
           <div v-for="point in item.flipPointsDetail" :key="point.flipPrice" class="flex items-center justify-between gap-4 max-md:flex-col max-md:items-start max-md:gap-2 border-t border-[#eee] pt-3 first:border-t-0 first:pt-0">
             <!-- 左侧：翻转价 + 涨跌额 -->
             <div class="whitespace-nowrap tracking-[0.5px]">
-              <span class="text-[22px] font-bold">{{ point.flipPrice !== null ? point.flipPrice.toFixed(3) : "--" }}</span>
-              <span
-                class="text-[18px] ml-1"
+              <div
+                class="text-[18px] w-[80px] inline-block"
                 :class="{
                   'text-[#f56c6c]': point.priceChange > 0,
                   'text-[#67c23a]': point.priceChange < 0,
@@ -27,7 +26,8 @@
                 }"
               >
                 {{ formatChange(point.priceChange) }}
-              </span>
+              </div>
+              <span class="text-[22px] font-bold ml-1">{{ point.flipPrice !== null ? point.flipPrice.toFixed(2) : "--" }}</span>
             </div>
 
             <!-- 右侧：涨跌幅 -->
@@ -83,7 +83,7 @@ const gammaFlipData = computed(() => {
 // 格式化涨跌额
 const formatChange = (val) => {
   if (val === null || val === undefined) return "--";
-  return val > 0 ? `+${val.toFixed(3)}` : val.toFixed(3);
+  return val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2);
 };
 
 // 格式化涨跌幅
