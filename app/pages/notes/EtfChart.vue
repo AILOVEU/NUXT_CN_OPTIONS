@@ -1,18 +1,3 @@
-<template>
-  <!-- 卡片容器 -->
-  <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4">
-    <!-- 头部标题行 -->
-    <div class="flex justify-between items-center mb-2">
-      <div class="title-wrap">
-        <span class="font-semibold text-base text-gray-800 mr-2">{{ code }}</span>
-        <span class="text-sm text-gray-500">{{ name }}</span>
-      </div>
-      <div class="font-semibold text-base" :class="isUp ? 'text-red-500' : 'text-green-500'">{{ isUp ? "+" : "" }}{{ pctChange }}%</div>
-    </div>
-    <!-- 图表容器 -->
-    <div ref="chartRef" class="w-full h-[230px]"></div>
-  </div>
-</template>
 <script setup>
 import { computed, ref, watch, onMounted } from "vue";
 import * as echarts from "echarts";
@@ -39,6 +24,85 @@ const pctChange = computed(() => {
 
 const isUp = computed(() => Number(pctChange.value) >= 0);
 
+// 核心：滑动窗口±30分钟局部高低点 + 10分钟内同类型极值只留第一个
+function getLocalExtremumMarkPoints() {
+  const dataList = props.data;
+  const total = dataList.length;
+  if (total === 0) return [];
+  const markPoints = [];
+  const windowRange = 30; // 前后各30根K线窗口
+  const duplicateGap = 10; // 10根K线=10分钟内重复极值忽略
+
+  // 记录最近一次高点、低点索引，用于去重
+  let lastHighIdx = -Infinity;
+  let lastLowIdx = -Infinity;
+
+  for (let i = 0; i < total; i++) {
+    // 滑动窗口边界
+    const left = Math.max(0, i - windowRange);
+    const right = Math.min(total - 1, i + windowRange);
+    let winMax = -Infinity;
+    let winMin = Infinity;
+
+    // 计算窗口内最高最低价格
+    for (let j = left; j <= right; j++) {
+      const h = dataList[j][2];
+      const l = dataList[j][3];
+      if (h > winMax) winMax = h;
+      if (l < winMin) winMin = l;
+    }
+
+    const currHigh = dataList[i][2];
+    const currLow = dataList[i][3];
+    const currTime = dataList[i][0];
+
+    // 当前是局部高点
+    if (currHigh === winMax) {
+      // 判断距离上一个高点是否超过10根K线，不足则跳过
+      if (i - lastHighIdx >= duplicateGap) {
+        markPoints.push({
+          coord: [i, currHigh],
+          symbol: "triangle",
+          symbolRotate: 0,
+          symbolSize: 10,
+          itemStyle: { color: "#ef4444" },
+          label: {
+            show: true,
+            formatter: currTime,
+            position: "top",
+            fontSize: 12,
+            color: "#ef4444",
+          },
+        });
+        lastHighIdx = i;
+      }
+    }
+
+    // 当前是局部低点
+    if (currLow === winMin) {
+      // 判断距离上一个低点是否超过10根K线，不足则跳过
+      if (i - lastLowIdx >= duplicateGap) {
+        markPoints.push({
+          coord: [i, currLow],
+          symbol: "triangle",
+          symbolRotate: 180,
+          symbolSize: 10,
+          itemStyle: { color: "#22c55e" },
+          label: {
+            show: true,
+            formatter: currTime,
+            position: "bottom",
+            fontSize: 12,
+            color: "#22c55e",
+          },
+        });
+        lastLowIdx = i;
+      }
+    }
+  }
+  return markPoints;
+}
+
 function initChart() {
   if (!chartRef.value) return;
 
@@ -47,6 +111,7 @@ function initChart() {
   const upColor = "#ef4444";
   const downColor = "#22c55e";
   const lineColor = isUp.value ? upColor : downColor;
+  const markData = getLocalExtremumMarkPoints();
 
   const option = {
     grid: [
@@ -61,6 +126,7 @@ function initChart() {
         const idx = times.value.indexOf(time);
         const d = props.data[idx];
         if (!d) return "";
+
         const open = d[1];
         const high = d[2];
         const low = d[3];
@@ -68,24 +134,23 @@ function initChart() {
         const vol = d[5];
         const prev = props.prevClose;
 
-        // 振幅
         const amplitude = (((high - low) / prev) * 100).toFixed(2);
-        // 涨跌额、涨跌幅
         const changeVal = close - prev;
         const changePct = ((changeVal / prev) * 100).toFixed(2);
         const tipUp = changePct >= 0;
         const color = tipUp ? "#ef4444" : "#22c55e";
         const sign = tipUp ? "+" : "";
+
         return `
-      <div style="font-weight:600;margin-bottom:4px">${time}</div>
-      开: ${open}<br/>
-      高: ${high}<br/>
-      低: ${low}<br/>
-      收: ${close}<br/>
-      量: ${vol.toLocaleString()}<br/>
-      振幅: ${amplitude}%<br/>
-      <span style="color:${color}">涨跌幅: ${sign}${changePct}%</span>
-    `;
+          <div style="font-weight:600;margin-bottom:4px">${time}</div>
+          开: ${open}<br/>
+          高: ${high}<br/>
+          低: ${low}<br/>
+          收: ${close}<br/>
+          量: ${vol.toLocaleString()}<br/>
+          振幅: ${amplitude}%<br/>
+          <span style="color:${color}">涨跌幅: ${sign}${changePct}%</span>
+        `;
       },
     },
     xAxis: [
@@ -144,6 +209,9 @@ function initChart() {
           lineStyle: { type: "dashed", color: "#999", width: 1 },
           data: [{ yAxis: props.prevClose, label: { formatter: "昨收", fontSize: 10, color: "#999" } }],
         },
+        markPoint: {
+          data: markData,
+        },
       },
       {
         name: "成交量",
@@ -185,3 +253,18 @@ watch(
   { deep: true }
 );
 </script>
+
+<template>
+  <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4">
+    <div class="flex justify-between items-center mb-2">
+      <div class="title-wrap">
+        <span class="font-semibold text-base text-gray-800 mr-2">{{ code }}</span>
+        <span class="text-sm text-gray-500">{{ name }}</span>
+      </div>
+      <div class="font-semibold text-base" :class="isUp ? 'text-red-500' : 'text-green-500'">
+        {{ isUp ? "+" : "" }}{{ pctChange }}%
+      </div>
+    </div>
+    <div ref="chartRef" class="w-full h-[230px]"></div>
+  </div>
+</template>
