@@ -16,7 +16,8 @@ export function useEtfData() {
         currentDate.value = date
       } catch (e) {
         error.value = e.message || '加载失败'
-        dailyData.value = null
+        dailyData.value = {}
+        currentDate.value = date
       } finally {
         loading.value = false
       }

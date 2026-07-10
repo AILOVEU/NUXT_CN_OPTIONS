@@ -1,5 +1,6 @@
 <template>
   <MouseXLine />
+  <Nav />
   <div class="min-h-screen bg-[#f5f7fa] px-5 mx-auto">
     <!-- 顶部导航栏 -->
     <header class="bg-white rounded-[10px] py-4 px-5 mb-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">

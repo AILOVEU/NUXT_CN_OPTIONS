@@ -56,7 +56,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { OPTIONS_MAP } from "~/data";
+import { STOCK_INDEX_OPTIONS_MAP } from "~/data";
 const props = defineProps(["gammaFlipData"]);
 
 const gammaFlipData = computed(() => {
@@ -67,14 +67,14 @@ const gammaFlipData = computed(() => {
     const item = props.gammaFlipData[key];
     res.push({
       ...item,
-      stockName: OPTIONS_MAP.find((el) => el.code === key)?.showName || key,
+      stockName: STOCK_INDEX_OPTIONS_MAP.find((el) => el.code === key)?.showName || key,
       code: key,
       currentPrice: item.currentPrice?.toFixed(3) ?? "--",
     });
   });
   res.sort(function (a, b) {
-    const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["code"]);
-    const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["code"]);
+    const aSort = STOCK_INDEX_OPTIONS_MAP.findIndex((el) => el.code === a["code"]);
+    const bSort = STOCK_INDEX_OPTIONS_MAP.findIndex((el) => el.code === b["code"]);
     return aSort - bSort;
   });
   return res;

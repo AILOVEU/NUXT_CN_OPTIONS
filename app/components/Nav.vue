@@ -64,6 +64,10 @@ const navList = [
     name: "ETF",
   },
   {
+    href: "/notes",
+    name: "日记",
+  },
+  {
     href: "/minutes",
     name: "分钟",
   },
