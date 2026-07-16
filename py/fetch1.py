@@ -111,7 +111,7 @@ def fetch_etf_1min(code: str, name: str, date_str: str) -> dict:
                 "symbol": symbol,
                 "scale": 1,    # 1分钟线
                 "ma": "no",
-                "datalen": 480 # 取足够条数覆盖单日
+                "datalen": 240 * 5 # 取足够条数覆盖单日
             }
 
             resp = requests.get(
