@@ -4,7 +4,7 @@
   </div>
   <div v-else-if="props.row._split" style="background-color: black">&nbsp;</div>
   <div v-else-if="props.row._current" style="background-color: #e5effe">&nbsp;</div>
-  <div v-else-if="spread期权Item && show" class="p-[2px] h-[105px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
+  <div v-else-if="spread期权Item && show" class="p-[2px] h-[125px] flex flex-col justify-center relative px-[4px] mx-auto" :style="style">
     <div class="absolute top-[2px] left-[2px] flex flex-row max-md:flex-col-reverse items-start gap-[1px]" v-if="组合持仓">
       <div class="bg-[red] rounded-[50%] h-[16px] leading-[16px] text-[white] font-semibold px-[4px]">
         {{ 组合持仓 }}
@@ -18,6 +18,13 @@
 
     <div class="absolute bottom-[2px] left-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">买:{{ current期权Item?.["一手卖一价"] }}</div>
     <div class="absolute bottom-[2px] right-[2px] rounded-[5px] h-[16px] leading-[16px] bg-[white] font-[600] px-[4px]">卖:{{ spread期权Item?.["一手买一价"] }}</div>
+    <div class="text-[gray] mb-[5px]">
+      <div class="mx-auto flex items-center whitespace-nowrap mt-1">
+        <div class="basis-1/3 text-center">打和</div>
+        <div class="basis-1/3 text-center text-[0.75em]">溢 {{ (打和点溢价 * 100).toFixed(1) }}%</div>
+        <div class="basis-1/3 text-center">{{ 打和点.toFixed(3) }}</div>
+      </div>
+    </div>
 
     <div class="mx-auto w-full flex gap-[4px] items-center justify-around">
       <TagDiffPrice :current期权Item="current期权Item" :spread期权Item="spread期权Item" :diffValue="props.diffValue" />
@@ -129,6 +136,23 @@ const 组合盈亏 = computed(() => {
   return (current期权盈亏 - spread期权盈亏) * 组合持仓.value;
 });
 
+const 打和点 = computed(() => {
+  const 买入价 = current期权Item.value?.["一手卖一价"];
+  const 卖出价 = spread期权Item.value?.["一手买一价"];
+  const 成本 = 买入价 - 卖出价;
+  const 行权价 = current期权Item.value?.["行权价"] * current期权Item.value?.["合约单位"];
+  const isCall = current期权Item.value?.["沽购"] === "购";
+  let res = isCall ? 行权价 + 成本 : 行权价 - 成本;
+  return res / current期权Item.value?.["合约单位"];
+});
+
+const 打和点溢价 = computed(() => {
+  const 正股价格 = current期权Item.value?.["正股价格"];
+  const isCall = current期权Item.value?.["沽购"] === "购";
+  let _打和点 = 打和点.value;
+  // return [_打和点 , 正股价格,isCall ? (_打和点 - 正股价格) / 正股价格 : (正股价格 - _打和点) / 正股价格]
+  return isCall ? (_打和点 - 正股价格) / 正股价格 : (正股价格 - _打和点) / 正股价格;
+});
 const style = computed(() => {
   if (组合持仓.value) {
     return {
