@@ -67,10 +67,10 @@ const navList = [
     href: "/notes",
     name: "日记",
   },
-  {
-    href: "/minutes",
-    name: "分钟",
-  },
+  // {
+  //   href: "/minutes",
+  //   name: "分钟",
+  // },
   {
     href: "/futures",
     name: "期货",

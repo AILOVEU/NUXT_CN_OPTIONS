@@ -16,13 +16,42 @@ const times = computed(() => props.data.map((d) => d[0]));
 const closePrices = computed(() => props.data.map((d) => d[4]));
 const volumes = computed(() => props.data.map((d) => d[5]));
 
+// 当日收盘涨跌幅
 const pctChange = computed(() => {
   if (!props.prevClose || !props.data.length) return 0;
   const last = props.data[props.data.length - 1][4];
   return (((last - props.prevClose) / props.prevClose) * 100).toFixed(2);
 });
-
 const isUp = computed(() => Number(pctChange.value) >= 0);
+
+// 当日最高价、最低价
+const dayHigh = computed(() => {
+  if (!props.data.length) return 0;
+  return Math.max(...props.data.map((item) => item[2]));
+});
+const dayLow = computed(() => {
+  if (!props.data.length) return 0;
+  return Math.min(...props.data.map((item) => item[3]));
+});
+
+// 最高点相对昨收涨跌幅
+const highPct = computed(() => {
+  if (!props.prevClose || dayHigh.value === 0) return "0.00";
+  return (((dayHigh.value - props.prevClose) / props.prevClose) * 100).toFixed(2);
+});
+// 最低点相对昨收涨跌幅
+const lowPct = computed(() => {
+  if (!props.prevClose || dayLow.value === 0) return "0.00";
+  return (((dayLow.value - props.prevClose) / props.prevClose) * 100).toFixed(2);
+});
+
+// 当日振幅
+function getAmplitude() {
+  if (!props.prevClose || !props.data.length) return "0.00";
+  const high = dayHigh.value;
+  const low = dayLow.value;
+  return (((high - low) / props.prevClose) * 100).toFixed(2);
+}
 
 // 核心：滑动窗口±30分钟局部高低点 + 10分钟内同类型极值只留第一个
 function getLocalExtremumMarkPoints() {
@@ -256,13 +285,27 @@ watch(
 
 <template>
   <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4">
-    <div class="flex justify-between items-center mb-2">
+    <div class="flex justify-between items-start mb-2">
       <div class="title-wrap">
         <span class="font-semibold text-base text-gray-800 mr-2">{{ code }}</span>
         <span class="text-sm text-gray-500">{{ name }}</span>
       </div>
-      <div class="font-semibold text-base" :class="isUp ? 'text-red-500' : 'text-green-500'">
-        {{ isUp ? "+" : "" }}{{ pctChange }}%
+      <!-- 右侧丰富数据区域 -->
+      <div class="text-right">
+        <!-- 当日收盘涨跌（主大号字体） -->
+        <div class="font-bold text-lg" :class="isUp ? 'text-[red]' : 'text-[green]'">{{ isUp ? "+" : "" }}{{ pctChange }}%</div>
+        <!-- 最高点涨幅 -->
+        <div class="text-xs mt-1" :class="Number(highPct) >= 0 ? 'text-[red]' : 'text-[green]'">
+          最高 <span class="inline-block text-left font-mono">{{ Number(highPct) >= 0 ? "+" : "" }}{{ highPct }}%</span>
+        </div>
+        <!-- 最低点跌幅 -->
+        <div class="text-xs mt-0.5" :class="Number(lowPct) >= 0 ? 'text-[red]' : 'text-[green]'">
+          最低 <span class="inline-block text-left font-mono">{{ Number(lowPct) >= 0 ? "+" : "" }}{{ lowPct }}%</span>
+        </div>
+        <!-- 振幅 无红绿颜色 -->
+        <div class="text-xs mt-0.5 text-gray-500 flex justify-between items-center">
+          <span class="text-xs text-gray-500">振幅</span> <span class="inline-block text-right font-mono">{{ getAmplitude() }}%</span>
+        </div>
       </div>
     </div>
     <div ref="chartRef" class="w-full h-[230px]"></div>

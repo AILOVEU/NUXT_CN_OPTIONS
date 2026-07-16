@@ -15,8 +15,7 @@
 
     <!-- 笔记区域 -->
     <section v-if="noteText" class="bg-gradient-to-br from-amber-100 to-amber-200 rounded-[10px] py-4 px-5 mb-4">
-      <div class="text-[13px] text-amber-800 mb-1.5 font-medium">📝 今日笔记</div>
-      <div class="text-sm text-amber-900 leading-relaxed">{{ noteText }}</div>
+      <div class="text-2xl text-center text-amber-900 leading-relaxed">{{ noteText }}</div>
     </section>
 
     <!-- 加载状态 -->
