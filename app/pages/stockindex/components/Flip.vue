@@ -9,7 +9,7 @@
 
         <!-- 现价标题行 -->
         <div class="text-sm text-[#909399] mb-2">
-          当前现价：<span class="text-[18px] font-bold text-[#303133]">{{ item.currentPrice ?? "--" }}</span>
+          当前现价：<span class="text-[18px] font-bold text-[#303133] font-mono">{{ item.currentPrice ?? "--" }}</span>
         </div>
 
         <!-- 多组Gamma翻转点位列表 -->
@@ -18,7 +18,7 @@
             <!-- 左侧：翻转价 + 涨跌额 -->
             <div class="whitespace-nowrap tracking-[0.5px]">
               <div
-                class="text-[18px] w-[80px] inline-block"
+                class="text-[18px] w-[80px] inline-block font-mono"
                 :class="{
                   'text-[#f56c6c]': point.priceChange > 0,
                   'text-[#67c23a]': point.priceChange < 0,
@@ -27,14 +27,14 @@
               >
                 {{ formatChange(point.priceChange) }}
               </div>
-              <span class="text-[22px] font-bold ml-1">{{ point.flipPrice !== null ? point.flipPrice.toFixed(2) : "--" }}</span>
+              <span class="text-[22px] font-bold ml-1 font-mono">{{ point.flipPrice !== null ? point.flipPrice.toFixed(2) : "--" }}</span>
+              <span v-if="point.备注" class="ml-[12px]">{{ point.备注 }}</span>
             </div>
-
             <!-- 右侧：涨跌幅 -->
             <div class="flex flex-col items-end gap-1 pr-[10px]">
               <span class="text-xs text-[#909399]">涨跌幅</span>
               <span
-                class="text-[20px] font-bold"
+                class="text-[20px] font-bold font-mono"
                 :class="{
                   'text-[#f56c6c]': point.changePercent > 0,
                   'text-[#67c23a]': point.changePercent < 0,
@@ -69,7 +69,7 @@ const gammaFlipData = computed(() => {
       ...item,
       stockName: STOCK_INDEX_OPTIONS_MAP.find((el) => el.code === key)?.showName || key,
       code: key,
-      currentPrice: item.currentPrice?.toFixed(3) ?? "--",
+      currentPrice: item.currentPrice?.toFixed(2) ?? "--",
     });
   });
   res.sort(function (a, b) {

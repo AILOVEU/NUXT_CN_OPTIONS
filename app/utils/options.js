@@ -874,6 +874,7 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
       const priceChange = Number((price - currentPrice).toFixed(4));
       const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
       return {
+        备注: '当月',
         flipPrice: price,
         priceChange,
         changePercent,
