@@ -1,4 +1,17 @@
 <template>
+  <div>
+    <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
+      <el-form-item label="正股">
+        <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
+      </el-form-item>
+      <el-form-item label="到期日">
+        <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
+      </el-form-item>
+      <el-form-item label="沽购">
+        <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
+      </el-form-item>
+    </el-form>
+  </div>
   <div class="flex justify-evenly gap-[50px] max-md:flex-col">
     <!-- 认购 -->
     <div class="flex flex-col items-center">
@@ -92,10 +105,27 @@
   </div>
 </template>
 <script setup>
+import { deadline_list, deadline_color_list, OPTIONS_MAP } from "~/data";
 import { formatDecimal, formatNumberToWan, getMedian } from "~/utils/utils";
+// 表单数据
+const formData = reactive({
+  正股List: [...OPTIONS_MAP.map((el) => el.code)],
+  到期日List: [...deadline_list],
+  沽购List: ["沽", "购"],
+});
+
+const stockOptions = OPTIONS_MAP.map((el) => ({
+  label: el.name,
+  value: el.code,
+}));
+
 const props = defineProps(["tiledData", "comboList"]);
 const 非组合TiledData = computed(() => {
-  return props.tiledData.filter((el) => !el["组合"] && el["持仓"] > 0);
+  return props.tiledData
+    .filter((el) => !el["组合"] && el["持仓"] > 0)
+    .filter((el) => formData.正股List.includes(el["正股代码"]))
+    .filter((el) => formData.到期日List.includes(el["到期日"]))
+    .filter((el) => formData.沽购List.includes(el["沽购"]));
 });
 
 const 认购总价 = computed(() => {

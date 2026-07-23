@@ -4,6 +4,9 @@
       <el-form-item label="正股">
         <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
       </el-form-item>
+      <el-form-item label="沽购">
+        <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
+      </el-form-item>
       <el-form-item label="到期日">
         <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
       </el-form-item>
@@ -30,6 +33,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
 
 const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
+  沽购List: ["沽", "购"],
   到期日List: [...deadline_list],
 });
 
@@ -132,6 +136,7 @@ const filteredData = computed(() => {
     props.tiledData
       ?.filter((el) => el["持仓"])
       ?.filter((el) => formData.正股List.includes(el["正股代码"]))
+      ?.filter((el) => formData.沽购List.includes(el["沽购"]))
       ?.filter((el) => formData.到期日List.includes(el["到期日"])) || []
   );
 });

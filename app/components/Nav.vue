@@ -35,10 +35,6 @@ const navList = [
     name: "总览",
   },
   {
-    href: "/stockindex",
-    name: "股指",
-  },
-  {
     href: "/filter",
     name: "筛选",
   },
@@ -54,7 +50,10 @@ const navList = [
     href: "/analysis",
     name: "★分析",
   },
-
+  {
+    href: "/stockindex",
+    name: "股指",
+  },
   {
     href: "/vixs",
     name: "Vixs",
