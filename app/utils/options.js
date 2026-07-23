@@ -652,7 +652,8 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
     row["is彩票"] = checkIs彩票(row);
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
-
+    row["持仓额"] = row["持仓量"] * row["一手价"];
+    row["日增额"] = row["日增"] * row["一手价"];
     tiledData.push(row);
   });
   let 总仓位 = 0;
@@ -853,45 +854,43 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
 
     // ========== 新增：筛选最近到期日合约 ==========
     // 提取所有未到期的到期日，按时间升序
-    const validExpiryList = [...new Set(options.map(o => o.到期日))]
-      .map(dateStr => ({ str: dateStr, date: new Date(dateStr) }))
-      .filter(item => item.date > new Date())
+    const validExpiryList = [...new Set(options.map((o) => o.到期日))]
+      .map((dateStr) => ({ str: dateStr, date: new Date(dateStr) }))
+      .filter((item) => item.date > new Date())
       .sort((a, b) => a.date - b.date);
-    
+
     const nearestExpiry = validExpiryList[0]?.str;
     // 最近到期日的合约子集
-    const nearExpiryOptions = nearestExpiry 
-      ? options.filter(opt => opt.到期日 === nearestExpiry) 
-      : [];
+    const nearExpiryOptions = nearestExpiry ? options.filter((opt) => opt.到期日 === nearestExpiry) : [];
 
     // ========== 分别计算近月、全期限翻转点 ==========
     const nearFlipPrices = findAllFlipPoints(nearExpiryOptions); // 近月单独计算
-    const fullFlipPrices = findAllFlipPoints(options);          // 原逻辑：全到期日合并计算
+    const fullFlipPrices = findAllFlipPoints(options); // 原逻辑：全到期日合并计算
 
     // ========== 组装翻转点详情：近月在前，全期限在后 ==========
     // 近月翻转点详情
-    const nearFlipDetail = nearFlipPrices.map(price => {
+    const nearFlipDetail = nearFlipPrices.map((price) => {
       const priceChange = Number((price - currentPrice).toFixed(4));
       const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
       return {
-        备注: '当月',
+        备注: "当月",
         flipPrice: price,
         priceChange,
         changePercent,
-        expiryType: 'near',       // 标记：近月到期
-        expiryDate: nearestExpiry // 对应到期日
+        expiryType: "near", // 标记：近月到期
+        expiryDate: nearestExpiry, // 对应到期日
       };
     });
 
     // 全期限翻转点详情（原逻辑结果）
-    const fullFlipDetail = fullFlipPrices.map(price => {
+    const fullFlipDetail = fullFlipPrices.map((price) => {
       const priceChange = Number((price - currentPrice).toFixed(4));
       const changePercent = Number((((price - currentPrice) / currentPrice) * 100).toFixed(2));
       return {
         flipPrice: price,
         priceChange,
         changePercent,
-        expiryType: 'full'        // 标记：全期限合并
+        expiryType: "full", // 标记：全期限合并
       };
     });
 

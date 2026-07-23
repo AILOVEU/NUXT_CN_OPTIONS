@@ -117,6 +117,20 @@
               <TagVega :value="row['Vega']" />
             </el-table-column>
           </el-table-column>
+          <el-table-column label="做市商" align="center">
+            <el-table-column #default="{ row }" label="持仓量" prop="持仓量" width="60" sortable align="right">
+              {{ formatNumberToWan(row["持仓量"]) }}
+            </el-table-column>
+            <el-table-column #default="{ row }" label="持仓额" prop="持仓额" width="100" sortable align="right">
+              {{ formatNumberToWan(row["持仓额"]) }}
+            </el-table-column>
+            <el-table-column #default="{ row }" label="日增量" prop="日增" width="100" sortable align="right">
+              {{ formatNumberToWan(row["日增"]) }}
+            </el-table-column>
+            <el-table-column #default="{ row }" label="日增额" prop="日增额" width="100" sortable align="right">
+              {{ formatNumberToWan(row["日增额"]) }}
+            </el-table-column>
+          </el-table-column>
           <el-table-column #default="{ row }" label="组合?" prop="组合" width="45" sortable align="left">
             {{ row["组合"] ? "是" : "" }}
           </el-table-column>
@@ -130,7 +144,7 @@ import _ from "lodash";
 import { deadline_list, OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 
-const props = defineProps(["checkIsChance", "data", "isCombo", "showHold"]);
+const props = defineProps(["checkIsChance", "data", "isCombo", "showHold", "orderBy", "filterCount"]);
 const tableData = reactive({
   tiledData: [],
   loading: false,
@@ -151,10 +165,18 @@ const filteredTableData = computed(() => {
   let filtered = (props.data?.length ? props.data : tableData.tiledData).filter((el) => props.checkIsChance(el));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
-  if (props.showHold) {
-    filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
+  if (props.orderBy) {
+    filtered = filtered.filter((el) => !!el[props.orderBy]);
+    filtered = _.orderBy(filtered, [props.orderBy], ["desc"]);
   } else {
-    filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
+    if (props.showHold) {
+      filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
+    } else {
+      filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
+    }
+  }
+  if (props.filterCount) {
+    return filtered.slice(0, props.filterCount);
   }
   return filtered;
 });

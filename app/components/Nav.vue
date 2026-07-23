@@ -39,6 +39,10 @@ const navList = [
     name: "筛选",
   },
   {
+    href: "/rank",
+    name: "排行",
+  },
+  {
     href: "/spread",
     name: "价差",
   },
