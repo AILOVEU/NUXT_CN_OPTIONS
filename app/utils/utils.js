@@ -98,7 +98,12 @@ export function formatNumberToWan(num) {
     return `${signStr}${wanInteger}万`;
   } else {
     // 非整万数：符号 + 万级整数 + 万 + 个级部分
-    return `${signStr}${wanInteger}万 ${gePart}`;
+    return `${signStr}${wanInteger}万 ${getGePart(gePart)}`;
+  }
+  function getGePart(value) {
+    const num = Math.abs(Number(value) || 0);
+    const str = num.toString();
+    return str.padStart(4, "_");
   }
 }
 // 获取指定日期所在月份的第四个星期四

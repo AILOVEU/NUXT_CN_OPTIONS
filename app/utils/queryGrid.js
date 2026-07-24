@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 function handle市场数据(dataList, 沽购, 行内期权名称List) {
   const 期权名称List = 行内期权名称List.filter((el) => el.includes(沽购));
   const 期权ItemList = dataList.filter((el) => 期权名称List.includes(el["期权名称"]));
-  console.log("期权ItemList", 期权ItemList);
   const 日增额 = 期权ItemList.filter((el) => el.日增额).reduce((prev, item) => prev + item.日增额, 0);
   const 日增量 = 期权ItemList.filter((el) => el.日增量).reduce((prev, item) => prev + item.日增量, 0);
   const 持仓额 = 期权ItemList.filter((el) => el.持仓额).reduce((prev, item) => prev + item.持仓额, 0);
@@ -98,7 +97,6 @@ function handleHoldData(dataList, 正股代码List) {
     const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);
     return aSort - bSort;
   });
-  console.log("tableData", tableData);
   return tableData;
 }
 export async function queryGrid(正股代码List, useCatch) {

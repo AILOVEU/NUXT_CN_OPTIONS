@@ -15,7 +15,10 @@
         <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary :summary-method="getSummary">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
-              <div v-if="type" class="leading-[1.2]">
+              <div v-if="label.includes('市场')" class="leading-[1.2] flex items-center gap-[2px] justify-center">
+                <div>{{ label }}</div>
+              </div>
+              <div v-else-if="type" class="leading-[1.2]">
                 <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月") }}</div>
                 <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
               </div>
