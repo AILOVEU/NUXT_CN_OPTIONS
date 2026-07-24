@@ -27,7 +27,7 @@ const { setGlobalLoading, isMobile } = useGlobal();
 const route = useRoute();
 const router = useRouter();
 const updateTime = ref(localStorage.getItem("updateTime"));
-const CAN_REFRES_NAV_LIST = ["/hold", "/filter", "/rank", "/spread", "/analysis"];
+const CAN_REFRES_NAV_LIST = ["/hold", "/filter", "/spread", "/analysis"];
 const CUSTOM_QUERY_NAV_LIST = ["/stockindex"];
 const navList = [
   {
@@ -37,10 +37,6 @@ const navList = [
   {
     href: "/filter",
     name: "筛选",
-  },
-  {
-    href: "/rank",
-    name: "排行",
   },
   {
     href: "/spread",

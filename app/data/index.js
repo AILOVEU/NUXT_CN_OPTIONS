@@ -106,7 +106,7 @@ export const OPTIONS_MAP = [
     name: "50ETF",
     linkName: ["上证50ETF", "XD上证50ETF"], // 链接stock_code
     color: "#73c0de",
-    showName: "上50🧊", // 顶部tab筛选会用到
+    showName: "上_50🧊", // 顶部tab筛选会用到
     极简Name: "🧊",
     隐波Max: 15,
     fs: "m:10+c:510050",
@@ -116,7 +116,7 @@ export const OPTIONS_MAP = [
     name: "300ETF",
     linkName: ["沪深300ETF华泰柏瑞", "XD沪深300ETF华泰柏瑞"],
     color: "#91cc75",
-    showName: "300🍆",
+    showName: "沪300🍆",
     极简Name: "🍆",
     隐波Max: 15,
     fs: "m:10+c:510300",
@@ -146,7 +146,7 @@ export const OPTIONS_MAP = [
     name: "创业板ETF",
     linkName: ["创业板ETF易方达"],
     color: "#ea7ccc",
-    showName: "创🦑",
+    showName: "创ETF🦑",
     极简Name: "🦑",
     隐波Max: 22,
     fs: "m:12+c:159915",
@@ -156,7 +156,7 @@ export const OPTIONS_MAP = [
     name: "科50ETF",
     linkName: ["科创50ETF"],
     color: "#9a60b4",
-    showName: "科50🐸",
+    showName: "科_50🐸",
     极简Name: "🐸",
     隐波Max: 22,
     fs: "m:10+c:588000",
