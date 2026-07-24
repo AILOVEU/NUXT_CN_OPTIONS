@@ -15,7 +15,8 @@
       </el-form-item>
     </el-form>
   </div>
-  <!-- 2 分组维度 -->
+
+  <!-- 2分组维度 -->
   <div class="grid max-md:grid-cols-1 grid-cols-3 gap-6 mt-[10px]">
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-4 text-orange-400 border-b pb-2">持仓额{{ orderArrowText }}</h3>
@@ -35,31 +36,17 @@
               <td class="py-1 px-1 border font-mono">{{ item.groupKey }}</td>
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
-                  <!-- 中间0轴线 -->
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <!-- 负数 绿色条：向左延伸 -->
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <!-- 负数绿色条：白色文字 -->
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_2) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_2) }}
                   </div>
-                  <!-- 正数 蓝色条：向右延伸 -->
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <!-- 正数蓝色条：白色文字 -->
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_2) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_2) }}
                   </div>
-                  <!-- 0值 -->
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <!-- 0值灰色条：深色文字 -->
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -87,26 +74,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_2) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_2) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_2) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_2) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -134,26 +108,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_2) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_2) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_2) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_2) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -164,7 +125,7 @@
     </div>
   </div>
 
-  <!-- 3 分组维度 -->
+  <!-- 3分组维度 -->
   <div class="grid max-md:grid-cols-1 grid-cols-3 gap-6 mt-6">
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-4 text-orange-400 border-b pb-2">持仓额{{ orderArrowText }}</h3>
@@ -185,26 +146,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_3) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_3) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_3) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_3) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -232,26 +180,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_3) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_3) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_3) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_3) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -279,26 +214,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_3) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_3) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_3) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_3) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -309,7 +231,7 @@
     </div>
   </div>
 
-  <!-- 4 分组维度 -->
+  <!-- 4分组维度 -->
   <div class="grid max-md:grid-cols-1 grid-cols-3 gap-6 mt-6">
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-4 text-orange-400 border-b pb-2">持仓额{{ orderArrowText }}</h3>
@@ -330,26 +252,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_4) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_4) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '持仓额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '持仓额') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allHoldAmount_4) + '%' }">
+                    {{ getPercentText(item.total, allHoldAmount_4) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -377,26 +286,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_4) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_4) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增额') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增额') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddAmount_4) + '%' }">
+                    {{ getPercentText(item.total, allDayAddAmount_4) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -424,26 +320,13 @@
               <td class="py-1 px-1 border">
                 <div class="h-5 w-full bg-gray-100 rounded overflow-hidden relative text-xs">
                   <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-gray-300 z-10"></div>
-                  <div
-                    v-if="item.total < 0"
-                    class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total < 0" class="h-full rounded absolute right-1/2 bg-green-500 flex items-center justify-end pr-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_4) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_4) }}
                   </div>
-                  <div
-                    v-if="item.total > 0"
-                    class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium"
-                    :style="{ width: getBarWidth(item.total, '日增量') + '%' }"
-                  >
-                    {{ getPercentText(item.total, '日增量') }}
+                  <div v-if="item.total > 0" class="h-full rounded absolute left-1/2 bg-blue-500 flex items-center pl-1 text-white font-medium" :style="{ width: getBarWidth(item.total, allDayAddCount_4) + '%' }">
+                    {{ getPercentText(item.total, allDayAddCount_4) }}
                   </div>
-                  <div
-                    v-if="item.total === 0"
-                    class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-white"
-                  >
-                    0%
-                  </div>
+                  <div v-if="item.total === 0" class="h-full w-[10%] rounded absolute left-1/2 -translate-x-1/2 bg-gray-300 flex items-center justify-center text-gray-800 font-medium">0%</div>
                 </div>
               </td>
               <td class="py-1 px-1 border text-right font-mono">{{ formatNumberToWan(item.total) }}</td>
@@ -489,7 +372,7 @@ const props = defineProps({
   },
 });
 
-// 筛选后原始数据
+// 筛选后原始明细数据
 const filterTableData = computed(() => {
   return props.tiledData
     .filter((el) => formData.正股List.includes(el["正股代码"]))
@@ -497,59 +380,8 @@ const filterTableData = computed(() => {
     .filter((el) => formData.沽购List.includes(el["沽购"]));
 });
 
-// 计算三个字段各自全局最大最小值
-const fieldRange = computed(() => {
-  const getDataRange = (field) => {
-    const nums = filterTableData.value.map(i => Number(i[field])).filter(n => !isNaN(n));
-    if (!nums.length) return { min: 0, max: 0 };
-    return {
-      min: Math.min(...nums),
-      max: Math.max(...nums)
-    };
-  };
-  return {
-    持仓额: getDataRange("持仓额"),
-    日增额: getDataRange("日增额"),
-    日增量: getDataRange("日增量"),
-  };
-});
-
-/**
- * 统一计算进度宽度 0~50%区间（左右各一半容器）
- * 整体总跨度 = max - min
- * 占比区间 0 ~ 100% 映射到容器整体宽度
- * 左半边(-)、右半边(+)各占50%容器宽度
- * 极值严格：最小值=-100% 最大值=100%
- */
-// 进度条宽度计算
-const getBarWidth = (value, fieldKey) => {
-  const { min, max } = fieldRange.value[fieldKey];
-  if (max === min) return 0;
-  const totalRange = max - min;
-  // 整体0~100%
-  const totalPercent = ((value - min) / totalRange) * 100;
-  // 距离中点的距离，单侧宽度最大50%
-  const offset = totalPercent - 50;
-  return Math.abs(offset).toFixed(1);
-};
-
-// 百分比文字
-const getPercentText = (value, fieldKey) => {
-  const { min, max } = fieldRange.value[fieldKey];
-  if (max === min) return "0%";
-  const totalRange = max - min;
-  const totalPercent = ((value - min) / totalRange) * 100;
-  // 换算成以0为中心 -50 ~ +50 再放大两倍
-  const pct = ((totalPercent - 50) / 50) * 100;
-  const num = Number(pct.toFixed(1));
-  if (num > 0) return `${num}%`;
-  if (num < 0) return `${num}%`;
-  return "0%";
-};
-
-
-// 公共分组求和工厂函数
-const createGroupSum = (getKeyFn) => (field) => {
+// 分组求和工厂：返回【完整未截取数组】
+const createGroupAllList = (getKeyFn) => (field) => {
   const groupMap = new Map();
   filterTableData.value
     .filter((el) => !!el[field])
@@ -562,36 +394,103 @@ const createGroupSum = (getKeyFn) => (field) => {
     });
 
   let list = _.orderBy(
-    Array.from(groupMap.values()).filter(el => !!el.total),
+    Array.from(groupMap.values()).filter((el) => !!el.total),
     ["total"],
     [formData.orderByRank]
   );
-  return list.slice(0, 20);
+  // 返回全部数据，不slice
+  return list;
 };
 
 // 三种分组规则
-const groupSum2 = createGroupSum((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}`);
-const groupSum3 = createGroupSum((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}_${item.千行权价}`);
-const groupSum4 = createGroupSum((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}_${item.千行权价}_${item.到期月份icon}`);
+const groupSum2 = createGroupAllList((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}`);
+const groupSum3 = createGroupAllList((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}_${item.千行权价}`);
+const groupSum4 = createGroupAllList((item) => `${item.展示正股名称}_${item.沽购 === "沽" ? "🟢" : "🔴"}_${item.千行权价}_${item.到期月份icon}`);
 
-// 所有表格数据源
-const holdAmountTop20_2 = computed(() => groupSum2("持仓额"));
-const dayAddAmountTop20_2 = computed(() => groupSum2("日增额"));
-const dayAddCountTop20_2 = computed(() => groupSum2("日增量"));
+// ========== 全部完整聚合数据（用来计算最大最小值）==========
+// 2维度 全部数据
+const allHoldAmount_2 = computed(() => groupSum2("持仓额"));
+const allDayAddAmount_2 = computed(() => groupSum2("日增额"));
+const allDayAddCount_2 = computed(() => groupSum2("日增量"));
 
-const holdAmountTop20_3 = computed(() => groupSum3("持仓额"));
-const dayAddAmountTop20_3 = computed(() => groupSum3("日增额"));
-const dayAddCountTop20_3 = computed(() => groupSum3("日增量"));
+// 3维度 全部数据
+const allHoldAmount_3 = computed(() => groupSum3("持仓额"));
+const allDayAddAmount_3 = computed(() => groupSum3("日增额"));
+const allDayAddCount_3 = computed(() => groupSum3("日增量"));
 
-const dayAddAmountTop20_4 = computed(() => groupSum4("日增额"));
-const dayAddCountTop20_4 = computed(() => groupSum4("日增量"));
-const holdAmountTop20_4 = computed(() => groupSum4("持仓额"));
+// 4维度 全部数据
+const allHoldAmount_4 = computed(() => groupSum4("持仓额"));
+const allDayAddAmount_4 = computed(() => groupSum4("日增额"));
+const allDayAddCount_4 = computed(() => groupSum4("日增量"));
 
-// 数字转万 格式化函数
-const formatNumberToWan = (num) => {
-  if (num == null) return "0.00";
-  return (Number(num) / 10000).toFixed(2);
+// ========== 截取前20条用于页面渲染 ==========
+const holdAmountTop20_2 = computed(() => allHoldAmount_2.value.slice(0, 20));
+const dayAddAmountTop20_2 = computed(() => allDayAddAmount_2.value.slice(0, 20));
+const dayAddCountTop20_2 = computed(() => allDayAddCount_2.value.slice(0, 20));
+
+const holdAmountTop20_3 = computed(() => allHoldAmount_3.value.slice(0, 20));
+const dayAddAmountTop20_3 = computed(() => allDayAddAmount_3.value.slice(0, 20));
+const dayAddCountTop20_3 = computed(() => allDayAddCount_3.value.slice(0, 20));
+
+const holdAmountTop20_4 = computed(() => allHoldAmount_4.value.slice(0, 20));
+const dayAddAmountTop20_4 = computed(() => allDayAddAmount_4.value.slice(0, 20));
+const dayAddCountTop20_4 = computed(() => allDayAddCount_4.value.slice(0, 20));
+
+/**
+ * 获取值域区间
+ */
+const getTableFullRange = (fullList) => {
+  if (!fullList || fullList.length === 0) return { min: 0, max: 0 };
+  const nums = fullList.map((item) => item.total);
+  return {
+    min: Math.min(...nums),
+    max: Math.max(...nums),
+  };
 };
+
+/**
+ * 计算进度条宽度（左右单侧最大50%）
+ */
+const getBarWidth = (value, fullList) => {
+  const { min, max } = getTableFullRange(fullList);
+  if (min === max) return 0;
+
+  let widthRatio = 0;
+  if (value > 0) {
+    // 正数：0 ~ max 映射 0~50%宽度
+    widthRatio = (value / max) * 50;
+  } else if (value < 0) {
+    // 负数：min ~ 0 映射 0~50%宽度
+    widthRatio = (Math.abs(value) / Math.abs(min)) * 50;
+  }
+  return Number(Math.min(50, widthRatio).toFixed(1));
+};
+
+/**
+ * 正确正负百分比文本
+ * 正数：0 ~ 100%
+ * 负数：-100% ~ 0
+ */
+const getPercentText = (value, fullList) => {
+  const { min, max } = getTableFullRange(fullList);
+  if (min === max) return "0%";
+
+  let percent = 0;
+  if (value > 0) {
+    percent = (value / max) * 100;
+  } else if (value < 0) {
+    percent = -((Math.abs(value) / Math.abs(min)) * 100);
+  }
+
+  const num = Number(Math.max(-100, Math.min(100, percent)).toFixed(1));
+  return `${num}%`;
+};
+
+// 数字转万
+// const formatNumberToWan = (num) => {
+//   if (num == null) return "0.00";
+//   return (Number(num) / 10000).toFixed(2);
+// };
 </script>
 
 <style scoped>
