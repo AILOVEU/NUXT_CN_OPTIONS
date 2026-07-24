@@ -27,7 +27,10 @@
             <template #default="{ row }" v-if="label === '期权'">
               <Center :row="row" />
             </template>
-            <template #default="{ row }" v-if="label !== '期权'">
+            <template #default="{ row }" v-else-if="label.includes('市场')">
+              <Data :row="row" :isCall="type === 'C'" />
+            </template>
+            <template #default="{ row }" v-else>
               <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" />
             </template>
           </el-table-column>
@@ -41,6 +44,7 @@ import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
+import Data from "./components/Data.vue";
 import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 const props = defineProps(["mode", "symmetricData", "tiledData", "tableTitle", "showTypeVal"]);
@@ -65,8 +69,16 @@ const tableData = reactive({
   columns: [
     ...reversed_deadline_list.map((el) => ({ type: "C", label: el })),
     {
+      label: "C市场",
+      type: "C",
+    },
+    {
       label: "期权",
       type: "",
+    },
+    {
+      label: "P市场",
+      type: "P",
     },
     ...deadline_list.map((el) => ({ type: "P", label: el })),
   ],
@@ -79,6 +91,8 @@ const showColumns = computed(() => {
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
 function getWrapperColumnWidth(label) {
+  if (label.includes("市场")) return "140px";
+
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
   return showTypeVal.value === "打印" || showTypeVal.value === "空白" ? "340px" : "172px";
@@ -131,7 +145,7 @@ const getSummary = ({ columns, data }) => {
   return columns.map((col, index) => {
     // 第一列显示“合计”
     // if (index === 0) return "合计";
-    console.log("col", col, data);
+    // console.log("col", col, data);
     const type = col.property?.includes("C") ? "C" : "P";
     const 到期时间 = col.property.replace("C", "").replace("P", "");
     const month = dayjs(到期时间, "YYYY-MM-DD").format("M月");

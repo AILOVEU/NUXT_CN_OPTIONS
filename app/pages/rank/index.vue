@@ -98,7 +98,6 @@ function checkIsChance(target) {
   if (formData.过滤持有 === "权利" && !(target["持仓"] > 0)) return false;
   if (formData.过滤持有 === "义务" && !(target["持仓"] < 0)) return false;
   if (formData.过滤持有 === "持有" && !target["持仓"]) return false;
-
   return true;
 }
 </script>

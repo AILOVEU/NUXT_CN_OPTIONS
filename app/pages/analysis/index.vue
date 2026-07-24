@@ -21,6 +21,9 @@
       <Card header="持仓分析_BarInfo">
         <BarInfo :tiledData="tiledData" />
       </Card>
+      <Card header="市场分析_Top">
+        <Top :tiledData="tiledData" />
+      </Card>
     </div>
   </div>
 </template>
@@ -28,6 +31,7 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
+import Top from "./components/Top.vue";
 import BarInfo from "./components/BarInfo";
 import OrderTimeline from "./components/OrderTimeline";
 import SankeyInfo from "./components/SankeyInfo";

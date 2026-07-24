@@ -2,6 +2,21 @@ import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "./options";
 import { get_fist_季度月份 } from "./options";
 import dayjs from "dayjs";
+function handle市场数据(dataList, 沽购, 行内期权名称List) {
+  const 期权名称List = 行内期权名称List.filter((el) => el.includes(沽购));
+  const 期权ItemList = dataList.filter((el) => 期权名称List.includes(el["期权名称"]));
+  console.log("期权ItemList", 期权ItemList);
+  const 日增额 = 期权ItemList.filter((el) => el.日增额).reduce((prev, item) => prev + item.日增额, 0);
+  const 日增量 = 期权ItemList.filter((el) => el.日增量).reduce((prev, item) => prev + item.日增量, 0);
+  const 持仓额 = 期权ItemList.filter((el) => el.持仓额).reduce((prev, item) => prev + item.持仓额, 0);
+  const 持仓量 = 期权ItemList.filter((el) => el.持仓量).reduce((prev, item) => prev + item.持仓量, 0);
+  return {
+    日增额,
+    日增量,
+    持仓额,
+    持仓量,
+  };
+}
 function handleHoldData(dataList, 正股代码List) {
   const [month_list, month_index] = get_fist_季度月份(dataList);
   let tableData = [];
@@ -43,6 +58,9 @@ function handleHoldData(dataList, 正股代码List) {
       //   data["P" + 实际月份 + key] = put_item?.[key];
       // });
     });
+    // 汇总日增量、日增额、持仓量、持仓额数据
+    record["C市场数据"] = handle市场数据(dataList, "购", record["行内期权名称List"]);
+    record["P市场数据"] = handle市场数据(dataList, "沽", record["行内期权名称List"]);
     // 公共字段
     ["正股代码", "行权价", "正股价格", "千行权价", "is旧期权", "展示正股名称", "行权价溢价"].forEach((key) => {
       record[key] = item[key];
