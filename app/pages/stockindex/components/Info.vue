@@ -84,7 +84,7 @@ const isShow持仓 = computed(() => {
   return false;
 });
 const 日增量 = computed(() => {
-  return current期权Item.value["日增"];
+  return current期权Item.value["日增量"];
 });
 const 持仓量 = computed(() => {
   return current期权Item.value["持仓量"];

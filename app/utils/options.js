@@ -572,7 +572,7 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
   debug(_tiledData);
   let tiledData = [];
   _tiledData.forEach((_) => {
-    // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
+    // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增量,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
     let row = {};
     Object.keys(fields_dict).forEach((key) => {
       row[fields_dict[key]] = _[key];
@@ -585,7 +585,7 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
       "卖一",
       "持仓量",
       "行权价",
-      "日增",
+      "日增量",
       "隐波",
       "溢价率",
       "杠杆",
@@ -653,7 +653,7 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
     row["展示期权名称"] = row["展示正股名称"] + row["沽购"] + row["到期月份"] + row["千行权价"];
     row["行权价溢价"] = (100 * (row["行权价"] - row["正股价格"])) / row["正股价格"];
     row["持仓额"] = row["持仓量"] * row["一手价"];
-    row["日增额"] = row["日增"] * row["一手价"];
+    row["日增额"] = row["日增量"] * row["一手价"];
     tiledData.push(row);
   });
   let 总仓位 = 0;
@@ -926,7 +926,7 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
 //     Vega: 0.362,
 //     到期日: "2026-08-26",
 //     持仓量: 359,
-//     日增: 23,
+//     日增量: 23,
 //     最新价: 0.6363,
 //     期权名称: "创业板ETF沽8月4600",
 //     正股代码: "159915",

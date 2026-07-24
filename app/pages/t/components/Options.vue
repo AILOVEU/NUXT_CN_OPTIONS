@@ -5,7 +5,7 @@
     </el-progress>
     <div class="flex justify-between mt-[3px] px-[5px]">
       <div class="text-[12px]">{{ 持仓量 }}</div>
-      <div class="text-left" :style="{ color: 日增 > 0 ? 'red' : 'green' }">{{ 日增 }}</div>
+      <div class="text-left" :style="{ color: 日增量 > 0 ? 'red' : 'green' }">{{ 日增量 }}</div>
     </div>
   </div>
 </template>
@@ -14,8 +14,8 @@ const props = defineProps(["row"]);
 const 持仓量 = computed(() => {
   return Math.floor(props.row["持仓量"]);
 });
-const 日增 = computed(() => {
-  let value = Math.floor(props.row["日增"]);
+const 日增量 = computed(() => {
+  let value = Math.floor(props.row["日增量"]);
   if (isNaN(value)) return "-";
   return value;
 });

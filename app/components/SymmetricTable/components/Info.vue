@@ -154,7 +154,7 @@ const 盈亏百分比 = computed(() => (持仓.value ? (一手价.value - 一手
 const 仓位 = computed(() => (持仓.value || 0) * (一手价.value || 0));
 
 // 行情数值
-const 日增量 = computed(() => optionItem.value["日增"]);
+const 日增量 = computed(() => optionItem.value["日增量"]);
 const 持仓量 = computed(() => optionItem.value["持仓量"]);
 const 档位 = computed(() => optionItem.value["档位"]);
 const 档位名称 = computed(() => optionItem.value["档位名称"]);

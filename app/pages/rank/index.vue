@@ -19,6 +19,9 @@
           <el-form-item label="排序" clearable>
             <TabSelect :options="orderByList.map((el) => ({ label: el, value: el }))" v-model="formData.orderBy" />
           </el-form-item>
+          <el-form-item label="增降序" clearable>
+            <TabSelect :options="增降序Ops" v-model="formData.orderByRank" />
+          </el-form-item>
           <el-form-item label="过滤持有">
             <el-radio-group v-model="formData.过滤持有">
               <el-radio :value="'权利'">仅权利</el-radio>
@@ -31,7 +34,7 @@
       </el-form>
     </div>
     <div class="w-full flex mb-[12px] gap-[20px] justify-between">
-      <div
+      <!-- <div
         class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
         v-for="item in [
           { label: '列表', value: 'list' },
@@ -41,10 +44,10 @@
         @click="showType = item.value"
       >
         {{ item.label }}
-      </div>
+      </div> -->
     </div>
-    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold="false" :filterCount="20" :orderBy="formData.orderBy" />
-    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
+    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold="false" :filterCount="20" :orderBy="formData.orderBy" :orderByRank="formData.orderByRank" :过滤持变字段="true" />
+    <!-- <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" /> -->
   </div>
 </template>
 
@@ -61,7 +64,17 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   value: el.code,
 }));
 const 档位名称List = ref(["实5档", "实4档", "实3档", "实2档", "实1档", "平值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"]);
-const orderByList = ref(["持仓额", "持仓量", "日增额",'日增']);
+const orderByList = ref(["持仓额", "持仓量", "日增额", "日增量"]);
+const 增降序Ops = [
+  {
+    label: "增序",
+    value: "asc",
+  },
+  {
+    label: "降序",
+    value: "desc",
+  },
+];
 // 表单数据 + 启用开关
 const formData = reactive({
   // 其他筛选

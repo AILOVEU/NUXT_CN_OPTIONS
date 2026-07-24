@@ -91,7 +91,7 @@ function getYearMonth(str) {
 function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
   let tiledData = [];
   _tiledData.forEach((_) => {
-    // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
+    // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增量,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
     let row = {};
     Object.keys(stock_index_fields_dict).forEach((key) => {
       row[stock_index_fields_dict[key]] = _[key];
@@ -116,7 +116,7 @@ function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
     //   "卖一",
     //   "持仓量",
     //   "行权价",
-    //   "日增",
+    //   "日增量",
     //   "隐波",
     //   "溢价率",
     //   "杠杆",

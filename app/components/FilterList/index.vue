@@ -72,16 +72,17 @@
           <el-table-column label="持" #default="{ row }" prop="持仓" align="right" width="30" sortable>
             <TagHold :value="row['持仓'] || ''" />
           </el-table-column>
-          <el-table-column label="持变" #default="{ row }" prop="持仓变化" align="right" width="40" sortable>
-            <TagHold :value="row['持仓变化'] || ''" :showPlus="true" />
-          </el-table-column>
-          <el-table-column label="持变单价" #default="{ row }" prop="持仓金额变化单价" align="right" width="55" sortable>
-            {{ row["持仓金额变化单价"] || "" }}
-          </el-table-column>
-          <el-table-column label="持变金额" #default="{ row }" prop="持仓金额变化" align="right" width="55" sortable>
-            {{ row["持仓金额变化"] || "" }}
-          </el-table-column>
-
+          <template v-if="!props.过滤持变字段">
+            <el-table-column label="持变" #default="{ row }" prop="持仓变化" align="right" width="40" sortable>
+              <TagHold :value="row['持仓变化'] || ''" :showPlus="true" />
+            </el-table-column>
+            <el-table-column label="持变单价" #default="{ row }" prop="持仓金额变化单价" align="right" width="55" sortable>
+              {{ row["持仓金额变化单价"] || "" }}
+            </el-table-column>
+            <el-table-column label="持变金额" #default="{ row }" prop="持仓金额变化" align="right" width="55" sortable>
+              {{ row["持仓金额变化"] || "" }}
+            </el-table-column>
+          </template>
           <!-- <el-table-column label="基本信息" align="center">
           <el-table-column #default="{ row }" label="正股" prop="正股" width="130" sortable align="right" />
           <el-table-column #default="{ row }" label="沽购" prop="沽购" width="60" sortable align="right">
@@ -118,16 +119,16 @@
             </el-table-column>
           </el-table-column>
           <el-table-column label="做市商" align="center">
-            <el-table-column #default="{ row }" label="持仓量" prop="持仓量" width="60" sortable align="right">
+            <el-table-column #default="{ row }" label="持仓量" prop="持仓量" width="60" align="right">
               {{ formatNumberToWan(row["持仓量"]) }}
             </el-table-column>
-            <el-table-column #default="{ row }" label="持仓额" prop="持仓额" width="100" sortable align="right">
+            <el-table-column #default="{ row }" label="持仓额" prop="持仓额" width="90" align="right">
               {{ formatNumberToWan(row["持仓额"]) }}
             </el-table-column>
-            <el-table-column #default="{ row }" label="日增量" prop="日增" width="100" sortable align="right">
-              {{ formatNumberToWan(row["日增"]) }}
+            <el-table-column #default="{ row }" label="日增量" prop="日增量" width="60" align="right">
+              {{ formatNumberToWan(row["日增量"]) }}
             </el-table-column>
-            <el-table-column #default="{ row }" label="日增额" prop="日增额" width="100" sortable align="right">
+            <el-table-column #default="{ row }" label="日增额" prop="日增额" width="90" align="right">
               {{ formatNumberToWan(row["日增额"]) }}
             </el-table-column>
           </el-table-column>
@@ -144,7 +145,7 @@ import _ from "lodash";
 import { deadline_list, OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 
-const props = defineProps(["checkIsChance", "data", "isCombo", "showHold", "orderBy", "filterCount"]);
+const props = defineProps(["checkIsChance", "data", "isCombo", "showHold", "orderBy", "orderByRank", "filterCount", "过滤持变字段"]);
 const tableData = reactive({
   tiledData: [],
   loading: false,
@@ -167,7 +168,7 @@ const filteredTableData = computed(() => {
   // 越小越好：一手价、隐波（价格是隐波的反应）
   if (props.orderBy) {
     filtered = filtered.filter((el) => !!el[props.orderBy]);
-    filtered = _.orderBy(filtered, [props.orderBy], ["desc"]);
+    filtered = _.orderBy(filtered, [props.orderBy], [props.orderByRank]);
   } else {
     if (props.showHold) {
       filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
