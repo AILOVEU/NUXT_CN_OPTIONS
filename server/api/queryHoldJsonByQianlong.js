@@ -21,7 +21,6 @@ export async function getHoldJSON() {
       csvtojson({ output: "line" })
         .fromStream(converterStream)
         .then((res) => {
-          console.log(res);
           const list = res
             .map((el) => el.replaceAll(" ", "").split("\t"))
             .map((el) => ({

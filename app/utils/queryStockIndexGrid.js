@@ -13,7 +13,8 @@ function handleHoldData(dataList, 正股代码List) {
   // const [month_list, month_index] = get_fist_季度月份(dataList);
 
   const month_list = STOCK_INDEX_MONTH_LIST;
-  const month_index = 0;
+  const firstQuarterMonth = month_list.find((month) => ["03", "06", "09", "12"].includes((month + "").slice(2, 4)));
+  const month_index = 1;
   let tableData = [];
   let 正股价格_dict = {};
   dataList.forEach((item) => {
@@ -23,7 +24,7 @@ function handleHoldData(dataList, 正股代码List) {
     // 只处理左侧认购数据
     if (item["期权名称"].includes("沽")) return;
     // 只处理第一个季度数据
-    if (item["到期年月"] !== month_list[month_index]) return;
+    if (item["到期年月"] !== firstQuarterMonth) return;
     // 添加沽购+月份+"期权名称" = 期权名称，如下：
     //   C1月期权名称: "50ETF购1月3000",
     //   P1月期权名称: "50ETF沽1月3000",
@@ -95,6 +96,6 @@ function handleHoldData(dataList, 正股代码List) {
 export async function queryStockIndexGrid(正股代码List, useCatch) {
   const [tiledData, gammaFlipResult] = await get_http_data_stock_index(正股代码List, useCatch);
   const tableData = handleHoldData(tiledData, 正股代码List);
-  console.log('gammaFlipResult',gammaFlipResult)
+  console.log("gammaFlipResult", gammaFlipResult);
   return [tableData, tiledData, gammaFlipResult];
 }

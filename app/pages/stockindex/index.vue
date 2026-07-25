@@ -48,8 +48,9 @@
       <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
         <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" width="138px">
           <template #header>
-            <div v-if="type" class="leading-[1.2]">
-              <div class="leading-[1.2]">{{ type }}{{ label }}</div>
+            <div v-if="type">
+              <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月DD") }}</div>
+              <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
             </div>
             <!-- 改用当前项 ref，消除全局 captureRef 隐患 -->
             <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => itemRefs[idx]?.download()">
@@ -57,7 +58,6 @@
               <el-button link>⬇</el-button>
             </div>
           </template>
-
           <template #default="{ row }" v-if="label === '期权'">
             <Center :row="row" />
           </template>
@@ -72,7 +72,7 @@
 
 <script setup>
 import { formatNumberToWan, formatDecimal } from "~/utils/utils";
-import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict, STOCK_INDEX_MONTH_LIST } from "~/data";
+import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict, STOCK_INDEX_DAY_MAP } from "~/data";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
 import Info from "./components/Info";
@@ -90,7 +90,7 @@ const max一手价Val = ref(3000);
 const captureRef = ref();
 const tableRef = ref();
 
-const deadline_list = STOCK_INDEX_MONTH_LIST;
+const deadline_list = Object.values(STOCK_INDEX_DAY_MAP);
 const stockCodeOptions = computed(() => {
   const ops = STOCK_INDEX_OPTIONS_MAP.map((el) => ({
     value: el.code,

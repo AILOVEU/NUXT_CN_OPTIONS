@@ -65,7 +65,7 @@ function formatYm(str) {
 const isPrint = computed(() => props.showTypeVal === "打印");
 const 期权名称 = computed(() => {
   const type = props.isCall ? "C" : "P";
-  const month = formatYm(props.date);
+  const month = dayjs(props.date, "YYYY-MM-DD").format("YY年M月");
   return props.row[type + month + "期权名称"];
 });
 const current期权Item = computed(() => {
