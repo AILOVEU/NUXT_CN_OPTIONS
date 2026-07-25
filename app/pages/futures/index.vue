@@ -96,6 +96,6 @@ function getRowStyle({ row }) {
 </script>
 <style>
 .el-table--small .el-table__cell {
-  padding: 0!impoartant;
+  padding: 0 !impoartant;
 }
 </style>
