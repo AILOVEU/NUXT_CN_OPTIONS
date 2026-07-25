@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import csvtojson from "csvtojson";
+
 export function getRandomInt(start, end) {
   // Math.random() 生成 0 ≤ 随机数 < 1 的浮点数
   // 乘以5后，得到 0 ≤ 随机数 < 5 的浮点数
@@ -434,4 +436,10 @@ export function getWeekRange(n) {
 export function isDateInRangeWeek(week, date) {
   const [start, end] = getWeekRange(week);
   return (dayjs(date, "YYYY-MM-DD").isSame(start, "day") || dayjs(date, "YYYY-MM-DD").isAfter(start, "day")) && (dayjs(date, "YYYY-MM-DD").isSame(end, "day") || dayjs(date, "YYYY-MM-DD").isBefore(end, "day"));
+}
+
+export async function getCsvArrByPublic(path) {
+  const csvRaw = await $fetch(path);
+  let res = await csvtojson().fromString(csvRaw);
+  return res;
 }

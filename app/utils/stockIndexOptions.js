@@ -1,6 +1,6 @@
 import { stock_index_fields_dict, STOCK_INDEX_DAY_MAP, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价, 股指持仓JSON } from "~/data";
 import dayjs from "dayjs";
-import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
+import { formatDecimal, getRandomInt, promiseAllSequential, getCsvArrByPublic } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
@@ -201,7 +201,7 @@ export async function get_http_data_stock_index(正股代码List, useCatch) {
   let _tiledData = [];
   if (useCatch) {
     try {
-      _tiledData = await $fetch("/api/queryStockIndexDataJson");
+      _tiledData = await getCsvArrByPublic("/stockindexdata.csv");
     } catch (e) {
       console.warn("e", e);
       _tiledData = [];
