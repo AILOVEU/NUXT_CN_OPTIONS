@@ -9,7 +9,7 @@
             <tr class="text-left">
               <th class="py-2 px-1 border w-[10px]">序</th>
               <th class="py-2 px-1 border">合约分组</th>
-              <th class="py-2 px-1 border">合计持仓量</th>
+              <th class="py-2 px-1 border w-[205px]">合计持仓量</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +42,7 @@
             <tr class="text-left">
               <th class="py-2 px-1 border w-[10px]">序</th>
               <th class="py-2 px-1 border">合约分组</th>
-              <th class="py-2 px-1 border">合计持仓额</th>
+              <th class="py-2 px-1 border w-[205px]">合计持仓额</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +74,7 @@
             <tr class="text-left">
               <th class="py-2 px-1 border w-[10px]">序</th>
               <th class="py-2 px-1 border">合约分组</th>
-              <th class="py-2 px-1 border">合计日增额</th>
+              <th class="py-2 px-1 border w-[205px]">合计日增额</th>
             </tr>
           </thead>
           <tbody>
@@ -106,7 +106,7 @@
             <tr class="text-left">
               <th class="py-2 px-1 border w-[10px]">序</th>
               <th class="py-2 px-1 border">合约分组</th>
-              <th class="py-2 px-1 border">合计日增量</th>
+              <th class="py-2 px-1 border w-[205px]">合计日增量</th>
             </tr>
           </thead>
           <tbody>
