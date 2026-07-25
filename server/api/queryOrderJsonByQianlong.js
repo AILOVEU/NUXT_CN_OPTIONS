@@ -1,15 +1,22 @@
 // 获取持仓json
 import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
-import fs from "node:fs";
-import path from "node:path";
-const isDeno = process.env.NITRO_PRESET;
-// const csvPath = isDeno ? "../public/持仓.txt" : "./public/持仓.txt";
-export async function get_持仓JSON() {
-  const csvPath = path.join(process.cwd(), "public", "当日成交.txt");
-  return new Promise((resolve) => {
+import { Readable } from "node:stream";
+export async function getOrderJSON() {
+  return new Promise(async (resolve) => {
     try {
-      const converterStream = fs.createReadStream(csvPath).pipe(iconvLite.decodeStream("gbk"));
+      // 1. 获取原始二进制字节
+      const storage = useStorage("assets:server");
+      const rawUint8 = await storage.getItemRaw("当日成交.dat");
+      if (!rawUint8) return resolve([]);
+
+      // 2. 关键：构建和 fs.createReadStream 完全相同的二进制可读流
+      const fileBuffer = Buffer.from(rawUint8);
+      const readStream = Readable.from(fileBuffer);
+
+      // 3. 完全复刻你本地能跑通的管道代码
+      const converterStream = readStream.pipe(iconvLite.decodeStream("gbk"));
+
       const 操作Map = {
         买入开仓: 1,
         卖出平仓: -1,
@@ -43,7 +50,7 @@ export async function get_持仓JSON() {
   });
 }
 export default eventHandler(async (event) => {
-  const 持仓JSON = await get_持仓JSON();
+  const 持仓JSON = await getOrderJSON();
   // console.log("持仓JSON", 持仓JSON);
   if (!持仓JSON?.length) return [];
   return 持仓JSON;

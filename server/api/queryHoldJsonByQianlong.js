@@ -8,7 +8,7 @@ export async function getHoldJSON() {
     try {
       // 1. 获取原始二进制字节
       const storage = useStorage("assets:server");
-      const rawUint8 = await storage.getItemRaw("hold.dat");
+      const rawUint8 = await storage.getItemRaw("持仓.dat");
       if (!rawUint8) return resolve([]);
 
       // 2. 关键：构建和 fs.createReadStream 完全相同的二进制可读流

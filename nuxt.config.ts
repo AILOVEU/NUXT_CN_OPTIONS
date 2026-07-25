@@ -26,13 +26,6 @@ export default defineNuxtConfig({
     assets: {
       server: true,
     },
-    serverAssets: [
-      {
-        baseName: "server",
-        dir: "./assets/server",
-        binary: ["txt"], // 标记 txt 为纯二进制，不做文本转码
-      },
-    ],
   },
   vite: {
     build: {
