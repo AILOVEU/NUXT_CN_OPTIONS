@@ -18,6 +18,7 @@ export default defineNuxtConfig({
   //   minify: false, // 开发时关闭压缩
   // },
   nitro: {
+    
     preset: "vercel",
     // 关键：不把 node\_modules 打进打包产物，运行时由平台按需引入依赖
     external: true,
