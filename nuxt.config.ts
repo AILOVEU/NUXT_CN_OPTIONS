@@ -18,12 +18,14 @@ export default defineNuxtConfig({
   //   minify: false, // 开发时关闭压缩
   // },
   nitro: {
-    
     preset: "vercel",
     // 关键：不把 node\_modules 打进打包产物，运行时由平台按需引入依赖
     external: true,
     // 剔除打包里冗余的本地node\_modules
     noScripts: true,
+    assets: {
+      server: true,
+    },
   },
   vite: {
     build: {
