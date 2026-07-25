@@ -4,7 +4,7 @@ import iconvLite from "iconv-lite";
 import fs from "node:fs";
 import path from "node:path";
 const isDeno = process.env.NITRO_PRESET;
-const csvPath = isDeno ? "../public/持仓.txt" : "../public/持仓.txt";
+const csvPath = isDeno ? "../public/持仓.txt" : "../static/持仓.txt";
 export async function get_持仓JSON() {
   // const csvPath = path.join(process.cwd(), "public", "持仓.txt");
   return new Promise((resolve) => {
