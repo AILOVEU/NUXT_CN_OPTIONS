@@ -21,7 +21,7 @@ async function get_target_http_data(正股代码List, fs) {
     let tiledData = [];
     while (curr_page < 50) {
       // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
-      const res = await $fetch("/api/queryEastmoneyStockIndex", {
+      const res = await $fetch("/api/query_Eastmoney_StockIndex", {
         method: "get",
         params: {
           //   np: "1",
@@ -201,14 +201,14 @@ export async function get_http_data_stock_index(正股代码List, useCatch) {
   let _tiledData = [];
   if (useCatch) {
     try {
-      _tiledData = await getCsvArrByPublic("/stockindexdata.csv");
+      _tiledData = await getCsvArrByPublic("/data_stockindex.csv");
     } catch (e) {
       console.warn("e", e);
       _tiledData = [];
     }
   } else {
     _tiledData = await get_target_http_data(正股代码List, "m:11");
-    $fetch("/api/queryStockIndexSaveData", {
+    $fetch("/api/save_StockIndex_data", {
       method: "post",
       body: { data: _tiledData },
     });

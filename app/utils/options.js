@@ -1,6 +1,6 @@
 import { fields_dict, OPTIONS_MAP, MONTH_ICON, 金额, 最大建议买入时间价 } from "~/data";
 import dayjs from "dayjs";
-import { formatDecimal, getRandomInt, promiseAllSequential } from "~/utils/utils";
+import { formatDecimal, getRandomInt, promiseAllSequential, getCsvArrByPublic } from "~/utils/utils";
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
@@ -253,7 +253,7 @@ async function get_target_http_data(持仓JSON, fs) {
     let tiledData = [];
     while (curr_page < 50) {
       // const res = await $fetch("https://push2.eastmoney.com/api/qt/clist/get", {
-      const res = await $fetch("/api/queryEastmoney", {
+      const res = await $fetch("/api/query_Eastmoney_ETFOption", {
         method: "get",
         params: {
           np: "1",
@@ -953,7 +953,7 @@ export async function get_http_data(
   let 成交Json = await $fetch("/api/queryOrderJsonByQianlong");
   if (useCatch) {
     try {
-      _tiledData = await $fetch("/api/queryDataJson");
+      _tiledData = await getCsvArrByPublic("/data_etfoption.csv");
     } catch (e) {
       console.warn("e", e);
       _tiledData = [];
@@ -980,7 +980,7 @@ export async function get_http_data(
           _tiledData.push(...el);
         });
         if (_tiledData.length) {
-          $fetch("/api/querySaveData", {
+          $fetch("/api/save_ETFOption_data", {
             method: "post",
             body: { data: _tiledData },
           });

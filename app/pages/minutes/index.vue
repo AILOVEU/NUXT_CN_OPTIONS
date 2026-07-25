@@ -41,6 +41,7 @@
 
 <script setup>
 import { OPTIONS_MAP } from "~/data";
+import { getCsvArrByPublic } from "~/utils/utils";
 const stockCodeOptions = computed(() => {
   const ops = OPTIONS_MAP.map((el) => ({
     value: el.code,
@@ -56,12 +57,7 @@ const show = ref(true);
 async function handleQuery() {
   try {
     show.value = false;
-    const _tiledData = await $fetch("/api/queryMinutesData", {
-      method: "get",
-      params: {
-        fundCode: stockCode.value,
-      },
-    });
+    const _tiledData = await getCsvArrByPublic(`/minutes_${stockCode.value}.csv`);
     show.value = true;
     dailyKlineData.value = transformToDailyKline(_tiledData);
   } catch (error) {

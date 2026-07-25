@@ -43,6 +43,7 @@ import { OPTIONS_MAP } from "~/data";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
 import { getFourWednesdayOfMonth, getDatesBetween, resizeFontSize, getMinPointFiveMultiple, getMaxPointFiveMultipleLessThan } from "~/utils/utils";
+import { getCsvArrByPublic } from "~/utils/utils";
 
 // ==================== 常量定义（提取魔法数字） ====================
 const { setGlobalLoading, isMobile } = useGlobal();
@@ -106,13 +107,16 @@ async function handleQuery() {
   setGlobalLoading(true);
 
   try {
-    fundData.value = await $fetch("/api/queryFundDataJson", {
-      method: "get",
-      params: {
-        fundCode: stockCode.value,
-      },
-      signal: abortController.value.signal,
-    });
+    const _fundData = await getCsvArrByPublic(`/${stockCode.value}.csv`);
+    fundData.value = _fundData.map((el) => ({
+      fund_code: el.fund_code,
+      date: el.trade_date,
+      open: +el.open,
+      high: +el.high,
+      low: +el.low,
+      close: +el.close,
+      volumn: +el.volumn,
+    }));
   } catch (error) {
     // 忽略取消请求的错误
     if (error.name !== "AbortError") {
