@@ -19,7 +19,7 @@
 import { reactive, watch } from "vue";
 import { deadline_list, OPTIONS_MAP } from "~/data";
 // 静态数据
-const 档位名称List = ["实5档", "实4档", "实3档", "实2档", "实1档", "平值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"];
+const 档位名称List = ["实5档", "实4档", "实3档", "实2档", "实1档", "平_值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"];
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,

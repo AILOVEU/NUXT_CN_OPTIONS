@@ -31,7 +31,7 @@
 import { OPTIONS_MAP } from "~/data";
 import { get_http_data } from "~/utils/options";
 import _ from "lodash";
-import Top from "./components/Top.vue";
+import Top from "./components/Top";
 import BarInfo from "./components/BarInfo";
 import OrderTimeline from "./components/OrderTimeline";
 import SankeyInfo from "./components/SankeyInfo";

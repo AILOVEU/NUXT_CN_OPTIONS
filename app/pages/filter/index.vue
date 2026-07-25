@@ -185,7 +185,7 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
 }));
-const 档位名称List = ref(["实5档", "实4档", "实3档", "实2档", "实1档", "平值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"]);
+const 档位名称List = ref(["实5档", "实4档", "实3档", "实2档", "实1档", "平_值", "虚1档", "虚2档", "虚3档", "虚4档", "虚5档"]);
 // 表单数据 + 启用开关
 const formData = reactive({
   // 启用开关（6个范围）

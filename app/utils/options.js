@@ -353,7 +353,7 @@ function processOptionData(optionData) {
       if (item.沽购 === "购") {
         // 认购期权：行权价>正股价=虚值，<正股价=实值
         if (diffIndex === 0) {
-          level = "平值";
+          level = "平_值";
           levelNo = 0;
         } else if (diffIndex > 0) {
           level = `虚${diffIndex}档`;
@@ -366,7 +366,7 @@ function processOptionData(optionData) {
         // 沽
         // 认沽期权：行权价<正股价=虚值，>正股价=实值
         if (diffIndex === 0) {
-          level = "平值";
+          level = "平_值";
           levelNo = 0;
         } else if (diffIndex < 0) {
           level = `虚${Math.abs(diffIndex)}档`;
