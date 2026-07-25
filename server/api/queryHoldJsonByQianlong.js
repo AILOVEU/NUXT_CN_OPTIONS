@@ -3,10 +3,17 @@ import csvtojson from "csvtojson";
 import iconvLite from "iconv-lite";
 import fs from "node:fs";
 import path from "node:path";
-const storage = useStorage("assets:public");
+const isDeploy = !!process.env.VERCEL;
 
 export async function get_持仓JSON() {
-  const csvPath = await storage.getItem("持仓.txt");
+  let csvPath;
+  if (isDeploy) {
+    // Vercel 打包后绝对路径：.output/public/持仓.txt
+    csvPath = path.join(process.cwd(), ".output", "public", "持仓.txt");
+  } else {
+    // 本地开发 / 本地node启动打包产物
+    csvPath = path.join(process.cwd(), "public", "持仓.txt");
+  }
   return new Promise((resolve) => {
     try {
       const converterStream = fs.createReadStream(csvPath).pipe(iconvLite.decodeStream("gbk"));
