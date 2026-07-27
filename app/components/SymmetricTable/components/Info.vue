@@ -4,13 +4,22 @@
   <!-- 分割线行 -->
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <!-- 当前高亮行 -->
-  <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
+  <div v-else-if="props.row._current" :style="props.isCall
+    ? 'background: linear-gradient(rgb(255, 220, 220), rgb(190, 220, 190)); height: 22px'
+    : 'background: linear-gradient(rgb(190, 220, 190), rgb(255, 220, 220)); height: 22px'">
+    &nbsp;
+  </div>
   <!-- 期权卡片主体 -->
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
+    class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle"
+    :class="{ 'print-text-large': isPrint }">
     <!-- 左上 -->
     <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "→" }}</span>
-      <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }"><TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" /></div>
+      <TagHold :showPlus="true" v-if="持仓变化 && props.showTypeVal !== '空白'" :value="持仓变化" /><span
+        v-if="持仓变化 && props.showTypeVal !== '空白'">{{ "→" }}</span>
+      <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+        <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
+      </div>
       <TagHoldDiffPercent v-if="isPrint && 持仓" :value="盈亏" :收益率="收益率" />
     </div>
 
@@ -20,7 +29,8 @@
     </div>
 
     <!-- 右上涨跌标签 -->
-    <div v-if="showTypeNotBlank" class="absolute top-[0px] right-[0px] max-md:top-[20px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
+    <div v-if="showTypeNotBlank" class="absolute top-[0px] right-[0px] max-md:top-[20px]"
+      :class="{ 'text-limit-show-mode': optionLimitShow }">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
     </div>
 
@@ -45,47 +55,86 @@
     <!-- 打印模式中间区域 -->
     <div v-else-if="isPrint" class="flex flex-col justify-center mx-auto gap-[2px]">
       <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
-        <div class="whitespace-nowrap"><TagPrice :value="一手价" /></div>
-        <div class="whitespace-nowrap"><TagDelta :value="deltaVal" /></div>
-        <div class="whitespace-nowrap"><TagPremium :value="溢价率Val" /></div>
-        <div class="whitespace-nowrap"><TagIv :value="隐波Val" /></div>
+        <div class="whitespace-nowrap">
+          <TagPrice :value="一手价" />
+        </div>
+        <div class="whitespace-nowrap">
+          <TagDelta :value="deltaVal" />
+        </div>
+        <div class="whitespace-nowrap">
+          <TagPremium :value="溢价率Val" />
+        </div>
+        <div class="whitespace-nowrap">
+          <TagIv :value="隐波Val" />
+        </div>
       </div>
       <div v-if="持仓" class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
-        <div class="whitespace-nowrap"><TagCostPrice :value="一手成本价" /></div>
-        <div class="whitespace-nowrap"><TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" /></div>
+        <div class="whitespace-nowrap">
+          <TagCostPrice :value="一手成本价" />
+        </div>
+        <div class="whitespace-nowrap">
+          <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
+        </div>
       </div>
     </div>
 
     <!-- 普通展示中间区域 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]" :class="{ scale2: indexValMatchScale }">
+    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]"
+      :class="{ scale2: indexValMatchScale }">
       <!-- 第一行：价格、打和点、溢价率 -->
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('一手价')"><TagPrice :value="一手价" /></div>
-        <div class="whitespace-nowrap" v-if="showField('打和点')"><TagAimPrice :value="打和点Val" /></div>
-        <div class="whitespace-nowrap" v-if="showField('溢价率')"><TagPremium :value="溢价率Val" /></div>
+        <div class="whitespace-nowrap" v-if="showField('一手价')">
+          <TagPrice :value="一手价" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('打和点')">
+          <TagAimPrice :value="打和点Val" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('溢价率')">
+          <TagPremium :value="溢价率Val" />
+        </div>
       </div>
       <!-- 第二行：杠杆、隐波、Delta -->
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('杠杆')"><TagLeverage :value="杠杆Val" /></div>
-        <div class="whitespace-nowrap" v-if="showField('隐波')"><TagIv :value="隐波Val" :正股="正股代码Val" /></div>
-        <div class="whitespace-nowrap" v-if="showField('Delta')"><TagDelta :value="deltaVal" :正股="正股代码Val" /></div>
+        <div class="whitespace-nowrap" v-if="showField('杠杆')">
+          <TagLeverage :value="杠杆Val" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('隐波')">
+          <TagIv :value="隐波Val" :正股="正股代码Val" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('Delta')">
+          <TagDelta :value="deltaVal" :正股="正股代码Val" />
+        </div>
       </div>
       <!-- 第三行：Vega、Gamma、单日损耗 -->
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('Vega')"><TagVega :value="vegaVal" /></div>
-        <div class="whitespace-nowrap" v-if="showField('Gamma')"><TagGamma :value="gammaVal" /></div>
-        <div class="whitespace-nowrap ml-[4px]" v-if="showField('单日损耗')"><TagTheta :value="单日损耗Val" /></div>
+        <div class="whitespace-nowrap" v-if="showField('Vega')">
+          <TagVega :value="vegaVal" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('Gamma')">
+          <TagGamma :value="gammaVal" />
+        </div>
+        <div class="whitespace-nowrap ml-[4px]" v-if="showField('单日损耗')">
+          <TagTheta :value="单日损耗Val" />
+        </div>
       </div>
       <!-- 第四行：持仓量、增仓量 -->
       <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('持仓量')"><TagVolumn :value="持仓量" /></div>
-        <div class="whitespace-nowrap" v-if="showField('增仓量')"><TagVolumnAdd :value="日增量" /></div>
+        <div class="whitespace-nowrap" v-if="showField('持仓量')">
+          <TagVolumn :value="持仓量" />
+        </div>
+        <div class="whitespace-nowrap" v-if="showField('增仓量')">
+          <TagVolumnAdd :value="日增量" />
+        </div>
       </div>
       <!-- 持仓专属行：成本价、仓位 -->
       <div v-if="持仓">
         <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]">
-          <div class="whitespace-nowrap" v-if="showField('一手成本价')"><TagCostPrice :value="一手成本价" /></div>
-          <div class="whitespace-nowrap" v-if="showField('仓位')"><TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" /></div>
+          <div class="whitespace-nowrap" v-if="showField('一手成本价')">
+            <TagCostPrice :value="一手成本价" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('仓位')">
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+          </div>
         </div>
       </div>
     </div>
@@ -264,6 +313,7 @@ const handleGlassStyle = (el, isEnable) => {
 .my-tag-wrapper {
   margin-inline: -1px;
   position: relative;
+
   &:hover {
     z-index: 1;
   }
@@ -272,11 +322,13 @@ const handleGlassStyle = (el, isEnable) => {
 .scale2 {
   .my-tag-wrapper {
     font-size: 2.5em;
+
     @media not all and (min-width: 768px) {
       font-size: 1.5em;
     }
   }
 }
+
 .print-text-large {
   .text-limit-show-mode * {
     color: gray !important;
@@ -296,6 +348,7 @@ const handleGlassStyle = (el, isEnable) => {
 .borderRed {
   border: 1px solid red;
 }
+
 .borderGreen {
   border: 1px solid green;
 }

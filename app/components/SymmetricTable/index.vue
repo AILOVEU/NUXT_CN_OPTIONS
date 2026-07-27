@@ -10,19 +10,27 @@
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
     <div class="h-[calc(100%-120px)]">
-      <Capture title="期权T型" ref="captureRef" :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
-        <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ props.tableTitle || "" }}{{ dayStr }}</div>
-        <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary :summary-method="getSummary">
-          <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label" align="center" :width="getWrapperColumnWidth(label)">
+      <Capture title="期权T型" ref="captureRef"
+        :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
+        <div
+          class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">
+          {{ props.tableTitle || "" }}{{ dayStr }}</div>
+        <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%"
+          :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary
+          :summary-method="getSummary">
+          <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label"
+            align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
               <div v-if="label.includes('市场')" class="leading-[1.2] flex items-center gap-[2px] justify-center">
                 <div>{{ label }}</div>
               </div>
               <div v-else-if="type" class="leading-[1.2]">
                 <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月DD") }}</div>
-                <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
+                <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})
+                </div>
               </div>
-              <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => captureRef.download()">
+              <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer"
+                @click="() => captureRef.download()">
                 <div>{{ label }}</div>
                 <el-button link>⬇</el-button>
               </div>
@@ -31,10 +39,11 @@
               <Center :row="row" />
             </template>
             <template #default="{ row }" v-else-if="label.includes('市场')">
-              <Data :row="row" :isCall="type === 'C'" />
+              <Data :row="row" :isCall="type === 'C'" :minMaxData="minMaxData" />
             </template>
             <template #default="{ row }" v-else>
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" :showTypeVal="showTypeVal" />
+              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode"
+                :indexVal="indexVal" :showTypeVal="showTypeVal" />
             </template>
           </el-table-column>
         </el-table>
@@ -94,7 +103,7 @@ const showColumns = computed(() => {
   return tableData.columns.filter((el) => columnVal.value.includes(el.label));
 });
 function getWrapperColumnWidth(label) {
-  if (label.includes("市场")) return "140px";
+  if (label.includes("市场")) return "90px";
 
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
@@ -112,6 +121,59 @@ const filteredTableData = computed(() => {
     return el["千行权价"] >= targetRangeArr[0] && el["千行权价"] <= targetRangeArr[1];
   });
 });
+
+/**
+ * 计算C市场、P市场下 日增额、日增量、持仓额、持仓量 的最大最小值
+ * @param {Array} filteredTableData 数据源数组，每项包含 'C市场数据字段'、'P市场数据字段'
+ * @returns {Object} 各指标最大最小值
+ */
+function calcMarketMinMax(filteredTableData) {
+  // 需要统计的指标key
+  const targetKeys = ['日增额', '日增量', '持仓额', '持仓量'];
+  // 市场字段
+  const marketFields = ['C市场数据', 'P市场数据'];
+
+  // 初始化收集所有数值
+  const valueMap = {};
+  targetKeys.forEach(key => {
+    valueMap[key] = [];
+  });
+
+  // 遍历每一行数据
+  filteredTableData.forEach(row => {
+    marketFields.forEach(marketKey => {
+      const marketData = row[marketKey];
+      if (!marketData) return;
+      targetKeys.forEach(field => {
+        const val = Number(marketData[field]);
+        // 过滤有效数字
+        if (!isNaN(val)) {
+          valueMap[field].push(val);
+        }
+      });
+    });
+  });
+
+  // 组装最大最小值结果
+  const result = {};
+  targetKeys.forEach(field => {
+    const list = valueMap[field];
+    if (list.length === 0) {
+      result[field] = { max: null, min: null };
+    } else {
+      result[field] = {
+        max: Math.max(...list),
+        min: Math.min(...list)
+      };
+    }
+  });
+
+  return result;
+}
+
+const minMaxData = computed(() => {
+  return calcMarketMinMax(filteredTableData.value)
+})
 
 function getCellStyle({ column, row }) {
   if (row["_split"] || row["_current"]) return {};
@@ -187,16 +249,20 @@ const captureRef = ref(null);
 .el-table--small .cell {
   padding: 0 0px !important;
 }
+
 .el-table--small .el-table__cell {
   padding: 0px 0 !important;
 }
+
 .el-radio-group {
   justify-content: center;
   width: 100%;
 }
+
 .el-radio-button {
   flex: 1;
 }
+
 // 新增：合计行全局放大字体
 .symmetic-table {
   .el-table__footer-wrapper .cell {
@@ -205,7 +271,7 @@ const captureRef = ref(null);
     height: 30px;
   }
 }
+
 // .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
 //   border: 0;
-// }
-</style>
+// }</style>

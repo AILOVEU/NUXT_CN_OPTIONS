@@ -7,7 +7,7 @@
         {{ 千行权价 }}
       </div>
       <div class="text-[12px] pt-[4px]" v-if="props.row['正股代码'] === '159922'">
-        ({{ formatDecimal(千行权价 * 2.513 / 1000,  2) }})
+        ({{ formatDecimal(千行权价 * 2.513 / 1000, 2) }})
       </div>
       <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap">
         <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
@@ -16,7 +16,9 @@
       </div>
     </div>
   </div>
-  <div v-else class="h-[22px] leading-[22px] text-[20px]">
+  <div v-else class="h-[22px] leading-[22px] text-[20px] font-extrabold" :style="props.isCall
+    ? 'background: linear-gradient(rgb(255, 220, 220), rgb(190, 220, 190)); height: 22px'
+    : 'background: linear-gradient(rgb(190, 220, 190), rgb(255, 220, 220)); height: 22px'">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>
@@ -54,6 +56,7 @@ const 溢价 = computed(() => {
   border: 1px solid #acbac4;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
 }
+
 .center-full-cell {
   position: absolute;
   top: 0;
