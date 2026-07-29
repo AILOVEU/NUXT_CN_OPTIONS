@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(220vh-85px)] flex justify-center">
+    <div class="h-[calc(100vh-80px)] overflow-y-auto max-md:h-[calc(220vh-85px)] flex justify-center">
       <div class="mx-auto">
         <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型">
           <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="filterTableDataByStockCode(item)" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />

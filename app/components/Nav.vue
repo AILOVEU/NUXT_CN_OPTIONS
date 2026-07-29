@@ -39,6 +39,10 @@ const navList = [
     name: "筛选",
   },
   {
+    href: "/filter/complex",
+    name: "筛选2",
+  },
+  {
     href: "/spread",
     name: "价差",
   },

@@ -143,7 +143,6 @@
 <script setup>
 import _ from "lodash";
 import { deadline_list, OPTIONS_MAP } from "~/data";
-import dayjs from "dayjs";
 
 const props = defineProps(["checkIsChance", "data", "isCombo", "showHold", "orderBy", "orderByRank", "filterCount", "过滤持变字段"]);
 const tableData = reactive({
