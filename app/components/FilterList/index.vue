@@ -132,6 +132,12 @@
               {{ formatNumberToWan(row["日增额"]) }}
             </el-table-column>
           </el-table-column>
+          <el-table-column label="涨跌实值性价比" align="center">
+            <el-table-column #default="{ row }" label="涨跌2" prop="涨跌2" sortable width="100" align="right"> {{ row["涨跌2"][0] }} - {{ row["涨跌2"][1] }} </el-table-column>
+            <el-table-column #default="{ row }" label="涨跌5" prop="涨跌5" sortable width="100" align="right"> {{ row["涨跌5"][0] }} - {{ row["涨跌5"][1] }} </el-table-column>
+            <el-table-column #default="{ row }" label="涨跌10" prop="涨跌10" sortable width="100" align="right"> {{ row["涨跌10"][0] }} - {{ row["涨跌10"][1] }} </el-table-column>
+            <el-table-column #default="{ row }" label="涨跌15" prop="涨跌15" sortable width="100" align="right"> {{ row["涨跌15"][0] }} - {{ row["涨跌15"][1] }} </el-table-column>
+          </el-table-column>
           <el-table-column #default="{ row }" label="组合?" prop="组合" width="45" sortable align="left">
             {{ row["组合"] ? "是" : "" }}
           </el-table-column>
@@ -161,8 +167,29 @@ async function handleQuery() {
 }
 handleQuery();
 
+function get实值涨跌打分(row, 涨跌百分比) {
+  // if (row["一手内在价"] <= 0) return 0;
+  const isCall = row["沽购"] === "购";
+  const 一手价 = row["一手价"];
+  const 打和点 = row["打和点"];
+
+  let 涨跌目标价 = isCall ? row["正股价格"] * (1 + 涨跌百分比 / 100) : row["正股价格"] * (1 - 涨跌百分比 / 100);
+  涨跌目标价 = formatDecimal(涨跌目标价, 4);
+  if (isCall && 涨跌目标价 < 打和点) return [0, 涨跌目标价];
+  if (!isCall && 涨跌目标价 > 打和点) return [0, 涨跌目标价];
+
+  const 盈利价 = Math.abs(涨跌目标价 - 打和点) * row["合约单位"];
+  return [formatDecimal(盈利价 / 一手价, 3), 涨跌目标价];
+}
 const filteredTableData = computed(() => {
   let filtered = (props.data?.length ? props.data : tableData.tiledData).filter((el) => props.checkIsChance(el));
+  filtered = filtered.map((el) => ({
+    ...el,
+    涨跌2: get实值涨跌打分(el, 2),
+    涨跌5: get实值涨跌打分(el, 5),
+    涨跌10: get实值涨跌打分(el, 10),
+    涨跌15: get实值涨跌打分(el, 15),
+  }));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
   if (props.orderBy) {
