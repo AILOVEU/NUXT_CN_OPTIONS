@@ -52,6 +52,7 @@ export function generateRandomString(length) {
 }
 
 export function formatDecimal(num, toFixed = 2) {
+  if (!num) return num
   // 先将数字转为字符串
   const str = num.toString();
 

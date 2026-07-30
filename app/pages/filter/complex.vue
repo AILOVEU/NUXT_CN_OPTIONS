@@ -6,23 +6,28 @@
       <div class="flex justify-between items-center mb-4">
         <span class="font-medium">筛选条件分组</span>
         <div class="flex gap-3">
-          <button @click="addGroup" class="px-3 py-1.5 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+ 新增条件组</button>
-          <button @click="resetAll" class="px-3 py-1.5 bg-gray-500 text-white rounded text-sm hover:bg-gray-600">重置全部筛选</button>
+          <button @click="addGroup" class="px-3 py-1.5 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+
+            新增条件组</button>
+          <button @click="resetAll"
+            class="px-3 py-1.5 bg-gray-500 text-white rounded text-sm hover:bg-gray-600">重置全部筛选</button>
         </div>
       </div>
       <!-- 遍历每一个条件组 -->
-      <div v-for="(group, groupIdx) in groupList" :key="groupIdx" class="border border-blue-200 rounded-md p-2 mb-2 bg-white">
+      <div v-for="(group, groupIdx) in groupList" :key="groupIdx"
+        class="border border-blue-200 rounded-md p-2 mb-2 bg-white">
         <div class="flex justify-between items-center mb-3">
           <span class="text-sm font-semibold text-blue-600"> 第{{ groupIdx + 1 }}组（组内条件全部满足） </span>
           <div class="flex gap-2">
             <button @click="addRule(groupIdx)" class="px-2 py-1 bg-green-500 text-white rounded text-xs">添加本组条件</button>
-            <button v-if="groupList.length > 1" @click="delGroup(groupIdx)" class="px-2 py-1 bg-red-400 text-white rounded text-xs">删除整组</button>
+            <button v-if="groupList.length > 1" @click="delGroup(groupIdx)"
+              class="px-2 py-1 bg-red-400 text-white rounded text-xs">删除整组</button>
           </div>
         </div>
 
         <!-- 组内多条且条件 -->
         <div class="flex flex-col gap-3">
-          <div v-for="(rule, ruleIdx) in group.rules" :key="ruleIdx" class="flex flex-nowrap items-center gap-3 relative">
+          <div v-for="(rule, ruleIdx) in group.rules" :key="ruleIdx"
+            class="flex flex-nowrap items-center gap-3 relative">
             <div v-if="ruleIdx > 0" class="text-gray-400 text-[12px] font-bold absolute left-[-15px]">且</div>
 
             <!-- 筛选字段选择 -->
@@ -30,6 +35,10 @@
               <option value="正股代码">期权标的（多选）</option>
               <option value="到期日">期权到期日（多选）</option>
               <option value="沽购">期权沽购（单选）</option>
+              <option value="一手价">一手价范围</option>
+              <option value="一手内在价">一手内在价范围</option>
+              <option value="一手时间价">一手时间价范围</option>
+
             </select>
 
             <div class="basis-[80%]">
@@ -37,14 +46,32 @@
               <TabSelectMult v-if="rule.field === '正股代码'" :options="filter1Opts" v-model="rule.value" />
 
               <!-- 多选 期权到期日 -->
-              <TabSelectMult v-if="rule.field === '到期日'" :options="filter2Opts.map((el) => ({ label: el, value: el }))" v-model="rule.value" />
+              <TabSelectMult v-if="rule.field === '到期日'" :options="filter2Opts.map((el) => ({ label: el, value: el }))"
+                v-model="rule.value" />
 
               <!-- 单选 期权沽购 -->
-              <TabSelect v-if="rule.field === '沽购'" :options="filter3Opts.map((el) => ({ label: el, value: el }))" v-model="rule.value" />
+              <TabSelect v-if="rule.field === '沽购'" :options="filter3Opts.map((el) => ({ label: el, value: el }))"
+                v-model="rule.value" />
+              <div class="flex" v-if="rule.field === '一手价'">
+                <el-input placeholder="最小值" v-model="rule.value[0]" />
+                <div>-</div>
+                <el-input placeholder="最小值" v-model="rule.value[1]" />
+              </div>
+              <div class="flex" v-if="rule.field === '一手内在价'">
+                <el-input placeholder="最小值" v-model="rule.value[0]" />
+                <div>-</div>
+                <el-input placeholder="最小值" v-model="rule.value[1]" />
+              </div>
+              <div class="flex" v-if="rule.field === '一手时间价'">
+                <el-input placeholder="最小值" v-model="rule.value[0]" />
+                <div>-</div>
+                <el-input placeholder="最小值" v-model="rule.value[1]" />
+              </div>
             </div>
 
             <!-- 删除单条条件 -->
-            <button @click="delRule(groupIdx, ruleIdx)" class="px-2 py-1 bg-red-400 text-white rounded text-xs">删除</button>
+            <button @click="delRule(groupIdx, ruleIdx)"
+              class="px-2 py-1 bg-red-400 text-white rounded text-xs">删除</button>
           </div>
         </div>
 
@@ -158,6 +185,15 @@ const filterData = computed(() => {
           case "沽购":
             // 单选：精准相等
             return row.沽购 === value;
+          case "一手价":
+            // 单选：精准相等
+            return row.一手价 >= value[0] && row.一手价 <= value[1];
+          case "一手时间价":
+            // 单选：精准相等
+            return row.一手时间价 >= value[0] && row.一手时间价 <= value[1];
+          case "一手内在价":
+            // 单选：精准相等
+            return row.一手内在价 >= value[0] && row.一手内在价 <= value[1];
           default:
             return true;
         }
