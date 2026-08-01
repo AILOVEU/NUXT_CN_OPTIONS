@@ -15,7 +15,7 @@
       </div>
       <div class="text-right text-[11.5px] leading-[1.7] text-[#8f95a1]">
         数据源 data_etfoption.csv · {{ model.underlyings.length }} 标的 / {{ totalContracts }} 合约<br />
-        历史：vixs.csv + 标的日线（截至 {{ maxTradeDate || '—' }}）
+        历史：vixs.csv（IV 截至 {{ maxVixDate || '—' }}）+ 标的日线（截至 {{ maxTradeDate || '—' }}）
       </div>
     </header>
 
@@ -304,7 +304,7 @@
             <b class="text-[#5f6672]">波动率口径</b><br />
             · <b class="text-[#5f6672]">预期实现波动率</b> = 0.6 × 近5日已实现波动率 + 0.4 × 综合HV（Parkinson 50% / 收盘 20%），当前 {{ fmt(verdictObj ? verdictObj.hf : 0, 2) }}。<br />
             · <b class="text-[#5f6672]">VRP</b> = 平值 IV － 预期实现波动率。为正说明期权卖方收到的溢价高于标的实际波动，是卖波动率的安全垫。<br />
-            · <b class="text-[#5f6672]">IV 历史分位</b> 取自 vixs.csv 近 3 年分布（序列截至 {{ maxTradeDate || '—' }}）。<br />
+            · <b class="text-[#5f6672]">IV 历史分位</b> 取自 vixs.csv 近 3 年分布（序列截至 {{ maxVixDate || '—' }}）。<br />
             · <b class="text-[#5f6672]">波动率锥</b> 用标的日线（截至 {{ maxTradeDate || '—' }}）近 3 年滚动 HV 的分位数绘制。<br /><br />
             <b class="text-[#5f6672]">希腊字母口径</b><br />
             · Vega 为 IV 变动 100% 的价格变化，图表中 <b class="text-[#5f6672]">Vega×100</b> 即 IV 每上升 1 个点每张合约的盈亏（元）。<br />
@@ -413,6 +413,7 @@ const loaded = ref(false)
 const loadError = ref('')
 const valDate = ref(props.valuationDate || '')
 const maxTradeDate = ref('')
+const maxVixDate = ref('')
 const selU = ref(null)
 const selE = ref(null)
 const selStg = ref(null)
@@ -571,7 +572,11 @@ async function loadHistory() {
   }))
   let md = null
   codes.forEach(c => (dailyStore[c] || []).forEach(x => { if (!md || x.d > md) md = x.d }))
-  if (md) { maxTradeDate.value = md; valDate.value = md; recomputeDays() }
+  if (md) { maxTradeDate.value = md }
+  let mv = null
+  codes.forEach(c => (ivHistStore[c] || []).forEach(x => { if (!mv || x.d > mv) mv = x.d }))
+  if (mv) maxVixDate.value = mv
+  if (md && !valDate.value) { valDate.value = md; recomputeDays() }
   model.value.underlyings.forEach(enrichUnderlying)
 }
 function recomputeDays() {
@@ -590,6 +595,9 @@ function applyHistory(h) {
   let md = null
   model.value.underlyings.forEach(u => (dailyStore[u.code] || []).forEach(x => { if (!md || x.d > md) md = x.d }))
   if (md) { maxTradeDate.value = md; if (!valDate.value) { valDate.value = md; recomputeDays() } }
+  let mv = null
+  model.value.underlyings.forEach(u => (ivHistStore[u.code] || []).forEach(x => { if (!mv || x.d > mv) mv = x.d }))
+  if (mv) maxVixDate.value = mv
 }
 function enrichUnderlying(u) {
   const code = u.code
