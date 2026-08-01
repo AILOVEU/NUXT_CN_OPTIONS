@@ -136,8 +136,8 @@ async function handleQuery() {
   setGlobalLoading(true);
 
   try {
-    // 直接读取静态文件 vixs2.csv（长表：code,time,open,high,low,close）
-    const res = await fetch("/vixs2.csv", { signal: abortController.value.signal });
+    // 直接读取静态文件 vixs.csv（长表：code,time,open,high,low,close）
+    const res = await fetch("/vixs.csv", { signal: abortController.value.signal });
     const txt = await res.text();
     const rows = Papa.parse(txt, { header: true, skipEmptyLines: true }).data;
 

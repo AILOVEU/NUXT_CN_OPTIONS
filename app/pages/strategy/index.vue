@@ -14,7 +14,7 @@
       </div>
       <div class="text-right text-[11.5px] leading-[1.7] text-[#8f95a1]">
         数据源 data_etfoption.csv · {{ model.underlyings.length }} 标的 / {{ totalContracts }} 合约<br />
-        历史：vixs2.csv + 标的日线（截至 {{ maxTradeDate || '—' }}）
+        历史：vixs.csv + 标的日线（截至 {{ maxTradeDate || '—' }}）
       </div>
     </header>
 
@@ -161,7 +161,7 @@
         <VChart :option="coneOpt" autoresize class="chart" /></div>
       <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
         <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#7a5af8]"></span>隐含波动率历史走势</div>
-        <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">该标的 IV 指数历史序列（vixs2.csv），红线为当前 ATM IV 所处水平</div>
+        <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">该标的 IV 指数历史序列（vixs.csv），红线为当前 ATM IV 所处水平</div>
         <VChart :option="ivHistOpt" autoresize class="chart" /></div>
     </div>
 
@@ -303,7 +303,7 @@
             <b class="text-[#5f6672]">波动率口径</b><br />
             · <b class="text-[#5f6672]">预期实现波动率</b> = 0.6 × 近5日已实现波动率 + 0.4 × 综合HV（Parkinson 50% / 收盘 20%），当前 {{ fmt(verdictObj ? verdictObj.hf : 0, 2) }}。<br />
             · <b class="text-[#5f6672]">VRP</b> = 平值 IV － 预期实现波动率。为正说明期权卖方收到的溢价高于标的实际波动，是卖波动率的安全垫。<br />
-            · <b class="text-[#5f6672]">IV 历史分位</b> 取自 vixs2.csv 近 3 年分布（序列截至 {{ maxTradeDate || '—' }}）。<br />
+            · <b class="text-[#5f6672]">IV 历史分位</b> 取自 vixs.csv 近 3 年分布（序列截至 {{ maxTradeDate || '—' }}）。<br />
             · <b class="text-[#5f6672]">波动率锥</b> 用标的日线（截至 {{ maxTradeDate || '—' }}）近 3 年滚动 HV 的分位数绘制。<br /><br />
             <b class="text-[#5f6672]">希腊字母口径</b><br />
             · Vega 为 IV 变动 100% 的价格变化，图表中 <b class="text-[#5f6672]">Vega×100</b> 即 IV 每上升 1 个点每张合约的盈亏（元）。<br />
@@ -551,7 +551,7 @@ function buildFromRows(rows) {
 async function loadHistory() {
   const codes = model.value.underlyings.map(u => u.code)
   try {
-    const res = await fetch('/vixs2.csv'); const txt = await res.text()
+    const res = await fetch('/vixs.csv'); const txt = await res.text()
     const rows = Papa.parse(txt, { header: true, skipEmptyLines: true }).data
     rows.forEach((r) => {
       const d = r.time; if (!d) return

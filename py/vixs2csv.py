@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""将 public/vixs_data 下的所有 .xls 文件合并生成 public/vixs2.csv。
+"""将 public/vixs_data 下的所有 .xls 文件合并生成 public/vixs.csv。
 
 原始 .xls 实为 GBK 编码的制表符分隔文本文件，结构为：
   第1行: 标题，含代码（如 "(TZ004)"）
@@ -31,7 +31,7 @@ CODE_MAP = {
 }
 
 SRC_DIR = os.path.join('public', 'vixs_data')
-OUT_FILE = os.path.join('public', 'vixs2.csv')
+OUT_FILE = os.path.join('public', 'vixs.csv')
 COLS = ['code', 'time', 'open', 'high', 'low', 'close']
 
 
