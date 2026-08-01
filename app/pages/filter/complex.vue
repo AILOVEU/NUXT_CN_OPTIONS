@@ -1,4 +1,5 @@
 <template>
+  <Nav />
   <div class="p-6 mx-auto" v-loading="tableData.loading">
     <el-input v-model="formData.top" />
     <!-- 筛选分组区域 -->
