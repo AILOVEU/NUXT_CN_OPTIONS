@@ -52,13 +52,13 @@
 import _ from "lodash";
 import { get_http_data } from "~/utils/options";
 import { OPTIONS_MAP } from "~/data";
+import Papa from "papaparse";
 import dayjs from "dayjs";
 import { useGlobal } from "~/stores/useGlobal.js";
 import { getFourWednesdayOfMonth, getDatesBetween, resizeFontSize, getMoreThanTen, getLessThanTen, getFourWednesdayInRange } from "~/utils/utils";
 
 // ==================== 常量定义（提取魔法数字，与上一版本完全一致） ====================
 const { setGlobalLoading, isMobile } = useGlobal();
-const BEND = 2025;
 const COL_NUM = 1; // 固定列数
 const GAP = 1; // 网格间距
 const PADDING = 0.5; // 图表内边距
@@ -87,7 +87,7 @@ const loading = ref(false);
 const abortController = ref(null); // 用于取消请求
 
 // 全局常量：所有交割日
-const highlightDates = getFourWednesdayInRange("2000-01-01", "2025-12-31");
+const highlightDates = getFourWednesdayInRange("2000-01-01", "2026-12-31");
 
 // ==================== 工具函数（与上一版本顺序一致） ====================
 // 补零函数
@@ -136,16 +136,23 @@ async function handleQuery() {
   setGlobalLoading(true);
 
   try {
-    const response = await $fetch("/api/queryVixsDataJson", {
-      method: "post",
-      body: {
-        codeList: [stockCode.value],
-      },
-      signal: abortController.value.signal,
-    });
+    // 直接读取静态文件 vixs2.csv（长表：code,time,open,high,low,close）
+    const res = await fetch("/vixs2.csv", { signal: abortController.value.signal });
+    const txt = await res.text();
+    const rows = Papa.parse(txt, { header: true, skipEmptyLines: true }).data;
 
-    // 过滤有效数据
-    vixsData.value = response.filter((el) => el.code === stockCode.value).filter((el) => el.date);
+    // 过滤出当前标的，并将长表字段映射为原结构（time -> date，数值化）
+    vixsData.value = rows
+      .filter((el) => el.code === stockCode.value)
+      .filter((el) => el.time)
+      .map((el) => ({
+        date: el.time.replace(/\//g, "-"),
+        open: +el.open,
+        close: +el.close,
+        low: +el.low,
+        high: +el.high,
+        code: el.code,
+      }));
   } catch (error) {
     // 忽略取消请求的错误
     if (error.name !== "AbortError") {
@@ -209,8 +216,8 @@ const 总览options = computed(() => {
 const options = computed(() => {
   if (!vixsData.value.length) return {};
 
-  // 计算年份数量（行数）
-  const uniqueYears = Array.from(new Set(vixsData.value.map((el) => dayjs(el.date, "YYYY-MM-DD").year())));
+  // 计算年份数量（行数），按倒序排列（最新年份在最上面）
+  const uniqueYears = Array.from(new Set(vixsData.value.map((el) => dayjs(el.date, "YYYY-MM-DD").year()))).sort((a, b) => b - a);
   rowNum.value = uniqueYears.length;
 
   // 计算网格尺寸
@@ -225,7 +232,7 @@ const options = computed(() => {
 
   // 按年份倒序处理（最新年份在最上面）
   for (let row = 0; row < rowNum.value; row++) {
-    const year = BEND - row;
+    const year = uniqueYears[row];
     const index = row;
 
     // 生成当年12个月的前缀
