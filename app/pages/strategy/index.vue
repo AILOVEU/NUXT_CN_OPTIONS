@@ -562,14 +562,18 @@ async function loadHistory() {
       if (code && v > 1 && v < 200) (ivHistStore[code] = ivHistStore[code] || []).push({ d, v })
     })
   } catch (e) { /* IV 历史缺失则降级 */ }
-  await Promise.all(codes.map(async (code) => {
-    try {
-      const res = await fetch('/' + code + '.csv'); if (!res.ok) return
-      const txt = await res.text()
-      const rows = Papa.parse(txt, { header: true, skipEmptyLines: true }).data.filter(r => r.close)
-      dailyStore[code] = rows.map(r => ({ d: r.trade_date, o: +r.open, h: +r.high, l: +r.low, c: +r.close, v: +r.volume || 0 }))
-    } catch (e) { /* 无日线则降级 */ }
-  }))
+  try {
+    const res = await fetch('/etf_qianfuquan.csv')
+    if (!res.ok) throw new Error('HTTP ' + res.status)
+    const txt = await res.text()
+    const rows = Papa.parse(txt, { header: true, skipEmptyLines: true }).data.filter(r => r.close)
+    const byCode = {}
+    rows.forEach(r => {
+      const code = r.code; if (!code) return
+      ;(byCode[code] = byCode[code] || []).push({ d: r.date, o: +r.open, h: +r.high, l: +r.low, c: +r.close, v: +r.volumn || 0 })
+    })
+    codes.forEach(code => { if (byCode[code]) dailyStore[code] = byCode[code] })
+  } catch (e) { /* 无日线则降级 */ }
   let md = null
   codes.forEach(c => (dailyStore[c] || []).forEach(x => { if (!md || x.d > md) md = x.d }))
   if (md) { maxTradeDate.value = md }
@@ -988,7 +992,7 @@ const spotOpt = computed(() => {
   return Object.assign({}, BASE_OPT, {
     grid: { left: 52, right: 56, top: 26, bottom: 34 }, legend: { show: false },
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 } },
-    xAxis: Object.assign({ type: 'category', data: cs.map(x => x.d.slice(5)) }, AXIS),
+    xAxis: Object.assign({ type: 'category', data: cs.map(x => x.d), axisLabel: { fontSize: 10, rotate: 35, interval: 0 } }, AXIS),
     yAxis: [Object.assign({ type: 'value', scale: true, name: '价格' }, AXIS), Object.assign({ type: 'value', position: 'right', splitLine: { show: false }, show: false }, AXIS)],
     series: [
       { name: '成交量', type: 'bar', yAxisIndex: 1, data: cs.map(x => x.v), itemStyle: { color: (p) => { const i = p.dataIndex; return (i > 0 && cs[i].c >= cs[i - 1].c) ? 'rgba(224,32,32,.20)' : 'rgba(18,160,92,.20)' } } },

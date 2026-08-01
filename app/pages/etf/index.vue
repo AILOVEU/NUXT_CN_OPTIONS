@@ -47,7 +47,6 @@ import { getCsvArrByPublic } from "~/utils/utils";
 
 // ==================== 常量定义（提取魔法数字） ====================
 const { setGlobalLoading, isMobile } = useGlobal();
-const BEND = 2025;
 const COL_NUM = 1; // 固定列数
 const GAP = 1; // 网格间距
 const PADDING = 0.5; // 图表内边距
@@ -93,8 +92,36 @@ function formatNumberToWan(num) {
 }
 
 // ==================== 业务逻辑 ====================
+// 缓存合并后的不复权数据（首次请求网络后复用，切换标的不再重新请求）
+let cachedRawFundData = null;
+
+// 仅做本地过滤与字段映射，无网络请求
+function applyFundFilter() {
+  if (!cachedRawFundData) {
+    fundData.value = [];
+    return;
+  }
+  fundData.value = cachedRawFundData
+    .filter((el) => el.code === stockCode.value)
+    .map((el) => ({
+      fund_code: el.code,
+      date: el.date,
+      open: +el.open,
+      high: +el.high,
+      low: +el.low,
+      close: +el.close,
+      volumn: +el.volumn,
+    }));
+}
+
 // 带取消功能的查询函数
 async function handleQuery() {
+  // 缓存命中：仅本地过滤，不重新请求网络
+  if (cachedRawFundData) {
+    applyFundFilter();
+    return;
+  }
+
   // 取消上一个未完成的请求
   if (abortController.value) {
     abortController.value.abort();
@@ -107,16 +134,9 @@ async function handleQuery() {
   setGlobalLoading(true);
 
   try {
-    const _fundData = await getCsvArrByPublic(`/${stockCode.value}.csv`);
-    fundData.value = _fundData.map((el) => ({
-      fund_code: el.fund_code,
-      date: el.trade_date,
-      open: +el.open,
-      high: +el.high,
-      low: +el.low,
-      close: +el.close,
-      volumn: +el.volumn,
-    }));
+    const _fundData = await getCsvArrByPublic(`/etf_bufuquan.csv`);
+    cachedRawFundData = _fundData; // 缓存，后续切换标的直接复用
+    applyFundFilter();
   } catch (error) {
     // 忽略取消请求的错误
     if (error.name !== "AbortError") {
@@ -129,19 +149,24 @@ async function handleQuery() {
   }
 }
 
-// 防抖处理股票代码切换
+// 防抖处理股票代码切换（仅首次无缓存时用于网络请求）
 const debouncedHandleQuery = _.debounce(handleQuery, DEBOUNCE_DELAY);
 
 function handleStockCodeChange() {
-  debouncedHandleQuery();
+  // 已缓存则无需重新请求，直接本地过滤（瞬时）
+  if (cachedRawFundData) {
+    applyFundFilter();
+  } else {
+    debouncedHandleQuery();
+  }
 }
 
 // 生成图表配置
 const options = computed(() => {
   if (!fundData.value?.length) return {};
 
-  // 计算年份数量（行数）
-  const uniqueYears = Array.from(new Set(fundData.value.map((el) => dayjs(el.date, "YYYY-MM-DD").year())));
+  // 计算年份数量（行数），按年份倒序（最新年份在最上面）
+  const uniqueYears = Array.from(new Set(fundData.value.map((el) => dayjs(el.date, "YYYY-MM-DD").year()))).sort((a, b) => b - a);
   rowNum.value = uniqueYears.length;
 
   // 计算网格尺寸
@@ -156,7 +181,7 @@ const options = computed(() => {
 
   // 按年份倒序处理（最新年份在最上面）
   for (let row = 0; row < rowNum.value; row++) {
-    const year = BEND - row;
+    const year = uniqueYears[row];
     const index = row;
 
     // 生成当年12个月的前缀
