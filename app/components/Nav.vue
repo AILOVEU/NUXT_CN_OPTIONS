@@ -55,6 +55,10 @@ const navList = [
     name: "★分析",
   },
   {
+    href: "/strategy",
+    name: "策略",
+  },
+  {
     href: "/stockindex",
     name: "股指",
   },
