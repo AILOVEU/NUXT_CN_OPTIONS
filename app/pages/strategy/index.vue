@@ -1,4 +1,5 @@
 <template>
+  <Nav />
   <div v-if="loaded" class="mx-auto max-w-[1560px] px-5 pb-16 pt-[18px] text-[#1f2329]"
        style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
     <header class="mb-3.5 flex flex-wrap items-end justify-between gap-3">
