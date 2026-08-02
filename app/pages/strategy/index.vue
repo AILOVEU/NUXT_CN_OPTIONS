@@ -19,72 +19,83 @@
       </div>
     </header>
 
-    <!-- 标的 / 到期月 切换 -->
-    <div class="mb-3.5 flex flex-wrap items-center gap-8">
-      <div class="w-full max-w-[640px]">
-        <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">标的</div>
-        <TabSelect :options="tabUOptions" v-model="selU" />
+    <!-- 标的 / 到期月 切换（滑动置顶） -->
+    <el-affix :offset="0" class="mb-3.5">
+      <div class="flex flex-wrap items-center gap-8 rounded-lg border border-[#e5e8ef] bg-white px-4 py-3 shadow-sm">
+        <div class="w-full max-w-[640px]">
+          <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">标的</div>
+          <TabSelect :options="tabUOptions" v-model="selU" />
+        </div>
+        <div v-if="U" class="w-full max-w-[640px]">
+          <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">到期月</div>
+          <TabSelect :options="tabEOptions" v-model="selE" />
+        </div>
       </div>
-      <div v-if="U" class="w-full max-w-[640px]">
-        <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">到期月</div>
-        <TabSelect :options="tabEOptions" v-model="selE" />
-      </div>
-    </div>
+    </el-affix>
 
-    <!-- 结论 -->
-    <ModuleVerdict :u="U" :e="E" />
+    <!-- 区块一：标的变会变（仅依赖标的） -->
+    <section class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5">
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换 — 标的变会变</h2>
 
-    <!-- KPI -->
-    <ModuleKpiCards :u="U" :e="E" />
-
-    <!-- 信号明细 -->
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleDirSignal :u="U" :e="E" />
-      <ModuleVolSignal :u="U" :e="E" />
-    </div>
-
-    <!-- 图表网格 -->
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleIvSmile :e="E" />
       <ModuleTermStructure :u="U" />
-    </div>
 
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleVolCone :u="U" />
-      <ModuleIvHist :u="U" :e="E" />
-    </div>
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
+        <ModuleVolCone :u="U" />
+        <ModuleSpotTrend :u="U" />
+      </div>
 
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleOi :e="E" />
-      <ModuleDoi :e="E" />
-    </div>
+      <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" />
+    </section>
 
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleGex :e="E" />
-      <ModuleGreeks :e="E" />
-    </div>
+    <!-- 区块二：标的和到期月都会变 -->
+    <section class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5">
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换 — 两者皆变</h2>
 
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleSpotTrend :u="U" />
+      <!-- 结论 -->
+      <ModuleVerdict :u="U" :e="E" />
+
+      <!-- KPI -->
+      <ModuleKpiCards :u="U" :e="E" class="mt-3.5" />
+
+      <!-- 信号明细 -->
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
+        <ModuleDirSignal :u="U" :e="E" />
+        <ModuleVolSignal :u="U" :e="E" />
+      </div>
+
+      <ModuleIvHist :u="U" :e="E" class="mt-3.5" />
+
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
+        <ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" />
+        <ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" />
+      </div>
+
+      <!-- 按到期月下钻的合约明细（同随两者变化） -->
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
+        <ModuleIvSmile :e="E" />
+        <ModuleOi :e="E" />
+      </div>
+
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
+        <ModuleDoi :e="E" />
+        <ModuleGex :e="E" />
+      </div>
+
+      <ModuleGreeks :e="E" class="mt-3.5" />
+
+      <ModuleTTable :e="E" class="mt-3.5" />
+    </section>
+
+    <!-- 静态区：不随标的/到期月筛选变化 -->
+    <section class="mb-3.5 rounded-lg border border-[#9aa3b2] bg-[#f6f7f9] p-3.5">
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#6b7280]">六标的横截面（不随筛选变化）</h2>
+
       <ModuleCrossSection :underlyings="model.underlyings" />
-    </div>
 
-    <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-      <ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" />
-      <ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" />
-    </div>
+      <ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
 
-    <!-- 策略排行 -->
-    <ModuleRank :underlyings="model.underlyings" :sel-u="selU" />
-
-    <!-- 策略 KPI -->
-    <ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" />
-
-    <!-- T 型报价表 -->
-    <ModuleTTable :e="E" />
-
-    <!-- 口径 -->
-    <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" />
+      <ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
+    </section>
   </div>
 
   <div v-else class="mx-auto max-w-[1560px] px-5 py-20 text-center text-[#8f95a1]">
@@ -282,7 +293,7 @@ async function loadChain() {
 function buildFromRows(rows) {
   model.value = parseChain(rows)
   loaded.value = true
-  if (selU.value == null && model.value.underlyings[0]) selU.value = model.value.underlyings[0].code
+  if (selU.value == null) selU.value = OPTIONS_MAP[0].code
   const u = U.value
   if (u && !selE.value) selE.value = u.expiries[0].exp
 }
