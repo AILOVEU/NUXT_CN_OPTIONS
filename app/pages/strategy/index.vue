@@ -45,6 +45,8 @@
       </div>
 
       <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" />
+
+      <ModuleIvRegime :u="U" class="mt-3.5" />
     </section>
 
     <!-- 区块二：标的和到期月都会变 -->
@@ -95,6 +97,8 @@
       <ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
 
       <ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
+
+      <ModuleVixForecast class="mt-3.5" />
     </section>
   </div>
 
@@ -130,6 +134,8 @@ import ModuleRank from './components/ModuleRank.vue'
 import ModuleStrategyKpi from './components/ModuleStrategyKpi.vue'
 import ModuleTTable from './components/ModuleTTable.vue'
 import ModuleMethodology from './components/ModuleMethodology.vue'
+import ModuleIvRegime from './components/ModuleIvRegime.vue'
+import ModuleVixForecast from './components/ModuleVixForecast.vue'
 
 /* ============ 字段解析（业务字段 -> 中文名，中文名由 fields_dict 映射为 f 编号） ============ */
 const CODE2F = Object.fromEntries(Object.entries(fields_dict).map(([f, cn]) => [cn, f]))
