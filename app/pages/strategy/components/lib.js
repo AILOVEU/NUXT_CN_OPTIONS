@@ -1,23 +1,38 @@
-/* strategy 页面各模块共用的纯计算逻辑（不依赖 Vue 响应式，可独立测试） */
+/* strategy 页面各模块共用的常量与纯计算逻辑（不依赖 Vue 响应式，可独立测试） */
 
-/* ===== 颜色常量 ===== */
+/* ============ 常量 ============ */
+export const MULT = 10000
 export const C_UP = '#e02020'
 export const C_DN = '#12a05c'
 export const C_ACC = '#2f6feb'
 export const C_PUR = '#7a5af8'
 export const C_WARN = '#f5a623'
 
-/* ===== 通用格式化 ===== */
-export const fmt = (v, d = 2) => (v === null || v === undefined || isNaN(v)) ? '—' : Number(v).toFixed(d)
-export const sign = (v) => (v > 0 ? '+' : '')
-export const wan = (v) => Math.abs(v) >= 1e8 ? (v / 1e8).toFixed(2) + '亿' : Math.abs(v) >= 1e4 ? (v / 1e4).toFixed(1) + '万' : Math.round(v)
-export const fmtExp = (s) => (s && s.length >= 8) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}` : s
+/* ============ ECharts 共享配置 ============ */
+export const AXIS = { axisLine: { lineStyle: { color: '#dfe3e8' } }, axisLabel: { color: '#8f95a1', fontSize: 11 },
+  splitLine: { lineStyle: { color: '#f0f2f5' } }, nameTextStyle: { color: '#8f95a1', fontSize: 11 } }
+export const BASE_OPT = { grid: { left: 52, right: 52, top: 34, bottom: 34 },
+  tooltip: { trigger: 'axis', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1,
+    textStyle: { color: '#1f2329', fontSize: 12 }, extraCssText: 'box-shadow:0 4px 18px rgba(0,0,0,.09);border-radius:8px' },
+  legend: { top: 2, textStyle: { color: '#5f6672', fontSize: 11 }, itemWidth: 14, itemHeight: 8, itemGap: 14 } }
 
-/* ===== 数学 / 金融工具 ===== */
+/* ============ 标的代码映射 ============ */
+export const NAME2CODE = {
+  '上证50ETF华夏': '510050', '沪深300ETF华泰柏瑞': '510300', '中证500ETF南方': '510500',
+  '中证500ETF嘉实': '159922', '创业板ETF易方达': '159915', '科创50ETF华夏': '588000',
+}
+export const SHORT = { '510050': '上证50ETF', '510300': '沪深300ETF', '510500': '沪500ETF', '159922': '深500ETF', '159915': '创业板ETF', '588000': '科创50ETF' }
+
+/* ============ 通用工具 ============ */
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
+export const fmt = (v, d = 2) => (v === null || v === undefined || isNaN(v)) ? '—' : Number(v).toFixed(d)
+export const wan = (v) => Math.abs(v) >= 1e8 ? (v / 1e8).toFixed(2) + '亿' : Math.abs(v) >= 1e4 ? (v / 1e4).toFixed(1) + '万' : Math.round(v)
+export const sign = (v) => (v > 0 ? '+' : '')
 export const pstdev = (a) => { if (!a.length) return 0; const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length) }
 export const parseDate = (s) => { if (!s) return null; s = String(s).replace(/-/g, ''); if (s.length >= 8) return new Date(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8)); return null }
 export const daysBetween = (a, b) => { const da = parseDate(a), db = parseDate(b); if (!da || !db) return 30; return Math.round((db - da) / 86400000) }
+export const fmtExp = (s) => (s && s.length >= 8) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}` : s
+
 export function ncdf(x) {
   const a1 = .254829592, a2 = -.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = .3275911
   const s = x < 0 ? -1 : 1; x = Math.abs(x) / Math.SQRT2; const t = 1 / (1 + p * x)
@@ -31,15 +46,7 @@ export function bs(S, K, T, sig, type, r = 0.015) {
   return type === 'C' ? S * ncdf(d1) - K * Math.exp(-r * T) * ncdf(d2) : K * Math.exp(-r * T) * ncdf(-d2) - S * ncdf(-d1)
 }
 
-/* ===== ECharts 共享配置 ===== */
-export const AXIS = { axisLine: { lineStyle: { color: '#dfe3e8' } }, axisLabel: { color: '#8f95a1', fontSize: 11 },
-  splitLine: { lineStyle: { color: '#f0f2f5' } }, nameTextStyle: { color: '#8f95a1', fontSize: 11 } }
-export const BASE_OPT = { grid: { left: 52, right: 52, top: 34, bottom: 34 },
-  tooltip: { trigger: 'axis', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1,
-    textStyle: { color: '#1f2329', fontSize: 12 }, extraCssText: 'box-shadow:0 4px 18px rgba(0,0,0,.09);border-radius:8px' },
-  legend: { top: 2, textStyle: { color: '#5f6672', fontSize: 11 }, itemWidth: 14, itemHeight: 8, itemGap: 14 } }
-
-/* ===== 评分引擎 ===== */
+/* ============ 评分引擎 ============ */
 export function hvFair(u) { const h = u.hv || {}; const fast = h.rv5 || h.hvRV || h.hvPark || 0; const slow = h.hvBlend || h.hvPark || 0; return .6 * fast + .4 * slow }
 export function scoreDir(u, e) {
   const S = u.spot, h = u.hv || {}; const S_ = []
@@ -92,8 +99,13 @@ export function verdictOf(d, v, ctx) {
   }
   return { D, V, key, alt, caution }
 }
+export function sigRow(x, col) {
+  const s = x.s; const w = s == null ? 0 : Math.abs(s) / 2
+  const c = s == null ? '#ccc' : (col === 'dir' ? (s > 0 ? C_UP : C_DN) : (s < 0 ? C_PUR : C_WARN))
+  return { n: x.n, v: x.v, w: x.w, tip: x.t, sLabel: s == null ? '—' : sign(s) + fmt(s, 0), barW: w, color: c }
+}
 
-/* ===== 策略构造 ===== */
+/* ============ 策略构造 ============ */
 export function pickByDelta(rows, type, target) {
   let best = null, bd = 9
   rows.forEach(r => {
@@ -104,29 +116,29 @@ export function pickByDelta(rows, type, target) {
   })
   return best
 }
-export function leg(row, type, qty, days, mult) {
+export function leg(row, type, qty, days) {
   if (!row) return null
   const px = type === 'C' ? row.cLast : row.pLast
   const iv = type === 'C' ? row.cIV : row.pIV
   const ivv = (iv != null ? iv : (type === 'C' ? row.pIV : row.cIV)) || 20
-  return { type, K: row.K, px, qty, iv: ivv / 100, t: days, mult }
+  return { type, K: row.K, px, qty, iv: ivv / 100, t: days }
 }
-export function underLeg(u, qty, mult) { return { type: 'S', K: 0, px: u.spot, qty, iv: 0, t: 1e9, mult } }
+export function underLeg(u, qty) { return { type: 'S', K: 0, px: u.spot, qty, iv: 0, t: 1e9 } }
 export const STRATEGIES = {
-  short_strangle: { n: '卖出宽跨式 Short Strangle', d: '同时卖出虚值认购与虚值认沽，赚取双边时间价值，需承担两侧尾部风险', build: (r, e) => [leg(r, 'C', -1, e.days), leg(pickByDelta(r, 'P', .25), 'P', -1, e.days)] },
-  iron_condor: { n: '铁鹰式 Iron Condor', d: '卖宽跨式并买入更虚值的两翼作保护，风险有限、收益有限的做空波动率结构', build: (r, e) => [leg(pickByDelta(r, 'C', .25), 'C', -1, e.days), leg(pickByDelta(r, 'C', .10), 'C', 1, e.days), leg(pickByDelta(r, 'P', .25), 'P', -1, e.days), leg(pickByDelta(r, 'P', .10), 'P', 1, e.days)] },
-  short_straddle: { n: '卖出跨式 Short Straddle', d: '卖出平值认购＋认沽，时间价值收入最大，Gamma 风险也最大', build: (r, e) => [leg(pickByDelta(r, 'C', .50), 'C', -1, e.days), leg(pickByDelta(r, 'P', .50), 'P', -1, e.days)] },
-  long_straddle: { n: '买入跨式 Long Straddle', d: '买入平值认购＋认沽，做多波动率，需要标的大幅单边或波动率抬升', build: (r, e) => [leg(pickByDelta(r, 'C', .50), 'C', 1, e.days), leg(pickByDelta(r, 'P', .50), 'P', 1, e.days)] },
-  long_strangle: { n: '买入宽跨式 Long Strangle', d: '买入虚值认购＋认沽，成本低于跨式，需要更大波幅', build: (r, e) => [leg(pickByDelta(r, 'C', .25), 'C', 1, e.days), leg(pickByDelta(r, 'P', .25), 'P', 1, e.days)] },
-  bull_put: { n: '牛市看跌价差 Bull Put Spread', d: '卖出较高行权价认沽、买入较低行权价认沽，温和看多＋收时间价值，风险有限', build: (r, e) => [leg(pickByDelta(r, 'P', .35), 'P', -1, e.days), leg(pickByDelta(r, 'P', .15), 'P', 1, e.days)] },
-  bear_call: { n: '熊市看涨价差 Bear Call Spread', d: '卖出较低行权价认购、买入较高行权价认购，温和看空＋收时间价值，风险有限', build: (r, e) => [leg(pickByDelta(r, 'C', .35), 'C', -1, e.days), leg(pickByDelta(r, 'C', .15), 'C', 1, e.days)] },
-  long_call: { n: '买入认购 Long Call', d: '方向性做多，损失有限、收益无限，但需承受时间价值损耗与 IV 回落', build: (r, e) => [leg(pickByDelta(r, 'C', .45), 'C', 1, e.days)] },
-  long_put: { n: '买入认沽 Long Put', d: '方向性做空 / 组合保险，损失有限', build: (r, e) => [leg(pickByDelta(r, 'P', .45), 'P', 1, e.days)] },
-  call_spread: { n: '牛市看涨价差 Bull Call Spread', d: '买低卖高认购，降低权利金成本，适合 IV 偏高时的温和看多', build: (r, e) => [leg(pickByDelta(r, 'C', .45), 'C', 1, e.days), leg(pickByDelta(r, 'C', .20), 'C', -1, e.days)] },
-  put_spread: { n: '熊市看跌价差 Bear Put Spread', d: '买高卖低认沽，降低成本的温和看空', build: (r, e) => [leg(pickByDelta(r, 'P', .45), 'P', 1, e.days), leg(pickByDelta(r, 'P', .20), 'P', -1, e.days)] },
-  short_put: { n: '卖出认沽 Short Put', d: '看不跌，收时间价值，下方需备足资金准备接货', build: (r, e, u) => [leg(pickByDelta(r, 'P', .30), 'P', -1, e.days)] },
-  covered_call: { n: '备兑开仓 Covered Call', d: '持有标的＋卖出虚值认购，增强收益、降低持仓成本，放弃大涨空间', build: (r, e, u) => [underLeg(u, 1), leg(pickByDelta(r, 'C', .30), 'C', -1, e.days)] },
-  butterfly: { n: '蝶式价差 Butterfly', d: '押注到期价钉在中心行权价附近，成本低、赔率高', build: (r, e) => [leg(pickByDelta(r, 'C', .35), 'C', 1, e.days), leg(pickByDelta(r, 'C', .50), 'C', -2, e.days), leg(pickByDelta(r, 'C', .65), 'C', 1, e.days)] },
+  short_strangle: { n: '卖出宽跨式 Short Strangle', d: '同时卖出虚值认购与虚值认沽，赚取双边时间价值，需承担两侧尾部风险', build: (r, e) => [leg(pickByDelta(r, 'C', .25), 'C', -1), leg(pickByDelta(r, 'P', .25), 'P', -1)] },
+  iron_condor: { n: '铁鹰式 Iron Condor', d: '卖宽跨式并买入更虚值的两翼作保护，风险有限、收益有限的做空波动率结构', build: (r, e) => [leg(pickByDelta(r, 'C', .25), 'C', -1), leg(pickByDelta(r, 'C', .10), 'C', 1), leg(pickByDelta(r, 'P', .25), 'P', -1), leg(pickByDelta(r, 'P', .10), 'P', 1)] },
+  short_straddle: { n: '卖出跨式 Short Straddle', d: '卖出平值认购＋认沽，时间价值收入最大，Gamma 风险也最大', build: (r, e) => [leg(pickByDelta(r, 'C', .50), 'C', -1), leg(pickByDelta(r, 'P', .50), 'P', -1)] },
+  long_straddle: { n: '买入跨式 Long Straddle', d: '买入平值认购＋认沽，做多波动率，需要标的大幅单边或波动率抬升', build: (r, e) => [leg(pickByDelta(r, 'C', .50), 'C', 1), leg(pickByDelta(r, 'P', .50), 'P', 1)] },
+  long_strangle: { n: '买入宽跨式 Long Strangle', d: '买入虚值认购＋认沽，成本低于跨式，需要更大波幅', build: (r, e) => [leg(pickByDelta(r, 'C', .25), 'C', 1), leg(pickByDelta(r, 'P', .25), 'P', 1)] },
+  bull_put: { n: '牛市看跌价差 Bull Put Spread', d: '卖出较高行权价认沽、买入较低行权价认沽，温和看多＋收时间价值，风险有限', build: (r, e) => [leg(pickByDelta(r, 'P', .35), 'P', -1), leg(pickByDelta(r, 'P', .15), 'P', 1)] },
+  bear_call: { n: '熊市看涨价差 Bear Call Spread', d: '卖出较低行权价认购、买入较高行权价认购，温和看空＋收时间价值，风险有限', build: (r, e) => [leg(pickByDelta(r, 'C', .35), 'C', -1), leg(pickByDelta(r, 'C', .15), 'C', 1)] },
+  long_call: { n: '买入认购 Long Call', d: '方向性做多，损失有限、收益无限，但需承受时间价值损耗与 IV 回落', build: (r, e) => [leg(pickByDelta(r, 'C', .45), 'C', 1)] },
+  long_put: { n: '买入认沽 Long Put', d: '方向性做空 / 组合保险，损失有限', build: (r, e) => [leg(pickByDelta(r, 'P', .45), 'P', 1)] },
+  call_spread: { n: '牛市看涨价差 Bull Call Spread', d: '买低卖高认购，降低权利金成本，适合 IV 偏高时的温和看多', build: (r, e) => [leg(pickByDelta(r, 'C', .45), 'C', 1), leg(pickByDelta(r, 'C', .20), 'C', -1)] },
+  put_spread: { n: '熊市看跌价差 Bear Put Spread', d: '买高卖低认沽，降低成本的温和看空', build: (r, e) => [leg(pickByDelta(r, 'P', .45), 'P', 1), leg(pickByDelta(r, 'P', .20), 'P', -1)] },
+  short_put: { n: '卖出认沽 Short Put', d: '看不跌，收时间价值，下方需备足资金准备接货', build: (r, e) => [leg(pickByDelta(r, 'P', .30), 'P', -1)] },
+  covered_call: { n: '备兑开仓 Covered Call', d: '持有 10000 份标的＋卖出虚值认购，增强收益、降低持仓成本，放弃大涨空间', build: (r, e, u) => [underLeg(u, 1), leg(pickByDelta(r, 'C', .30), 'C', -1, e.days)] },
+  butterfly: { n: '蝶式价差 Butterfly', d: '押注到期价钉在中心行权价附近，成本低、赔率高', build: (r, e) => [leg(pickByDelta(r, 'C', .35), 'C', 1), leg(pickByDelta(r, 'C', .50), 'C', -2), leg(pickByDelta(r, 'C', .65), 'C', 1)] },
   calendar: { n: '日历价差（卖近月买次月）', d: '期限结构倒挂时卖近月、买次月平值认购，赚取近月更快的时间价值衰减', build: (r, e, u) => { const nx = u.expiries.find(x => x.days > e.days); if (!nx) return []; return [leg(pickByDelta(r, 'C', .50), 'C', -1, e.days), leg(pickByDelta(nx.byStrike, 'C', .50), 'C', 1, nx.days)] } },
 }
 export function buildLegs(u, e, key) {
@@ -138,7 +150,7 @@ export function buildLegs(u, e, key) {
   return legs
 }
 export function legLabel(l) {
-  if (l.type === 'S') return (l.qty > 0 ? '买入' : '卖出') + ' 标的 ' + Math.abs(l.qty) * (l.mult || 10000) + ' 份 @' + fmt(l.px, 3)
+  if (l.type === 'S') return (l.qty > 0 ? '买入' : '卖出') + ' 标的 ' + Math.abs(l.qty) * MULT + ' 份 @' + fmt(l.px, 3)
   return (l.qty > 0 ? '买入' : '卖出') + ' ' + Math.abs(l.qty) + ' 张 ' + (l.type === 'C' ? '认购' : '认沽') + ' ' + fmt(l.K, 3) + ' @' + fmt(l.px, 4)
 }
 export function legValue(l, s, tEvalDays) {
@@ -146,134 +158,4 @@ export function legValue(l, s, tEvalDays) {
   const rem = (l.t - tEvalDays) / 365
   if (rem <= 1e-6) return l.type === 'C' ? Math.max(0, s - l.K) : Math.max(0, l.K - s)
   return bs(s, l.K, rem, l.iv, l.type)
-}
-
-/* ===== 隐波规律（基于 vixs.csv 价格序列动态计算 HV） ===== */
-export function acf(a, lag) {
-  const n = a.length; if (n <= lag) return 0
-  const m = a.reduce((x, y) => x + y, 0) / n
-  let cov = 0, varr = 0
-  for (let i = lag; i < n; i++) cov += (a[i] - m) * (a[i - lag] - m)
-  for (let i = 0; i < n; i++) varr += (a[i] - m) ** 2
-  return varr ? cov / varr : 0
-}
-export function quantile(sortedArr, p) {
-  if (!sortedArr.length) return null
-  const idx = Math.min(sortedArr.length - 1, Math.max(0, Math.round(p * (sortedArr.length - 1))))
-  return sortedArr[idx]
-}
-export function buildLineSvg(series, opt) {
-  const W = 920, H = 360, padL = 58, padR = 18, padT = 24, padB = 34
-  const n = series.length
-  const maxV = opt.max || Math.max(...series.map(s => s.v), 1) * 1.05
-  const yOf = v => padT + (1 - v / maxV) * (H - padT - padB)
-  const xOf = i => padL + (n <= 1 ? 0 : i / (n - 1) * (W - padL - padR))
-  let g = `<rect width="${W}" height="${H}" fill="#fff"/>`
-  for (let v = 0; v <= maxV; v += 25) {
-    const y = yOf(v); g += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#eef1f6"/>`
-    g += `<text x="${padL - 8}" y="${(y + 4).toFixed(1)}" font-size="11" fill="#8a94a6" text-anchor="end">${v}</text>`
-  }
-  if (opt.center != null) {
-    const yc = yOf(opt.center)
-    g += `<line x1="${padL}" y1="${yc.toFixed(1)}" x2="${W - padR}" y2="${yc.toFixed(1)}" stroke="#e8453c" stroke-dasharray="5 4" stroke-width="1" opacity="0.7"/>`
-  }
-  const step = Math.max(1, Math.floor(n / 12))
-  for (let i = 0; i < n; i += step) {
-    const x = xOf(i)
-    g += `<text x="${x.toFixed(1)}" y="${H - 12}" font-size="11" fill="#8a94a6" text-anchor="middle">${series[i].label}</text>`
-  }
-  const pts = series.map((s, i) => `${xOf(i).toFixed(1)},${yOf(s.v).toFixed(1)}`).join(' ')
-  g += `<polyline points="${pts}" fill="none" stroke="#e8453c" stroke-width="2"/>`
-  g += `<text x="${padL}" y="16" font-size="12" fill="#5a6472">年化 HV（%）</text>`
-  return { viewBox: `0 0 ${W} ${H}`, svg: g }
-}
-export function buildBarSvg(yearly, opt) {
-  const W = 920, H = 300, padL = 58, padR = 18, padT = 24, padB = 38
-  const maxV = opt.max || Math.max(...yearly.map(y => y.v), 1) * 1.1
-  const yOf = v => padT + (1 - v / maxV) * (H - padT - padB)
-  let g = `<rect width="${W}" height="${H}" fill="#fff"/>`
-  for (let v = 0; v <= maxV; v += 25) {
-    const y = yOf(v); g += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#eef1f6"/>`
-    g += `<text x="${padL - 8}" y="${(y + 4).toFixed(1)}" font-size="11" fill="#8a94a6" text-anchor="end">${v}</text>`
-  }
-  const n = yearly.length, bw = (W - padL - padR) / n * 0.62, gap = (W - padL - padR) / n
-  yearly.forEach((y, i) => {
-    const x = padL + i * gap + (gap - bw) / 2
-    const h = (H - padB) - yOf(y.v), yy = yOf(y.v)
-    const col = y.v >= 70 ? '#e8453c' : (y.v >= 40 ? '#f0a830' : '#3a9d6b')
-    g += `<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}" rx="2"/>`
-    g += `<text x="${(x + bw / 2).toFixed(1)}" y="${(yy - 5).toFixed(1)}" font-size="11" fill="#5a6472" text-anchor="middle">${y.v.toFixed(1)}</text>`
-    g += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 14}" font-size="11" fill="#8a94a6" text-anchor="middle">${y.year}</text>`
-  })
-  g += `<text x="${padL}" y="16" font-size="12" fill="#5a6472">年度年化 HV（%）</text>`
-  return { viewBox: `0 0 ${W} ${H}`, svg: g }
-}
-export function computeIVRules(ivHistStore, selU) {
-  const out = { loading: true, code: '', nDays: 0, kpi: {}, dist: {}, monthlySvg: null, yearlySvg: null }
-  try {
-    const codes = Object.keys(ivHistStore)
-    let code = (selU && ivHistStore[selU] && ivHistStore[selU].length >= 30)
-      ? selU
-      : codes.sort((a, b) => (ivHistStore[b] || []).length - (ivHistStore[a] || []).length)[0] || ''
-    if (!code || !ivHistStore[code] || ivHistStore[code].length < 30) { out.loading = false; out.code = code; return out }
-    const ser = ivHistStore[code].slice().sort((a, b) => a.d < b.d ? -1 : 1)
-    const rets = []
-    for (let i = 1; i < ser.length; i++) {
-      const p = +ser[i - 1].v, c = +ser[i].v
-      if (p > 0 && c > 0) rets.push({ d: ser[i].d, r: c / p - 1 })
-    }
-    const n = rets.length
-    if (n < 30) { out.loading = false; out.code = code; return out }
-    const SQRT242 = Math.sqrt(242)
-    const absr = rets.map(x => Math.abs(x.r))
-    const hvDaily = absr.map(x => x * SQRT242 * 100)
-    const meanHV = hvDaily.reduce((a, b) => a + b, 0) / n
-    const hvSorted = hvDaily.slice().sort((a, b) => a - b)
-    const medHV = quantile(hvSorted, 0.5)
-    const lag1 = acf(absr, 1), lag5 = acf(absr, 5), lag20 = acf(absr, 20)
-    const idxByAbs = absr.map((v, i) => i).sort((i, j) => absr[j] - absr[i])
-    const topRet = idxByAbs.slice(0, 30).reduce((s, i) => s + rets[i].r, 0) / 30 * 100
-    const byMonth = {}
-    rets.forEach((x, i) => { const ym = x.d.slice(0, 7); (byMonth[ym] = byMonth[ym] || []).push(hvDaily[i]) })
-    const byMonthClose = {}
-    ser.forEach((s, i) => { const ym = s.d.slice(0, 7); (byMonthClose[ym] = byMonthClose[ym] || []).push(+s.v) })
-    let upHV = [], dnHV = []
-    Object.keys(byMonth).forEach(ym => {
-      const cls = byMonthClose[ym]; if (!cls || cls.length < 15) return
-      const chg = (cls[cls.length - 1] / cls[0] - 1)
-      const avg = byMonth[ym].reduce((a, b) => a + b, 0) / byMonth[ym].length
-      if (chg > 0.03) upHV.push(avg); else if (chg < -0.03) dnHV.push(avg)
-    })
-    const monthly = Object.keys(byMonth).sort().map(ym => ({
-      label: ym.slice(0, 4), v: byMonth[ym].reduce((a, b) => a + b, 0) / byMonth[ym].length
-    }))
-    const monthlyV = monthly.map(m => m.v)
-    const phi = monthlyV.length > 3 ? acf(monthlyV, 1) : 0
-    const halfLife = (phi > 0 && phi < 1) ? Math.log(0.5) / Math.log(phi) : NaN
-    const byYear = {}
-    rets.forEach((x, i) => { const y = x.d.slice(0, 4); (byYear[y] = byYear[y] || []).push(hvDaily[i]) })
-    const yearly = Object.keys(byYear).sort().map(y => ({ year: y, v: byYear[y].reduce((a, b) => a + b, 0) / byYear[y].length }))
-    const dist = { p5: quantile(hvSorted, 0.05), p10: quantile(hvSorted, 0.10), p25: quantile(hvSorted, 0.25),
-      p50: quantile(hvSorted, 0.50), p75: quantile(hvSorted, 0.75), p90: quantile(hvSorted, 0.90),
-      p95: quantile(hvSorted, 0.95), p99: quantile(hvSorted, 0.99) }
-    out.code = code; out.nDays = ser.length
-    out.kpi = { meanHV, medHV, lag1, lag5, lag20, phi, halfLife: isNaN(halfLife) ? 0 : halfLife, topRet,
-      upHV: upHV.length ? upHV.reduce((a, b) => a + b, 0) / upHV.length : 0,
-      dnHV: dnHV.length ? dnHV.reduce((a, b) => a + b, 0) / dnHV.length : 0 }
-    out.dist = dist
-    let lastY = ''
-    const mLabels = monthly.map(m => { const yy = m.label.slice(0, 4); if (yy !== lastY) { lastY = yy; return yy } return '' })
-    out.monthlySvg = buildLineSvg(monthly.map((m, i) => ({ label: mLabels[i], v: m.v })), {
-      max: Math.ceil(Math.max(...monthly.map(m => m.v), 100) / 25) * 25, center: meanHV })
-    out.yearlySvg = buildBarSvg(yearly, { max: Math.ceil(Math.max(...yearly.map(y => y.v), 100) / 25) * 25 })
-    out.loading = false
-  } catch (e) { out.loading = false; console.error('computeIVRules error', e) }
-  return out
-}
-
-/* ===== 信号行格式化 ===== */
-export function sigRow(x, col) {
-  const s = x.s; const w = s == null ? 0 : Math.abs(s) / 2
-  const c = s == null ? '#ccc' : (col === 'dir' ? (s > 0 ? C_UP : C_DN) : (s < 0 ? C_PUR : C_WARN))
-  return { n: x.n, v: x.v, w: x.w, tip: x.t, sLabel: s == null ? '—' : sign(s) + fmt(s, 0), barW: w, color: c }
 }

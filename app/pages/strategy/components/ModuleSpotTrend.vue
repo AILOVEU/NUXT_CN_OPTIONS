@@ -1,26 +1,37 @@
 <template>
-  <ChartCard v-if="u" title="标的历史走势" :desc="`窗口 ${hist.length} 个交易日｜当前 ${fmt(u.spot,3)}｜区间涨跌 ${sign(u.ret*100)}${fmt(u.ret*100,1)}%`">
-    <VChart v-if="opt" :option="opt" autoresize />
-  </ChartCard>
+  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>标的近期走势与波动</div>
+    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">近 17 个交易日日线（红涨绿跌）与成交量</div>
+    <VChart :option="spotOpt" autoresize class="chart" />
+  </div>
 </template>
+
 <script setup>
 import { computed } from 'vue'
-import VChart from 'vue-echarts'
-import ChartCard from './ChartCard.vue'
-import { BASE_OPT, AXIS, fmt, sign } from './lib'
-const props = defineProps({ u: { type: Object, default: null }, hist: { type: Array, default: () => [] } })
-const opt = computed(() => {
-  const h = props.hist; if (!h || !h.length) return null
-  return {
-    ...BASE_OPT,
-    xAxis: { type: 'category', data: h.map(x => x.d.slice(5)), boundaryGap: false, ...AXIS },
-    yAxis: { type: 'value', scale: true, ...AXIS },
+import { AXIS, BASE_OPT, C_UP, C_DN, C_WARN } from './lib'
+
+const props = defineProps({
+  u: { type: Object, default: null },
+})
+const U = computed(() => props.u)
+
+const spotOpt = computed(() => {
+  const u = U.value; if (!u || !u.hv.closes || !u.hv.closes.length) return { title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
+  const cs = u.hv.closes
+  return Object.assign({}, BASE_OPT, {
+    grid: { left: 52, right: 56, top: 26, bottom: 34 }, legend: { show: false },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 } },
+    xAxis: Object.assign({ type: 'category', data: cs.map(x => x.d), axisLabel: { fontSize: 10, rotate: 35, interval: 0 } }, AXIS),
+    yAxis: [Object.assign({ type: 'value', scale: true, name: '价格' }, AXIS), Object.assign({ type: 'value', position: 'right', splitLine: { show: false }, show: false }, AXIS)],
     series: [
-      { name: '收盘', type: 'line', smooth: true, symbol: 'none', data: h.map(x => +x.s.toFixed(3)),
-        lineStyle: { width: 2, color: '#1f2329' }, areaStyle: { color: 'rgba(31,35,41,.05)' } },
-      ...(h.some(x => x.ma5 != null) ? [{ name: 'MA5', type: 'line', smooth: true, symbol: 'none', data: h.map(x => x.ma5 == null ? null : +x.ma5.toFixed(3)), lineStyle: { width: 1.4, color: '#7a5af8' }, itemStyle: { color: '#7a5af8' } }] : []),
-      ...(h.some(x => x.ma10 != null) ? [{ name: 'MA10', type: 'line', smooth: true, symbol: 'none', data: h.map(x => x.ma10 == null ? null : +x.ma10.toFixed(3)), lineStyle: { width: 1.4, color: '#2f6feb' }, itemStyle: { color: '#2f6feb' } }] : []),
+      { name: '成交量', type: 'bar', yAxisIndex: 1, data: cs.map(x => x.v), itemStyle: { color: (p) => { const i = p.dataIndex; return (i > 0 && cs[i].c >= cs[i - 1].c) ? 'rgba(224,32,32,.20)' : 'rgba(18,160,92,.20)' } } },
+      { name: 'K线', type: 'candlestick', data: cs.map(x => [x.o, x.c, x.l, x.h]), itemStyle: { color: C_UP, color0: '#fff', borderColor: C_UP, borderColor0: C_DN } },
+      { name: 'MA5', type: 'line', data: cs.map((_, i) => i < 4 ? null : +(cs.slice(i - 4, i + 1).reduce((a, b) => a + b.c, 0) / 5).toFixed(4)), symbol: 'none', lineStyle: { width: 1.4, color: C_WARN } },
     ],
-  }
+  })
 })
 </script>
+
+<style scoped>
+.chart { width: 100%; height: 290px }
+</style>

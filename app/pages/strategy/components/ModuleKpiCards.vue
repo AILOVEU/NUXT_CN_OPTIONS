@@ -1,30 +1,36 @@
 <template>
-  <div v-if="u && u.expiries && u.expiries.length && e" class="grid grid-cols-4 gap-3.5">
-    <div v-for="(c,i) in cards" :key="i" class="rounded-[9px] border border-[#e3e6ea] bg-white p-[11px_13px]">
-      <div class="text-[11.5px] text-[#8f95a1]">{{ c[0] }}</div>
+  <div class="mt-3.5 grid grid-cols-4 gap-3.5" v-if="kpiCards.length">
+    <div v-for="(c, i) in kpiCards" :key="i" class="rounded-[9px] border border-[#e3e6ea] bg-white p-[11px_13px]">
+      <div class="flex items-center justify-between text-[11.5px] text-[#8f95a1]"><span>{{ c[0] }}</span></div>
       <div class="mt-0.5 text-[20px] font-[650] tabular-nums tracking-[-.5px]" :class="c[3]">{{ c[1] }}</div>
       <div class="mt-px text-[11px] text-[#8f95a1]">{{ c[2] }}</div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { computed } from 'vue'
-import { fmt, sign, wan, clamp } from './lib'
-const props = defineProps({ u: { type: Object, default: null }, e: { type: Object, default: null } })
-const cards = computed(() => {
-  const u = props.u, e = props.e, h = u.hv || {}
-  const exp = u.expiries[u.expiries.length-1]
-  const termSlope = (exp.atmIV - e.atmIV) / e.atmIV
-  const vrp = e.atmIV - (0.6*(h.rv5||h.hvRV||h.hvPark||0) + 0.4*(h.hvBlend||h.hvPark||0))
+import { fmt, sign, wan, hvFair } from './lib'
+
+const props = defineProps({
+  u: { type: Object, default: null },
+  e: { type: Object, default: null },
+})
+const U = computed(() => props.u)
+const E = computed(() => props.e)
+
+const kpiCards = computed(() => {
+  const u = U.value, e = E.value; if (!u || !e) return []
+  const h = u.hv || {}, hf = hvFair(u), vrp = e.atmIV - hf
   return [
-    ['当前价 / MA', fmt(u.spot,3), '距 MA10 ' + sign((u.spot/(h.ma10||u.spot)-1)*100) + fmt((u.spot/(h.ma10||u.spot)-1)*100,1) + '%', 'text-[#1f2329]'],
-    ['HV(20) / IV(ATM)', fmt(h.hv20,1) + ' / ' + fmt(e.atmIV,1), 'IV-HV(隐含-实现) ' + sign(vrp) + fmt(vrp,1) + 'pt', vrp>0?'text-[#e02020]':'text-[#12a05c]'],
-    ['IV 历史分位', (u.ivPct?fmt(u.ivPct.pct,0):'-') + '%', '近1年 ' + (u.ivPct?u.ivPct.basis:0) + ' 样本', (u.ivPct&&u.ivPct.pct>=75)?'text-[#e02020]':(u.ivPct&&u.ivPct.pct>=50)?'text-[#f5a623]':'text-[#12a05c]'],
-    ['期限结构', fmt(e.atmIV,1) + '→' + fmt(exp.atmIV,1), sign(termSlope*100) + fmt(termSlope*100,1) + '%', termSlope>0?'text-[#12a05c]':'text-[#e02020]'],
-    ['PCR(持仓/成交)', fmt(e.pcr,2) + ' / ' + fmt(e.volPCR,2), '看跌/看涨比', e.pcr>1?'text-[#12a05c]':'text-[#e02020]'],
-    ['ΔPCR', fmt(e.deltaPCR,2), '虚值认沽偏度', 'text-[#1f2329]'],
-    ['最大痛点', fmt(e.maxPain,3), '到期引力 ' + sign((e.maxPain/u.spot-1)*100) + fmt((e.maxPain/u.spot-1)*100,1) + '%', 'text-[#1f2329]'],
-    ['GEX 净', wan(e.gex) + ' (×1e8)', '零界 ' + fmt(e.zeroG,3), e.gex<0?'text-[#e02020]':'text-[#12a05c]'],
+    ['标的现价', fmt(u.spot, 3), `近17日 ${sign(h.ret17 || 0)}${fmt(h.ret17 || 0, 2)}%`, (h.ret17 || 0) >= 0 ? 'up' : 'dn'],
+    ['平值 IV', fmt(e.atmIV, 2), `平值行权价 ${fmt(e.atmK, 3)}`, ''],
+    ['IV 历史分位', u.ivPct ? fmt(u.ivPct.pct, 0) + '%' : '—', u.ivPct ? `中位 ${fmt(u.ivPct.median, 1)} / 区间 ${fmt(u.ivPct.min, 0)}~${fmt(u.ivPct.max, 0)}` : '该标的无 IV 历史', u.ivPct && u.ivPct.pct > 80 ? 'up' : ''],
+    ['预期实现波动率', fmt(hf, 2), `近5日RV ${fmt(h.rv5 || 0, 1)} · 17日综合 ${fmt(h.hvBlend || 0, 1)}`, ''],
+    ['波动率风险溢价', sign(vrp) + fmt(vrp, 2), vrp > 0 ? 'IV 贵于实现波动率，利于卖方' : 'IV 低于实现波动率，卖方无安全垫', vrp > 0 ? 'up' : 'dn'],
+    ['持仓量 PCR', fmt(e.oiPCR, 2), `认购 ${wan(e.callOI)} / 认沽 ${wan(e.putOI)}`, ''],
+    ['最大痛点', fmt(e.maxPain, 3), `偏离现价 ${sign((e.maxPain / u.spot - 1) * 100)}${fmt((e.maxPain / u.spot - 1) * 100, 2)}%`, e.maxPain > u.spot ? 'up' : 'dn'],
+    ['净 Gamma 敞口', wan(e.netGex), e.netGex > 0 ? '做市商多 Gamma → 抑制波动' : '做市商空 Gamma → 放大波动', e.netGex > 0 ? 'dn' : 'up'],
   ]
 })
 </script>

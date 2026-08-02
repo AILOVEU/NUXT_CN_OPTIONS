@@ -1,28 +1,44 @@
 <template>
-  <ChartCard title="波动率象限图" :desc="`横轴＝IV 历史分位，纵轴＝VRP；右上待回调、左下可持有、左上做多波动、右下卖波动`">
-    <VChart v-if="opt" :option="opt" autoresize />
-  </ChartCard>
+  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#7a5af8]"></span>策略象限图</div>
+    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">横轴方向评分、纵轴波动率评分，六个标的所处象限决定策略类型</div>
+    <VChart :option="quadOpt" autoresize class="chart tall" />
+  </div>
 </template>
+
 <script setup>
 import { computed } from 'vue'
-import VChart from 'vue-echarts'
-import ChartCard from './ChartCard.vue'
-import { BASE_OPT, AXIS, fmt } from './lib'
-const props = defineProps({ underlyings: { type: Array, default: () => [] } })
-const opt = computed(() => {
-  const us = props.underlyings; if (!us || !us.length) return null
-  const pts = us.map(u => ({ name: u.NAME, v: [(u.ivPct ? u.ivPct.pct : 0), +(u.expiries[0].atmIV - u.hv.hvBlend).toFixed(1)] }))
-  return {
-    ...BASE_OPT,
-    grid: { left: 56, right: 30, top: 40, bottom: 46 },
-    xAxis: { type: 'value', name: 'IV 分位 %', min: 0, max: 100, ...AXIS },
-    yAxis: { type: 'value', name: 'VRP (IV-HV)', ...AXIS },
-    series: [{
-      type: 'scatter', symbolSize: 16, data: pts.map(p => ({ name: p.name, value: p.v })),
-      label: { show: true, position: 'right', fontSize: 10, color: '#1f2329', formatter: p => p.name },
-      itemStyle: { color: p => (p.value[0] >= 75 ? '#e02020' : p.value[0] >= 50 ? '#f5a623' : p.value[0] >= 25 ? '#3a9d6b' : '#2f6feb') },
-      markLine: { silent: true, symbol: 'none', lineStyle: { color: '#c9cfd8', type: 'dashed' }, data: [{ xAxis: 50 }, { yAxis: 0 }] },
-    }],
-  }
+import { AXIS, BASE_OPT, C_ACC, fmt, sign, scoreDir, scoreVol } from './lib'
+
+const props = defineProps({
+  underlyings: { type: Array, default: () => [] },
+  selU: { type: String, default: null },
+})
+
+const quadOpt = computed(() => {
+  const pts = props.underlyings.map(u => {
+    const e = u.expiries[0], d = scoreDir(u, e), v = scoreVol(u, e)
+    return { name: u.short, value: [+fmt(d.score, 1), +fmt(v.score, 1)], cur: u.code === props.selU }
+  })
+  const label = (x, y, t, c) => ({ type: 'scatter', data: [{ value: [x, y] }], symbolSize: 1, silent: true, label: { show: true, formatter: t, fontSize: 11, color: c, fontWeight: 600 }, tooltip: { show: false } })
+  return Object.assign({}, BASE_OPT, {
+    grid: { left: 56, right: 30, top: 26, bottom: 40 }, legend: { show: false },
+    tooltip: { trigger: 'item', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 },
+      formatter: p => `<b>${p.data.name}</b><br>方向 ${sign(p.value[0])}${p.value[0]}<br>波动率 ${sign(p.value[1])}${p.value[1]}` },
+    xAxis: Object.assign({ type: 'value', name: '方向评分（→ 看多）', min: -100, max: 100, splitLine: { lineStyle: { color: '#f2f4f7' } } }, AXIS),
+    yAxis: Object.assign({ type: 'value', name: '波动率评分（↑ 做多波动率）', min: -100, max: 100, splitLine: { lineStyle: { color: '#f2f4f7' } } }, AXIS),
+    series: [
+      label(-58, 72, '买入认沽', '#b9bfc9'), label(58, 72, '买入认购', '#b9bfc9'), label(-58, -72, '熊市看涨价差', '#b9bfc9'),
+      label(58, -72, '牛市看跌价差', '#b9bfc9'), label(0, -88, '卖出宽跨 / 铁鹰', '#b9bfc9'), label(0, 88, '买入跨式', '#b9bfc9'),
+      { type: 'scatter', data: pts, symbolSize: p => p.data && p.data.cur ? 22 : 14, itemStyle: { color: p => p.data.cur ? C_ACC : 'rgba(122,90,248,.55)', borderColor: '#fff', borderWidth: 2 },
+        label: { show: true, position: 'right', formatter: p => p.data.name, fontSize: 11, color: '#5f6672' },
+        markLine: { silent: true, symbol: 'none', lineStyle: { color: '#d8dce2' }, data: [{ xAxis: 0 }, { yAxis: 0 }] } },
+    ],
+  })
 })
 </script>
+
+<style scoped>
+.chart { width: 100%; height: 290px }
+.chart.tall { height: 360px }
+</style>

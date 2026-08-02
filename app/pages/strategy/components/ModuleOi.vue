@@ -1,25 +1,42 @@
 <template>
-  <ChartCard v-if="e" title="持仓量 OI 分布" :desc="`到期日 ${e.label}｜总 OI ${wan(e.totalOI)}｜Put/Call OI ${fmt(e.pcOI,2)}`">
-    <VChart v-if="opt" :option="opt" autoresize />
-  </ChartCard>
+  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#f5a623]"></span>持仓量分布与最大痛点</div>
+    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">认购向右、认沽向左；黄线为到期日全市场买方总亏损（最大痛点＝亏损最小处）</div>
+    <VChart :option="oiOpt" autoresize class="chart tall" />
+  </div>
 </template>
+
 <script setup>
 import { computed } from 'vue'
-import VChart from 'vue-echarts'
-import ChartCard from './ChartCard.vue'
-import { BASE_OPT, AXIS, wan, fmt } from './lib'
-const props = defineProps({ e: { type: Object, default: null } })
-const opt = computed(() => {
-  const e = props.e; if (!e || !e.byStrike) return null
-  const rows = e.byStrike
-  return {
-    ...BASE_OPT,
-    xAxis: { type: 'category', data: rows.map(r => r.K), name: '行权价', ...AXIS },
-    yAxis: { type: 'value', name: 'OI（张）', ...AXIS },
+import { AXIS, BASE_OPT, C_UP, C_DN, C_WARN, fmt } from './lib'
+
+const props = defineProps({
+  e: { type: Object, default: null },
+})
+const E = computed(() => props.e)
+
+const oiOpt = computed(() => {
+  if (!E.value) return {}
+  const ks = E.value.byStrike.map(b => b.K)
+  const pain = E.value.painCurve.map(p => +(p.pain / 1e8).toFixed(2))
+  return Object.assign({}, BASE_OPT, {
+    grid: { left: 56, right: 64, top: 34, bottom: 44 },
+    legend: { top: 2, data: ['认购持仓', '认沽持仓', '买方总亏损（亿）'], textStyle: { color: '#5f6672', fontSize: 11 } },
+    xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
+    yAxis: [Object.assign({ type: 'value', name: '持仓量（张）', axisLabel: { color: '#8f95a1', fontSize: 10, formatter: v => Math.abs(v) >= 1e4 ? (Math.abs(v) / 1e4).toFixed(0) + '万' : Math.abs(v) } }, AXIS),
+      Object.assign({ type: 'value', name: '亏损（亿）', position: 'right', splitLine: { show: false }, axisLabel: { fontSize: 10 } }, AXIS)],
+    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
     series: [
-      { name: '认购 OI', type: 'bar', stack: 'oi', data: rows.map(r => r.cOI || 0), itemStyle: { color: '#e02020' } },
-      { name: '认沽 OI', type: 'bar', stack: 'oi', data: rows.map(r => r.pOI || 0), itemStyle: { color: '#12a05c' } },
+      { name: '认购持仓', type: 'bar', data: E.value.byStrike.map(b => b.cOI), itemStyle: { color: C_UP, opacity: .8 }, barGap: '15%', barWidth: '38%', tooltip: { valueFormatter: v => v } },
+      { name: '认沽持仓', type: 'bar', data: E.value.byStrike.map(b => b.pOI), itemStyle: { color: C_DN, opacity: .8 }, barWidth: '38%' },
+      { name: '买方总亏损（亿）', type: 'line', yAxisIndex: 1, data: pain, symbol: 'none', lineStyle: { color: C_WARN, width: 2 }, tooltip: { valueFormatter: v => fmt(v, 1) + '亿' },
+        markLine: { silent: true, symbol: 'none', label: { formatter: '最大痛点 ' + E.value.maxPain, position: 'insideEndTop', color: C_WARN, fontSize: 10 }, lineStyle: { color: C_WARN, type: 'dotted', width: 1.5 }, data: [{ xAxis: ks.indexOf(E.value.maxPain) }] } },
     ],
-  }
+  })
 })
 </script>
+
+<style scoped>
+.chart { width: 100%; height: 290px }
+.chart.tall { height: 360px }
+</style>

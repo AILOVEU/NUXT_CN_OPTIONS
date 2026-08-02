@@ -1,26 +1,36 @@
 <template>
-  <ChartCard v-if="u && u.expiries && u.expiries.length" title="波动率期限结构" :desc="`近月 ATM IV ${fmt(u.expiries[0].atmIV,1)} → 远月 ${fmt(u.expiries[u.expiries.length-1].atmIV,1)}｜结构${u.termSlope>0?'近低远高(Contango)':'近高远低(倒挂)'}`">
-    <VChart v-if="opt" :option="opt" autoresize />
-  </ChartCard>
+  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>波动率期限结构</div>
+    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">近月高于远月＝倒挂（市场紧张，近月贵）；反之为正向（Contango）</div>
+    <VChart :option="termOpt" autoresize class="chart" />
+  </div>
 </template>
+
 <script setup>
 import { computed } from 'vue'
-import VChart from 'vue-echarts'
-import ChartCard from './ChartCard.vue'
-import { BASE_OPT, AXIS, fmt } from './lib'
-const props = defineProps({ u: { type: Object, default: null } })
-const opt = computed(() => {
-  const u = props.u; if (!u || !u.expiries || !u.expiries.length) return null
-  return {
-    ...BASE_OPT,
-    xAxis: { type: 'category', data: u.expiries.map(e => e.label), ...AXIS },
-    yAxis: { type: 'value', name: 'IV %', ...AXIS },
+import { AXIS, BASE_OPT, C_UP, C_DN, C_ACC, fmt } from './lib'
+
+const props = defineProps({
+  u: { type: Object, default: null },
+})
+const U = computed(() => props.u)
+
+const termOpt = computed(() => {
+  if (!U.value) return {}
+  const xs = U.value.expiries.map(e => e.days + '天')
+  return Object.assign({}, BASE_OPT, {
+    legend: { top: 2, data: ['平值 IV', '25Δ 认购 IV', '25Δ 认沽 IV'], textStyle: { color: '#5f6672', fontSize: 11 } },
+    xAxis: Object.assign({ type: 'category', data: xs, name: '剩余期限' }, AXIS),
+    yAxis: Object.assign({ type: 'value', name: 'IV %', scale: true }, AXIS),
     series: [
-      { name: 'ATM IV', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, data: u.expiries.map(e => +e.atmIV.toFixed(2)),
-        lineStyle: { width: 2.5, color: '#2f6feb' }, itemStyle: { color: '#2f6feb' }, areaStyle: { color: 'rgba(47,111,235,.08)' } },
-      { name: 'IVxHV(偏高判据)', type: 'line', smooth: true, symbol: 'none', data: u.expiries.map(e => +e.ivxhv.toFixed(2)),
-        lineStyle: { width: 1.6, color: '#e02020', type: 'dashed' }, itemStyle: { color: '#e02020' } },
+      { name: '平值 IV', type: 'line', data: U.value.expiries.map(e => +fmt(e.atmIV, 2)), symbolSize: 8, lineStyle: { width: 3, color: C_ACC }, itemStyle: { color: C_ACC }, label: { show: true, color: '#5f6672', fontSize: 11, formatter: '{c}' }, areaStyle: { color: 'rgba(47,111,235,.07)' } },
+      { name: '25Δ 认购 IV', type: 'line', data: U.value.expiries.map(e => +fmt(e.ivc25, 2)), symbolSize: 5, lineStyle: { width: 1.6, color: C_UP, type: 'dashed' }, itemStyle: { color: C_UP } },
+      { name: '25Δ 认沽 IV', type: 'line', data: U.value.expiries.map(e => +fmt(e.ivp25, 2)), symbolSize: 5, lineStyle: { width: 1.6, color: C_DN, type: 'dashed' }, itemStyle: { color: C_DN } },
     ],
-  }
+  })
 })
 </script>
+
+<style scoped>
+.chart { width: 100%; height: 290px }
+</style>
