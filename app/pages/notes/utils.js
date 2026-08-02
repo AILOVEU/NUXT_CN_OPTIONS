@@ -10,7 +10,7 @@ export function useEtfData() {
       loading.value = true
       error.value = ''
       try {
-        const res = await fetch(`/etf-data/${date}.json`)
+        const res = await fetch(`/etf-1min-data/${date}.json`)
         if (!res.ok) throw new Error('数据不存在')
         dailyData.value = await res.json()
         currentDate.value = date
@@ -26,7 +26,7 @@ export function useEtfData() {
     // 加载笔记
     async function loadNote(date) {
       try {
-        const res = await fetch('/etf-data/notes.json')
+        const res = await fetch('/etf-1min-data/notes.json')
         const notes = await res.json()
         noteText.value = notes[date] || ''
       } catch {
