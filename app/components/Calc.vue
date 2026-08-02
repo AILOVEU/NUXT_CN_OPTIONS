@@ -235,12 +235,208 @@ function updateChartData() {
     const data = generateLineData(range);
 
     chartInstance.setOption({
-        series: [
-            { data: data.map((item) => [item[0], item[1]]) },
-            { data: data.map((item) => [item[0], item[2]]) },
-            { data: data.map((item) => [item[0], item[3]]) },
-        ],
+        series: buildSeries(data),
     });
+}
+
+// 获取当前横轴变量对应的输入值（作为 x 点位）
+function getCurrentX() {
+    switch (selectedAxis.value) {
+        case "days": return params.daysToExpire;
+        case "strike": return params.strikePrice;
+        case "spot": return params.spotPrice;
+        case "vol": return params.impliedVol;
+        default: return null;
+    }
+}
+
+// 构建曲线 series，并在“当前输入点位”上标记 x（竖线）与各价值 y 点
+function buildSeries(data) {
+    const xVal = getCurrentX();
+    if (xVal === null) return [];
+    const res = calcValue(
+        params.spotPrice,
+        params.strikePrice,
+        params.daysToExpire,
+        params.impliedVol,
+        params.riskFreeRate,
+        params.optionType
+    );
+
+    // 在“期权总价格”曲线上寻找 ≈ 当前价 2 倍的点（用于标记翻倍位置）
+    const twiceTarget = res.premium * 2;
+    let twicePoint = null;
+    if (data.length) {
+        const ys = data.map((d) => d[1]);
+        const yMin = Math.min(...ys);
+        const yMax = Math.max(...ys);
+        // 仅当目标值落在曲线 y 范围内才标记，避免误标
+        if (twiceTarget >= yMin && twiceTarget <= yMax) {
+            let bestDiff = Infinity;
+            for (const d of data) {
+                const diff = Math.abs(d[1] - twiceTarget);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    twicePoint = d;
+                }
+            }
+        }
+    }
+
+    // 在当前 x 处、给定 y 值上打一个标记点，并显示数值
+    const mkMarkPoint = (y, labelOffset) => ({
+        symbol: "circle",
+        symbolSize: 7,
+        itemStyle: { color: "auto" },
+        labelLayout: { moveOverlap: "shiftY" },
+        label: {
+            show: true,
+            formatter: (p) => Number(p.value).toFixed(4),
+            position: "right",
+            offset: labelOffset,
+            fontSize: 10,
+            color: "#334155",
+            backgroundColor: "rgba(255,255,255,0.85)",
+            padding: [2, 3],
+            borderRadius: 3,
+        },
+        data: [{ coord: [xVal, y], value: y }],
+    });
+
+    // 贯穿 x 轴的虚线：当前输入点位 + （若存在）约 2 倍点的 x 点位
+    const axisNameMap = { days: "到期天数", strike: "行权价", spot: "正股价格", vol: "隐含波动率" };
+    const axisName = axisNameMap[selectedAxis.value] || "x";
+    const currentLine = {
+        symbol: "none",
+        lineStyle: { type: "dashed", color: "#64748b", width: 1.5 },
+        label: { show: false },
+        data: [
+            {
+                xAxis: xVal,
+                label: {
+                    show: true,
+                    formatter: () => `当前输入 ${axisName} ${Number(xVal).toFixed(3)}`,
+                    position: "end",
+                    color: "#64748b",
+                    fontSize: 12,
+                },
+            },
+        ],
+    };
+    if (twicePoint) {
+        currentLine.data.push({
+            xAxis: twicePoint[0],
+            lineStyle: { type: "dashed", color: "#dc2626", width: 1.5 },
+            label: {
+                show: true,
+                formatter: () => `2× ${axisName} ${Number(twicePoint[0]).toFixed(3)}`,
+                position: "end",
+                color: "#dc2626",
+                fontSize: 12,
+            },
+        });
+    }
+
+    // 三条贯穿 y 轴的虚线，仅作视觉对齐参考（数值已由 markPoint 在右侧标出）
+    const yLines = {
+        symbol: "none",
+        lineStyle: { type: "dashed", color: "#cbd5e1", width: 1 },
+        label: {
+            show: false,
+        },
+        labelLayout: { moveOverlap: "shiftY" },
+        data: [
+            { yAxis: res.premium, yText: `理论 ${res.premium.toFixed(4)}` },
+            { yAxis: res.intrinsic, yText: `内在 ${res.intrinsic.toFixed(4)}` },
+            { yAxis: res.time, yText: `时间 ${res.time.toFixed(4)}` },
+        ],
+    };
+
+    // 期权总价格曲线上的标记点：当前输入点 + （若存在）约 2 倍点
+    const premiumMarkPoint = {
+        labelLayout: { moveOverlap: "shiftY" },
+        data: [
+            {
+                coord: [xVal, res.premium],
+                value: res.premium,
+                symbol: "circle",
+                symbolSize: 7,
+                itemStyle: { color: "auto" },
+                label: {
+                    show: true,
+                    formatter: (p) => Number(p.value).toFixed(4),
+                    position: "right",
+                    offset: [0, -6],
+                    fontSize: 10,
+                    color: "#334155",
+                    backgroundColor: "rgba(255,255,255,0.85)",
+                    padding: [2, 3],
+                    borderRadius: 3,
+                },
+            },
+        ],
+    };
+    if (twicePoint) {
+        premiumMarkPoint.data.push({
+            coord: [twicePoint[0], twicePoint[1]],
+            value: twicePoint[1],
+            symbol: "diamond",
+            symbolSize: 12,
+            itemStyle: { color: "#dc2626" },
+            label: {
+                show: true,
+                formatter: "2×",
+                position: "right",
+                offset: [0, 0],
+                fontSize: 10,
+                color: "#dc2626",
+                backgroundColor: "rgba(255,255,255,0.85)",
+                padding: [2, 3],
+                borderRadius: 3,
+            },
+        });
+    }
+
+    return [
+        {
+            name: "期权总价格",
+            type: "line",
+            smooth: false,
+            data: data.map((item) => [item[0], item[1]]),
+            lineStyle: { width: 2, color: "#2563eb" },
+            symbol: "none",
+            markPoint: premiumMarkPoint,
+            markLine: currentLine,
+        },
+        {
+            name: "内在价值",
+            type: "line",
+            smooth: false,
+            data: data.map((item) => [item[0], item[2]]),
+            lineStyle: { width: 2, color: "#059669" },
+            symbol: "none",
+            markPoint: mkMarkPoint(res.intrinsic, [0, 0]),
+        },
+        {
+            name: "时间价值",
+            type: "line",
+            smooth: false,
+            data: data.map((item) => [item[0], item[3]]),
+            lineStyle: { width: 2, color: "#ea580c" },
+            symbol: "none",
+            markPoint: mkMarkPoint(res.time, [0, 6]),
+        },
+        {
+            // 仅用于承载 y 轴三条水平参考线
+            name: "参考线",
+            type: "line",
+            data: [],
+            markLine: yLines,
+            tooltip: { show: false },
+            silent: true,
+            legendHoverLink: false,
+        },
+    ];
 }
 
 // 页面单点实时计算
@@ -280,7 +476,7 @@ function getAxisRange() {
 }
 
 // 生成曲线原始数据
-function generateLineData(range, pointNum = 180) {
+function generateLineData(range, pointNum = 1000) {
     if (!range) return [];
     const { min, max, key } = range;
     const list = [];
@@ -359,39 +555,16 @@ const handleAxisChange = async () => {
             max: range.max,
             splitNumber: 10,
             boundaryGap: false,
+            splitLine: { show: false },
         },
         yAxis: {
             type: "value",
             name: "期权价值",
             min: 0,
             scale: false,
+            splitLine: { show: false },
         },
-        series: [
-            {
-                name: "期权总价格",
-                type: "line",
-                smooth: false,
-                data: data.map((item) => [item[0], item[1]]),
-                lineStyle: { width: 2, color: "#2563eb" },
-                symbol: "none",
-            },
-            {
-                name: "内在价值",
-                type: "line",
-                smooth: false,
-                data: data.map((item) => [item[0], item[2]]),
-                lineStyle: { width: 2, color: "#059669" },
-                symbol: "none",
-            },
-            {
-                name: "时间价值",
-                type: "line",
-                smooth: false,
-                data: data.map((item) => [item[0], item[3]]),
-                lineStyle: { width: 2, color: "#ea580c" },
-                symbol: "none",
-            },
-        ],
+        series: buildSeries(data),
     };
     chartInstance.setOption(option, true);
     calcOption();
