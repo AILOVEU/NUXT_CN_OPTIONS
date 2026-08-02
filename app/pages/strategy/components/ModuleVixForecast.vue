@@ -1,7 +1,7 @@
 <template>
   <div class="mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
-    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#7a5af8]"></span>隐波未来一年预测（六标的 · 多维度）</div>
-    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">基于 public/vixs.csv 全样本，采用 OU 均值回复模型 + 季节性 + 跳跃风险三维度，生成未来 252 个交易日（约一年）的隐波预测区间；不随标的选择变化</div>
+    <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#7a5af8]"></span>隐波未来一年预测（总体 / 单标的 · 多维度）</div>
+    <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">基于 public/vixs.csv 全样本，采用 OU 均值回复模型 + 季节性 + 跳跃风险三维度，生成未来 252 个交易日（约一年）的隐波预测区间；"全部"为六标的按日中位数合并的总体视角，不随标的选择变化</div>
 
     <div v-if="loading" class="py-8 text-center text-[12px] text-[#8f95a1]">加载隐波数据中…</div>
     <div v-else-if="err" class="py-8 text-center text-[12px] text-[#e02020]">{{ err }}</div>
@@ -46,7 +46,7 @@
       <VChart :option="fcOpt" autoresize class="chart" />
 
       <!-- 多维度分析 -->
-      <div class="mb-1 mt-3 text-[12.5px] font-medium text-[#3a3f47]">维度一 · 季节性（近 5 年月度均值隐波）</div>
+      <div class="mb-1 mt-3 text-[12.5px] font-medium text-[#3a3f47]">维度一 · 季节性（近 5 年月度均值隐波{{ sel === 'ALL' ? ' · 各标的分组' : '' }}）</div>
       <VChart :option="seasonOpt" autoresize class="chart-sm" />
 
       <div class="mb-1 mt-3 text-[12.5px] font-medium text-[#3a3f47]">维度二 · 波动率聚类（近 60 日滚动自相关）</div>
@@ -76,7 +76,8 @@ const selOpts = computed(() => {
   const seen = {}
   const out = []
   for (const p of allSeries.value) if (!seen[p.code]) { seen[p.code] = 1; out.push({ code: p.code, short: SHORT[p.code] || p.code }) }
-  return out.sort((a, b) => Object.keys(SHORT).indexOf(a.code) - Object.keys(SHORT).indexOf(b.code))
+  out.sort((a, b) => Object.keys(SHORT).indexOf(a.code) - Object.keys(SHORT).indexOf(b.code))
+  return [{ code: 'ALL', short: '全部' }, ...out]
 })
 
 /* ---------- CSV 解析 ---------- */
@@ -108,9 +109,21 @@ function quant(sorted, q) {
 function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN }
 function stdev(a) { const m = mean(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length) }
 
-/* 单标的分析：返回 OU 参数、预测路径、季节性、自相关、跳跃 */
+/* 单标的 / 全部分析：返回 OU 参数、预测路径、季节性、自相关、跳跃
+   code === 'ALL' 时，按日期对齐取当日各标的隐波中位数，得到"总体隐波"序列 */
 function analyze(code) {
-  const pts = allSeries.value.filter(p => p.code === code).sort((a, b) => a.date - b.date)
+  let pts
+  if (code === 'ALL') {
+    const byDate = {}
+    for (const p of allSeries.value) if (p.v >= 5 && p.v <= 200) (byDate[p.date.getTime()] = byDate[p.date.getTime()] || []).push(p.v)
+    pts = Object.keys(byDate).map(t => {
+      const vs = byDate[t].slice().sort((a, b) => a - b)
+      const med = vs[Math.floor(vs.length / 2)]
+      return { date: new Date(+t), v: med, code: 'ALL', month: new Date(+t).getMonth() }
+    }).sort((a, b) => a.date - b.date)
+  } else {
+    pts = allSeries.value.filter(p => p.code === code).sort((a, b) => a.date - b.date)
+  }
   const clean = pts.filter(p => p.v >= 5 && p.v <= 200).map(p => p.v)
   if (clean.length < 30) return null
   const n = clean.length
@@ -171,10 +184,21 @@ function analyze(code) {
   const yrMin = yrMax - 4
   const season = []
   for (let mo = 0; mo < 12; mo++) {
-    const vs = allSeries.value.filter(p => p.code === code && p.month === mo && p.date.getFullYear() >= yrMin)
+    const vs = allSeries.value
+      .filter(p => (code === 'ALL' || p.code === code) && p.month === mo && p.date.getFullYear() >= yrMin)
       .map(p => p.v).filter(v => v >= 5 && v <= 200)
     season.push(vs.length ? +mean(vs).toFixed(1) : null)
   }
+  // 全部视角：额外给出每个标的各自的各月值，供分组柱状图展示
+  const seasons = code === 'ALL'
+    ? Object.keys(SHORT).filter(c => allSeries.value.some(p => p.code === c)).map(c => ({
+        code: c, short: SHORT[c],
+        data: Array.from({ length: 12 }, (_, mo) => {
+          const vs = allSeries.value.filter(p => p.code === c && p.month === mo && p.date.getFullYear() >= yrMin).map(p => p.v).filter(v => v >= 5 && v <= 200)
+          return vs.length ? +mean(vs).toFixed(1) : null
+        }),
+      }))
+    : null
 
   // 自相关：滚动 60 日，lag 1..12
   const acf = []
@@ -188,10 +212,11 @@ function analyze(code) {
   }
 
   return { code, pts, clean, curIV, pct, center, half, fcCenter, fcLo, fcHi, jumpRate, jumpDays,
-    path, lo, hi, p10, p90, H, season, acf, k, sigma }
+    path, lo, hi, p10, p90, H, season, seasons, acf, k, sigma }
 }
 
 const analyses = computed(() => selOpts.value.map(o => analyze(o.code)).filter(Boolean))
+function nameOf(code) { return code === 'ALL' ? '六标的（总体）' : (SHORT[code] || code) }
 const cur = computed(() => {
   const a = analyses.value.find(x => x.code === sel.value) || analyses.value[0]
   if (!a) return { iv: NaN, pct: 0, center: NaN, half: NaN, fcCenter: NaN, fcLo: NaN, fcHi: NaN, jumpRate: 0, jumpDays: 0 }
@@ -228,12 +253,29 @@ const seasonOpt = computed(() => {
   const a = analyses.value.find(x => x.code === sel.value) || analyses.value[0]
   if (!a) return Object.assign({}, BASE_OPT)
   const cats = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+  // 全部视角：分组柱状图，展示每个标的各自的各月值
+  if (a.code === 'ALL' && a.seasons && a.seasons.length) {
+    const palette = ['#7a5af8', '#2f6feb', '#19b36b', '#e6a23c', '#eb4d6a', '#13c2c2']
+    return Object.assign({}, BASE_OPT, {
+      grid: { left: 46, right: 18, top: 34, bottom: 28 },
+      legend: { show: true, type: 'scroll', top: 4, textStyle: { fontSize: 10, color: '#5f6672' } },
+      tooltip: { trigger: 'axis', valueFormatter: v => (v == null ? '—' : v + '%') },
+      xAxis: Object.assign({ type: 'category', data: cats, axisLabel: { color: '#8f95a1', fontSize: 10 } }, AXIS),
+      yAxis: Object.assign({ type: 'value', name: 'IV %', scale: true }, AXIS),
+      series: a.seasons.map((s, i) => ({
+        name: s.short, type: 'bar', data: s.data,
+        itemStyle: { color: palette[i % palette.length], opacity: .85, borderRadius: [2, 2, 0, 0] },
+        barMaxWidth: 14,
+      })),
+    })
+  }
+  // 单标的视角：单条柱状图
   return Object.assign({}, BASE_OPT, {
     grid: { left: 46, right: 18, top: 24, bottom: 28 }, legend: { show: false },
     tooltip: { trigger: 'axis', valueFormatter: v => (v == null ? '—' : v + '%') },
     xAxis: Object.assign({ type: 'category', data: cats }, AXIS),
     yAxis: Object.assign({ type: 'value', name: 'IV %', scale: true }, AXIS),
-    series: [{ type: 'bar', data: a.season, itemStyle: { color: p => p.value >= 0 ? C_PUR : '#ccc', opacity: .8, borderRadius: [3, 3, 0, 0] }, barWidth: '55%' }],
+    series: [{ type: 'bar', data: a.season, itemStyle: { color: C_PUR, opacity: .8, borderRadius: [3, 3, 0, 0] }, barWidth: '55%' }],
   })
 })
 
@@ -255,8 +297,9 @@ const acfOpt = computed(() => {
 const conclusion = computed(() => {
   const a = analyses.value.find(x => x.code === sel.value) || analyses.value[0]
   if (!a) return '暂无数据。'
+  const nm = nameOf(a.code)
   const parts = []
-  parts.push(`当前隐波 ${fmt(a.curIV, 1)}%（历史分位 ${fmt(a.pct * 100, 0)}%），OU 长期中枢 ${fmt(a.center, 1)}%`)
+  parts.push(`【${nm}】当前隐波 ${fmt(a.curIV, 1)}%（历史分位 ${fmt(a.pct * 100, 0)}%），OU 长期中枢 ${fmt(a.center, 1)}%`)
   parts.push(a.pct > 0.66 ? '处于历史偏高区，均值回复压力下未来一年大概率向中枢收敛下行'
     : a.pct < 0.34 ? '处于历史偏低区，事件驱动下易向上跳升，回复中枢意愿强'
     : '处于历史中性区，围绕中枢窄幅波动')
@@ -273,7 +316,7 @@ onMounted(async () => {
     const text = await $fetch('/vixs.csv', { responseType: 'text' })
     allSeries.value = parseCsv(text)
     if (!allSeries.value.length) err.value = 'vixs.csv 无有效隐波数据'
-    else sel.value = selOpts.value[0] ? selOpts.value[0].code : null
+    else sel.value = 'ALL'
   } catch (e) {
     err.value = '读取 vixs.csv 失败：' + (e && e.message ? e.message : e)
   } finally {
