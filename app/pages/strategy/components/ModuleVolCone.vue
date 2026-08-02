@@ -24,7 +24,7 @@ const coneOpt = computed(() => {
     { name: name + '_base', type: 'line', stack: name, data: lh.cone.map(c => c[a]), symbol: 'none', lineStyle: { opacity: 0 }, silent: true, tooltip: { show: false } },
     { name, type: 'line', stack: name, data: lh.cone.map(c => c[b] - c[a]), symbol: 'none', lineStyle: { opacity: 0 }, areaStyle: { color }, tooltip: { show: false } },
   ])
-  const ivPts = u.expiries.map(ex => [ex.days * 250 / 365, ex.atmIV])
+  const ivPts = (u.expiries || []).map(ex => [ex.days * 250 / 365, ex.atmIV])
   return Object.assign({}, BASE_OPT, {
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 } },
     legend: { top: 2, data: ['中位数', '近期实现波动率', '当前各期限 IV'], textStyle: { color: '#5f6672', fontSize: 11 } },
@@ -35,7 +35,7 @@ const coneOpt = computed(() => {
       ...band('p25', 'p75', 'rgba(122,90,248,.18)', 'r3'), ...band('p75', 'p90', 'rgba(122,90,248,.10)', 'r4'), ...band('p90', 'max', 'rgba(122,90,248,.05)', 'r5'),
       { name: '中位数', type: 'line', data: lh.cone.map(c => +fmt(c.median, 1)), symbol: 'none', lineStyle: { width: 2, color: C_PUR } },
       { name: '近期实现波动率', type: 'line', data: [+fmt(u.hv.hv5 || u.hv.rv5, 1), +fmt(u.hv.hv10, 1), +fmt(u.hv.hvCC, 1), null, null, null, null], symbolSize: 7, lineStyle: { width: 2, color: C_DN }, itemStyle: { color: C_DN }, connectNulls: false },
-      { name: '当前各期限 IV', type: 'scatter', symbolSize: 12, itemStyle: { color: C_UP }, data: u.expiries.map(ex => { const w = ex.days * 250 / 365; let idx = 0, bd = 1e9; lh.cone.forEach((c, i) => { const a = Math.abs(c.win - w); if (a < bd) { bd = a; idx = i } }); return [idx, +fmt(ex.atmIV, 1)] }) },
+      { name: '当前各期限 IV', type: 'scatter', symbolSize: 12, itemStyle: { color: C_UP }, data: (u.expiries || []).map(ex => { const w = ex.days * 250 / 365; let idx = 0, bd = 1e9; lh.cone.forEach((c, i) => { const a = Math.abs(c.win - w); if (a < bd) { bd = a; idx = i } }); return [idx, +fmt(ex.atmIV, 1)] }) },
     ],
   })
 })

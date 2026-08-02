@@ -25,9 +25,9 @@
         <div class="mt-0.5 text-[13px] leading-[1.75]">
           IV 历史分位 <b class="font-semibold">{{ U.ivPct ? fmt(U.ivPct.pct, 0) + '%' : '—' }}</b>，
           当前 ATM IV <b class="font-semibold">{{ fmt(E.atmIV, 2) }}</b> vs 预期实现波动率 <b class="font-semibold">{{ fmt(verdictObj.hf, 2) }}</b>，
-          风险溢价 <b :style="{ color: verdictObj.vrp > 0 ? C_UP : C_DN }">{{ sign(verdictObj.vrp) }}{{ fmt(verdictObj.vrp, 2) }}</b> 点；
-          期限结构 <b class="font-semibold">{{ verdictObj.far.atmIV < E.atmIV ? '倒挂' : '正向' }}</b>（{{ fmt(E.atmIV, 1) }}→{{ fmt(verdictObj.far.atmIV, 1) }}）；
-          实现波动率近5日较17日 <b :style="{ color: (U.hv.rvTrend || 0) < 0 ? C_DN : C_UP }">{{ sign((U.hv.rvTrend || 0) * 100) }}{{ fmt((U.hv.rvTrend || 0) * 100, 1) }}%</b>。
+          风险溢价 <b :style="{ color: (verdictObj.vrp == null || verdictObj.vrp > 0) ? C_UP : C_DN }">{{ verdictObj.vrp == null ? '—（平值 IV 缺失）' : sign(verdictObj.vrp) + fmt(verdictObj.vrp, 2) }}</b> 点；
+          期限结构 <b class="font-semibold">{{ (E.atmIV == null || verdictObj.far.atmIV == null) ? '数据不足' : (verdictObj.far.atmIV < E.atmIV ? '倒挂' : '正向') }}</b>（{{ fmt(E.atmIV, 1) }}→{{ fmt(verdictObj.far.atmIV, 1) }}）；
+          实现波动率近5日较17日 <b :style="{ color: ((U.hv && U.hv.rvTrend) || 0) < 0 ? C_DN : C_UP }">{{ sign(((U.hv && U.hv.rvTrend) || 0) * 100) }}{{ fmt(((U.hv && U.hv.rvTrend) || 0) * 100, 1) }}%</b>。
         </div>
       </div>
     </div>
@@ -75,8 +75,10 @@ const verdictObj = computed(() => {
   if (!U.value || !E.value) return null
   const ctx = ctxOf(U.value, E.value)
   const vd = verdictOf(dirScore.value.score, volScore.value.score, ctx)
-  const hf = hvFair(U.value); const vrp = E.value.atmIV - hf
-  const far = U.value.expiries[U.value.expiries.length - 1]
+  const hf = hvFair(U.value)
+  const vrp = (E.value.atmIV != null) ? E.value.atmIV - hf : null
+  const exps = (U.value.expiries || []).filter(x => x && x.atmIV != null)
+  const far = exps.length ? exps[exps.length - 1] : E.value
   const legs1 = buildLegs(U.value, E.value, vd.key)
   return { vd, hf, vrp, far, legs1, dirScore: dirScore.value.score, volScore: volScore.value.score }
 })

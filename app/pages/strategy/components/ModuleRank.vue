@@ -12,7 +12,7 @@
         <tr v-for="r in rankRows" :key="r.u.code" :style="r.u.code === selU ? 'background:#f2f6ff;font-weight:600' : ''">
           <td style="text-align: left">{{ r.u.code === selU ? '▶ ' : '' }}{{ r.u.short }}</td>
           <td>{{ fmt(r.u.spot, 3) }}</td>
-          <td :class="(r.u.hv.ret17 || 0) >= 0 ? 'text-[#e02020]' : 'text-[#12a05c]'">{{ sign(r.u.hv.ret17 || 0) }}{{ fmt(r.u.hv.ret17 || 0, 1) }}%</td>
+          <td :class="((r.u.hv && r.u.hv.ret17) || 0) >= 0 ? 'text-[#e02020]' : 'text-[#12a05c]'">{{ sign((r.u.hv && r.u.hv.ret17) || 0) }}{{ fmt((r.u.hv && r.u.hv.ret17) || 0, 1) }}%</td>
           <td>{{ fmt(r.e.atmIV, 2) }}</td>
           <td>{{ fmt(r.hf, 2) }}</td>
           <td :class="r.vrp > 0 ? 'text-[#e02020]' : 'text-[#12a05c]'"><b>{{ sign(r.vrp) }}{{ fmt(r.vrp, 2) }}</b></td>
@@ -39,11 +39,16 @@ const props = defineProps({
 
 const rankRows = computed(() => {
   return props.underlyings.map((u) => {
-    const e = u.expiries[0], far = u.expiries[u.expiries.length - 1]
+    const e = u.expiries && u.expiries[0]
+    if (!e) return null
+    const far = (u.expiries || []).filter(x => x && x.atmIV != null)
+    const farE = far.length ? far[far.length - 1] : null
     const d = scoreDir(u, e).score, v = scoreVol(u, e).score, vd = verdictOf(d, v, ctxOf(u, e))
-    const hf = hvFair(u), vrp = e.atmIV - hf, slope = (far.atmIV - e.atmIV) / e.atmIV
+    const hf = hvFair(u)
+    const vrp = (e.atmIV != null) ? e.atmIV - hf : 0
+    const slope = (farE && e.atmIV != null) ? (farE.atmIV - e.atmIV) / e.atmIV : 0
     return { u, e, d, v, vd, hf, vrp, slope }
-  }).sort((a, b) => Math.abs(b.v) - Math.abs(a.v))
+  }).filter(Boolean).sort((a, b) => Math.abs(b.v) - Math.abs(a.v))
 })
 </script>
 

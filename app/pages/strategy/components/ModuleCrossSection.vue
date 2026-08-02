@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const crossOpt = computed(() => {
-  const pts = props.underlyings.map(u => {
+  const pts = props.underlyings.filter(u => u.expiries && u.expiries[0]).map(u => {
     const e = u.expiries[0], hf = hvFair(u)
     const oi = u.expiries.reduce((a, b) => a + b.totalOI, 0)
     return { name: u.short, value: [+fmt(hf, 2), +fmt(e.atmIV, 2), oi] }

@@ -16,7 +16,7 @@ const props = defineProps({
 })
 
 const quadOpt = computed(() => {
-  const pts = props.underlyings.map(u => {
+  const pts = props.underlyings.filter(u => u.expiries && u.expiries[0]).map(u => {
     const e = u.expiries[0], d = scoreDir(u, e), v = scoreVol(u, e)
     return { name: u.short, value: [+fmt(d.score, 1), +fmt(v.score, 1)], cur: u.code === props.selU }
   })

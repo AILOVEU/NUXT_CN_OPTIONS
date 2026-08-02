@@ -47,9 +47,10 @@ export function bs(S, K, T, sig, type, r = 0.015) {
 }
 
 /* ============ 评分引擎 ============ */
-export function hvFair(u) { const h = u.hv || {}; const fast = h.rv5 || h.hvRV || h.hvPark || 0; const slow = h.hvBlend || h.hvPark || 0; return .6 * fast + .4 * slow }
+export function hvFair(u) { const h = u.hv || {}; const fast = h.rv5 ?? h.hvPark ?? 0; const slow = h.hvBlend ?? h.hvPark ?? 0; return .6 * fast + .4 * slow }
 export function scoreDir(u, e) {
   const S = u.spot, h = u.hv || {}; const S_ = []
+  if (!(S > 0)) return { items: S_, score: 0 }
   const trend = (S / (h.ma10 || S) - 1)
   S_.push({ n: '趋势动量（现价 / MA10）', v: sign(trend * 100) + fmt(trend * 100, 2) + '%', w: .35, s: clamp(trend * 1500, -100, 100), t: '价格在均线下方＝下行趋势' })
   const mp = (e.maxPain / S - 1)
@@ -64,24 +65,32 @@ export function scoreDir(u, e) {
   return { items: S_, score: wt ? tot / wt : 0 }
 }
 export function scoreVol(u, e) {
-  const S_ = [], far = u.expiries[u.expiries.length - 1], hf = hvFair(u)
+  const S_ = [], hf = hvFair(u)
+  const exps = (u.expiries || []).filter(x => x && x.atmIV != null)
+  const far = exps.length ? exps[exps.length - 1] : null
   const p = u.ivPct ? u.ivPct.pct : null
   S_.push({ n: 'IV 历史分位（近3年）', v: p == null ? '无历史数据' : fmt(p, 0) + '%', w: .30, s: p == null ? null : -(p - 50) / 50 * 100, t: '分位越高，卖波动率越占优' })
-  const vrp = e.atmIV - hf
-  S_.push({ n: '波动率风险溢价 VRP', v: sign(vrp) + fmt(vrp, 2) + ' 点（IV ' + fmt(e.atmIV, 1) + ' － 预期HV ' + fmt(hf, 1) + '）', w: .30, s: -clamp(vrp / (e.atmIV || 1) * 400, -100, 100), t: 'IV 高于预期实现波动率＝卖方有安全垫' })
-  const slope = (far.atmIV - e.atmIV) / e.atmIV
-  S_.push({ n: '期限结构斜率', v: fmt(e.atmIV, 1) + ' → ' + fmt(far.atmIV, 1) + '（' + sign(slope * 100) + fmt(slope * 100, 1) + '%）', w: .20, s: clamp(slope * 400, -100, 100), t: '倒挂＝近月被抢，卖近月买远月占优' })
+  const vrp = (e.atmIV != null) ? e.atmIV - hf : null
+  S_.push({ n: '波动率风险溢价 VRP', v: vrp == null ? '平值 IV 缺失' : sign(vrp) + fmt(vrp, 2) + ' 点（IV ' + fmt(e.atmIV, 1) + ' － 预期HV ' + fmt(hf, 1) + '）', w: .30, s: vrp == null ? null : -clamp(vrp / (e.atmIV || 1) * 400, -100, 100), t: 'IV 高于预期实现波动率＝卖方有安全垫' })
+  const slope = (far && e.atmIV != null) ? (far.atmIV - e.atmIV) / e.atmIV : null
+  S_.push({ n: '期限结构斜率', v: slope == null ? '近远月数据缺失' : fmt(e.atmIV, 1) + ' → ' + fmt(far.atmIV, 1) + '（' + sign(slope * 100) + fmt(slope * 100, 1) + '%）', w: .20, s: slope == null ? null : clamp(slope * 400, -100, 100), t: '倒挂＝近月被抢，卖近月买远月占优' })
   const rt = (u.hv && u.hv.rvTrend) || 0
   S_.push({ n: '实现波动率动量（近5日 vs 17日）', v: sign(rt * 100) + fmt(rt * 100, 1) + '%', w: .20, s: clamp(rt * 500, -100, 100), t: '实现波动率回落中＝IV 后续大概率跟跌' })
   let tot = 0, wt = 0; S_.forEach(x => { if (x.s != null) { tot += x.s * x.w; wt += x.w } })
   return { items: S_, score: wt ? tot / wt : 0 }
 }
-export function ctxOf(u, e) { const far = u.expiries[u.expiries.length - 1]; return { vrp: e.atmIV - hvFair(u), slope: (far.atmIV - e.atmIV) / e.atmIV, days: e.days } }
+export function ctxOf(u, e) {
+  const exps = (u.expiries || []).filter(x => x && x.atmIV != null)
+  const far = exps.length ? exps[exps.length - 1] : null
+  const vrp = (e.atmIV != null) ? e.atmIV - hvFair(u) : null
+  const slope = (far && e.atmIV != null) ? (far.atmIV - e.atmIV) / e.atmIV : null
+  return { vrp, slope, days: e.days }
+}
 export function verdictOf(d, v, ctx) {
   ctx = ctx || {}
   const D = Math.abs(d) < 18 ? '中性' : (d > 0 ? (d > 45 ? '偏多' : '略偏多') : (d < -45 ? '偏空' : '略偏空'))
   const V = Math.abs(v) < 18 ? '波动率中性' : (v < 0 ? (v < -45 ? '强烈做空波动率' : '做空波动率') : (v > 45 ? '强烈做多波动率' : '做多波动率'))
-  const vrp = ctx.vrp === undefined ? 1 : ctx.vrp
+  const vrp = (ctx.vrp === undefined || ctx.vrp === null) ? 1 : ctx.vrp
   let key, alt, caution = ''
   if (Math.abs(d) < 18) {
     if (v <= -18) {
@@ -158,4 +167,34 @@ export function legValue(l, s, tEvalDays) {
   const rem = (l.t - tEvalDays) / 365
   if (rem <= 1e-6) return l.type === 'C' ? Math.max(0, s - l.K) : Math.max(0, l.K - s)
   return bs(s, l.K, rem, l.iv, l.type)
+}
+
+/* 给定腿组合计算盈亏曲线与组合希腊字母 / 到期获利概率（Payoff 与 StrategyKpi 共用，避免双源计算不一致） */
+export function computePayoff(u, e, legs) {
+  if (!u || !e || !legs || !legs.length) return null
+  const S = u.spot; if (!(S > 0)) return null
+  const lo = S * 0.78, hi = S * 1.22, N = 140
+  const xs = [], expPL = [], nowPL = []
+  const cost = legs.reduce((a, l) => a + l.qty * l.px * MULT, 0)
+  for (let i = 0; i <= N; i++) {
+    const s = lo + (hi - lo) * i / N; xs.push(+s.toFixed(4))
+    let pe = 0, pn = 0
+    legs.forEach(l => { pe += l.qty * (legValue(l, s, e.days) - l.px) * MULT; pn += l.qty * (legValue(l, s, 0) - l.px) * MULT })
+    expPL.push(+pe.toFixed(0)); nowPL.push(+pn.toFixed(0))
+  }
+  const mx = Math.max(...expPL), mn = Math.min(...expPL)
+  const bes = []
+  for (let i = 1; i < xs.length; i++) if (expPL[i - 1] * expPL[i] < 0) { const t = Math.abs(expPL[i - 1]) / (Math.abs(expPL[i - 1]) + Math.abs(expPL[i])); bes.push(+(xs[i - 1] + (xs[i] - xs[i - 1]) * t).toFixed(4)) }
+  const rowOf = (l) => { if (l.type === 'S') return null; const ex = u.expiries.find(x => x.days === l.t) || e; return ex.byStrike.find(x => x.K === l.K) }
+  const gk = (l, cf, pf, sv) => { if (l.type === 'S') return sv; const b = rowOf(l); if (!b) return 0; return (l.type === 'C' ? b[cf] : b[pf]) || 0 }
+  const netD = legs.reduce((a, l) => a + l.qty * gk(l, 'cDelta', 'pDelta', 1), 0)
+  const netT = legs.reduce((a, l) => a + l.qty * gk(l, 'cTheta', 'pTheta', 0), 0)
+  const netV = legs.reduce((a, l) => a + l.qty * gk(l, 'cVega', 'pVega', 0) * MULT * 0.01, 0)
+  let pop = 0
+  if (e.atmIV != null && e.days > 0) {
+    const sig = e.atmIV / 100 * Math.sqrt(e.days / 365); let win = 0, tot = 0
+    for (let i = 0; i < xs.length; i++) { const z = Math.log(xs[i] / S) / sig; const w = Math.exp(-z * z / 2); tot += w; if (expPL[i] > 0) win += w }
+    pop = tot ? win / tot * 100 : 0
+  }
+  return { xs, expPL, nowPL, cost, mx, mn, bes, netD, netT, netV, pop, S }
 }
