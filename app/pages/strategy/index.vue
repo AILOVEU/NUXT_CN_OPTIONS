@@ -107,6 +107,12 @@
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#7a5af8]">隐含波动率 IV 综合分析与预测（不随筛选变化）</h2>
       <ModuleVixForecast />
     </section>
+
+    <!-- 股指期权全景分析：独立大模块，不随筛选变化 -->
+    <section id="section-stock-index" class="mb-3.5 rounded-lg border border-[#e67e22] bg-[#fef9f2] p-3.5">
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#e67e22]">股指期权全景分析（不随筛选变化）</h2>
+      <ModuleStockIndex />
+    </section>
   </div>
 
   <div v-else class="mx-auto max-w-[1560px] px-5 py-20 text-center text-[#8f95a1]">
@@ -143,6 +149,7 @@ import ModuleTTable from './components/ModuleTTable.vue'
 import ModuleMethodology from './components/ModuleMethodology.vue'
 import ModuleIvRegime from './components/ModuleIvRegime.vue'
 import ModuleVixForecast from './components/ModuleVixForecast.vue'
+import ModuleStockIndex from './components/ModuleStockIndex.vue'
 
 /* ============ 字段解析（业务字段 -> 中文名，中文名由 fields_dict 映射为 f 编号） ============ */
 const CODE2F = Object.fromEntries(Object.entries(fields_dict).map(([f, cn]) => [cn, f]))

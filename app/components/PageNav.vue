@@ -110,6 +110,10 @@ const sections = [
       { label: '核心结论', anchor: 'module-vix-conclusion' },
     ],
   },
+  {
+    label: '股指期权全景分析',
+    anchor: 'section-stock-index',
+  },
 ]
 
 function toggleSection(idx) {
