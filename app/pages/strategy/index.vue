@@ -36,58 +36,58 @@
     </el-affix>
 
     <!-- 区块一：标的变会变（仅依赖标的） -->
-    <section class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5">
+    <section class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5" style="min-height: 480px">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换 — 标的变会变</h2>
 
-      <ModuleTermStructure :u="U" />
+      <ModuleTermStructure :u="U" style="min-height: 180px" />
 
-      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-        <ModuleVolCone :u="U" />
-        <ModuleSpotTrend :u="U" />
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
+        <ModuleVolCone :u="U" style="min-height: 160px" />
+        <ModuleSpotTrend :u="U" style="min-height: 160px" />
       </div>
 
-      <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" />
+      <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" style="min-height: 100px" />
 
-      <ModuleIvRegime :u="U" class="mt-3.5" />
+      <ModuleIvRegime :u="U" class="mt-3.5" style="min-height: 80px" />
     </section>
 
     <!-- 区块二：标的和到期月都会变 -->
-    <section class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5">
+    <section class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5" style="min-height: 700px">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换 — 两者皆变</h2>
 
       <!-- 结论 -->
-      <ModuleVerdict :u="U" :e="E" />
+      <ModuleVerdict :u="U" :e="E" style="min-height: 160px" />
 
       <!-- KPI -->
-      <ModuleKpiCards :u="U" :e="E" class="mt-3.5" />
+      <ModuleKpiCards :u="U" :e="E" class="mt-3.5" style="min-height: 80px" />
 
       <!-- 信号明细 -->
-      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-        <ModuleDirSignal :u="U" :e="E" />
-        <ModuleVolSignal :u="U" :e="E" />
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
+        <ModuleDirSignal :u="U" :e="E" style="min-height: 160px" />
+        <ModuleVolSignal :u="U" :e="E" style="min-height: 160px" />
       </div>
 
-      <ModuleIvHist :u="U" :e="E" class="mt-3.5" />
+      <ModuleIvHist :u="U" :e="E" class="mt-3.5" style="min-height: 200px" />
 
-      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-        <ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" />
-        <ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" />
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 180px">
+        <ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" style="min-height: 180px" />
+        <ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" style="min-height: 180px" />
       </div>
 
       <!-- 按到期月下钻的合约明细（同随两者变化） -->
-      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-        <ModuleIvSmile :e="E" />
-        <ModuleOi :e="E" />
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
+        <ModuleIvSmile :e="E" style="min-height: 160px" />
+        <ModuleOi :e="E" style="min-height: 160px" />
       </div>
 
-      <div class="mt-3.5 grid grid-cols-2 gap-3.5">
-        <ModuleDoi :e="E" />
-        <ModuleGex :e="E" />
+      <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
+        <ModuleDoi :e="E" style="min-height: 160px" />
+        <ModuleGex :e="E" style="min-height: 160px" />
       </div>
 
-      <ModuleGreeks :e="E" class="mt-3.5" />
+      <ModuleGreeks :e="E" class="mt-3.5" style="min-height: 180px" />
 
-      <ModuleTTable :e="E" class="mt-3.5" />
+      <ModuleTTable :e="E" class="mt-3.5" style="min-height: 160px" />
     </section>
 
     <!-- 静态区：不随标的/到期月筛选变化 -->
