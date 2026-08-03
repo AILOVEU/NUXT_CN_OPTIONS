@@ -1,15 +1,17 @@
 <template>
   <Nav />
   <div v-if="loaded" class="mx-auto max-w-[1560px] px-5 pb-16 pt-[18px] text-[#1f2329]"
-      style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
+    style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
     <header class="mb-3.5 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 class="text-[20px] font-[650] tracking-[-.2px]">ETF 期权策略分析看板
-          <span class="ml-1 rounded bg-[#eef2fb] px-2 py-0.5 text-[11px] font-semibold text-[#2f6feb]">{{ model.valuationDate || '—' }}</span>
+          <span class="ml-1 rounded bg-[#eef2fb] px-2 py-0.5 text-[11px] font-semibold text-[#2f6feb]">{{
+            model.valuationDate || '—' }}</span>
         </h1>
         <div v-if="U && E" class="mt-1 text-[12px] text-[#8f95a1]">
           {{ U.name }} · 现价 <b class="font-semibold text-[#1f2329]">{{ fmt(U.spot, 3) }}</b> ·
-          近17日 <span :class="(U.hv.ret17 || 0) >= 0 ? 'text-[#e02020]' : 'text-[#12a05c]'">{{ sign(U.hv.ret17 || 0) }}{{ fmt(U.hv.ret17 || 0, 2) }}%</span>
+          近17日 <span :class="(U.hv.ret17 || 0) >= 0 ? 'text-[#e02020]' : 'text-[#12a05c]'">{{ sign(U.hv.ret17 || 0) }}{{
+            fmt(U.hv.ret17 || 0, 2) }}%</span>
           · 当前合约 {{ fmtExp(E.exp) }}（剩余 {{ E.days }} 天）
         </div>
       </div>
@@ -21,12 +23,12 @@
 
     <!-- 标的 / 到期月 切换（滑动置顶） -->
     <el-affix :offset="0" class="mb-3.5">
-      <div class="flex flex-wrap items-center gap-8 rounded-lg border border-[#e5e8ef] bg-white px-4 py-3 shadow-sm">
-        <div class="w-full max-w-[640px]">
+      <div class="flex flex-nowrap items-center gap-8 rounded-lg border border-[#e5e8ef] bg-white px-4 py-3 shadow-sm">
+        <div class="flex-1">
           <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">标的</div>
           <TabSelect :options="tabUOptions" v-model="selU" />
         </div>
-        <div v-if="U" class="w-full max-w-[640px]">
+        <div v-if="U" class="flex-1">
           <div class="mb-1.5 text-[11.5px] tracking-[.4px] text-[#8f95a1]">到期月</div>
           <TabSelect :options="tabEOptions" v-model="selE" />
         </div>
@@ -97,8 +99,12 @@
       <ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
 
       <ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
+    </section>
 
-      <ModuleVixForecast class="mt-3.5" />
+    <!-- 隐含波动率 IV 综合分析与预测：独立大模块，六标的横截面，不随筛选变化 -->
+    <section class="mb-3.5 rounded-lg border border-[#7a5af8] bg-[#f9f8ff] p-3.5">
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#7a5af8]">隐含波动率 IV 综合分析与预测（不随筛选变化）</h2>
+      <ModuleVixForecast />
     </section>
   </div>
 
@@ -212,9 +218,11 @@ function parseChain(rows) {
     const timeval = L - intrinsic
     const thetaYuan = (theta || 0) / 365 * MULT
     const vegaYuan = (vega || 0) * MULT * 0.01
-    chain.push({ u: code, uname, name, type, K, L, P, bid, ask, oi: oi || 0, doi: doi || 0, iv, prem,
+    chain.push({
+      u: code, uname, name, type, K, L, P, bid, ask, oi: oi || 0, doi: doi || 0, iv, prem,
       exp, lev, delta: delta || 0, gamma: gamma || 0, vega: vega || 0, theta: theta || 0, spot,
-      intrinsic, timeval, chg, thetaYuan, vegaYuan })
+      intrinsic, timeval, chg, thetaYuan, vegaYuan
+    })
   })
   const byU = {}
   chain.forEach(c => { (byU[c.u] = byU[c.u] || []).push(c) })
@@ -243,7 +251,8 @@ function parseChain(rows) {
         const c_ = cmap[K], p_ = pmap[K]
         const gexC = (c_ && c_.gamma) ? c_.gamma * c_.oi * MULT * spot * spot * 0.01 : 0
         const gexP = (p_ && p_.gamma) ? p_.gamma * p_.oi * MULT * spot * spot * 0.01 : 0
-        return { K,
+        return {
+          K,
           cIV: c_ ? c_.iv : null, pIV: p_ ? p_.iv : null,
           cOI: c_ ? c_.oi : 0, pOI: p_ ? p_.oi : 0, cDOI: c_ ? c_.doi : 0, pDOI: p_ ? p_.doi : 0,
           cLast: c_ ? c_.L : null, pLast: p_ ? p_.L : null,
@@ -255,15 +264,18 @@ function parseChain(rows) {
           cLev: c_ ? c_.lev : null, pLev: p_ ? p_.lev : null,
           cPrem: c_ ? c_.prem : null, pPrem: p_ ? p_.prem : null,
           cTV: c_ ? +c_.timeval.toFixed(4) : null, pTV: p_ ? +p_.timeval.toFixed(4) : null,
-          gexC, gexP, netGex: gexC - gexP }
+          gexC, gexP, netGex: gexC - gexP
+        }
       })
       const netDelta = sub.reduce((a, x) => a + (x.delta || 0) * x.oi, 0)
       const netGex = byStrike.reduce((a, b) => a + b.netGex, 0)
       let cum = 0, flip = null, pr = null
       byStrike.forEach(b => { cum += b.netGex; if (pr != null && pr < 0 && cum >= 0) flip = b.K; pr = cum })
-      return { exp, days: valDate.value ? daysBetween(valDate.value, exp) : 30, atmK, atmIV, ivc25, ivp25, rr25, bf25,
+      return {
+        exp, days: valDate.value ? daysBetween(valDate.value, exp) : 30, atmK, atmIV, ivc25, ivp25, rr25, bf25,
         callOI, putOI, oiPCR: callOI ? putOI / callOI : null, callDOI, putDOI, doiPCR: callDOI > 0 ? putDOI / callDOI : null,
-        maxPain, painCurve: pain, byStrike, netDelta, netGex, gammaFlip: flip, totalOI: callOI + putOI }
+        maxPain, painCurve: pain, byStrike, netDelta, netGex, gammaFlip: flip, totalOI: callOI + putOI
+      }
     })
     const totalOI = expiries.reduce((a, e) => a + e.totalOI, 0)
     return { code, name: uname, short: SHORT[code] || uname, spot, hv: {}, longHV: null, ivHist: [], ivPct: null, expiries, totalOI }
@@ -323,7 +335,7 @@ async function loadHistory() {
     const byCode = {}
     rows.forEach(r => {
       const code = r.code; if (!code) return
-      ;(byCode[code] = byCode[code] || []).push({ d: r.date, o: +r.open, h: +r.high, l: +r.low, c: +r.close, v: +r.volumn || 0 })
+        ; (byCode[code] = byCode[code] || []).push({ d: r.date, o: +r.open, h: +r.high, l: +r.low, c: +r.close, v: +r.volumn || 0 })
     })
     codes.forEach(code => { if (byCode[code]) dailyStore[code] = byCode[code] })
   } catch (e) { /* 无日线则降级 */ }
@@ -368,8 +380,10 @@ function enrichUnderlying(u) {
       const hs = []
       for (let i = win; i < rets.length; i++) hs.push(pstdev(rets.slice(i - win, i)) * Math.sqrt(252) * 100)
       const tail = hs.slice(-750); const s = tail.slice().sort((a, b) => a - b); const n = s.length
-      return { win, min: s[0], p10: s[Math.floor(n / 10)], p25: s[Math.floor(n / 4)], median: s[Math.floor(n / 2)],
-        p75: s[Math.floor(3 * n / 4)], p90: s[Math.floor(9 * n / 10)], max: s[n - 1], cur: tail[tail.length - 1] }
+      return {
+        win, min: s[0], p10: s[Math.floor(n / 10)], p25: s[Math.floor(n / 4)], median: s[Math.floor(n / 2)],
+        p75: s[Math.floor(3 * n / 4)], p90: s[Math.floor(9 * n / 10)], max: s[n - 1], cur: tail[tail.length - 1]
+      }
     })
     u.longHV = { cone, endDate: ds[ds.length - 1].d }
   } else u.longHV = null
@@ -378,8 +392,10 @@ function enrichUnderlying(u) {
   if (ih.length && u.expiries[0] && u.expiries[0].atmIV != null) {
     const vals = ih.map(x => x.v); const s = vals.slice().sort((a, b) => a - b); const n = s.length
     const below = vals.filter(v => v < u.expiries[0].atmIV).length
-    u.ivPct = { pct: below / n * 100, n, median: s[Math.floor(n / 2)], p10: s[Math.floor(n / 10)],
-      p90: s[Math.floor(9 * n / 10)], min: s[0], max: s[n - 1], last: ih[ih.length - 1].v, lastDate: ih[ih.length - 1].d }
+    u.ivPct = {
+      pct: below / n * 100, n, median: s[Math.floor(n / 2)], p10: s[Math.floor(n / 10)],
+      p90: s[Math.floor(9 * n / 10)], min: s[0], max: s[n - 1], last: ih[ih.length - 1].v, lastDate: ih[ih.length - 1].d
+    }
   } else u.ivPct = null
 }
 

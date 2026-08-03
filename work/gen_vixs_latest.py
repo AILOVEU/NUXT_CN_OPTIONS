@@ -34,9 +34,9 @@ MAP = {
     '588000': 'index_option_kcb_qvix',
     '159915': 'index_option_cyb_qvix',
     '159901': 'index_option_100etf_qvix',     # 100ETF（深证100ETF）
-    '1000': 'index_option_1000index_qvix',  # 中证1000 指数
-    '300': 'index_option_300index_qvix',   # 沪深300 指数
-    '50': 'index_option_50index_qvix',    # 上证50 指数
+    # '1000': 'index_option_1000index_qvix',  # 中证1000 指数
+    # '300': 'index_option_300index_qvix',   # 沪深300 指数
+    # '50': 'index_option_50index_qvix',    # 上证50 指数
 }
 
 OUT_FILE = os.path.join('public', 'vixs.csv')

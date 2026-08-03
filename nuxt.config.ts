@@ -37,7 +37,7 @@ export default defineNuxtConfig({
   build: { transpile: ["echarts-liquidfill"] },
   echarts: {
     renderer: ["svg"],
-    charts: ["SankeyChart", "LineChart", "BarChart", "MapChart", "PieChart", "ScatterChart", "SunburstChart", "CandlestickChart "],
+    charts: ["SankeyChart", "LineChart", "BarChart", "MapChart", "PieChart", "ScatterChart", "SunburstChart", "CandlestickChart", "HeatmapChart"],
     components: ["TitleComponent", "DatasetComponent", "GridComponent", "TooltipComponent", "ToolboxComponent", "LegendComponent", "GeoComponent", "VisualMapComponent", "MarkLineComponent", "MarkAreaComponent", "MarkPointComponent", "GraphicComponent", "DataZoomComponent"],
   },
   elementPlus: {
