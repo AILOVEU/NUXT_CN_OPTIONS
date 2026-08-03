@@ -11,43 +11,43 @@
 
     <template v-else>
       <!-- 1. 历史走势 -->
-      <section>
+      <section id="module-vix-history">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 1 · 各标的隐含波动率历史走势</div>
         <VChart :option="historyOpt" autoresize class="chart-grid" />
       </section>
 
       <!-- 2. 波动率锥 -->
-      <section class="mt-3">
+      <section id="module-vix-cone" class="mt-3">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 2 · 波动率锥（IV 分位分布与当前水位）</div>
         <VChart :option="coneOpt" autoresize class="chart" />
       </section>
 
       <!-- 3. 季节性 -->
-      <section class="mt-3">
+      <section id="module-vix-season" class="mt-3">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 3 · 各标的隐波季节性规律（代表标的：50ETF/300ETF/500ETF/科创50/创业板ETF）</div>
         <VChart :option="seasonOpt" autoresize class="chart" />
       </section>
 
       <!-- 4. 未来一年预测 -->
-      <section class="mt-3">
+      <section id="module-vix-forecast" class="mt-3">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 4 · 未来一年隐含波动率走势预测（均值回归 + 季节性模型，覆盖 vixs 全部标的）</div>
         <VChart :option="forecastOpt" autoresize class="chart-grid" />
       </section>
 
       <!-- 5. 当前分位排名 -->
-      <section class="mt-3">
+      <section id="module-vix-rank" class="mt-3">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 5 · 各标的隐波当前历史分位</div>
         <VChart :option="rankOpt" autoresize class="chart" />
       </section>
 
       <!-- 6. 相关性矩阵 -->
-      <section class="mt-3">
+      <section id="module-vix-corr" class="mt-3">
         <div class="mb-1 text-[12.5px] font-medium text-[#3a3f47]">图 6 · 各标的隐波相关性矩阵</div>
         <VChart :option="corrOpt" autoresize class="chart-square" />
       </section>
 
       <!-- 核心结论 -->
-      <div class="mt-3 rounded-[8px] border border-[#eee6fb] bg-[#faf7ff] p-3 text-[12px] leading-[1.7] text-[#4a4458]">
+      <div id="module-vix-conclusion" class="mt-3 rounded-[8px] border border-[#eee6fb] bg-[#faf7ff] p-3 text-[12px] leading-[1.7] text-[#4a4458]">
         <b class="text-[#7a5af8]">核心结论：</b>{{ conclusion }}
       </div>
     </template>

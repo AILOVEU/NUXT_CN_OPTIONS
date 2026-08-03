@@ -1,5 +1,6 @@
 <template>
   <Nav />
+  <PageNav />
   <div v-if="loaded" class="mx-auto max-w-[1560px] px-5 pb-16 pt-[18px] text-[#1f2329]"
     style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
     <header class="mb-3.5 flex flex-wrap items-end justify-between gap-3">
@@ -36,73 +37,73 @@
     </el-affix>
 
     <!-- 区块一：标的变会变（仅依赖标的） -->
-    <section class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5" style="min-height: 480px">
+    <section id="section-u" class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5" style="min-height: 480px">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换 — 标的变会变</h2>
 
-      <ModuleTermStructure :u="U" style="min-height: 180px" />
+      <div id="module-term-structure"><ModuleTermStructure :u="U" style="min-height: 180px" /></div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <ModuleVolCone :u="U" style="min-height: 160px" />
-        <ModuleSpotTrend :u="U" style="min-height: 160px" />
+        <div id="module-vol-cone"><ModuleVolCone :u="U" style="min-height: 160px" /></div>
+        <div id="module-spot-trend"><ModuleSpotTrend :u="U" style="min-height: 160px" /></div>
       </div>
 
-      <ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" style="min-height: 100px" />
+      <div id="module-methodology"><ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" style="min-height: 100px" /></div>
 
-      <ModuleIvRegime :u="U" class="mt-3.5" style="min-height: 80px" />
+      <div id="module-iv-regime"><ModuleIvRegime :u="U" class="mt-3.5" style="min-height: 80px" /></div>
     </section>
 
     <!-- 区块二：标的和到期月都会变 -->
-    <section class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5" style="min-height: 700px">
+    <section id="section-ue" class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5" style="min-height: 700px">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换 — 两者皆变</h2>
 
       <!-- 结论 -->
-      <ModuleVerdict :u="U" :e="E" style="min-height: 160px" />
+      <div id="module-verdict"><ModuleVerdict :u="U" :e="E" style="min-height: 160px" /></div>
 
       <!-- KPI -->
-      <ModuleKpiCards :u="U" :e="E" class="mt-3.5" style="min-height: 80px" />
+      <div id="module-kpi-cards"><ModuleKpiCards :u="U" :e="E" class="mt-3.5" style="min-height: 80px" /></div>
 
       <!-- 信号明细 -->
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <ModuleDirSignal :u="U" :e="E" style="min-height: 160px" />
-        <ModuleVolSignal :u="U" :e="E" style="min-height: 160px" />
+        <div id="module-dir-signal"><ModuleDirSignal :u="U" :e="E" style="min-height: 160px" /></div>
+        <div id="module-vol-signal"><ModuleVolSignal :u="U" :e="E" style="min-height: 160px" /></div>
       </div>
 
-      <ModuleIvHist :u="U" :e="E" class="mt-3.5" style="min-height: 200px" />
+      <div id="module-iv-hist"><ModuleIvHist :u="U" :e="E" class="mt-3.5" style="min-height: 200px" /></div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 180px">
-        <ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" style="min-height: 180px" />
-        <ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" style="min-height: 180px" />
+        <div id="module-payoff"><ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" style="min-height: 180px" /></div>
+        <div id="module-strategy-kpi"><ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" style="min-height: 180px" /></div>
       </div>
 
       <!-- 按到期月下钻的合约明细（同随两者变化） -->
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <ModuleIvSmile :e="E" style="min-height: 160px" />
-        <ModuleOi :e="E" style="min-height: 160px" />
+        <div id="module-iv-smile"><ModuleIvSmile :e="E" style="min-height: 160px" /></div>
+        <div id="module-oi"><ModuleOi :e="E" style="min-height: 160px" /></div>
       </div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <ModuleDoi :e="E" style="min-height: 160px" />
-        <ModuleGex :e="E" style="min-height: 160px" />
+        <div id="module-doi"><ModuleDoi :e="E" style="min-height: 160px" /></div>
+        <div id="module-gex"><ModuleGex :e="E" style="min-height: 160px" /></div>
       </div>
 
-      <ModuleGreeks :e="E" class="mt-3.5" style="min-height: 180px" />
+      <div id="module-greeks"><ModuleGreeks :e="E" class="mt-3.5" style="min-height: 180px" /></div>
 
-      <ModuleTTable :e="E" class="mt-3.5" style="min-height: 160px" />
+      <div id="module-t-table"><ModuleTTable :e="E" class="mt-3.5" style="min-height: 160px" /></div>
     </section>
 
     <!-- 静态区：不随标的/到期月筛选变化 -->
-    <section class="mb-3.5 rounded-lg border border-[#9aa3b2] bg-[#f6f7f9] p-3.5">
+    <section id="section-cross" class="mb-3.5 rounded-lg border border-[#9aa3b2] bg-[#f6f7f9] p-3.5">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#6b7280]">六标的横截面（不随筛选变化）</h2>
 
-      <ModuleCrossSection :underlyings="model.underlyings" />
+      <div id="module-cross-section"><ModuleCrossSection :underlyings="model.underlyings" /></div>
 
-      <ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
+      <div id="module-quadrant"><ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" /></div>
 
-      <ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" />
+      <div id="module-rank"><ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" /></div>
     </section>
 
     <!-- 隐含波动率 IV 综合分析与预测：独立大模块，六标的横截面，不随筛选变化 -->
-    <section class="mb-3.5 rounded-lg border border-[#7a5af8] bg-[#f9f8ff] p-3.5">
+    <section id="section-vix" class="mb-3.5 rounded-lg border border-[#7a5af8] bg-[#f9f8ff] p-3.5">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#7a5af8]">隐含波动率 IV 综合分析与预测（不随筛选变化）</h2>
       <ModuleVixForecast />
     </section>
