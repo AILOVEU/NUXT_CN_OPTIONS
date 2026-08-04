@@ -31,29 +31,28 @@
     </div>
     <Flip :gammaFlipData="gammaFlipData" />
     <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
-    <Capture
-      v-for="(item, idx) in tableList"
-      :key="idx"
-      :ref="(el) => el && (itemRefs[idx] = el)"
-      title="股指T型"
-      :style="{
-        'border-left': '10px solid #576a8f',
-        'border-right': '10px solid #576a8f',
-        margin: '0 auto',
-        width: 'fit-content',
-        //  minWidth: 133 * 13 + 'px'
-      }"
-    >
-      <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">{{ item }}{{ dayStr }}</div>
-      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false" ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
-        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label" align="center" width="138px">
+    <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{
+      'border-left': '10px solid #576a8f',
+      'border-right': '10px solid #576a8f',
+      margin: '0 auto',
+      width: 'fit-content',
+      //  minWidth: 133 * 13 + 'px'
+    }">
+      <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">
+        {{ item }}{{ dayStr }}</div>
+      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false"
+        ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
+        <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label"
+          align="center" width="138px">
           <template #header>
             <div v-if="type">
               <div class="leading-[1.2]">{{ type }}{{ dayjs(label, "YYYY-MM-DD").format("M月DD") }}</div>
-              <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})</div>
+              <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})
+              </div>
             </div>
             <!-- 改用当前项 ref，消除全局 captureRef 隐患 -->
-            <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer" @click="() => itemRefs[idx]?.download()">
+            <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer"
+              @click="() => itemRefs[idx]?.download()">
               <div>{{ label }}</div>
               <el-button link>⬇</el-button>
             </div>
@@ -62,7 +61,8 @@
             <Center :row="row" />
           </template>
           <template #default="{ row }" v-if="label !== '期权'">
-            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" mode="hold" :indexVal="[]" showTypeVal="精简" />
+            <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" mode="hold"
+              :indexVal="[]" showTypeVal="精简" />
           </template>
         </el-table-column>
       </el-table>
@@ -84,7 +84,7 @@ const { isMobile } = useGlobal();
 
 const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 
-const max溢价Val = ref(12);
+const max溢价Val = ref(5);
 const max一手价Val = ref(3000);
 // 全局表格ref（保留原有）
 const captureRef = ref();
@@ -125,6 +125,12 @@ async function handleQuery(useCatch = true) {
   loading.value = true;
   const allCodeList = STOCK_INDEX_OPTIONS_MAP.map((el) => el["code"]);
   let [data, _data, flip] = await queryStockIndexGrid(allCodeList, useCatch);
+  if (!useCatch) {
+    if (_data.length) {
+      localStorage.setItem("STOCKINDEX_updateTime", dayjs().format("YYYY-MM-DD HH:mm:ss"));
+      window.location.reload();
+    }
+  }
   tableData.data = data;
   tiledData.value = _data;
   gammaFlipData.value = flip;
@@ -262,6 +268,7 @@ handleQuery();
 .el-table--small .cell {
   padding: 0 0px !important;
 }
+
 .el-table--small .el-table__cell {
   padding: 0px 0 !important;
 }
