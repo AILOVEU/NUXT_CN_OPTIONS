@@ -9,8 +9,8 @@
         <TagCallPut :value="row['沽购']" />
       </el-table-column>
       <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="40" align="center">
-        <div class="pb-[5px]" v-for="item in (row.list || [])?.filter((el) => isInNextNMinutes(time, el['成交时间'], timeInterval))">
-          <div class="flex border-bottom-[1px] justify-between gap-[5px] border-[red] text-[gray] px-[2px]">
+        <div class="pb-[4px] mb-[4px] border-b border-dashed border-gray-300 last:border-b-0 last:pb-0 last:mb-0" v-for="item in (row.list || [])?.filter((el) => isInNextNMinutes(time, el['成交时间'], timeInterval))">
+          <div class="flex justify-between gap-[5px] text-[gray] px-[2px]">
             <div>{{ item.持仓变化 }}</div>
             <div>{{ formatDecimal(item.成交价格 * 10000, 0) }}</div>
           </div>
