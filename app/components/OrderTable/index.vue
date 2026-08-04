@@ -9,26 +9,30 @@
       </el-table-column>
       <el-table-column #default="{ row }" v-for="time in totalTimeList" :label="time" :prop="time" width="40" align="center">
         <div class="pb-[5px]" v-for="item in (row.list || [])?.filter((el) => isInNext5Minutes(time, el['成交时间']))">
-          <!-- <div v-for="item in (row.list || [])?.filter((el) => dayjs(el['成交时间'], 'HH:mm:ss').format('HH:mm') === time)"> -->
           <div class="flex border-bottom-[1px] justify-between gap-[5px] border-[red] text-[gray] px-[2px]">
             <div>{{ item.持仓变化 }}</div>
             <div>{{ formatDecimal(item.成交价格 * 10000, 0) }}</div>
           </div>
           <div class="font-semibold">{{ formatDecimal(item.持仓变化 * item.成交价格 * 10000, 0) }}</div>
+          <div :class="item['相对收盘盈亏'] >= 0 ? 'text-[#e02020]' : 'text-[#12a05c]'" class="text-[13px] font-medium">
+            {{ formatDecimal(item['相对收盘盈亏'], 0) }}
+          </div>
         </div>
       </el-table-column>
       <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right">
         <div class="px-[2px] mx-auto pb-[5px]">
           <div class="text-[gray] text-center">{{ row.持仓变化sum }}</div>
           <div class="text-center font-semibold">{{ formatDecimal(row.成交金额sum * 10000, 0) }}</div>
+          <!-- <div :class="row['相对收盘盈亏sum'] >= 0 ? 'text-[#12a05c]' : 'text-[#e02020]'" class="text-[13px] text-center font-medium">
+            {{ formatDecimal(row['相对收盘盈亏sum'], 0) }}
+          </div> -->
         </div>
       </el-table-column>
     </el-table>
   </Capture>
 </template>
 <script setup>
-import { formatNumberToWan, formatDecimal } from "~/utils/utils";
-import { OPTIONS_MAP, deadline_list } from "~/data";
+import {  formatDecimal } from "~/utils/utils";
 import dayjs from "dayjs";
 import _ from "lodash";
 const captureRef = ref(null);
@@ -134,35 +138,32 @@ const totalTimeList = ref([...morningList, ...afternoonList]);
 
 // 通用合计方法（永远不用改）
 const getSummary = ({ columns, data }) => {
-  // const summaryProps = props.showHold ? ["今日总涨跌", "单日总损耗", "总盈亏", "仓位", "持仓", "持仓金额变化"] : ["持仓金额变化"];
   return columns.map((col, index) => {
-    // 第一列显示“合计”
     if (index === 0) return "合计";
-    // 当前列在合计列表里 → 求和
     if (col.property.includes(":")) {
-      let sum = 0;
+      let sum = 0, pnlSum = 0;
       data.forEach((row) => {
         row.list.forEach((order) => {
           if (isInNext5Minutes(col.property, order["成交时间"])) {
             sum += order["持仓变化"] * order["成交价格"] * 10000;
+            pnlSum += order["相对收盘盈亏"] || 0;
           }
         });
       });
-      if (sum) return formatDecimal(sum, 0);
+      if (sum || pnlSum) return formatDecimal(sum, 0) + '\n' + formatDecimal(pnlSum, 0);
       return "";
     }
     if (col.property === "成交金额sum") {
-      let sum = 0;
+      let sum = 0, pnlSum = 0;
       data.forEach((row) => {
         row.list.forEach((order) => {
           sum += order["持仓变化"] * order["成交价格"] * 10000;
+          pnlSum += order["相对收盘盈亏"] || 0;
         });
       });
-      if (sum) return formatDecimal(sum, 0);
+      if (sum || pnlSum) return formatDecimal(sum, 0) + '\n' + formatDecimal(pnlSum, 0);
       return "";
     }
-
-    // 不在列表 → 空
     return "";
   });
 };

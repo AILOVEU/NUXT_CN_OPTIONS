@@ -13,7 +13,7 @@
         <MoneyTrend :tiledData="tiledData" :comboList="comboList" />
       </Card>
       <Card header="交割单_OrderTimeline">
-        <OrderTimeline :orderList="orderList" />
+        <OrderTimeline :orderList="orderList" :tiledData="tiledData" />
       </Card>
       <Card header="时间价值分析_SankeyInfo">
         <SankeyInfo :tiledData="tiledData" :comboList="comboList" />
