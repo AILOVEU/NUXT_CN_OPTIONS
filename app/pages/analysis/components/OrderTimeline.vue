@@ -7,6 +7,9 @@
       <el-form-item label="沽购">
         <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
       </el-form-item>
+      <el-form-item label="买卖">
+        <TabSelectMult :options="['买入', '卖出'].map((el) => ({ label: el, value: el }))" v-model="formData.买卖List" />
+      </el-form-item>
     </el-form>
   </div>
   <OrderTable :formData="formData" :orderList="curOrderList" :dayStr="dayjs().format('YYYY-MM-DD')" />
@@ -32,12 +35,19 @@ const tiledMap = computed(() => {
 const formData = reactive({
   正股List: [...OPTIONS_MAP.map((el) => el.code)],
   沽购List: ["沽", "购"],
+  买卖List: ["买入", "卖出"],
 });
 
 const curOrderList = computed(() => {
   const flat = (props.orderList || []).flat();
+  const { 买卖List } = formData;
+  const showBuy = 买卖List.includes("买入");
+  const showSell = 买卖List.includes("卖出");
   const groups = {};
   for (const item of flat) {
+    // 买卖过滤
+    if (!showBuy && item["持仓变化"] * item["成交价格"] > 0) continue;
+    if (!showSell && item["持仓变化"] * item["成交价格"] <= 0) continue;
     const name = item["期权名称"];
     if (!groups[name]) groups[name] = [];
     groups[name].push(item);

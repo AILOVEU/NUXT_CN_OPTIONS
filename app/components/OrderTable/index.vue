@@ -20,7 +20,7 @@
           </div>
         </div>
       </el-table-column>
-      <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right">
+      <el-table-column #default="{ row }" label="总计" prop="成交金额sum" width="50" align="center" fixed="right" class-name="total-col">
         <div class="px-[2px] mx-auto pb-[5px]">
           <div class="text-[gray] text-center">{{ row.持仓变化sum }}</div>
           <div class="text-center font-semibold">{{ formatDecimal(row.成交金额sum * 10000, 0) }}</div>
@@ -216,3 +216,20 @@ const getSummary = ({ columns, data }) => {
   });
 };
 </script>
+<style scoped>
+:deep(.total-col) {
+  background-color: #fff7e6 !important;
+}
+:deep(.total-col .cell) {
+  background-color: #fff7e6 !important;
+}
+:deep(.el-table__body tr:hover .total-col) {
+  background-color: #fff7e6 !important;
+}
+:deep(.el-table__body tr:hover .total-col .cell) {
+  background-color: #fff7e6 !important;
+}
+:deep(.el-table__footer-wrapper .el-table__cell) {
+  background-color: #fff7e6 !important;
+}
+</style>
