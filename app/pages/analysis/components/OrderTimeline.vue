@@ -43,13 +43,9 @@ const curOrderList = computed(() => {
     groups[name].push(item);
   }
   return Object.entries(groups).map(([期权名称, list]) => {
-    let 成交金额sum = 0, 持仓变化sum = 0, 相对收盘盈亏sum = 0;
     const 收盘价 = tiledMap.value[期权名称] || 0;
     for (const item of list) {
-      成交金额sum += item["持仓变化"] * item["成交价格"];
-      持仓变化sum += item["持仓变化"];
       item["相对收盘盈亏"] = (收盘价 - item["成交价格"]) * item["持仓变化"] * 10000;
-      相对收盘盈亏sum += item["相对收盘盈亏"];
     }
     const first = list[0];
     return {
@@ -58,9 +54,6 @@ const curOrderList = computed(() => {
       正股ShowName: stockNameMap[first["正股代码"]] || "",
       沽购: 期权名称.includes("购") ? "购" : "沽",
       list,
-      成交金额sum,
-      持仓变化sum,
-      相对收盘盈亏sum,
     };
   });
 });

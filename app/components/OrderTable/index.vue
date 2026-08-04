@@ -2,7 +2,7 @@
   <Capture :title="props.dayStr + '交割单'" ref="captureRef">
     <div class="flex justify-center pb-[5px] cursor-pointer" @click="() => captureRef.download()">{{ props.dayStr }}交割单 <el-button link>⬇</el-button></div>
     <TabSelect :options="intervalOptions" v-model="timeInterval" class="mb-2" />
-    <el-table style="width: 100%" :data="filterTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary" :cell-style="getSpecialTimeStyle">
+    <el-table style="width: 100%" :data="enrichedTableData" size="small" border stripe height="100%" :highlight-current-row="false" show-summary :summary-method="getSummary" :cell-style="getSpecialTimeStyle">
       <el-table-column label="期权名称" prop="期权名称" width="135" align="left" fixed="left"> </el-table-column>
       <el-table-column label="正股" prop="正股ShowName" width="60" align="center" fixed="left" />
       <el-table-column label="沽购" #default="{ row }" prop="沽购" align="center" width="30" fixed="left">
@@ -50,7 +50,7 @@ const intervalOptions = [
   { value: 30, label: "30分钟" },
   { value: 60, label: "60分钟" },
 ];
-const timeInterval = ref(5);
+const timeInterval = ref(10);
 /**
  * 生成指定时间段内每隔1分钟的时间数组
  * @param {string} start - 开始时间，如 '09:30'
@@ -135,6 +135,17 @@ function isInNextNMinutes(targetTime, checkTime, interval = 5) {
 
 const props = defineProps(["orderList", "dayStr", "formData"]);
 
+// 从 list 中计算行级汇总
+function computeRowSums(list) {
+  let 成交金额sum = 0, 持仓变化sum = 0, 相对收盘盈亏sum = 0;
+  for (const item of list) {
+    成交金额sum += item["持仓变化"] * item["成交价格"];
+    持仓变化sum += item["持仓变化"];
+    相对收盘盈亏sum += item["相对收盘盈亏"] || 0;
+  }
+  return { 成交金额sum, 持仓变化sum, 相对收盘盈亏sum };
+}
+
 // 过滤与校验
 const filterTableData = computed(() => {
   return (
@@ -144,6 +155,14 @@ const filterTableData = computed(() => {
       .filter((el) => props.formData.沽购List.includes(el["沽购"]))
   );
 });
+
+// 带 sum 字段的表格数据
+const enrichedTableData = computed(() =>
+  filterTableData.value.map((row) => ({
+    ...row,
+    ...computeRowSums(row.list || []),
+  }))
+);
 
 // 合并成一个完整数组（按需使用）
 const totalTimeList = computed(() => [
