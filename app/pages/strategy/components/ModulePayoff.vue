@@ -34,10 +34,14 @@ const legsC = computed(() => { const u = U.value, e = E.value; if (!u || !e) ret
 const payoffData = computed(() => computePayoff(U.value, E.value, legsC.value))
 const payoffOpt = computed(() => {
   const p = payoffData.value
-  if (!p) return { title: { text: '该策略在当前到期月无可用合约', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
+  if (!p) return Object.assign({}, BASE_OPT, {
+    title: { text: '该策略在当前到期月无可用合约', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
+    xAxis: [], yAxis: [], series: [],
+  })
   const S = p.S
   const spotIdx = p.xs.reduce((a, b, i) => Math.abs(b - S) < Math.abs(p.xs[a] - S) ? i : a, 0)
   return Object.assign({}, BASE_OPT, {
+    title: { show: false },
     grid: { left: 62, right: 26, top: 30, bottom: 34 },
     legend: { top: 2, data: ['到期损益', '当前理论损益'], textStyle: { color: '#5f6672', fontSize: 11 } },
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 },

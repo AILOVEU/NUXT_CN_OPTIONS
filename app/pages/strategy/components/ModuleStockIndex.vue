@@ -102,6 +102,20 @@ const UNDERLYING_NAMES = { '上证50': '上证50', '沪深300': '沪深300', '�
 const UNDERLYING_SPOTS = { '上证50': 2887.05, '沪深300': 4543.18, '中证1000': 7079.78 }
 const PALETTE = ['#e67e22', '#2f6feb', '#19b36b', '#e02020', '#9b59b6', '#1abc9c']
 
+/* ============ 到期月排序 ============ */
+function parseExpiry(exp) {
+  const m = exp.match(/(\d{2})年(\d{1,2})月/)
+  if (!m) return null
+  return { year: 2000 + parseInt(m[1]), month: parseInt(m[2]) }
+}
+function sortExpiries(exps) {
+  return exps.slice().sort((a, b) => {
+    const pa = parseExpiry(a), pb = parseExpiry(b)
+    if (!pa || !pb) return a.localeCompare(b)
+    return pa.year !== pb.year ? pa.year - pb.year : pa.month - pb.month
+  })
+}
+
 /* ============ 数据加载 ============ */
 const loading = ref(true)
 const err = ref('')
@@ -162,8 +176,7 @@ onMounted(async () => {
     // 默认选第一个标的和第一个到期月
     const uSet = [...new Set(data.map(r => r.underlying))].sort()
     selUnderlying.value = uSet[0] || '上证50'
-    const exps = [...new Set(data.filter(r => r.underlying === selUnderlying.value).map(r => r.expiry))]
-      .sort((a, b) => a.localeCompare(b))
+    const exps = sortExpiries([...new Set(data.filter(r => r.underlying === selUnderlying.value).map(r => r.expiry))])
     selExpiry.value = exps[0] || ''
   } catch (e) { err.value = '加载失败: ' + e.message } finally { loading.value = false }
 })
@@ -172,7 +185,7 @@ onMounted(async () => {
 const underlyings = computed(() => [...new Set(rows.value.map(r => r.underlying))].sort())
 const expiries = computed(() => {
   const exps = [...new Set(rows.value.filter(r => r.underlying === selUnderlying.value).map(r => r.expiry))]
-  return exps.sort((a, b) => a.localeCompare(b))
+  return sortExpiries(exps)
 })
 const filtered = computed(() => rows.value.filter(r => r.underlying === selUnderlying.value && r.expiry === selExpiry.value))
 const allByU = computed(() => {
@@ -235,7 +248,7 @@ const termOpt = computed(() => {
   const series = []
   underlyings.value.forEach((u, i) => {
     const pts = []
-    const exps = [...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))].sort((a, b) => a.localeCompare(b))
+    const exps = sortExpiries([...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))])
     for (const exp of exps) {
       const iv = atmIV(u, exp)
       if (iv != null) pts.push([exp, iv])
@@ -368,7 +381,7 @@ const crossSkewOpt = computed(() => {
   if (!rows.value.length) return Object.assign({}, BASE_OPT)
   const series = []
   underlyings.value.forEach((u, i) => {
-    const exps = [...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))].sort((a, b) => a.localeCompare(b))
+    const exps = sortExpiries([...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))])
     if (!exps.length) return
     const nearExp = exps[0]
     const spot = UNDERLYING_SPOTS[u] || 0
@@ -476,7 +489,6 @@ const gexOpt = computed(() => {
     legend: { top: 2, data: ['认购 Gamma', '认沽 Gamma', '累计净 Gamma'], textStyle: { color: '#5f6672', fontSize: 11 } },
     xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
     yAxis: [Object.assign({ type: 'value', name: 'Gamma 敞口（亿元/1%）' }, AXIS), Object.assign({ type: 'value', name: '累计（亿）', position: 'right', splitLine: { show: false } }, AXIS)],
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
     series: [
       { name: '认购 Gamma', type: 'bar', data: cGex, itemStyle: { color: C_UP, opacity: 0.75 }, barWidth: '40%' },
       { name: '认沽 Gamma', type: 'bar', data: pGex.map(v => -v), itemStyle: { color: C_DN, opacity: 0.75 }, barGap: '15%', barWidth: '40%' },
@@ -516,7 +528,7 @@ const viewpoint = computed(() => {
 
   // 风险反转
   for (const u of underlyings.value) {
-    const exps = [...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))].sort((a, b) => a.localeCompare(b))
+    const exps = sortExpiries([...new Set(rows.value.filter(r => r.underlying === u).map(r => r.expiry))])
     if (!exps.length) continue
     const nearExp = exps[0]
     const spot = UNDERLYING_SPOTS[u] || 0

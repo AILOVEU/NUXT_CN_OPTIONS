@@ -25,7 +25,6 @@ const oiOpt = computed(() => {
     xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
     yAxis: [Object.assign({ type: 'value', name: '持仓量（张）', axisLabel: { color: '#8f95a1', fontSize: 10, formatter: v => Math.abs(v) >= 1e4 ? (Math.abs(v) / 1e4).toFixed(0) + '万' : Math.abs(v) } }, AXIS),
       Object.assign({ type: 'value', name: '亏损（亿）', position: 'right', splitLine: { show: false }, axisLabel: { fontSize: 10 } }, AXIS)],
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
     series: [
       { name: '认购持仓', type: 'bar', data: E.value.byStrike.map(b => b.cOI), itemStyle: { color: C_UP, opacity: .8 }, barGap: '15%', barWidth: '38%', tooltip: { valueFormatter: v => v } },
       { name: '认沽持仓', type: 'bar', data: E.value.byStrike.map(b => b.pOI), itemStyle: { color: C_DN, opacity: .8 }, barWidth: '38%' },

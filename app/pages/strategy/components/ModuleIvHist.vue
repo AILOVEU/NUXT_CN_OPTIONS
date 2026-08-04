@@ -20,13 +20,19 @@ const E = computed(() => props.e)
 const ivHistOpt = computed(() => {
   const u = U.value; if (!u) return {}
   const d = u.ivHist
-  if (!d || !d.length) return { title: { text: '该标的无 IV 历史序列', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
-  if (!E.value) return { title: { text: '加载中…', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
+  if (!d || !d.length) return Object.assign({}, BASE_OPT, {
+    title: { text: '该标的无 IV 历史序列', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
+    xAxis: [], yAxis: [], series: [],
+  })
+  if (!E.value) return Object.assign({}, BASE_OPT, {
+    title: { text: '加载中…', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
+    xAxis: [], yAxis: [], series: [],
+  })
   return Object.assign({}, BASE_OPT, {
+    title: { show: false },
     grid: { left: 52, right: 60, top: 26, bottom: 34 }, legend: { show: false },
     xAxis: Object.assign({ type: 'category', data: d.map(x => x.d), axisLabel: { color: '#8f95a1', fontSize: 10, formatter: v => v.replace(/^(\d{4})\/(\d+)\/\d+$/, '$1/$2') } }, AXIS),
     yAxis: Object.assign({ type: 'value', name: 'IV %', scale: true }, AXIS),
-    dataZoom: [{ type: 'inside', start: 40, end: 100 }, { type: 'slider', height: 14, bottom: 6, borderColor: '#e3e6ea', fillerColor: 'rgba(47,111,235,.08)' }],
     series: [{ type: 'line', data: d.map(x => x.v), symbol: 'none', lineStyle: { width: 1.4, color: C_PUR }, areaStyle: { color: 'rgba(122,90,248,.09)' },
       markLine: { silent: true, symbol: 'none', label: { fontSize: 10, position: 'insideEndTop' }, data: [
         { yAxis: +fmt(E.value.atmIV, 2), lineStyle: { color: C_UP, width: 1.6 }, label: { formatter: '当前 ' + fmt(E.value.atmIV, 1), color: C_UP } },

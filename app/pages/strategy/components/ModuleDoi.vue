@@ -23,7 +23,6 @@ const doiOpt = computed(() => {
     legend: { top: 2, data: ['认购增仓', '认沽增仓'], textStyle: { color: '#5f6672', fontSize: 11 } },
     xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
     yAxis: Object.assign({ type: 'value', name: '日增仓（张）', axisLabel: { color: '#8f95a1', fontSize: 10, formatter: v => Math.abs(v) >= 1e4 ? (v / 1e4).toFixed(0) + '万' : v } }, AXIS),
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
     series: [
       { name: '认购增仓', type: 'bar', data: E.value.byStrike.map(b => b.cDOI), itemStyle: { color: C_UP, opacity: .85 }, barWidth: '40%' },
       { name: '认沽增仓', type: 'bar', data: E.value.byStrike.map(b => b.pDOI), itemStyle: { color: C_DN, opacity: .85 }, barGap: '15%', barWidth: '40%' },

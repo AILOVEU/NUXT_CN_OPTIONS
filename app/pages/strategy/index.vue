@@ -1,6 +1,6 @@
 <template>
   <Nav />
-  <PageNav />
+  <PageNav :ready="loaded" :scroll-offset="100" :sections="pageNavSections" />
   <div v-if="loaded" class="mx-auto max-w-[1560px] px-5 pb-16 pt-[18px] text-[#1f2329]"
     style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
     <header class="mb-3.5 flex flex-wrap items-end justify-between gap-3">
@@ -38,7 +38,7 @@
 
     <!-- 区块一：标的变会变（仅依赖标的） -->
     <section id="section-u" class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5" style="min-height: 480px">
-      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换 — 标的变会变</h2>
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换</h2>
 
       <div id="module-term-structure"><ModuleTermStructure :u="U" style="min-height: 180px" /></div>
 
@@ -54,7 +54,7 @@
 
     <!-- 区块二：标的和到期月都会变 -->
     <section id="section-ue" class="mb-3.5 rounded-lg border border-[#e0913a] bg-[#fff8ef] p-3.5" style="min-height: 700px">
-      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换 — 两者皆变</h2>
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换</h2>
 
       <!-- 结论 -->
       <div id="module-verdict"><ModuleVerdict :u="U" :e="E" style="min-height: 160px" /></div>
@@ -93,7 +93,7 @@
 
     <!-- 静态区：不随标的/到期月筛选变化 -->
     <section id="section-cross" class="mb-3.5 rounded-lg border border-[#9aa3b2] bg-[#f6f7f9] p-3.5">
-      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#6b7280]">六标的横截面（不随筛选变化）</h2>
+      <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#6b7280]">不随筛选变化</h2>
 
       <div id="module-cross-section"><ModuleCrossSection :underlyings="model.underlyings" /></div>
 
@@ -178,6 +178,66 @@ const pickStr = (row, key, d = '') => {
 /* ============ 状态 ============ */
 const model = ref({ underlyings: [], chain: [], valuationDate: '', multiplier: MULT })
 const loaded = ref(false)
+
+/* ============ PageNav 导航配置 ============ */
+const pageNavSections = [
+  {
+    label: '仅随标的切换',
+    anchor: 'section-u',
+    items: [
+      { label: '波动率期限结构', anchor: 'module-term-structure' },
+      { label: '波动率锥 Volatility Cone', anchor: 'module-vol-cone' },
+      { label: '标的近期走势与波动', anchor: 'module-spot-trend' },
+      { label: '指标口径与风险提示', anchor: 'module-methodology' },
+      { label: '隐波规律（当前标的 · 实时计算）', anchor: 'module-iv-regime' },
+    ],
+  },
+  {
+    label: '随标的与到期月切换',
+    anchor: 'section-ue',
+    items: [
+      { label: '综合研判', anchor: 'module-verdict' },
+      { label: 'KPI 卡片', anchor: 'module-kpi-cards' },
+      { label: '方向信号分解', anchor: 'module-dir-signal' },
+      { label: '波动率信号分解', anchor: 'module-vol-signal' },
+      { label: '隐含波动率历史走势', anchor: 'module-iv-hist' },
+      { label: '策略到期损益图', anchor: 'module-payoff' },
+      { label: '策略风险收益指标', anchor: 'module-strategy-kpi' },
+      { label: '波动率微笑 / 偏斜', anchor: 'module-iv-smile' },
+      { label: '持仓量分布与最大痛点', anchor: 'module-oi' },
+      { label: '日增仓分布（资金流向）', anchor: 'module-doi' },
+      { label: 'Gamma 敞口 GEX', anchor: 'module-gex' },
+      { label: '希腊字母沿行权价分布', anchor: 'module-greeks' },
+      { label: 'T 型报价表', anchor: 'module-t-table' },
+    ],
+  },
+  {
+    label: '不随筛选变化',
+    anchor: 'section-cross',
+    items: [
+      { label: '六标的横截面：IV vs 实现波动率', anchor: 'module-cross-section' },
+      { label: '策略象限图', anchor: 'module-quadrant' },
+      { label: '六标的策略排行（近月合约）', anchor: 'module-rank' },
+    ],
+  },
+  {
+    label: 'IV 综合分析与预测',
+    anchor: 'section-vix',
+    items: [
+      { label: '历史走势', anchor: 'module-vix-history' },
+      { label: '波动率锥', anchor: 'module-vix-cone' },
+      { label: '季节性', anchor: 'module-vix-season' },
+      { label: '未来预测', anchor: 'module-vix-forecast' },
+      { label: '当前分位', anchor: 'module-vix-rank' },
+      { label: '相关性矩阵', anchor: 'module-vix-corr' },
+      { label: '核心结论', anchor: 'module-vix-conclusion' },
+    ],
+  },
+  {
+    label: '股指期权全景分析',
+    anchor: 'section-stock-index',
+  },
+]
 const loadError = ref('')
 const valDate = ref('')
 const maxTradeDate = ref('')

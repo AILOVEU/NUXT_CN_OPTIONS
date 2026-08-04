@@ -18,7 +18,10 @@ const U = computed(() => props.u)
 const coneOpt = computed(() => {
   const u = U.value; if (!u) return {}
   const lh = u.longHV
-  if (!lh || !lh.cone) return { title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
+  if (!lh || !lh.cone) return Object.assign({}, BASE_OPT, {
+    title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
+    xAxis: [], yAxis: [], series: [],
+  })
   const xs = lh.cone.map(c => c.win + '日')
   const band = (a, b, color, name) => ([
     { name: name + '_base', type: 'line', stack: name, data: lh.cone.map(c => c[a]), symbol: 'none', lineStyle: { opacity: 0 }, silent: true, tooltip: { show: false } },
@@ -26,6 +29,7 @@ const coneOpt = computed(() => {
   ])
   const ivPts = (u.expiries || []).map(ex => [ex.days * 250 / 365, ex.atmIV])
   return Object.assign({}, BASE_OPT, {
+    title: { show: false },
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 } },
     legend: { top: 2, data: ['中位数', '近期实现波动率', '当前各期限 IV'], textStyle: { color: '#5f6672', fontSize: 11 } },
     xAxis: Object.assign({ type: 'category', data: xs, name: '统计窗口' }, AXIS),

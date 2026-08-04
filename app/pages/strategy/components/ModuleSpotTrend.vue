@@ -16,9 +16,13 @@ const props = defineProps({
 const U = computed(() => props.u)
 
 const spotOpt = computed(() => {
-  const u = U.value; if (!u || !u.hv.closes || !u.hv.closes.length) return { title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } } }
+  const u = U.value; if (!u || !u.hv.closes || !u.hv.closes.length) return Object.assign({}, BASE_OPT, {
+    title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
+    xAxis: [], yAxis: [], series: [],
+  })
   const cs = u.hv.closes
   return Object.assign({}, BASE_OPT, {
+    title: { show: false },
     grid: { left: 52, right: 56, top: 26, bottom: 34 }, legend: { show: false },
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, backgroundColor: 'rgba(255,255,255,.97)', borderColor: '#e3e6ea', borderWidth: 1, textStyle: { color: '#1f2329', fontSize: 12 } },
     xAxis: Object.assign({ type: 'category', data: cs.map(x => x.d), axisLabel: { fontSize: 10, rotate: 35, interval: 0 } }, AXIS),

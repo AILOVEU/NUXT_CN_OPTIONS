@@ -24,7 +24,6 @@ const gexOpt = computed(() => {
     legend: { top: 2, data: ['认购 Gamma', '认沽 Gamma', '累计净 Gamma'], textStyle: { color: '#5f6672', fontSize: 11 } },
     xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
     yAxis: [Object.assign({ type: 'value', name: 'Gamma 敞口（亿元/1%）' }, AXIS), Object.assign({ type: 'value', name: '累计（亿）', position: 'right', splitLine: { show: false } }, AXIS)],
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }],
     series: [
       { name: '认购 Gamma', type: 'bar', data: E.value.byStrike.map(b => +(b.gexC / 1e8).toFixed(3)), itemStyle: { color: C_UP, opacity: .75 }, barWidth: '40%' },
       { name: '认沽 Gamma', type: 'bar', data: E.value.byStrike.map(b => +(-b.gexP / 1e8).toFixed(3)), itemStyle: { color: C_DN, opacity: .75 }, barGap: '15%', barWidth: '40%' },

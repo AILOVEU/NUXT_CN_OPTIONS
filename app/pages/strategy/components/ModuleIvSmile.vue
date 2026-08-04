@@ -23,7 +23,6 @@ const smileOpt = computed(() => {
     legend: { top: 2, data: ['认购 IV', '认沽 IV', '平均'], textStyle: { color: '#5f6672', fontSize: 11 } },
     xAxis: Object.assign({ type: 'category', data: ks, name: '行权价', axisLabel: { interval: 1, fontSize: 10, rotate: 35 } }, AXIS),
     yAxis: Object.assign({ type: 'value', name: 'IV %', scale: true }, AXIS),
-    dataZoom: [{ type: 'inside', start: 0, end: 100 }, { type: 'slider', bottom: 0, height: 14, borderColor: '#e3e6ea', fillerColor: 'rgba(47,111,235,.08)' }],
     series: [
       { name: '认购 IV', type: 'line', data: E.value.byStrike.map(b => b.cIV), smooth: true, symbolSize: 5, lineStyle: { width: 2, color: C_UP }, itemStyle: { color: C_UP }, connectNulls: true },
       { name: '认沽 IV', type: 'line', data: E.value.byStrike.map(b => b.pIV), smooth: true, symbolSize: 5, lineStyle: { width: 2, color: C_DN }, itemStyle: { color: C_DN }, connectNulls: true },
