@@ -27,7 +27,7 @@ ETF_LIST = {
     "588000": "科创50ETF",
 }
 
-OUTPUT_DIR = "..//public/etf-1min-data"
+OUTPUT_DIR = os.path.join("public", "etf-1min-data")
 REQUEST_DELAY = (0.5, 1.5)
 MAX_RETRY = 1
 
