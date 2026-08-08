@@ -4,23 +4,47 @@
       <Nav />
 
       <div class="w-full pb-[12px]">
-        <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
+        <TabSelect :options="stockCodeOptions" v-model="formData.stockCode" @click="handleStockCodeChange" />
+      </div>
+      <div class="w-full pb-[12px]">
+        <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
       </div>
     </div>
-    <div class="h-[calc(100vh-80px)] max-md:h-[calc(335vh-120px)] flex justify-center">
+    <div class="h-[calc(100vh-200px)] max-md:h-[calc(335vh-120px)] flex justify-center">
       <div class="mx-auto overflow-x-auto">
-        <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%" :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
-          <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约"><Options :row="getRowTargetOption(row, 'C')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="C_价值" prop="C_价值"><Time :row="getRowTargetOption(row, 'C')" /> </el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息"><Info :row="getRowTargetOption(row, 'C')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓"><Hold :row="getRowTargetOption(row, 'C')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格"><Price :row="getRowTargetOption(row, 'C')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="80" label="期权" prop="期权"><Center :row="row" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格"><Price :row="getRowTargetOption(row, 'P')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓"><Hold :row="getRowTargetOption(row, 'P')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息"><Info :row="getRowTargetOption(row, 'P')" /></el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="P_价值" prop="P_价值"><Time :row="getRowTargetOption(row, 'P')" /> </el-table-column>
-          <el-table-column #default="{ row }" align="center" width="100" label="P_合约" prop="P_合约"><Options :row="getRowTargetOption(row, 'P')" /></el-table-column>
+        <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%"
+          :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef">
+          <el-table-column #default="{ row }" align="center" width="100" label="C_合约" prop="C_合约">
+            <Options :row="getRowTargetOption(row, 'C')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="C_价值" prop="C_价值"><Time
+              :row="getRowTargetOption(row, 'C')" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_信息" prop="C_信息">
+            <Info :row="getRowTargetOption(row, 'C')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓">
+            <Hold :row="getRowTargetOption(row, 'C')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="C_价格" prop="C_价格">
+            <Price :row="getRowTargetOption(row, 'C')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="80" label="期权" prop="期权">
+            <Center :row="row" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="125" lalbel="P_价格" prop="P_价格">
+            <Price :row="getRowTargetOption(row, 'P')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓">
+            <Hold :row="getRowTargetOption(row, 'P')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_信息" prop="P_信息">
+            <Info :row="getRowTargetOption(row, 'P')" />
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_价值" prop="P_价值"><Time
+              :row="getRowTargetOption(row, 'P')" /> </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="100" label="P_合约" prop="P_合约">
+            <Options :row="getRowTargetOption(row, 'P')" />
+          </el-table-column>
         </el-table>
       </div>
     </div>
@@ -34,8 +58,9 @@ import Options from "./components/Options.vue";
 import Time from "./components/Time.vue";
 import Hold from "./components/Hold.vue";
 import { queryRow } from "~/utils/queryRow.js";
-import { OPTIONS_MAP } from "~/data";
 import { useGlobal } from "~/stores/useGlobal.js";
+import { deadline_list, OPTIONS_MAP } from "~/data";
+
 const { globalLoading } = useGlobal();
 const tableRef = ref();
 const stockCodeOptions = computed(() => {
@@ -45,7 +70,10 @@ const stockCodeOptions = computed(() => {
   }));
   return [...ops, { value: "all", label: "全" }];
 });
-const stockCode = ref(stockCodeOptions.value[0].value);
+const formData = reactive({
+  到期日List: [...deadline_list],
+  stockCode: stockCodeOptions.value[0].value
+});
 const tableData = reactive({
   data: [],
   comboList: [],
@@ -54,8 +82,9 @@ const tableData = reactive({
 });
 async function handleQuery() {
   tableData.loading = true;
-  const [tData, comboList, tiledData] = await queryRow(stockCode.value === "all" ? OPTIONS_MAP.map((el) => el.code) : [stockCode.value]);
-  tableData.data = tData || [];
+  const [tData, comboList, tiledData] = await queryRow(formData.stockCode === "all" ? OPTIONS_MAP.map((el) => el.code) : [formData.stockCode]);
+  tableData.data = (tData || []);
+  // tableData.data = (tData || []);
   tableData.comboList = comboList;
   tableData.tiledData = tiledData;
   tableData.loading = false;
@@ -84,6 +113,7 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
+    if(!formData.到期日List.includes(el["到期日"])) return false;
     if (el["is保留行"]) return true;
     if (el["is旧期权"]) return false;
     if (el['_current'] || el['_split']) return true;
@@ -117,13 +147,16 @@ function getRowStyle({ row }) {
 .el-table--small .cell {
   padding: 0 2px;
 }
+
 .el-table--small .el-table__cell {
   padding: 0px 0;
 }
+
 .el-radio-group {
   justify-content: center;
   width: 100%;
 }
+
 .el-radio-button {
   flex: 1;
 }

@@ -50,7 +50,7 @@ function handleTData(dataList) {
       if (a["到期日"] === b["到期日"]) {
         return a["行权价"] - b["行权价"];
       }
-      return dayjs(a["到期日"], "YYYY-MM-DD").isBefore(dayjs(b["到期日"], "YYYY-MM-DD")) ? 1 : -1;
+      return dayjs(a["到期日"], "YYYY-MM-DD").isAfter(dayjs(b["到期日"], "YYYY-MM-DD")) ? 1 : -1;
     }
     const aSort = OPTIONS_MAP.findIndex((el) => el.code === a["正股代码"]);
     const bSort = OPTIONS_MAP.findIndex((el) => el.code === b["正股代码"]);

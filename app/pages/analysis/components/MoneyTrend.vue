@@ -285,7 +285,7 @@ const commonMark = {
           color: "red",
         },
         name: "创新高",
-        yAxis: 43029,
+        yAxis: 122641,
         label: {
           show: true,
           position: "insideStart", // 靠左（最关键）
