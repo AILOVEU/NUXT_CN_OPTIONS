@@ -1,10 +1,10 @@
 // import dayjs from "dayjs";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-const COOKIE_LIST = {
-  _: "qgqp_b_id=fb5df5b6e0a7997070f2db46d13f174b; st_nvi=L1yWEeMo0BhKl3nWNh5Tb07e2; nid18=0f4f961de20f18db67adee4fe5e66cff; nid18_create_time=1785402357622; gviem=xvoxpNTEUNy_P-et58JHJ1c92; gviem_create_time=1785402357622; st_si=27037550150532; st_pvi=85216879439588; st_sp=2026-07-30%2017%3A05%3A56; st_inirUrl=https%3A%2F%2Fwww.google.com.hk%2F; st_sn=1; st_psi=20260804150400859-113200301321-4929574315; st_asi=delete",
-};
+const COOKIE = readFileSync(resolve("app/data/eastmoney_cookie.dat"), "utf-8").trim();
 export default eventHandler(async (event) => {
-  let cookie = COOKIE_LIST[getQuery(event)["fs"]] || COOKIE_LIST["_"];
+  let cookie = COOKIE;
   const res = await $fetch("https://push2." + "eastmoney.com" + "/api/qt/" + "clist/get", {
     method: "get",
     params: getQuery(event),
