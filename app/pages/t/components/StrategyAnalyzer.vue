@@ -140,19 +140,30 @@ const totalCount = computed(() => props.positions.reduce((s, p) => s + Math.abs(
 
 // 基于图表同源的 Black-Scholes 理论价，为每个持仓计算：盈亏后价(theoPrice) + 总盈亏(pnlTotal)
 // 使用每个持仓自身的正股价格/到期天数/隐波，避免多标的下用错 S0
+// 按当前滑块模拟的参数（正股/剩余天数/隐波）计算单个持仓理论价，滑动时随滑块实时变化
+function simulatedPrice(p) {
+  let spot = p.spotPrice;
+  let dte = p.dte;
+  let iv = p.iv;
+  if (activeTab.value === "price") {
+    spot = sliderRealValue.value;
+    dte = timeSliderValue.value;
+    iv = ivSliderValue.value;
+  } else if (activeTab.value === "time") {
+    dte = sliderRealValue.value;
+  } else if (activeTab.value === "iv") {
+    iv = sliderRealValue.value;
+  }
+  try {
+    return blackScholesOptionPrice(spot, p.strike, RISK_FREE_RATE, Math.max(dte, 0) / 365, iv, p.type);
+  } catch {
+    return p.entryPrice;
+  }
+}
+
 const enrichedPositions = computed(() => {
   return props.positions.map((p) => {
-    let theo = p.entryPrice;
-    try {
-      theo = blackScholesOptionPrice(
-        p.spotPrice,
-        p.strike,
-        RISK_FREE_RATE,
-        Math.max(p.dte, 0) / 365,
-        p.iv,
-        p.type
-      );
-    } catch { }
+    const theo = simulatedPrice(p);
     return {
       ...p,
       theoPrice: theo,
