@@ -1,7 +1,18 @@
 <template>
   <Nav />
-  <div class="p-6 mx-auto" v-loading="tableData.loading">
-    <el-input v-model="formData.top" />
+  <div class="px-6 mx-auto" v-loading="tableData.loading">
+    <div class="flex justify-start">
+      <el-button size="small" @click="handleNoCacheRefresh" :disabled="formData.stockCode === 'all'">无缓存刷新</el-button>
+      <span class="text-[12px] text-gray-400 ml-2 self-center">单次无缓存获取全量数据，不写入缓存</span>
+    </div>
+    <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
+      <el-form-item label="筛选个数">
+        <el-input v-model="formData.top" />
+      </el-form-item>
+      <el-form-item label="沽购">
+        <TabSelect :options="stockCodeOptions" v-model="formData.stockCode" @click="handleStockCodeChange" />
+      </el-form-item>
+    </el-form>
     <!-- 筛选分组区域 -->
     <div class="border rounded-lg p-2 mb-1 bg-gray-50">
       <div class="flex justify-between items-center mb-4">
@@ -85,17 +96,18 @@
     <!-- 筛选结果表格 -->
     <div>
       <h3 class="font-medium mb-2">筛选结果：共 {{ filterData.length }} 条数据</h3>
-      <FilterList :checkIsChance="() => true" :data="filterData.slice(0, formData.top)" :showHold="false" />
+      <FilterList :data="filterData.slice(0, formData.top)" :showHold="false" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, defineProps } from "vue";
+import { ref, computed } from "vue";
 import { OPTIONS_MAP, deadline_list } from "~/data";
 
 const formData = reactive({
   top: 20,
+  stockCode: 'all'
 });
 const tableData = reactive({
   tiledData: [],
@@ -108,14 +120,27 @@ async function handleQuery() {
   tableData.loading = false;
 }
 handleQuery();
+// 无缓存刷新：单次无缓存获取全量数据（saveData=false 不写缓存）
+async function handleNoCacheRefresh() {
+  tableData.loading = true;
+  const [tiledData] = await get_http_data([formData.stockCode], { useCatch: false, saveData: false });
+  tableData.tiledData = tiledData;
+  tableData.loading = false;
+}
 
 // 筛选下拉选项配置
-const filter1Opts = ref(
-  OPTIONS_MAP.map((el) => ({
+
+const stockCodeOptions = computed(() => {
+  let ops = OPTIONS_MAP.map((el) => ({
     value: el.code,
     label: el.showName,
-  }))
-);
+  }));
+  return [...ops, { value: "all", label: "全" }];
+});
+const filter1Opts = computed(() => {
+  if (formData.stockCode === 'all') return stockCodeOptions.value.filter(el => el['value'] !== 'all')
+  return stockCodeOptions.value.filter(el => el['value'] === formData.stockCode)
+})
 const filter2Opts = ref([...deadline_list]);
 const filter3Opts = ref(["沽", "购"]);
 
@@ -162,7 +187,7 @@ const resetAll = () => {
 
 // 核心计算属性：过滤数据
 const filterData = computed(() => {
-  const source = tableData.tiledData;
+  const source = tableData.tiledData.filter(el=> formData.stockCode === 'all' || el.正股代码 === formData.stockCode);
   // 无任何筛选条件，返回全部数据
   const totalRules = groupList.value.reduce((sum, g) => sum + g.rules.length, 0);
   if (totalRules === 0) return source;

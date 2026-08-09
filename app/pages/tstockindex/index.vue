@@ -1,5 +1,6 @@
 <template>
   <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[335%]">
+    <Nav />
     <div>
       <div class="w-full pb-[12px]">
         <TabSelect :options="stockCodeOptions" v-model="formData.stockCode" @click="handleStockCodeChange" />
@@ -8,7 +9,7 @@
         <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
       </div>
     </div>
-    <div class="h-[calc(100vh-200px)] max-md:h-[calc(335vh-120px)] flex gap-2">
+    <div class="h-[calc(100vh-150px)] max-md:h-[calc(335vh-120px)] flex gap-2">
       <div class="flex-1 overflow-x-auto">
         <el-table :data="filteredTableData" style="width: 100%" size="small" border height="100%"
           :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef"

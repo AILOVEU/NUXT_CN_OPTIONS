@@ -54,7 +54,7 @@ const stockIndexUpdateTime = ref(localStorage.getItem("STOCKINDEX_updateTime"));
 const CAN_REFRES_NAV_LIST = ["/hold", "/filter", "/spread", "/analysis"];
 const CAN_REFRES_STOCKINDEX_NAV_LIST = ["/stockindex"];
 
-const CUSTOM_QUERY_NAV_LIST = ["/stockindex"];
+const CUSTOM_QUERY_NAV_LIST = ["/stockindex", '/tstockindex'];
 const navGroups = [
   {
     name: "期权",
@@ -70,12 +70,14 @@ const navGroups = [
     items: [
       { href: "/analysis", name: "★分析" },
       { href: "/strategy", name: "策略" },
+      { href: "/t", name: "T型" },
     ],
   },
   {
     name: "股指",
     items: [
       { href: "/stockindex", name: "股指" },
+      { href: "/tstockindex", name: "股指T型" },
     ],
   },
   {
@@ -132,8 +134,7 @@ function handleQuery(catchAll = false) {
   const useCatch = false;
   get_http_data(
     OPTIONS_MAP.map((el) => el.code),
-    useCatch,
-    catchAll
+    { useCatch, catchAll }
   )
     .then(([tiledData]) => {
       if (tiledData.length) {

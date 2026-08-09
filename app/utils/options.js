@@ -945,8 +945,11 @@ export function calculateGammaFlip(optionList, { riskFreeRate = 0.015, contractM
 // 一般只请求持仓的数据，若需要请求所有数据，不提供切回只展示持仓的模式
 export async function get_http_data(
   正股代码List,
-  useCatch = true, // 默认使用缓存数据
-  catchAll = true // 当useCatch为false，请求接口时默认缓存所有
+  {
+    useCatch = true, // 默认使用缓存数据
+    catchAll = true, // 当useCatch为false，请求接口时默认缓存所有
+    saveData = true, // 是否把请求到的数据保存到缓存接口
+  } = {}
 ) {
   let _tiledData = [];
   let 持仓JSON = await $fetch("/api/queryHoldJsonByQianlong");
@@ -979,7 +982,7 @@ export async function get_http_data(
         list.forEach((el) => {
           _tiledData.push(...el);
         });
-        if (_tiledData.length) {
+        if (_tiledData.length && saveData) {
           $fetch("/api/save_ETFOption_data", {
             method: "post",
             body: { data: _tiledData },

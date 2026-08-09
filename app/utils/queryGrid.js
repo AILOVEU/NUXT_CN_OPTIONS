@@ -99,8 +99,8 @@ function handleHoldData(dataList, 正股代码List) {
   });
   return tableData;
 }
-export async function queryGrid(正股代码List, useCatch) {
-  const [tiledData, comboList, filteredOptionsList] = await get_http_data(正股代码List, useCatch);
+export async function queryGrid(正股代码List, { useCatch = true, saveData = true } = {}) {
+  const [tiledData, comboList, filteredOptionsList] = await get_http_data(正股代码List, { useCatch, saveData });
   const tableData = handleHoldData(tiledData, 正股代码List);
   return [tableData, comboList, tiledData, filteredOptionsList];
 }

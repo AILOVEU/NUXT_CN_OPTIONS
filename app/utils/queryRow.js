@@ -59,7 +59,7 @@ function handleTData(dataList) {
   return tiledData;
 }
 export async function queryRow(正股代码, useCatch) {
-  const [tiledData, comboList] = await get_http_data(正股代码, useCatch);
+  const [tiledData, comboList] = await get_http_data(正股代码, { useCatch });
   const tableData = handleTData(tiledData);
   return [tableData, comboList, tiledData];
 }

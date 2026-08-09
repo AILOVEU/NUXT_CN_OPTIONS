@@ -25,7 +25,7 @@
       <el-table-column type="expand">
         <template #default="props">
           <div>
-            <FilterList :checkIsChance="checkIsFilter" :data="props.row.children" :isCombo="!props.row.single" :showHold="true" />
+            <FilterList :data="props.row.children.filter(el=> checkIsFilter(el))" :isCombo="!props.row.single" :showHold="true" />
           </div>
         </template>
       </el-table-column>
@@ -39,7 +39,7 @@
       </el-table-column>
     </el-table>
     <div v-if="持仓变化Table.length" class="flex justify-center items-center">清仓列表</div>
-    <FilterList v-if="持仓变化Table.length" :checkIsChance="() => true" :data="持仓变化Table" :showHold="false" />
+    <FilterList v-if="持仓变化Table.length"  :data="持仓变化Table" :showHold="false" />
   </template>
 
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">

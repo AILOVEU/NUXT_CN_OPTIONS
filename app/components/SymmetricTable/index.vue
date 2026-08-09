@@ -35,14 +35,10 @@
                 <el-button link>⬇</el-button>
               </div>
             </template>
-            <template #default="{ row }" v-if="label === '期权'">
-              <Center :row="row" />
-            </template>
-            <template #default="{ row }" v-else-if="label.includes('市场')">
-              <Data :row="row" :isCall="type === 'C'" :minMaxData="minMaxData" />
-            </template>
-            <template #default="{ row }" v-else>
-              <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode"
+            <template #default="{ row }">
+              <Center v-if="label === '期权'" :row="row" />
+              <Data v-else-if="label.includes('市场')" :row="row" :isCall="type === 'C'" :minMaxData="minMaxData" />
+              <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData" :mode="props.mode"
                 :indexVal="indexVal" :showTypeVal="showTypeVal" />
             </template>
           </el-table-column>

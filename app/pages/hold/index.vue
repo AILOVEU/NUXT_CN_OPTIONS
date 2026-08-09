@@ -3,6 +3,11 @@
     <div>
       <Nav v-if="mode === 'hold'" @download="handleDownload" />
       <div class="w-full pb-[12px]">
+        <div class="flex items-center gap-[8px] px-[10px] pb-[6px]">
+          <el-button size="small" @click="handleSingleRefresh"
+            :disabled="!stockCode || stockCode === 'all'">单码无缓存刷新</el-button>
+          <span class="text-[12px] text-gray-400">仅获取当前正股实时数据，不写入缓存</span>
+        </div>
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
@@ -10,7 +15,8 @@
     <div class="h-[calc(100vh-80px)] overflow-y-auto max-md:h-[calc(220vh-85px)] flex justify-center">
       <div class="mx-auto">
         <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型">
-          <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="filterTableDataByStockCode(item)" :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+          <SymmetricTable :showTypeVal="showTypeVal" :symmetricData="filterTableDataByStockCode(item)"
+            :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
         </Capture>
       </div>
     </div>
@@ -31,7 +37,7 @@ const mode = computed(() => {
   return props.mode || "hold";
 });
 
-const stockCode = ref("all");
+const stockCode = ref(OPTIONS_MAP[0].code);
 const reversed_deadline_list = [...deadline_list].reverse();
 const tableData = reactive({
   symmetricData: [],
@@ -57,6 +63,16 @@ async function handleQuery() {
   tableData.loading = false;
 }
 handleQuery();
+// 单码无缓存刷新：仅获取当前正股实时数据（saveData=false 不写缓存），不更新filteredOptionsList以保留tab切换
+async function handleSingleRefresh() {
+  if (!stockCode.value || stockCode.value === "all") return;
+  tableData.loading = true;
+  const [symmetricData, comboList, tiledData] = await queryGrid([stockCode.value], { useCatch: false, saveData: false });
+  tableData.symmetricData = symmetricData || [];
+  tableData.tiledData = tiledData;
+  tableData.comboList = comboList;
+  tableData.loading = false;
+}
 function handleStockCodeChange() {
   tableList.value = [stockCode.value];
   // setTimeout(() => {
@@ -96,16 +112,20 @@ async function handleDownload() {
 .el-table--small .cell {
   padding: 0 0px;
 }
+
 .el-table--small .el-table__cell {
   padding: 0px 0;
 }
+
 .el-radio-group {
   justify-content: center;
   width: 100%;
 }
+
 .el-radio-button {
   flex: 1;
 }
+
 // .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
 //   border: 0;
 // }

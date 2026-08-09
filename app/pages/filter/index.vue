@@ -2,13 +2,18 @@
   <div v-loading="globalLoading.value" class="max-md:w-[255%]">
     <Nav />
     <div class="px-[50px]">
+      <div class="w-full flex justify-start mb-[6px]">
+        <el-button size="small" @click="querySingle" :disabled="showType === 'list'">无缓存刷新</el-button>
+        <span class="text-[12px] text-gray-400 ml-2 self-center">单次无缓存获取数据，不写入缓存</span>
+      </div>
       <el-form size="small" :model="formData" label-width="auto" label-suffix=":">
         <div>
           <el-form-item label="正股">
             <TabSelectMult :options="stockOptions" v-model="formData.正股List" />
           </el-form-item>
           <el-form-item label="到期日" clearable>
-            <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))" v-model="formData.到期日List" />
+            <TabSelectMult :options="deadline_list.map((el) => ({ label: el, value: el }))"
+              v-model="formData.到期日List" />
           </el-form-item>
           <el-form-item label="沽购" clearable>
             <TabSelectMult :options="['沽', '购'].map((el) => ({ label: el, value: el }))" v-model="formData.沽购List" />
@@ -155,20 +160,17 @@
       </el-form>
     </div>
     <div class="w-full flex mb-[12px] gap-[20px] justify-between">
-      <div
-        class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
+      <div class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
         v-for="item in [
           { label: '列表', value: 'list' },
           { label: 'T型', value: 'symmetric' },
-        ]"
-        :class="{ active: item.value === showType }"
-        @click="showType = item.value"
-      >
+        ]" :class="{ active: item.value === showType }" @click="showType = item.value">
         {{ item.label }}
       </div>
     </div>
-    <FilterList v-if="showType === 'list'" :checkIsChance="checkIsChance" :showHold="false" />
-    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)" />
+    <FilterList v-if="showType === 'list'" :showHold="false" :data="filteredTableData" />
+    <FilterSymmetric v-else-if="showType === 'symmetric'" :checkIsChance="checkIsChance" :key="JSON.stringify(formData)"
+      :正股代码List="formData.正股List" :refreshNonce="refreshNonce" />
   </div>
 </template>
 
@@ -181,6 +183,8 @@ import { deadline_list, OPTIONS_MAP } from "~/data";
 const { globalLoading } = useGlobal();
 
 const showType = ref("list");
+// 无缓存刷新计数：点击按钮 +1，子组件 watch 后单次无缓存获取数据（T型视图下 stockCode 为空或'all'时无操作）
+const refreshNonce = ref(0);
 const stockOptions = OPTIONS_MAP.map((el) => ({
   label: el.name,
   value: el.code,
@@ -262,6 +266,31 @@ function checkIsChance(target) {
 
   return true;
 }
+
+
+const tableData = reactive({
+  tiledData: [],
+  loading: false,
+});
+async function handleQuery({ useCatch = true, saveData = true } = {}) {
+  tableData.loading = true;
+  const catchAll = saveData;
+  const codeList = saveData ? OPTIONS_MAP.map((el) => el.code) : formData.正股List
+  const [tiledData] = await get_http_data(codeList, { useCatch, saveData, catchAll });
+  tableData.tiledData = tiledData;
+  tableData.loading = false;
+}
+const filteredTableData = computed(() => {
+  return tableData.tiledData.filter(checkIsChance);
+})
+handleQuery();
+function querySingle() {
+  if (showType.value === 'list') {
+    handleQuery({ useCatch: false, saveData: false });
+  } else {
+    refreshNonce.value = refreshNonce.value + 1;
+  }
+}
 </script>
 
 <style scoped>
@@ -269,12 +298,15 @@ function checkIsChance(target) {
   color: white;
   background-color: #409eff;
 }
+
 ::v-deep(.el-form-item) {
   margin-bottom: 6px;
 }
+
 ::v-deep(.el-radio-group) {
   justify-content: flex-start;
 }
+
 ::v-deep(.el-table--small .cell) {
   padding: 0 0px 0 0 !important;
 }

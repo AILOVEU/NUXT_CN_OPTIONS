@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="tableData.loading" class="flex justify-center">
+  <div class="flex justify-center">
     <div class="mx-auto overflow-x-auto border-[5px] border-[#576a8f]">
       <Capture title="期权列表" ref="captureRef">
         <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false"
@@ -174,7 +174,7 @@
 import _ from "lodash";
 import { deadline_list, OPTIONS_MAP } from "~/data";
 
-const props = defineProps(["checkIsChance", "data", "isCombo", "showHold", "orderBy", "orderByRank", "filterCount", "过滤持变字段"]);
+const props = defineProps(["data", "isCombo", "showHold", "过滤持变字段", "refreshNonce"]);
 const tableData = reactive({
   tiledData: [],
   loading: false,
@@ -198,18 +198,6 @@ function handleShowBs(optionItem) {
   bsModalData.visible = true;
 }
 
-async function handleQuery() {
-  if (Array.isArray(props.data)) {
-    tableData.tiledData = props.data;
-    return;
-  }
-  tableData.loading = true;
-  const [tiledData] = await get_http_data(OPTIONS_MAP.map((el) => el.code));
-  tableData.tiledData = tiledData;
-  tableData.loading = false;
-}
-handleQuery();
-
 function get实值涨跌打分(row, 涨跌百分比) {
   // if (row["一手内在价"] <= 0) return 0;
   const isCall = row["沽购"] === "购";
@@ -225,7 +213,7 @@ function get实值涨跌打分(row, 涨跌百分比) {
   return [formatDecimal(盈利价 / 一手价, 3), 涨跌目标价];
 }
 const filteredTableData = computed(() => {
-  let filtered = (props.data?.length ? props.data : tableData.tiledData).filter((el) => props.checkIsChance(el));
+  let filtered = props.data;
   filtered = filtered.map((el) => ({
     ...el,
     涨跌2: get实值涨跌打分(el, 2),
@@ -235,19 +223,19 @@ const filteredTableData = computed(() => {
   }));
   // 越大越好：Gamma、Delta（Gamma不会骗人）
   // 越小越好：一手价、隐波（价格是隐波的反应）
-  if (props.orderBy) {
-    filtered = filtered.filter((el) => !!el[props.orderBy]);
-    filtered = _.orderBy(filtered, [props.orderBy], [props.orderByRank]);
+  // if (props.orderBy) {
+  //   filtered = filtered.filter((el) => !!el[props.orderBy]);
+  //   filtered = _.orderBy(filtered, [props.orderBy], [props.orderByRank]);
+  // } else {
+  if (props.showHold) {
+    filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
   } else {
-    if (props.showHold) {
-      filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
-    } else {
-      filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
-    }
+    filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
   }
-  if (props.filterCount) {
-    return filtered.slice(0, props.filterCount);
-  }
+  // }
+  // if (props.filterCount) {
+  //   return filtered.slice(0, props.filterCount);
+  // }
   return filtered;
 });
 // ==========================================

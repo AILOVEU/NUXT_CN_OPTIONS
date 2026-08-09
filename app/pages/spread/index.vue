@@ -3,6 +3,10 @@
     <div>
       <Nav />
       <div class="w-full pb-[12px]">
+        <div class="flex items-center gap-[8px] px-[10px] pb-[6px]">
+          <el-button size="small" @click="handleSingleRefresh" :disabled="!stockCode || stockCode === 'all'">单码无缓存刷新</el-button>
+          <span class="text-[12px] text-gray-400">仅获取当前正股实时数据，不写入缓存</span>
+        </div>
         <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
       </div>
     </div>
@@ -40,11 +44,9 @@
                   <el-button link>⬇</el-button>
                 </div>
               </template>
-              <template #default="{ row }" v-if="label === '期权'">
-                <Center :row="row" />
-              </template>
-              <template #default="{ row }" v-if="label !== '期权'">
-                <Info :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :comboList="tableData.comboList" :diffValue="diff" />
+              <template #default="{ row }">
+                <Center v-if="label === '期权'" :row="row" />
+                <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="tableData.tiledData" :comboList="tableData.comboList" :diffValue="diff" />
               </template>
             </el-table-column>
           </el-table>
@@ -135,6 +137,16 @@ async function handleQuery() {
   tableData.loading = false;
 }
 handleQuery();
+// 单码无缓存刷新：仅获取当前正股实时数据（saveData=false 不写缓存），stockCode为空或'all'时无操作
+async function handleSingleRefresh() {
+  if (!stockCode.value || stockCode.value === "all") return;
+  tableData.loading = true;
+  const [_tableData, comboList, tiledData] = await queryGrid([stockCode.value], { useCatch: false, saveData: false });
+  tableData.data = _tableData || [];
+  tableData.tiledData = tiledData;
+  tableData.comboList = comboList;
+  tableData.loading = false;
+}
 function handleStockCodeChange() {
   tableRef.value.setScrollTop(0);
   setTimeout(() => {
