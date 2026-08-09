@@ -54,7 +54,7 @@
     </div>
 
     <!-- 图表切换 -->
-    <TabSelect v-if="positions.length" :options="chartTabs" v-model="activeTab" class="mb-2" @change="onTabChange" />
+    <TabSelect v-if="positions.length" :options="chartTabs" v-model="activeTab" class="mb-2" @click="onTabChange" />
 
     <!-- ECharts -->
     <div v-if="positions.length" ref="chartRef" class="w-full" :style="{ height: chartHeight + 'px' }"></div>
@@ -244,7 +244,7 @@ const sliderMinLabel = computed(() => {
 
 const sliderMaxLabel = computed(() => {
   if (activeTab.value === "price") return (S0.value * 1.2).toFixed(3);
-  if (activeTab.value === "time") return maxDTE.value + "天";
+  if (activeTab.value === "time") return timeSliderMax.value + "天";
   return (ivMaxValue.value * 100).toFixed(1) + "%";
 });
 
@@ -255,7 +255,7 @@ const sliderRealValue = computed(() => {
     return +(S0.value * 0.8 + S0.value * 0.4 * pct).toFixed(3);
   }
   if (activeTab.value === "time") {
-    return +(maxDTE.value * pct).toFixed(1);
+    return Math.round(timeSliderMax.value * pct); // 剩余天数取整
   }
   // iv：0 ~ Max(当前隐波×2, 30%)
   return +(ivMaxValue.value * pct).toFixed(4);
@@ -291,10 +291,13 @@ const sliderPnlPct = computed(() => {
   return (sliderPnl.value / totalCost.value) * 100;
 });
 
-// 滑块默认位置：波动率 tab 落在当前平均隐波处，其余 tab 在中间
+// 滑块默认位置：波动率 tab 落在当前平均隐波处，时间衰减 tab 落在当前剩余天数(maxDTE)处，其余 tab 在中间
 function defaultSliderPercent() {
   if (activeTab.value === "iv") {
     return avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
+  }
+  if (activeTab.value === "time") {
+    return maxDTE.value ? (maxDTE.value / timeSliderMax.value) * 100 : 50; // 默认定位到当前剩余天数 T
   }
   return 50;
 }
@@ -370,14 +373,14 @@ function buildTimeChart() {
   const data = [];
   const N = 100;
   for (let i = 0; i <= N; i++) {
-    const days = (maxDTE.value * i) / N;
+    const days = (timeSliderMax.value * i) / N;
     data.push([+days.toFixed(1), +calcCombinedPnl({ dte: days }).toFixed(0)]);
   }
 
   return {
     tooltip: { trigger: "axis", formatter: p => `剩余: ${p[0].axisValue.toFixed(1)}天<br/>组合盈亏: ${p[0].data[1]}` },
     grid: { left: 55, right: 15, top: 15, bottom: 30 },
-    xAxis: { type: "value", name: "剩余天数", min: 0, max: maxDTE.value, splitLine: { show: false } },
+    xAxis: { type: "value", name: "剩余天数", min: 0, max: timeSliderMax.value, splitLine: { show: false } },
     yAxis: { type: "value", name: "盈亏", splitLine: { show: false } },
     series: [{
       type: "line", data, smooth: true, symbol: "none",
