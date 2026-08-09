@@ -102,6 +102,8 @@ function formatRecord(_tiledData, 股指持仓JSON, 成交Json) {
     row["到期日"] = STOCK_INDEX_DAY_MAP[row["到期年月"]];
     row["正股代码"] = row["正股"];
     row["一手价"] = formatDecimal(row["最新价"] * row["合约单位"], 0);
+    row["一手买一价"] = formatDecimal(row["买一"] * row["合约单位"], 0);
+    row["一手卖一价"] = formatDecimal(row["卖一"] * row["合约单位"], 0);
     row["持仓"] = 股指持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["持仓"] || undefined;
     row["一手成本价"] = 股指持仓JSON.find((el) => el["期权名称"] === row["期权名称"])?.["成本"] || undefined;
     row["一手成本价"] = row["一手成本价"] ? row["一手成本价"] + 30 : undefined;

@@ -4,24 +4,33 @@
       组合盈亏分析
       <span class="flex items-center gap-1">
         <span v-if="positions.length" class="text-xs text-gray-400">({{ positions.length }}条)</span>
-        <el-button v-if="positions.length" size="small" text type="danger" class="!h-[20px] !text-[11px] !px-1" @click="clearAll">清空</el-button>
+        <el-button v-if="positions.length" size="small" text type="danger" class="!h-[20px] !text-[11px] !px-1"
+          @click="clearAll">清空</el-button>
       </span>
     </div>
 
     <!-- 持仓列表 -->
-    <div v-if="positions.length" class="mb-2 max-h-[160px] overflow-y-auto">
-      <div v-for="(pos, idx) in positions" :key="idx"
-        class="flex items-center justify-between text-xs py-[2px] px-1 mb-[2px] rounded"
+    <div v-if="positions.length" class="mb-2 max-h-[200px] overflow-y-auto">
+      <div v-for="(pos, idx) in enrichedPositions" :key="idx" class="text-xs py-[2px] px-1 mb-[2px] rounded"
         :class="pos.position > 0 ? 'bg-red-50' : 'bg-green-50'">
-        <div class="flex items-center gap-1 flex-1 min-w-0">
-          <span :class="pos.position > 0 ? 'text-red-600' : 'text-green-600'" class="font-bold flex-shrink-0">
-            {{ pos.position > 0 ? 'B' : 'S' }}{{ Math.abs(pos.position) }}
-          </span>
-          <span class="truncate">{{ pos.label }}</span>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1 flex-1 min-w-0">
+            <span :class="pos.position > 0 ? 'text-red-600' : 'text-green-600'" class="font-bold flex-shrink-0">
+              {{ pos.position > 0 ? 'B' : 'S' }}{{ Math.abs(pos.position) }}
+            </span>
+            <span class="truncate">{{ pos.label }}</span>
+          </div>
+          <el-button size="small" text class="!h-[16px] !w-[16px] !p-0 flex-shrink-0" @click="removePosition(idx)">
+            ✕
+          </el-button>
         </div>
-        <el-button size="small" text class="!h-[16px] !w-[16px] !p-0 flex-shrink-0" @click="removePosition(idx)">
-          ✕
-        </el-button>
+        <!-- 原始价 → 盈亏后价（理论价） → 盈亏 -->
+        <div class="flex justify-between gap-1 mt-[2px] pl-[14px] text-[10px] text-gray-500">
+          <span>原始:{{ formatDecimal(pos.entryPrice, 3) }}</span>
+          <span>理论:{{ formatDecimal(pos.theoPrice, 3) }}</span>
+          <span :class="pos.pnlTotal >= 0 ? 'text-red-500' : 'text-green-500'">盈亏:{{ formatDecimal(pos.pnlTotal, 0)
+            }}</span>
+        </div>
       </div>
     </div>
 
@@ -32,8 +41,16 @@
 
     <!-- 已选持仓汇总 -->
     <div v-if="positions.length" class="grid grid-cols-2 gap-1 mb-3 text-xs text-gray-500 bg-gray-50 rounded p-2">
+      <template v-if="activeTab === 'price'">
+        <div>组合原始价: <span :class="portfolioCost >= 0 ? 'text-red-500' : 'text-green-500'">{{
+          formatDecimal(portfolioCost, 0) }}</span></div>
+        <div>组合最新价: <span :class="displayPortfolioValue >= 0 ? 'text-red-500' : 'text-green-500'">{{
+          formatDecimal(displayPortfolioValue, 0) }}</span></div>
+      </template>
+      <div>
+        当前盈亏: <span :class="displayPnl >= 0 ? 'text-red-500' : 'text-green-500'">{{ formatDecimal(displayPnl, 0) }}</span>
+      </div>
       <div>总持仓: {{ totalCount }}</div>
-      <div>当前盈亏: <span :class="totalPnl >= 0 ? 'text-red-500' : 'text-green-500'">{{ formatDecimal(totalPnl, 0) }}</span></div>
     </div>
 
     <!-- 图表切换 -->
@@ -53,15 +70,8 @@
           </template>
         </span>
       </div>
-      <el-slider
-        v-model="sliderPercent"
-        :min="0"
-        :max="100"
-        :step="0.5"
-        size="small"
-        :show-tooltip="false"
-        @input="onSliderChange"
-      />
+      <el-slider v-model="sliderPercent" :min="0" :max="100" :step="0.5" size="small" :show-tooltip="false"
+        @input="onSliderChange" />
       <div class="flex justify-between text-[10px] text-gray-400">
         <span>{{ sliderMinLabel }}</span>
         <span>{{ sliderMaxLabel }}</span>
@@ -74,15 +84,8 @@
         <span>剩余: {{ timeSliderValue }}天</span>
         <span class="text-gray-400">调整到期日</span>
       </div>
-      <el-slider
-        v-model="timeSliderPercent"
-        :min="0"
-        :max="100"
-        :step="0.5"
-        size="small"
-        :show-tooltip="false"
-        @input="onSliderChange"
-      />
+      <el-slider v-model="timeSliderPercent" :min="0" :max="100" :step="0.5" size="small" :show-tooltip="false"
+        @input="onSliderChange" />
       <div class="flex justify-between text-[10px] text-gray-400">
         <span>到期日</span>
         <span>{{ maxDTE }}天</span>
@@ -120,10 +123,59 @@ let chartInstance = null;
 const RISK_FREE_RATE = 0.015;
 
 const totalCount = computed(() => props.positions.reduce((s, p) => s + Math.abs(p.position), 0));
+
+// 基于图表同源的 Black-Scholes 理论价，为每个持仓计算：盈亏后价(theoPrice) + 总盈亏(pnlTotal)
+// 使用每个持仓自身的正股价格/到期天数/隐波，避免多标的下用错 S0
+const enrichedPositions = computed(() => {
+  return props.positions.map((p) => {
+    let theo = p.entryPrice;
+    try {
+      theo = blackScholesOptionPrice(
+        p.spotPrice,
+        p.strike,
+        RISK_FREE_RATE,
+        Math.max(p.dte, 0) / 365,
+        p.iv,
+        p.type
+      );
+    } catch { }
+    return {
+      ...p,
+      theoPrice: theo,
+      pnlTotal: (theo - p.entryPrice) * p.position * props.multiplier,
+    };
+  });
+});
+
 const totalPnl = computed(() => {
+  return enrichedPositions.value.reduce((sum, p) => sum + p.pnlTotal, 0);
+});
+// 组合原始价（按开仓价计算的总成本：Σ 原始价 × 持仓 × 乘数）
+const portfolioCost = computed(() => {
   return props.positions.reduce((sum, p) => {
-    return sum + (p.currentPrice - p.entryPrice) * p.position * props.multiplier;
+    return sum + p.entryPrice * p.position * props.multiplier;
   }, 0);
+});
+// 组合最新价格（按理论价计算的总市值：Σ 盈亏后价 × 持仓 × 乘数）
+const portfolioValue = computed(() => {
+  return enrichedPositions.value.reduce((sum, p) => {
+    return sum + p.theoPrice * p.position * props.multiplier;
+  }, 0);
+});
+
+// 顶部汇总显示值：盈亏图 tab 下跟随滑块实时变动（正股价格/剩余天数模拟），
+// 组合最新价 = 组合原始价 + 模拟盈亏，保证 最新价 − 原始价 = 当前盈亏 恒成立
+const displayPnl = computed(() => {
+  if (activeTab.value === "price") {
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value });
+  }
+  return totalPnl.value;
+});
+const displayPortfolioValue = computed(() => {
+  if (activeTab.value === "price") {
+    return portfolioCost.value + displayPnl.value;
+  }
+  return portfolioValue.value;
 });
 
 function removePosition(idx) {

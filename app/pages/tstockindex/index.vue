@@ -22,6 +22,9 @@
           <el-table-column #default="{ row }" align="center" width="150" label="C_持仓" prop="C_持仓">
             <Hold :row="getRowTargetOption(row, 'C')" />
           </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="C_价格" prop="C_价格">
+            <Price :row="getRowTargetOption(row, 'C')" />
+          </el-table-column>
           <el-table-column #default="{ row }" align="center" width="70" label="C_交易" prop="C_交易">
             <template v-if="getRowTargetOption(row, 'C')?.['期权名称']">
               <div class="relative pb-[15px]">
@@ -36,11 +39,9 @@
                     :plain="(positionMap[getRowTargetOption(row, 'C')['期权名称']] || 0) >= 0"
                     class="!h-[18px] !text-[10px] !px-0 !w-full" @click.stop="handleTrade('C', 'sell', row)">
                     {{ positionMap[getRowTargetOption(row, 'C')['期权名称']] < 0 ? '卖' +
-                      Math.abs(positionMap[getRowTargetOption(row, 'C')['期权名称']]) : '卖' }}
-                  </el-button>
+                      Math.abs(positionMap[getRowTargetOption(row, 'C')['期权名称']]) : '卖' }} </el-button>
                 </div>
-                <el-button v-if="positionMap[getRowTargetOption(row, 'C')['期权名称']]"
-                  size="small" type="info" plain
+                <el-button v-if="positionMap[getRowTargetOption(row, 'C')['期权名称']]" size="small" type="info" plain
                   class="absolute left-0 right-0 bottom-0 !h-[14px] !text-[9px] !px-0 w-full"
                   @click.stop="handleRemoveFromTable('C', row)">删除</el-button>
               </div>
@@ -49,6 +50,7 @@
           <el-table-column #default="{ row }" align="center" width="80" label="期权" prop="期权">
             <Center :row="row" />
           </el-table-column>
+
           <el-table-column #default="{ row }" align="center" width="70" label="P_交易" prop="P_交易">
             <template v-if="getRowTargetOption(row, 'P')?.['期权名称']">
               <div class="relative pb-[15px]">
@@ -57,22 +59,23 @@
                     :plain="(positionMap[getRowTargetOption(row, 'P')['期权名称']] || 0) >= 0"
                     class="!h-[18px] !text-[10px] !px-0 !w-full" @click.stop="handleTrade('P', 'sell', row)">
                     {{ positionMap[getRowTargetOption(row, 'P')['期权名称']] < 0 ? '卖' +
-                      Math.abs(positionMap[getRowTargetOption(row, 'P')['期权名称']]) : '卖' }}
-                  </el-button>
-                  <el-button size="small"
-                    :type="positionMap[getRowTargetOption(row, 'P')['期权名称']] > 0 ? 'danger' : ''"
-                    :plain="(positionMap[getRowTargetOption(row, 'P')['期权名称']] || 0) <= 0"
-                    class="!h-[18px] !text-[10px] !px-0 !w-full" @click.stop="handleTrade('P', 'buy', row)">
-                    {{ positionMap[getRowTargetOption(row, 'P')['期权名称']] > 0 ? '买' +
-                      positionMap[getRowTargetOption(row, 'P')['期权名称']] : '买' }}
-                  </el-button>
+                      Math.abs(positionMap[getRowTargetOption(row, 'P')['期权名称']]) : '卖' }} </el-button>
+                      <el-button size="small"
+                        :type="positionMap[getRowTargetOption(row, 'P')['期权名称']] > 0 ? 'danger' : ''"
+                        :plain="(positionMap[getRowTargetOption(row, 'P')['期权名称']] || 0) <= 0"
+                        class="!h-[18px] !text-[10px] !px-0 !w-full" @click.stop="handleTrade('P', 'buy', row)">
+                        {{ positionMap[getRowTargetOption(row, 'P')['期权名称']] > 0 ? '买' +
+                          positionMap[getRowTargetOption(row, 'P')['期权名称']] : '买' }}
+                      </el-button>
                 </div>
-                <el-button v-if="positionMap[getRowTargetOption(row, 'P')['期权名称']]"
-                  size="small" type="info" plain
+                <el-button v-if="positionMap[getRowTargetOption(row, 'P')['期权名称']]" size="small" type="info" plain
                   class="absolute left-0 right-0 bottom-0 !h-[14px] !text-[9px] !px-0 w-full"
                   @click.stop="handleRemoveFromTable('P', row)">删除</el-button>
               </div>
             </template>
+          </el-table-column>
+          <el-table-column #default="{ row }" align="center" width="150" label="P_价格" prop="P_价格">
+            <Price :row="getRowTargetOption(row, 'P')" />
           </el-table-column>
           <el-table-column #default="{ row }" align="center" width="150" label="P_持仓" prop="P_持仓">
             <Hold :row="getRowTargetOption(row, 'P')" />
@@ -97,6 +100,7 @@
 import Center from "./components/Center.vue";
 import Info from "./components/Info.vue";
 import Options from "./components/Options.vue";
+import Price from "./components/Price.vue";
 import Hold from "../t/components/Hold.vue";
 import StrategyAnalyzer from "../t/components/StrategyAnalyzer.vue";
 import { queryStockIndexRow } from "~/utils/queryStockIndexRow.js";
@@ -116,7 +120,7 @@ const stockCodeOptions = computed(() => {
   return [...ops, { value: "all", label: "全" }];
 });
 const formData = reactive({
-  到期日List: [...deadline_list],
+  到期日List: [deadline_list[0]],
   stockCode: stockCodeOptions.value[0].value
 });
 const tableData = reactive({
