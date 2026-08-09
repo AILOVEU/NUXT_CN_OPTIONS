@@ -1,8 +1,11 @@
 <template>
   <div class="strategy-analyzer bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-    <div class="text-sm font-semibold text-gray-700 mb-2">
+    <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center justify-between">
       组合盈亏分析
-      <span v-if="positions.length" class="text-xs text-gray-400 ml-1">({{ positions.length }}条)</span>
+      <span class="flex items-center gap-1">
+        <span v-if="positions.length" class="text-xs text-gray-400">({{ positions.length }}条)</span>
+        <el-button v-if="positions.length" size="small" text type="danger" class="!h-[20px] !text-[11px] !px-1" @click="clearAll">清空</el-button>
+      </span>
     </div>
 
     <!-- 持仓列表 -->
@@ -34,10 +37,57 @@
     </div>
 
     <!-- 图表切换 -->
-    <TabSelect v-if="positions.length" :options="chartTabs" v-model="activeTab" class="mb-2" />
+    <TabSelect v-if="positions.length" :options="chartTabs" v-model="activeTab" class="mb-2" @change="onTabChange" />
 
     <!-- ECharts -->
-    <div v-if="positions.length" ref="chartRef" class="w-full h-[220px]"></div>
+    <div v-if="positions.length" ref="chartRef" class="w-full" :style="{ height: chartHeight + 'px' }"></div>
+
+    <!-- 可拖拽滑块 -->
+    <div v-if="positions.length" class="mt-2 px-2">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>{{ sliderLabel }}</span>
+        <span class="font-semibold" :class="sliderPnl >= 0 ? 'text-red-500' : 'text-green-500'">
+          盈亏: {{ formatDecimal(sliderPnl, 0) }}
+          <template v-if="activeTab === 'price' && sliderPnlPct !== null">
+            （{{ sliderPnlPct >= 0 ? '+' : '' }}{{ sliderPnlPct.toFixed(2) }}%）
+          </template>
+        </span>
+      </div>
+      <el-slider
+        v-model="sliderPercent"
+        :min="0"
+        :max="100"
+        :step="0.5"
+        size="small"
+        :show-tooltip="false"
+        @input="onSliderChange"
+      />
+      <div class="flex justify-between text-[10px] text-gray-400">
+        <span>{{ sliderMinLabel }}</span>
+        <span>{{ sliderMaxLabel }}</span>
+      </div>
+    </div>
+
+    <!-- 盈亏图专项：时间选择滑块 -->
+    <div v-if="positions.length && activeTab === 'price'" class="mt-2 px-2">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>剩余: {{ timeSliderValue }}天</span>
+        <span class="text-gray-400">调整到期日</span>
+      </div>
+      <el-slider
+        v-model="timeSliderPercent"
+        :min="0"
+        :max="100"
+        :step="0.5"
+        size="small"
+        :show-tooltip="false"
+        @input="onSliderChange"
+      />
+      <div class="flex justify-between text-[10px] text-gray-400">
+        <span>到期日</span>
+        <span>{{ maxDTE }}天</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -53,7 +103,7 @@ const props = defineProps({
   spotPrice: { type: Number, default: 0 },
 });
 
-const emit = defineEmits(["removePosition"]);
+const emit = defineEmits(["removePosition", "clearAll"]);
 
 const chartTabs = [
   { value: "price", label: "盈亏图" },
@@ -63,6 +113,7 @@ const chartTabs = [
 
 const activeTab = ref("price");
 const chartRef = ref(null);
+const chartHeight = 200;
 let chartInstance = null;
 
 const MULTIPLIER = 10000;
@@ -79,7 +130,95 @@ function removePosition(idx) {
   emit("removePosition", idx);
 }
 
-// 组合盈亏：给定参数下，所有持仓的 P&L 之和
+function clearAll() {
+  emit("clearAll");
+}
+
+// ========== 滑块相关 ==========
+const sliderPercent = ref(50); // 0~100
+const timeSliderPercent = ref(100); // 盈亏图专用：时间滑块，默认100%=当前到期日
+
+const S0 = computed(() => props.spotPrice || props.positions[0]?.spotPrice || 3);
+const maxDTE = computed(() => {
+  const dtes = props.positions.map(p => p.dte);
+  return dtes.length ? Math.max(...dtes, 0) : 30;
+});
+const avgIV = computed(() => {
+  const sum = props.positions.reduce((s, p) => s + p.iv, 0);
+  return props.positions.length ? sum / props.positions.length : 0.2;
+});
+
+// 盈亏图专用：时间滑块的实际 DTE 值
+const timeSliderValue = computed(() => {
+  return +(maxDTE.value * timeSliderPercent.value / 100).toFixed(1);
+});
+
+const sliderMinLabel = computed(() => {
+  if (activeTab.value === "price") return (S0.value * 0.8).toFixed(3);
+  if (activeTab.value === "time") return "0天";
+  return ((avgIV.value - 0.2) * 100).toFixed(1) + "%";
+});
+
+const sliderMaxLabel = computed(() => {
+  if (activeTab.value === "price") return (S0.value * 1.2).toFixed(3);
+  if (activeTab.value === "time") return maxDTE.value + "天";
+  return ((avgIV.value + 0.2) * 100).toFixed(1) + "%";
+});
+
+// 实际滑块值（根据 tab 映射到真实数值）
+const sliderRealValue = computed(() => {
+  const pct = sliderPercent.value / 100;
+  if (activeTab.value === "price") {
+    return +(S0.value * 0.8 + S0.value * 0.4 * pct).toFixed(3);
+  }
+  if (activeTab.value === "time") {
+    return +(maxDTE.value * pct).toFixed(1);
+  }
+  // iv
+  return +((avgIV.value - 0.2) + 0.4 * pct).toFixed(4);
+});
+
+const sliderLabel = computed(() => {
+  if (activeTab.value === "price") {
+    const changePct = ((sliderRealValue.value - S0.value) / S0.value) * 100;
+    return `正股: ${sliderRealValue.value}（${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%）`;
+  }
+  if (activeTab.value === "time") return `剩余: ${sliderRealValue.value}天`;
+  return `隐波: ${(sliderRealValue.value * 100).toFixed(1)}%`;
+});
+
+const sliderPnl = computed(() => {
+  if (activeTab.value === "price") {
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value });
+  }
+  if (activeTab.value === "time") {
+    return calcCombinedPnl({ dte: sliderRealValue.value });
+  }
+  return calcCombinedPnl({ iv: sliderRealValue.value });
+});
+
+// 组合投入资金（毛成本：Σ|持仓|×开仓价×乘数），用于计算盈亏百分比
+const totalCost = computed(() => {
+  return props.positions.reduce((sum, p) => sum + Math.abs(p.position) * p.entryPrice * MULTIPLIER, 0);
+});
+
+// 盈亏百分比（相对投入资金）
+const sliderPnlPct = computed(() => {
+  if (!totalCost.value) return null;
+  return (sliderPnl.value / totalCost.value) * 100;
+});
+
+function onTabChange() {
+  sliderPercent.value = 50;
+  timeSliderPercent.value = 100;
+  drawChart();
+}
+
+function onSliderChange() {
+  drawChart();
+}
+
+// ========== 组合盈亏计算 ==========
 function calcCombinedPnl({ spot, dte, iv }) {
   return props.positions.reduce((sum, pos) => {
     const S = spot ?? pos.spotPrice;
@@ -93,21 +232,20 @@ function calcCombinedPnl({ spot, dte, iv }) {
 }
 
 function buildPriceChart() {
-  const S0 = props.spotPrice || props.positions[0]?.spotPrice || 3;
-  const range = S0 * 0.2;
+  const range = S0.value * 0.2;
+  const dte = timeSliderValue.value;
   const data = [];
   const N = 200;
   for (let i = 0; i <= N; i++) {
-    const S = S0 - range + (2 * range * i) / N;
-    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S }).toFixed(0)]);
+    const S = S0.value - range + (2 * range * i) / N;
+    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S, dte }).toFixed(0)]);
   }
-
-  const currentPnl = +calcCombinedPnl({ spot: S0 }).toFixed(0);
+  const currentPnl = +calcCombinedPnl({ spot: S0.value, dte }).toFixed(0);
 
   return {
-    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>组合盈亏: ${p[0].data[1]}` },
+    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>剩余${dte}天<br/>组合盈亏: ${p[0].data[1]}` },
     grid: { left: 55, right: 15, top: 15, bottom: 30 },
-    xAxis: { type: "value", name: "正股价格", min: S0 - range, max: S0 + range, splitLine: { show: false } },
+    xAxis: { type: "value", name: "正股价格", min: S0.value - range, max: S0.value + range, splitLine: { show: false } },
     yAxis: { type: "value", name: "盈亏", splitLine: { show: false } },
     series: [{
       type: "line", data, smooth: true, symbol: "none",
@@ -117,27 +255,36 @@ function buildPriceChart() {
           { offset: 0, color: "rgba(37,99,235,0.15)" }, { offset: 1, color: "rgba(37,99,235,0.02)" },
         ]),
       },
-      markLine: { silent: true, data: [{ yAxis: 0, lineStyle: { type: "dashed", color: "#999" } }] },
+      markLine: {
+        silent: true,
+        symbol: "none",
+        data: [
+          { yAxis: 0, lineStyle: { type: "dashed", color: "#999" } },
+          { xAxis: sliderRealValue.value, lineStyle: { type: "solid", color: "#e02020", width: 1.5 }, label: { show: false } },
+        ],
+      },
       markPoint: {
-        data: [{ coord: [S0, currentPnl], symbol: "circle", symbolSize: 8, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } }],
+        data: [
+          { coord: [S0.value, currentPnl], symbol: "circle", symbolSize: 8, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+          { coord: [sliderRealValue.value, +calcCombinedPnl({ spot: sliderRealValue.value, dte }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+        ],
       },
     }],
   };
 }
 
 function buildTimeChart() {
-  const maxDTE = Math.max(...props.positions.map(p => p.dte), 30);
   const data = [];
   const N = 100;
   for (let i = 0; i <= N; i++) {
-    const days = (maxDTE * i) / N;
+    const days = (maxDTE.value * i) / N;
     data.push([+days.toFixed(1), +calcCombinedPnl({ dte: days }).toFixed(0)]);
   }
 
   return {
     tooltip: { trigger: "axis", formatter: p => `剩余: ${p[0].axisValue.toFixed(1)}天<br/>组合盈亏: ${p[0].data[1]}` },
     grid: { left: 55, right: 15, top: 15, bottom: 30 },
-    xAxis: { type: "value", name: "剩余天数", min: 0, max: maxDTE, splitLine: { show: false } },
+    xAxis: { type: "value", name: "剩余天数", min: 0, max: maxDTE.value, splitLine: { show: false } },
     yAxis: { type: "value", name: "盈亏", splitLine: { show: false } },
     series: [{
       type: "line", data, smooth: true, symbol: "none",
@@ -147,22 +294,27 @@ function buildTimeChart() {
           { offset: 0, color: "rgba(234,88,12,0.15)" }, { offset: 1, color: "rgba(234,88,12,0.02)" },
         ]),
       },
-      markLine: { silent: true, data: [{ yAxis: 0, lineStyle: { type: "dashed", color: "#999" } }] },
+      markLine: {
+        silent: true,
+        symbol: "none",
+        data: [
+          { yAxis: 0, lineStyle: { type: "dashed", color: "#999" } },
+          { xAxis: sliderRealValue.value, lineStyle: { type: "solid", color: "#ea580c", width: 1.5 }, label: { show: false } },
+        ],
+      },
       markPoint: {
-        data: [{
-          coord: [maxDTE, +calcCombinedPnl({ dte: maxDTE }).toFixed(0)],
-          symbol: "circle", symbolSize: 8, itemStyle: { color: "#ea580c" },
-          label: { show: true, formatter: p => p.value, fontSize: 10 },
-        }],
+        data: [
+          { coord: [maxDTE.value, +calcCombinedPnl({ dte: maxDTE.value }).toFixed(0)], symbol: "circle", symbolSize: 8, itemStyle: { color: "#ea580c" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+          { coord: [sliderRealValue.value, +calcCombinedPnl({ dte: sliderRealValue.value }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#ea580c" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+        ],
       },
     }],
   };
 }
 
 function buildIvChart() {
-  const avgIV = props.positions.reduce((s, p) => s + p.iv, 0) / Math.max(1, props.positions.length);
-  const minIv = Math.max(0.01, avgIV - 0.2);
-  const maxIv = avgIV + 0.2;
+  const minIv = Math.max(0.01, avgIV.value - 0.2);
+  const maxIv = avgIV.value + 0.2;
   const data = [];
   const N = 100;
   for (let i = 0; i <= N; i++) {
@@ -183,13 +335,19 @@ function buildIvChart() {
           { offset: 0, color: "rgba(124,58,237,0.15)" }, { offset: 1, color: "rgba(124,58,237,0.02)" },
         ]),
       },
-      markLine: { silent: true, data: [{ yAxis: 0, lineStyle: { type: "dashed", color: "#999" } }] },
+      markLine: {
+        silent: true,
+        symbol: "none",
+        data: [
+          { yAxis: 0, lineStyle: { type: "dashed", color: "#999" } },
+          { xAxis: sliderRealValue.value * 100, lineStyle: { type: "solid", color: "#7c3aed", width: 1.5 }, label: { show: false } },
+        ],
+      },
       markPoint: {
-        data: [{
-          coord: [avgIV * 100, +calcCombinedPnl({ iv: avgIV }).toFixed(0)],
-          symbol: "circle", symbolSize: 8, itemStyle: { color: "#7c3aed" },
-          label: { show: true, formatter: p => p.value, fontSize: 10 },
-        }],
+        data: [
+          { coord: [avgIV.value * 100, +calcCombinedPnl({ iv: avgIV.value }).toFixed(0)], symbol: "circle", symbolSize: 8, itemStyle: { color: "#7c3aed" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+          { coord: [sliderRealValue.value * 100, +calcCombinedPnl({ iv: sliderRealValue.value }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#7c3aed" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+        ],
       },
     }],
   };
@@ -212,8 +370,13 @@ function initChart() {
 }
 
 watch(activeTab, () => drawChart());
-watch(() => props.positions.length, (len) => {
+watch(() => props.positions.length, (len, oldLen) => {
   if (len > 0) {
+    // 新增持仓时重置所有滑块
+    if (!oldLen || oldLen === 0) {
+      sliderPercent.value = 50;
+      timeSliderPercent.value = 100;
+    }
     nextTick(() => { initChart(); });
   } else {
     if (chartInstance) { chartInstance.dispose(); chartInstance = null; }
