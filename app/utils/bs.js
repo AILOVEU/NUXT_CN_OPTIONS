@@ -46,8 +46,8 @@ function standardNormalCdf(x) {
  */
 export function blackScholesOptionPrice(S, K, r, T, sigma, optionType) {
   // 1. 入参合法性校验
-  if (S <= 0 || K <= 0 || sigma <= 0 || T < 0 || r < 0) {
-    throw new Error("入参非法：S、K、sigma 必须大于 0，T、r 必须大于等于 0");
+  if (S <= 0 || K <= 0 || sigma < 0 || T < 0 || r < 0) {
+    throw new Error("入参非法：S、K 必须大于 0，sigma、T、r 必须大于等于 0");
   }
   if (T === 0) {
     // 到期时，期权价值为内在价值
@@ -59,6 +59,16 @@ export function blackScholesOptionPrice(S, K, r, T, sigma, optionType) {
   }
   if (optionType !== "call" && optionType !== "put") {
     throw new Error("期权类型仅支持 'call'（看涨）或 'put'（看跌）");
+  }
+
+  // 波动率为 0：期权价值退化为确定性内在价值（标的按无风险利率增长后折现）
+  if (sigma === 0) {
+    const KExpRt = K * Math.exp(-r * T);
+    if (optionType === "call") {
+      return parseFloat(Math.max(S - KExpRt, 0).toFixed(4));
+    } else {
+      return parseFloat(Math.max(KExpRt - S, 0).toFixed(4));
+    }
   }
 
   // 2. 计算 d1 和 d2（BS 公式核心中间变量）
