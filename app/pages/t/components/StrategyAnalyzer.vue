@@ -101,6 +101,7 @@ import TabSelect from "~/components/TabSelect.vue";
 const props = defineProps({
   positions: { type: Array, default: () => [] },
   spotPrice: { type: Number, default: 0 },
+  multiplier: { type: Number, default: 10000 },
 });
 
 const emit = defineEmits(["removePosition", "clearAll"]);
@@ -116,13 +117,12 @@ const chartRef = ref(null);
 const chartHeight = 200;
 let chartInstance = null;
 
-const MULTIPLIER = 10000;
 const RISK_FREE_RATE = 0.015;
 
 const totalCount = computed(() => props.positions.reduce((s, p) => s + Math.abs(p.position), 0));
 const totalPnl = computed(() => {
   return props.positions.reduce((sum, p) => {
-    return sum + (p.currentPrice - p.entryPrice) * p.position * MULTIPLIER;
+    return sum + (p.currentPrice - p.entryPrice) * p.position * props.multiplier;
   }, 0);
 });
 
@@ -199,7 +199,7 @@ const sliderPnl = computed(() => {
 
 // 组合投入资金（毛成本：Σ|持仓|×开仓价×乘数），用于计算盈亏百分比
 const totalCost = computed(() => {
-  return props.positions.reduce((sum, p) => sum + Math.abs(p.position) * p.entryPrice * MULTIPLIER, 0);
+  return props.positions.reduce((sum, p) => sum + Math.abs(p.position) * p.entryPrice * props.multiplier, 0);
 });
 
 // 盈亏百分比（相对投入资金）
@@ -226,7 +226,7 @@ function calcCombinedPnl({ spot, dte, iv }) {
     const sigma = iv ?? pos.iv;
     try {
       const theo = blackScholesOptionPrice(S, pos.strike, RISK_FREE_RATE, T, sigma, pos.type);
-      return sum + (theo - pos.entryPrice) * pos.position * MULTIPLIER;
+      return sum + (theo - pos.entryPrice) * pos.position * props.multiplier;
     } catch { return sum; }
   }, 0);
 }

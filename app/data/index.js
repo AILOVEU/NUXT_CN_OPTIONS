@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { getValidExerciseDate } from "~/utils/utils";
+import { getValidExerciseDate } from "~/utils/date";
 import dayjs from "dayjs";
 
 const 最低本金贷款 = 1000; // 不消除这个贷款金了，所以接下来就留出1000用来投资，其他都提现
