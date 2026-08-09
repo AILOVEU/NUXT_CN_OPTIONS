@@ -88,7 +88,21 @@
         @input="onSliderChange" />
       <div class="flex justify-between text-[10px] text-gray-400">
         <span>到期日</span>
-        <span>{{ maxDTE }}天</span>
+        <span>{{ timeSliderMax }}天</span>
+      </div>
+    </div>
+
+    <!-- 盈亏图专项：隐波选择滑块 -->
+    <div v-if="positions.length && activeTab === 'price'" class="mt-2 px-2">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>隐波: {{ (ivSliderValue * 100).toFixed(1) }}%</span>
+        <span class="text-gray-400">调整隐波</span>
+      </div>
+      <el-slider v-model="ivSliderPercent" :min="0" :max="100" :step="0.5" size="small" :show-tooltip="false"
+        @input="onSliderChange" />
+      <div class="flex justify-between text-[10px] text-gray-400">
+        <span>0%</span>
+        <span>{{ (ivMaxValue * 100).toFixed(1) }}%</span>
       </div>
     </div>
   </div>
@@ -167,7 +181,7 @@ const portfolioValue = computed(() => {
 // 组合最新价 = 组合原始价 + 模拟盈亏，保证 最新价 − 原始价 = 当前盈亏 恒成立
 const displayPnl = computed(() => {
   if (activeTab.value === "price") {
-    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value });
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, iv: ivSliderValue.value });
   }
   return totalPnl.value;
 });
@@ -188,7 +202,8 @@ function clearAll() {
 
 // ========== 滑块相关 ==========
 const sliderPercent = ref(50); // 0~100
-const timeSliderPercent = ref(100); // 盈亏图专用：时间滑块，默认100%=当前到期日
+const timeSliderPercent = ref(100); // 盈亏图专用：时间滑块，默认=当前剩余天数
+const ivSliderPercent = ref(0); // 盈亏图专用：隐波滑块，默认=当前平均隐波位置
 
 const S0 = computed(() => props.spotPrice || props.positions[0]?.spotPrice || 3);
 const maxDTE = computed(() => {
@@ -200,21 +215,37 @@ const avgIV = computed(() => {
   return props.positions.length ? sum / props.positions.length : 0.2;
 });
 
-// 盈亏图专用：时间滑块的实际 DTE 值
+// 盈亏图专用：时间滑块最大值为当前剩余天数+2
+const timeSliderMax = computed(() => {
+  return maxDTE.value + 2;
+});
+// 盈亏图专用：时间滑块的实际 DTE 值（取整）
 const timeSliderValue = computed(() => {
-  return +(maxDTE.value * timeSliderPercent.value / 100).toFixed(1);
+  return Math.round(timeSliderMax.value * timeSliderPercent.value / 100);
+});
+// 盈亏图专用：时间滑块默认位置=当前剩余天数
+function defaultTimeSliderPercent() {
+  return maxDTE.value && timeSliderMax.value ? (maxDTE.value / timeSliderMax.value) * 100 : 100;
+}
+
+// 盈亏图专用：隐波滑块范围 0 ~ Max(当前隐波×2, 30%)，默认位置=当前平均隐波
+const ivMaxValue = computed(() => {
+  return Math.max(avgIV.value * 2, 0.3);
+});
+const ivSliderValue = computed(() => {
+  return +(ivMaxValue.value * ivSliderPercent.value / 100).toFixed(4);
 });
 
 const sliderMinLabel = computed(() => {
   if (activeTab.value === "price") return (S0.value * 0.8).toFixed(3);
   if (activeTab.value === "time") return "0天";
-  return ((avgIV.value - 0.2) * 100).toFixed(1) + "%";
+  return "0%";
 });
 
 const sliderMaxLabel = computed(() => {
   if (activeTab.value === "price") return (S0.value * 1.2).toFixed(3);
   if (activeTab.value === "time") return maxDTE.value + "天";
-  return ((avgIV.value + 0.2) * 100).toFixed(1) + "%";
+  return (ivMaxValue.value * 100).toFixed(1) + "%";
 });
 
 // 实际滑块值（根据 tab 映射到真实数值）
@@ -226,8 +257,8 @@ const sliderRealValue = computed(() => {
   if (activeTab.value === "time") {
     return +(maxDTE.value * pct).toFixed(1);
   }
-  // iv
-  return +((avgIV.value - 0.2) + 0.4 * pct).toFixed(4);
+  // iv：0 ~ Max(当前隐波×2, 30%)
+  return +(ivMaxValue.value * pct).toFixed(4);
 });
 
 const sliderLabel = computed(() => {
@@ -241,7 +272,7 @@ const sliderLabel = computed(() => {
 
 const sliderPnl = computed(() => {
   if (activeTab.value === "price") {
-    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value });
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, iv: ivSliderValue.value });
   }
   if (activeTab.value === "time") {
     return calcCombinedPnl({ dte: sliderRealValue.value });
@@ -260,9 +291,18 @@ const sliderPnlPct = computed(() => {
   return (sliderPnl.value / totalCost.value) * 100;
 });
 
+// 滑块默认位置：波动率 tab 落在当前平均隐波处，其余 tab 在中间
+function defaultSliderPercent() {
+  if (activeTab.value === "iv") {
+    return avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
+  }
+  return 50;
+}
+
 function onTabChange() {
-  sliderPercent.value = 50;
-  timeSliderPercent.value = 100;
+  sliderPercent.value = defaultSliderPercent();
+  timeSliderPercent.value = defaultTimeSliderPercent();
+  ivSliderPercent.value = avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
   drawChart();
 }
 
@@ -286,16 +326,17 @@ function calcCombinedPnl({ spot, dte, iv }) {
 function buildPriceChart() {
   const range = S0.value * 0.2;
   const dte = timeSliderValue.value;
+  const iv = ivSliderValue.value;
   const data = [];
   const N = 200;
   for (let i = 0; i <= N; i++) {
     const S = S0.value - range + (2 * range * i) / N;
-    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S, dte }).toFixed(0)]);
+    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S, dte, iv }).toFixed(0)]);
   }
-  const currentPnl = +calcCombinedPnl({ spot: S0.value, dte }).toFixed(0);
+  const currentPnl = +calcCombinedPnl({ spot: S0.value, dte, iv }).toFixed(0);
 
   return {
-    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>剩余${dte}天<br/>组合盈亏: ${p[0].data[1]}` },
+    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>剩余${dte}天<br/>隐波${(iv * 100).toFixed(1)}%<br/>组合盈亏: ${p[0].data[1]}` },
     grid: { left: 55, right: 15, top: 15, bottom: 30 },
     xAxis: { type: "value", name: "正股价格", min: S0.value - range, max: S0.value + range, splitLine: { show: false } },
     yAxis: { type: "value", name: "盈亏", splitLine: { show: false } },
@@ -318,7 +359,7 @@ function buildPriceChart() {
       markPoint: {
         data: [
           { coord: [S0.value, currentPnl], symbol: "circle", symbolSize: 8, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
-          { coord: [sliderRealValue.value, +calcCombinedPnl({ spot: sliderRealValue.value, dte }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+          { coord: [sliderRealValue.value, +calcCombinedPnl({ spot: sliderRealValue.value, dte, iv }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
         ],
       },
     }],
@@ -365,8 +406,8 @@ function buildTimeChart() {
 }
 
 function buildIvChart() {
-  const minIv = Math.max(0.01, avgIV.value - 0.2);
-  const maxIv = avgIV.value + 0.2;
+  const minIv = 0;
+  const maxIv = ivMaxValue.value;
   const data = [];
   const N = 100;
   for (let i = 0; i <= N; i++) {
@@ -426,8 +467,9 @@ watch(() => props.positions.length, (len, oldLen) => {
   if (len > 0) {
     // 新增持仓时重置所有滑块
     if (!oldLen || oldLen === 0) {
-      sliderPercent.value = 50;
-      timeSliderPercent.value = 100;
+      sliderPercent.value = defaultSliderPercent();
+      timeSliderPercent.value = defaultTimeSliderPercent();
+      ivSliderPercent.value = avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
     }
     nextTick(() => { initChart(); });
   } else {
