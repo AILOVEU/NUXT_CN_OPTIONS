@@ -1,6 +1,6 @@
 /* strategy 页面各模块共用的常量与纯计算逻辑（不依赖 Vue 响应式，可独立测试） */
 
-import { blackScholesOptionPrice } from '../../../utils/bs'
+import { blackScholesOptionPrice } from '~/utils/bs'
 
 /* ============ 常量 ============ */
 export const MULT = 10000
