@@ -4,7 +4,6 @@ import { formatDecimal, getRandomInt, promiseAllSequential, getCsvArrByPublic } 
 import { useMoneyStore } from "~/stores/useMoneyStore";
 import { ElMessage } from "element-plus";
 import _ from "lodash";
-import { blackScholesOptionPrice } from "~/utils/bs";
 
 export function get_fist_季度月份(dataList) {
   const month_list = Array.from(new Set(dataList.map((el) => el["到期日"])));
@@ -183,14 +182,7 @@ function get组合名称(权利Item, 义务Item) {
   const 到期月 = dayjs(权利Item["到期日"], "YYYY-MM-DD").format("M月");
   return `${正股名称}${权利Item["沽购"]}${到期月}  ${行权价Name}`;
 }
-// function getIs非法持仓(row) {
-//   if (row["持仓"]) {
-//     if (row["一手时间价"] > row["一手内在价"] || row["一手时间价"] > 最大建议买入时间价) return true;
-//     if (row["到期天数"] < 15) return true;
-//   }
-//   return false;
-// }
-export function 构建组合(tiledData) {
+function 构建组合(tiledData) {
   const { set保证金 } = useMoneyStore();
   const 持仓List = tiledData.filter((el) => el["持仓"]);
   const 组合List = [];
@@ -236,7 +228,7 @@ export function 构建组合(tiledData) {
   return 组合List;
 }
 
-export function toPrice(val, 合约单位) {
+function toPrice(val, 合约单位) {
   return Math.floor(val * 合约单位);
 }
 function sleep(time) {
@@ -298,14 +290,6 @@ async function get_target_http_data(持仓JSON, fs) {
     resolve(tiledData);
   });
 }
-let DEBUG_LIST = {};
-function debug(_tiledData) {
-  console.log(
-    "DEBUG_LIST - ",
-    _.unionBy(_tiledData, (row) => row["f333"])
-  );
-}
-
 // 处理期权数据，添加档位字段
 function processOptionData(optionData) {
   // 按正股代码分组处理
@@ -391,185 +375,7 @@ function checkIs彩票(target) {
   return true;
 }
 
-function calculateRatio(params, diffPercent, afterDay) {
-  const S = params["正股价格"];
-  const K = params["行权价"];
-  const r = 0.015;
-  const T = params["到期天数"] / 365;
-  const afterT = (params["到期天数"] - afterDay) / 365;
-  const sigma = (params["隐波"] || 0.01) / 100;
-  const optionType = params["沽购"] === "购" ? "call" : "put";
-  const optionPrice = blackScholesOptionPrice(S, K, r, T, sigma, optionType);
-  const upOptionPrice = blackScholesOptionPrice(S * (1 + diffPercent), K, r, afterT, sigma, optionType);
-  const downOptionPrice = blackScholesOptionPrice(S * (1 - diffPercent), K, r, afterT, sigma, optionType);
-  let res;
-  if (params["沽购"] === "购") {
-    res = (upOptionPrice - optionPrice) / (optionPrice - downOptionPrice);
-  } else {
-    res = (downOptionPrice - optionPrice) / (optionPrice - upOptionPrice);
-  }
-  return formatDecimal(Math.abs(res), 1);
-}
-
-/**
- * 期权综合评分计算器
- * 基于Gamma、Vega、Theta和真实杠杆率四个核心指标
- * 评分范围：0-100分，分数越高综合性价比越好
- */
-class OptionScorer {
-  /**
-   * 构造函数，可自定义各指标权重和基准范围
-   * @param {Object} customWeights - 自定义权重
-   * @param {Object} customRanges - 自定义指标基准范围
-   */
-  constructor(customWeights = {}, customRanges = {}) {
-    // 默认权重（总和为100%）
-    this.weights = {
-      gamma: 0.3,
-      realLeverage: 0.25,
-      vega: 0.25,
-      theta: 0.2,
-      ...customWeights,
-    };
-
-    // 验证权重总和是否为1
-    const totalWeight = Object.values(this.weights).reduce((a, b) => a + b, 0);
-    if (Math.abs(totalWeight - 1) > 0.001) {
-      console.warn(`权重总和为${totalWeight.toFixed(4)}，建议调整为1.0`);
-    }
-
-    // 默认指标基准范围（基于A股50ETF期权和沪深300期权的常见值）
-    this.ranges = {
-      gamma: { min: 0.001, max: 0.05 }, // Gamma常见范围：0.001-0.05
-      vega: { min: 0.001, max: 0.2 }, // Vega常见范围：0.001-0.2
-      theta: { min: -0.1, max: -0.001 }, // Theta常见范围：-0.1到-0.001（均为负值）
-      realLeverage: {
-        min: 2,
-        max: 50,
-        optimal: 30, // 真实杠杆率最优值，在此附近得分最高
-      },
-      ...customRanges,
-    };
-  }
-
-  /**
-   * 标准化正向指标（越高越好）
-   * @param {number} value - 实际值
-   * @param {number} min - 基准最小值
-   * @param {number} max - 基准最大值
-   * @returns {number} 标准化分数(0-100)
-   */
-  #normalizePositive(value, min, max) {
-    if (value <= min) return 0;
-    if (value >= max) return 100;
-    return ((value - min) / (max - min)) * 100;
-  }
-
-  /**
-   * 标准化负向指标（越小越好，如Theta）
-   * @param {number} value - 实际值
-   * @param {number} min - 基准最小值（最负值）
-   * @param {number} max - 基准最大值（最接近0）
-   * @returns {number} 标准化分数(0-100)
-   */
-  #normalizeNegative(value, min, max) {
-    if (value <= min) return 0;
-    if (value >= max) return 100;
-    return ((value - min) / (max - min)) * 100;
-  }
-
-  /**
-   * 标准化双向指标（适中最好，如真实杠杆率）
-   * 采用钟形曲线评分，在最优值附近得分最高
-   * @param {number} value - 实际值
-   * @param {number} min - 基准最小值
-   * @param {number} max - 基准最大值
-   * @param {number} optimal - 最优值
-   * @returns {number} 标准化分数(0-100)
-   */
-  #normalizeBellCurve(value, min, max, optimal) {
-    if (value <= min || value >= max) return 0;
-
-    // 计算距离最优值的相对距离
-    const totalRange = max - min;
-    let distance;
-
-    if (value <= optimal) {
-      distance = optimal - value;
-      const leftRange = optimal - min;
-      return 100 * (1 - distance / leftRange);
-    } else {
-      distance = value - optimal;
-      const rightRange = max - optimal;
-      return 100 * (1 - distance / rightRange);
-    }
-  }
-
-  /**
-   * 计算单个期权的综合评分
-   * @param {Object} optionData - 期权数据
-   * @param {number} optionData.gamma - Gamma值
-   * @param {number} optionData.vega - Vega值
-   * @param {number} optionData.theta - Theta值
-   * @param {number} optionData.realLeverage - 真实杠杆率
-   * @returns {Object} 包含各分项得分和综合得分的结果
-   */
-  score(optionData) {
-    const { gamma, vega, theta, realLeverage } = optionData;
-
-    // 计算各分项得分
-    const gammaScore = this.#normalizePositive(gamma, this.ranges.gamma.min, this.ranges.gamma.max);
-
-    const vegaScore = this.#normalizePositive(vega, this.ranges.vega.min, this.ranges.vega.max);
-
-    const thetaScore = this.#normalizeNegative(theta, this.ranges.theta.min, this.ranges.theta.max);
-
-    const realLeverageScore = this.#normalizeBellCurve(realLeverage, this.ranges.realLeverage.min, this.ranges.realLeverage.max, this.ranges.realLeverage.optimal);
-
-    // 计算综合得分
-    const totalScore = gammaScore * this.weights.gamma + vegaScore * this.weights.vega + thetaScore * this.weights.theta + realLeverageScore * this.weights.realLeverage;
-
-    return {
-      total: Math.round(totalScore * 100) / 100, // 保留两位小数
-      breakdown: {
-        gamma: Math.round(gammaScore * 100) / 100,
-        vega: Math.round(vegaScore * 100) / 100,
-        theta: Math.round(thetaScore * 100) / 100,
-        realLeverage: Math.round(realLeverageScore * 100) / 100,
-      },
-      weights: this.weights,
-    };
-  }
-
-  /**
-   * 批量计算多个期权的评分并排序
-   * @param {Array} optionsList - 期权数据列表
-   * @param {string} sortBy - 排序字段，默认为'total'
-   * @param {string} order - 排序顺序，'desc'降序或'asc'升序
-   * @returns {Array} 排序后的期权评分列表
-   */
-  scoreBatch(optionsList, sortBy = "total", order = "desc") {
-    const scoredList = optionsList.map((option) => ({
-      ...option,
-      score: this.score(option),
-    }));
-
-    // 排序
-    return scoredList.sort((a, b) => {
-      const aVal = sortBy === "total" ? a.score.total : a.score.breakdown[sortBy];
-      const bVal = sortBy === "total" ? b.score.total : b.score.breakdown[sortBy];
-      return order === "desc" ? bVal - aVal : aVal - bVal;
-    });
-  }
-}
-
-// ==================== 使用示例 ====================
-
-// 创建评分器实例（使用默认参数）
-const scorer = new OptionScorer();
-
 function formatRecord(_tiledData, 持仓JSON, 成交Json) {
-  debug(_tiledData);
   let tiledData = [];
   _tiledData.forEach((_) => {
     // _ 原始keyList: 最新价,期权名称,昨收,买一,卖一,持仓量,行权价,日增量,隐波,溢价率,到期日,杠杆,Delta,Gamma,Theta,正股,正股价格
@@ -702,7 +508,7 @@ function formatRecord(_tiledData, 持仓JSON, 成交Json) {
   });
   return tiledData;
 }
-export function format成交Json(成交Json) {
+function format成交Json(成交Json) {
   let 期权List = Array.from(new Set(成交Json.map((el) => el["期权名称"])));
   return 期权List.map((期权名称) => {
     const targetList = 成交Json.filter((item) => item["期权名称"] === 期权名称) || [];
@@ -1076,5 +882,3 @@ export async function get_http_data(
   let orderList = format成交Json(成交Json);
   return [tiledData, comboList, filteredOptionsList, orderList, gammaFlipResult];
 }
-
-export function format() {}
