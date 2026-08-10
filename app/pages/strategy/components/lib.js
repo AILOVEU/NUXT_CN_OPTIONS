@@ -1,5 +1,7 @@
 /* strategy 页面各模块共用的常量与纯计算逻辑（不依赖 Vue 响应式，可独立测试） */
 
+import { blackScholesOptionPrice } from '../../../utils/bs'
+
 /* ============ 常量 ============ */
 export const MULT = 10000
 export const C_UP = '#e02020'
@@ -33,17 +35,10 @@ export const parseDate = (s) => { if (!s) return null; s = String(s).replace(/-/
 export const daysBetween = (a, b) => { const da = parseDate(a), db = parseDate(b); if (!da || !db) return 30; return Math.round((db - da) / 86400000) }
 export const fmtExp = (s) => (s && s.length >= 8) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}` : s
 
-export function ncdf(x) {
-  const a1 = .254829592, a2 = -.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = .3275911
-  const s = x < 0 ? -1 : 1; x = Math.abs(x) / Math.SQRT2; const t = 1 / (1 + p * x)
-  const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x)
-  return .5 * (1 + s * y)
-}
+/* 委托 bs.js 的 blackScholesOptionPrice 执行计算，保持 lib.js 原有入参出参风格 */
 export function bs(S, K, T, sig, type, r = 0.015) {
   if (T <= 1e-6 || sig <= 0) return type === 'C' ? Math.max(0, S - K) : Math.max(0, K - S)
-  const d1 = (Math.log(S / K) + (r + sig * sig / 2) * T) / (sig * Math.sqrt(T))
-  const d2 = d1 - sig * Math.sqrt(T)
-  return type === 'C' ? S * ncdf(d1) - K * Math.exp(-r * T) * ncdf(d2) : K * Math.exp(-r * T) * ncdf(-d2) - S * ncdf(-d1)
+  return blackScholesOptionPrice(S, K, r, T, sig, type === 'C' ? 'call' : 'put')
 }
 
 /* ============ 评分引擎 ============ */
