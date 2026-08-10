@@ -1,5 +1,8 @@
 <template>
-  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#e8f5e9] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#2e7d32]">etf_qianfuquan.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>标的近期走势与波动</div>
     <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">近 17 个交易日日线（红涨绿跌）与成交量</div>
     <VChart :option="spotOpt" autoresize class="chart" />
@@ -11,16 +14,15 @@ import { computed } from 'vue'
 import { AXIS, BASE_OPT, C_UP, C_DN, C_WARN } from './lib'
 
 const props = defineProps({
-  u: { type: Object, default: null },
+  hv: { type: Object, default: null },
 })
-const U = computed(() => props.u)
 
 const spotOpt = computed(() => {
-  const u = U.value; if (!u || !u.hv.closes || !u.hv.closes.length) return Object.assign({}, BASE_OPT, {
+  const h = props.hv; if (!h || !h.closes || !h.closes.length) return Object.assign({}, BASE_OPT, {
     title: { text: '该标的无日线历史数据', left: 'center', top: '45%', textStyle: { color: '#8f95a1', fontSize: 13, fontWeight: 400 } },
     xAxis: [], yAxis: [], series: [],
   })
-  const cs = u.hv.closes
+  const cs = h.closes
   return Object.assign({}, BASE_OPT, {
     title: { show: false },
     grid: { left: 52, right: 56, top: 26, bottom: 34 }, legend: { show: false },

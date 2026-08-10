@@ -1,6 +1,11 @@
 <template>
-  <div v-if="verdictObj" class="mb-3.5 overflow-hidden rounded-[12px] border border-[#e3e6ea]"
-       style="background:linear-gradient(135deg,#fff 0%,#fbfcfe 100%)">
+  <div v-if="verdictObj" class="relative mb-3.5 overflow-hidden rounded-[12px] border border-[#e3e6ea]"
+     style="background:linear-gradient(135deg,#fff 0%,#fbfcfe 100%)">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_etfoption.csv</span>
+      <span class="rounded bg-[#fef3e2] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#b8860b]">vixs.csv</span>
+      <span class="rounded bg-[#e8f5e9] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#2e7d32]">etf_qianfuquan.csv</span>
+    </div>
     <div class="flex flex-wrap border-b border-[#eef0f3]">
       <div class="min-w-[180px] flex-1 border-r border-[#eef0f3] p-[16px_18px]">
         <div class="mb-1 text-[11.5px] text-[#8f95a1]">方向评分</div>
@@ -23,11 +28,11 @@
       <div class="min-w-[200px] flex-[1.6] p-[16px_18px]">
         <div class="mb-1 text-[11.5px] text-[#8f95a1]">核心判断</div>
         <div class="mt-0.5 text-[13px] leading-[1.75]">
-          IV 历史分位 <b class="font-semibold">{{ U.ivPct ? fmt(U.ivPct.pct, 0) + '%' : '—' }}</b>，
-          当前 ATM IV <b class="font-semibold">{{ fmt(E.atmIV, 2) }}</b> vs 预期实现波动率 <b class="font-semibold">{{ fmt(verdictObj.hf, 2) }}</b>，
+          IV 历史分位 <b class="font-semibold">{{ ivPct ? fmt(ivPct.pct, 0) + '%' : '—' }}</b>，
+          当前 ATM IV <b class="font-semibold">{{ fmt(e.atmIV, 2) }}</b> vs 预期实现波动率 <b class="font-semibold">{{ fmt(verdictObj.hf, 2) }}</b>，
           风险溢价 <b :style="{ color: (verdictObj.vrp == null || verdictObj.vrp > 0) ? C_UP : C_DN }">{{ verdictObj.vrp == null ? '—（平值 IV 缺失）' : sign(verdictObj.vrp) + fmt(verdictObj.vrp, 2) }}</b> 点；
-          期限结构 <b class="font-semibold">{{ (E.atmIV == null || verdictObj.far.atmIV == null) ? '数据不足' : (verdictObj.far.atmIV < E.atmIV ? '倒挂' : '正向') }}</b>（{{ fmt(E.atmIV, 1) }}→{{ fmt(verdictObj.far.atmIV, 1) }}）；
-          实现波动率近5日较17日 <b :style="{ color: ((U.hv && U.hv.rvTrend) || 0) < 0 ? C_DN : C_UP }">{{ sign(((U.hv && U.hv.rvTrend) || 0) * 100) }}{{ fmt(((U.hv && U.hv.rvTrend) || 0) * 100, 1) }}%</b>。
+          期限结构 <b class="font-semibold">{{ (e.atmIV == null || verdictObj.far.atmIV == null) ? '数据不足' : (verdictObj.far.atmIV < e.atmIV ? '倒挂' : '正向') }}</b>（{{ fmt(e.atmIV, 1) }}→{{ fmt(verdictObj.far.atmIV, 1) }}）；
+          实现波动率近5日较17日 <b :style="{ color: ((hv && hv.rvTrend) || 0) < 0 ? C_DN : C_UP }">{{ sign(((hv && hv.rvTrend) || 0) * 100) }}{{ fmt(((hv && hv.rvTrend) || 0) * 100, 1) }}%</b>。
         </div>
       </div>
     </div>
@@ -63,23 +68,37 @@ import { computed } from 'vue'
 import { fmt, sign, C_UP, C_DN, C_PUR, C_WARN, hvFair, scoreDir, scoreVol, ctxOf, verdictOf, buildLegs, legLabel, STRATEGIES } from './lib'
 
 const props = defineProps({
-  u: { type: Object, default: null },
-  e: { type: Object, default: null },
+  spot: { type: Number, default: null },
+  hv: { type: Object, default: null },
+  ivPct: { type: Object, default: null },
+  expiries: { type: Array, default: null },
+  atmIV: { type: Number, default: null },
+  days: { type: Number, default: null },
+  byStrike: { type: Array, default: null },
+  maxPain: { type: Number, default: null },
+  rr25: { type: Number, default: null },
+  doiPCR: { type: Number, default: null },
+  netDelta: { type: Number, default: null },
+  totalOI: { type: Number, default: null },
 })
-const U = computed(() => props.u)
-const E = computed(() => props.e)
+const u = computed(() => ({ spot: props.spot, hv: props.hv || {}, ivPct: props.ivPct, expiries: props.expiries || [] }))
+const e = computed(() => props.byStrike ? {
+  atmIV: props.atmIV, days: props.days, byStrike: props.byStrike,
+  maxPain: props.maxPain, rr25: props.rr25, doiPCR: props.doiPCR,
+  netDelta: props.netDelta, totalOI: props.totalOI,
+} : null)
 
-const dirScore = computed(() => (U.value && E.value) ? scoreDir(U.value, E.value) : { items: [], score: 0 })
-const volScore = computed(() => (U.value && E.value) ? scoreVol(U.value, E.value) : { items: [], score: 0 })
+const dirScore = computed(() => (props.spot != null && e.value) ? scoreDir(u.value, e.value) : { items: [], score: 0 })
+const volScore = computed(() => (props.spot != null && e.value) ? scoreVol(u.value, e.value) : { items: [], score: 0 })
 const verdictObj = computed(() => {
-  if (!U.value || !E.value) return null
-  const ctx = ctxOf(U.value, E.value)
+  if (props.spot == null || !e.value) return null
+  const ctx = ctxOf(u.value, e.value)
   const vd = verdictOf(dirScore.value.score, volScore.value.score, ctx)
-  const hf = hvFair(U.value)
-  const vrp = (E.value.atmIV != null) ? E.value.atmIV - hf : null
-  const exps = (U.value.expiries || []).filter(x => x && x.atmIV != null)
-  const far = exps.length ? exps[exps.length - 1] : E.value
-  const legs1 = buildLegs(U.value, E.value, vd.key)
+  const hf = hvFair(u.value)
+  const vrp = (e.value.atmIV != null) ? e.value.atmIV - hf : null
+  const exps = (props.expiries || []).filter(x => x && x.atmIV != null)
+  const far = exps.length ? exps[exps.length - 1] : e.value
+  const legs1 = buildLegs(u.value, e.value, vd.key)
   return { vd, hf, vrp, far, legs1, dirScore: dirScore.value.score, volScore: volScore.value.score }
 })
 const dirColor = computed(() => { const s = dirScore.value.score; return s > 0 ? C_UP : s < 0 ? C_DN : '#8f95a1' })

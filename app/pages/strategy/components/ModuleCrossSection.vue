@@ -1,5 +1,9 @@
 <template>
-  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_etfoption.csv</span>
+      <span class="rounded bg-[#e8f5e9] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#2e7d32]">etf_qianfuquan.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>六标的横截面：IV vs 实现波动率</div>
     <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">位于对角线上方＝IV 高于实现波动率（卖方有溢价）；气泡大小＝总持仓量</div>
     <VChart :option="crossOpt" autoresize class="chart" />

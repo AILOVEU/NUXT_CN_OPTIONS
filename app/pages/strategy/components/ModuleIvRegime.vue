@@ -1,5 +1,8 @@
 <template>
-  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#fef3e2] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#b8860b]">vixs.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>隐波规律（当前标的 · 实时计算）</div>
     <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">基于 public/vixs.csv 中当前标的隐波序列，全部统计在浏览器端实时计算，切换标的或数据更新即自动反映</div>
 
@@ -58,13 +61,13 @@ import { ref, computed, onMounted } from 'vue'
 import { AXIS, BASE_OPT, C_UP, C_DN, C_ACC, C_WARN, fmt } from './lib'
 
 const props = defineProps({
-  u: { type: Object, default: null },
+  code: { type: String, default: null },
 })
 
 const loading = ref(true)
 const err = ref('')
 const allSeries = ref([]) // 全量 [{date:Date, v:Number, code:String}]
-const curCode = computed(() => props.u && props.u.code ? String(props.u.code) : null)
+const curCode = computed(() => props.code ? String(props.code) : null)
 // 仅取当前标的序列，标的切换时自动响应（不重新 fetch）
 const series = computed(() => curCode.value ? allSeries.value.filter(p => p.code === curCode.value) : [])
 

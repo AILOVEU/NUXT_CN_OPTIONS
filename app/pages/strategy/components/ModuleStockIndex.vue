@@ -1,5 +1,8 @@
 <template>
-  <div class="mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_stockindex.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold">
       <span class="h-[13px] w-[3px] rounded-[2px] bg-[#e67e22]"></span>股指期权全景分析
     </div>

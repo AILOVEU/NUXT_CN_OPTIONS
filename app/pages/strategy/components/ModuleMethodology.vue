@@ -1,5 +1,10 @@
 <template>
-  <div class="mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_etfoption.csv</span>
+      <span class="rounded bg-[#fef3e2] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#b8860b]">vixs.csv</span>
+      <span class="rounded bg-[#e8f5e9] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#2e7d32]">etf_qianfuquan.csv</span>
+    </div>
     <div class="mb-2 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#8f95a1]"></span>指标口径与风险提示</div>
     <div class="text-[11.5px] leading-[1.7] text-[#8f95a1]">
       <div class="grid grid-cols-2 gap-[18px]">
@@ -32,9 +37,9 @@ import { computed } from 'vue'
 import { fmt, hvFair } from './lib'
 
 const props = defineProps({
-  u: { type: Object, default: null },
+  hv: { type: Object, default: null },
   maxVixDate: { type: String, default: '' },
   maxTradeDate: { type: String, default: '' },
 })
-const hf = computed(() => props.u ? hvFair(props.u) : 0)
+const hf = computed(() => props.hv ? hvFair({ hv: props.hv }) : 0)
 </script>

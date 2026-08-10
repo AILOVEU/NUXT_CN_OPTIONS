@@ -1,6 +1,6 @@
 <template>
   <Nav />
-  <PageNav :ready="loaded" :scroll-offset="100" :sections="pageNavSections" />
+  <PageNav :ready="loaded" :scrollOffset="100" :sections="pageNavSections" />
   <div v-if="loaded" class="mx-auto max-w-[1560px] px-5 pb-16 pt-[18px] text-[#1f2329]"
     style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased">
     <header class="mb-3.5 flex flex-wrap items-end justify-between gap-3">
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="text-right text-[11.5px] leading-[1.7] text-[#8f95a1]">
-        数据源 data_etfoption.csv · {{ model.underlyings.length }} 标的 / {{ totalContracts }} 合约<br />
+        数据源 data_etfoption.csv（实时）· {{ model.underlyings.length }} 标的 / {{ totalContracts }} 合约<br />
         历史：vixs.csv（IV 截至 {{ maxVixDate || '—' }}）+ 标的日线（截至 {{ maxTradeDate || '—' }}）
       </div>
     </header>
@@ -40,16 +40,16 @@
     <section id="section-u" class="mb-3.5 rounded-lg border border-[#2f6feb] bg-[#f5f8ff] p-3.5" style="min-height: 480px">
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#2f6feb]">仅随标的切换</h2>
 
-      <div id="module-term-structure"><ModuleTermStructure :u="U" style="min-height: 180px" /></div>
+      <div id="module-term-structure"><ModuleTermStructure :expiries="U.expiries" style="min-height: 180px" /></div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <div id="module-vol-cone"><ModuleVolCone :u="U" style="min-height: 160px" /></div>
-        <div id="module-spot-trend"><ModuleSpotTrend :u="U" style="min-height: 160px" /></div>
+        <div id="module-vol-cone"><ModuleVolCone :longHV="U.longHV" :hv="U.hv" :expiries="U.expiries" style="min-height: 160px" /></div>
+        <div id="module-spot-trend"><ModuleSpotTrend :hv="U.hv" style="min-height: 160px" /></div>
       </div>
 
-      <div id="module-methodology"><ModuleMethodology :u="U" :max-vix-date="maxVixDate" :max-trade-date="maxTradeDate" class="mt-3.5" style="min-height: 100px" /></div>
+      <div id="module-methodology"><ModuleMethodology :hv="U.hv" :maxVixDate="maxVixDate" :maxTradeDate="maxTradeDate" class="mt-3.5" style="min-height: 100px" /></div>
 
-      <div id="module-iv-regime"><ModuleIvRegime :u="U" class="mt-3.5" style="min-height: 80px" /></div>
+      <div id="module-iv-regime"><ModuleIvRegime :code="U.code" class="mt-3.5" style="min-height: 80px" /></div>
     </section>
 
     <!-- 区块二：标的和到期月都会变 -->
@@ -57,38 +57,48 @@
       <h2 class="mb-3 text-[12px] font-[600] tracking-[.4px] text-[#c97a1a]">随标的与到期月切换</h2>
 
       <!-- 结论 -->
-      <div id="module-verdict"><ModuleVerdict :u="U" :e="E" style="min-height: 160px" /></div>
+      <div id="module-verdict"><ModuleVerdict :spot="U.spot" :hv="U.hv" :ivPct="U.ivPct" :expiries="U.expiries"
+          :atmIV="E.atmIV" :days="E.days" :byStrike="E.byStrike" :maxPain="E.maxPain" :rr25="E.rr25" :doiPCR="E.doiPCR" :netDelta="E.netDelta" :totalOI="E.totalOI"
+          style="min-height: 160px" /></div>
 
       <!-- KPI -->
-      <div id="module-kpi-cards"><ModuleKpiCards :u="U" :e="E" class="mt-3.5" style="min-height: 80px" /></div>
+      <div id="module-kpi-cards"><ModuleKpiCards :spot="U.spot" :hv="U.hv" :ivPct="U.ivPct"
+          :atmIV="E.atmIV" :atmK="E.atmK" :maxPain="E.maxPain" :oiPCR="E.oiPCR" :callOI="E.callOI" :putOI="E.putOI" :netGex="E.netGex"
+          class="mt-3.5" style="min-height: 80px" /></div>
 
       <!-- 信号明细 -->
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <div id="module-dir-signal"><ModuleDirSignal :u="U" :e="E" style="min-height: 160px" /></div>
-        <div id="module-vol-signal"><ModuleVolSignal :u="U" :e="E" style="min-height: 160px" /></div>
+        <div id="module-dir-signal"><ModuleDirSignal :spot="U.spot" :hv="U.hv"
+            :maxPain="E.maxPain" :atmIV="E.atmIV" :rr25="E.rr25" :doiPCR="E.doiPCR" :netDelta="E.netDelta" :totalOI="E.totalOI"
+            style="min-height: 160px" /></div>
+        <div id="module-vol-signal"><ModuleVolSignal :spot="U.spot" :hv="U.hv" :ivPct="U.ivPct" :expiries="U.expiries" :atmIV="E.atmIV" style="min-height: 160px" /></div>
       </div>
 
-      <div id="module-iv-hist"><ModuleIvHist :u="U" :e="E" class="mt-3.5" style="min-height: 200px" /></div>
+      <div id="module-iv-hist"><ModuleIvHist :ivHist="U.ivHist" :ivPct="U.ivPct" :atmIV="E.atmIV" class="mt-3.5" style="min-height: 200px" /></div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 180px">
-        <div id="module-payoff"><ModulePayoff :u="U" :e="E" v-model:sel-stg="selStg" style="min-height: 180px" /></div>
-        <div id="module-strategy-kpi"><ModuleStrategyKpi :u="U" :e="E" :sel-stg="selStg" style="min-height: 180px" /></div>
+        <div id="module-payoff"><ModulePayoff :spot="U.spot" :hv="U.hv" :ivPct="U.ivPct" :expiries="U.expiries"
+            :atmIV="E.atmIV" :days="E.days" :byStrike="E.byStrike" :maxPain="E.maxPain" :rr25="E.rr25" :doiPCR="E.doiPCR" :netDelta="E.netDelta" :totalOI="E.totalOI"
+            v-model:selStg="selStg" style="min-height: 180px" /></div>
+        <div id="module-strategy-kpi"><ModuleStrategyKpi :spot="U.spot" :hv="U.hv" :ivPct="U.ivPct" :expiries="U.expiries"
+            :atmIV="E.atmIV" :days="E.days" :byStrike="E.byStrike" :maxPain="E.maxPain" :rr25="E.rr25" :doiPCR="E.doiPCR" :netDelta="E.netDelta" :totalOI="E.totalOI"
+            :selStg="selStg" style="min-height: 180px" /></div>
       </div>
 
       <!-- 按到期月下钻的合约明细（同随两者变化） -->
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <div id="module-iv-smile"><ModuleIvSmile :e="E" style="min-height: 160px" /></div>
-        <div id="module-oi"><ModuleOi :e="E" style="min-height: 160px" /></div>
+        <div id="module-iv-smile"><ModuleIvSmile :byStrike="E.byStrike" :atmK="E.atmK" style="min-height: 160px" /></div>
+        <div id="module-oi"><ModuleOi :byStrike="E.byStrike" :painCurve="E.painCurve" :maxPain="E.maxPain" style="min-height: 160px" /></div>
       </div>
 
       <div class="mt-3.5 grid grid-cols-2 gap-3.5" style="min-height: 160px">
-        <div id="module-doi"><ModuleDoi :e="E" style="min-height: 160px" /></div>
-        <div id="module-gex"><ModuleGex :e="E" style="min-height: 160px" /></div>
+        <div id="module-doi"><ModuleDoi :byStrike="E.byStrike" style="min-height: 160px" /></div>
+        <div id="module-gex"><ModuleGex :byStrike="E.byStrike" style="min-height: 160px" /></div>
       </div>
 
-      <div id="module-greeks"><ModuleGreeks :e="E" class="mt-3.5" style="min-height: 180px" /></div>
+      <div id="module-greeks"><ModuleGreeks :byStrike="E.byStrike" class="mt-3.5" style="min-height: 180px" /></div>
 
-      <div id="module-t-table"><ModuleTTable :e="E" class="mt-3.5" style="min-height: 160px" /></div>
+      <div id="module-t-table"><ModuleTTable :byStrike="E.byStrike" :atmK="E.atmK" class="mt-3.5" style="min-height: 160px" /></div>
     </section>
 
     <!-- 静态区：不随标的/到期月筛选变化 -->
@@ -97,9 +107,9 @@
 
       <div id="module-cross-section"><ModuleCrossSection :underlyings="model.underlyings" /></div>
 
-      <div id="module-quadrant"><ModuleQuadrant :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" /></div>
+      <div id="module-quadrant"><ModuleQuadrant :underlyings="model.underlyings" :selU="selU" class="mt-3.5" /></div>
 
-      <div id="module-rank"><ModuleRank :underlyings="model.underlyings" :sel-u="selU" class="mt-3.5" /></div>
+      <div id="module-rank"><ModuleRank :underlyings="model.underlyings" :selU="selU" class="mt-3.5" /></div>
     </section>
 
     <!-- 隐含波动率 IV 综合分析与预测：独立大模块，六标的横截面，不随筛选变化 -->

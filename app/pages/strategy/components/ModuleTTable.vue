@@ -1,5 +1,8 @@
 <template>
-  <div v-if="E" class="mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div v-if="byStrike && byStrike.length" class="relative mt-3.5 rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_etfoption.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#2f6feb]"></span>T 型报价表</div>
     <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">左侧认购 / 右侧认沽，黄色行为平值。杠杆＝真实杠杆，Theta 为每张每日时间价值损耗（元）</div>
     <div class="tw">
@@ -17,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="b in tRows" :key="b.K" :class="{ atm: b.K === E.atmK }">
+        <tr v-for="b in tRows" :key="b.K" :class="{ atm: b.K === atmK }">
           <td class="cside">{{ fmt(b.cTheta, 1) }}</td><td class="cside">{{ fmt(b.cVega, 3) }}</td>
           <td class="cside">{{ fmt(b.cGamma, 2) }}</td><td class="cside">{{ fmt(b.cDelta, 3) }}</td>
           <td class="cside">{{ fmt(b.cLev, 1) }}</td>
@@ -43,10 +46,10 @@ import { computed } from 'vue'
 import { fmt, sign } from './lib'
 
 const props = defineProps({
-  e: { type: Object, default: null },
+  byStrike: { type: Array, default: null },
+  atmK: { type: Number, default: null },
 })
-const E = computed(() => props.e)
-const tRows = computed(() => E.value ? E.value.byStrike : [])
+const tRows = computed(() => (props.byStrike || []))
 </script>
 
 <style scoped>

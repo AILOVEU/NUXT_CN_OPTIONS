@@ -1,5 +1,10 @@
 <template>
-  <div class="rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+  <div class="relative rounded-[10px] border border-[#e3e6ea] bg-white p-4">
+    <div class="absolute right-3 top-3 z-10 flex gap-1.5">
+      <span class="rounded bg-[#eef0f3] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#8f95a1]">data_etfoption.csv</span>
+      <span class="rounded bg-[#fef3e2] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#b8860b]">vixs.csv</span>
+      <span class="rounded bg-[#e8f5e9] px-1.5 py-0.5 text-[10px] leading-[1.5] text-[#2e7d32]">etf_qianfuquan.csv</span>
+    </div>
     <div class="mb-0.5 flex items-center gap-2 text-[13.5px] font-semibold"><span class="h-[13px] w-[3px] rounded-[2px] bg-[#7a5af8]"></span>策略象限图</div>
     <div class="mb-2 pl-[11px] text-[11.5px] text-[#8f95a1]">横轴方向评分、纵轴波动率评分，六个标的所处象限决定策略类型</div>
     <VChart :option="quadOpt" autoresize class="chart tall" />
