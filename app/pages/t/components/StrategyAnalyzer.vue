@@ -92,17 +92,19 @@
       </div>
     </div>
 
-    <!-- 盈亏图专项：隐波选择滑块 -->
-    <div v-if="positions.length && activeTab === 'price'" class="mt-2 px-2">
-      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
-        <span>隐波: {{ (ivSliderValue * 100).toFixed(1) }}%</span>
-        <span class="text-gray-400">调整隐波</span>
-      </div>
-      <el-slider v-model="ivSliderPercent" :min="0" :max="100" :step="0.5" size="small" :show-tooltip="false"
-        @input="onSliderChange" />
-      <div class="flex justify-between text-[10px] text-gray-400">
-        <span>0%</span>
-        <span>{{ (ivMaxValue * 100).toFixed(1) }}%</span>
+    <!-- 盈亏图专项：隐波选择滑块（每个合约一个） -->
+    <div v-if="positions.length && activeTab === 'price'" class="mt-2">
+      <div v-for="(pos, idx) in positions" :key="idx" class="px-2 mb-2">
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+          <span>{{ pos.label }} 隐波: {{ (ivSliderValueList[idx] * 100).toFixed(1) }}%</span>
+          <span class="text-gray-400">调整隐波</span>
+        </div>
+        <el-slider v-model="ivSliderPercentList[idx]" :min="0" :max="100" :step="0.5" size="small" :show-tooltip="false"
+          @input="onSliderChange" />
+        <div class="flex justify-between text-[10px] text-gray-400">
+          <span>0%</span>
+          <span>{{ (ivMaxValue * 100).toFixed(1) }}%</span>
+        </div>
       </div>
     </div>
   </div>
@@ -123,11 +125,16 @@ const props = defineProps({
 
 const emit = defineEmits(["removePosition", "clearAll"]);
 
-const chartTabs = [
-  { value: "price", label: "盈亏图" },
-  { value: "time", label: "时间衰减" },
-  { value: "iv", label: "波动率" },
-];
+const chartTabs = computed(() => {
+  const tabs = [
+    { value: "price", label: "盈亏图" },
+    { value: "time", label: "时间衰减" },
+  ];
+  if (props.positions.length <= 1) {
+    tabs.push({ value: "iv", label: "波动率" });
+  }
+  return tabs;
+});
 
 const activeTab = ref("price");
 const chartRef = ref(null);
@@ -141,14 +148,14 @@ const totalCount = computed(() => props.positions.reduce((s, p) => s + Math.abs(
 // 基于图表同源的 Black-Scholes 理论价，为每个持仓计算：盈亏后价(theoPrice) + 总盈亏(pnlTotal)
 // 使用每个持仓自身的正股价格/到期天数/隐波，避免多标的下用错 S0
 // 按当前滑块模拟的参数（正股/剩余天数/隐波）计算单个持仓理论价，滑动时随滑块实时变化
-function simulatedPrice(p) {
+function simulatedPrice(p, posIdx) {
   let spot = p.spotPrice;
   let dte = p.dte;
   let iv = p.iv;
   if (activeTab.value === "price") {
     spot = sliderRealValue.value;
     dte = timeSliderValue.value;
-    iv = ivSliderValue.value;
+    iv = posIdx >= 0 && ivSliderValueList.value[posIdx] !== undefined ? ivSliderValueList.value[posIdx] : p.iv;
   } else if (activeTab.value === "time") {
     dte = sliderRealValue.value;
   } else if (activeTab.value === "iv") {
@@ -162,8 +169,8 @@ function simulatedPrice(p) {
 }
 
 const enrichedPositions = computed(() => {
-  return props.positions.map((p) => {
-    const theo = simulatedPrice(p);
+  return props.positions.map((p, idx) => {
+    const theo = simulatedPrice(p, idx);
     return {
       ...p,
       theoPrice: theo,
@@ -192,7 +199,7 @@ const portfolioValue = computed(() => {
 // 组合最新价 = 组合原始价 + 模拟盈亏，保证 最新价 − 原始价 = 当前盈亏 恒成立
 const displayPnl = computed(() => {
   if (activeTab.value === "price") {
-    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, iv: ivSliderValue.value });
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, ivList: ivSliderValueList.value });
   }
   return totalPnl.value;
 });
@@ -214,7 +221,7 @@ function clearAll() {
 // ========== 滑块相关 ==========
 const sliderPercent = ref(50); // 0~100
 const timeSliderPercent = ref(100); // 盈亏图专用：时间滑块，默认=当前剩余天数
-const ivSliderPercent = ref(0); // 盈亏图专用：隐波滑块，默认=当前平均隐波位置
+const ivSliderPercentList = ref([]); // 盈亏图专用：每个合约一个隐波滑块，默认映射到各自当前隐波位置
 
 const S0 = computed(() => props.spotPrice || props.positions[0]?.spotPrice || 3);
 const maxDTE = computed(() => {
@@ -243,9 +250,16 @@ function defaultTimeSliderPercent() {
 const ivMaxValue = computed(() => {
   return Math.max(avgIV.value * 2, 0.3);
 });
-const ivSliderValue = computed(() => {
-  return +(ivMaxValue.value * ivSliderPercent.value / 100).toFixed(4);
+const ivSliderValueList = computed(() => {
+  return ivSliderPercentList.value.map((pct) => +(ivMaxValue.value * (pct / 100)).toFixed(4));
 });
+
+// 根据每个合约自身的隐波初始化滑块位置
+function initIvSliderPercentList() {
+  ivSliderPercentList.value = props.positions.map((p) => {
+    return ivMaxValue.value > 0 ? Math.min(100, (p.iv / ivMaxValue.value) * 100) : 0;
+  });
+}
 
 const sliderMinLabel = computed(() => {
   if (activeTab.value === "price") return (S0.value * 0.8).toFixed(3);
@@ -283,7 +297,7 @@ const sliderLabel = computed(() => {
 
 const sliderPnl = computed(() => {
   if (activeTab.value === "price") {
-    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, iv: ivSliderValue.value });
+    return calcCombinedPnl({ spot: sliderRealValue.value, dte: timeSliderValue.value, ivList: ivSliderValueList.value });
   }
   if (activeTab.value === "time") {
     return calcCombinedPnl({ dte: sliderRealValue.value });
@@ -316,7 +330,7 @@ function defaultSliderPercent() {
 function onTabChange() {
   sliderPercent.value = defaultSliderPercent();
   timeSliderPercent.value = defaultTimeSliderPercent();
-  ivSliderPercent.value = avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
+  initIvSliderPercentList();
   drawChart();
 }
 
@@ -325,11 +339,11 @@ function onSliderChange() {
 }
 
 // ========== 组合盈亏计算 ==========
-function calcCombinedPnl({ spot, dte, iv }) {
-  return props.positions.reduce((sum, pos) => {
+function calcCombinedPnl({ spot, dte, iv, ivList }) {
+  return props.positions.reduce((sum, pos, idx) => {
     const S = spot ?? pos.spotPrice;
     const T = (dte ?? pos.dte) / 365;
-    const sigma = iv ?? pos.iv;
+    const sigma = ivList ? ivList[idx] : (iv ?? pos.iv);
     try {
       const theo = blackScholesOptionPrice(S, pos.strike, RISK_FREE_RATE, T, sigma, pos.type);
       return sum + (theo - pos.entryPrice) * pos.position * props.multiplier;
@@ -340,17 +354,17 @@ function calcCombinedPnl({ spot, dte, iv }) {
 function buildPriceChart() {
   const range = S0.value * 0.2;
   const dte = timeSliderValue.value;
-  const iv = ivSliderValue.value;
+  const ivList = ivSliderValueList.value;
   const data = [];
   const N = 200;
   for (let i = 0; i <= N; i++) {
     const S = S0.value - range + (2 * range * i) / N;
-    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S, dte, iv }).toFixed(0)]);
+    data.push([+S.toFixed(3), +calcCombinedPnl({ spot: S, dte, ivList }).toFixed(0)]);
   }
-  const currentPnl = +calcCombinedPnl({ spot: S0.value, dte, iv }).toFixed(0);
+  const currentPnl = +calcCombinedPnl({ spot: S0.value, dte, ivList }).toFixed(0);
 
   return {
-    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>剩余${dte}天<br/>隐波${(iv * 100).toFixed(1)}%<br/>组合盈亏: ${p[0].data[1]}` },
+    tooltip: { trigger: "axis", formatter: p => `正股: ${p[0].axisValue.toFixed(3)}<br/>剩余${dte}天<br/>组合盈亏: ${p[0].data[1]}` },
     grid: { left: 55, right: 15, top: 15, bottom: 30 },
     xAxis: { type: "value", name: "正股价格", min: S0.value - range, max: S0.value + range, splitLine: { show: false } },
     yAxis: { type: "value", name: "盈亏", splitLine: { show: false } },
@@ -373,7 +387,7 @@ function buildPriceChart() {
       markPoint: {
         data: [
           { coord: [S0.value, currentPnl], symbol: "circle", symbolSize: 8, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
-          { coord: [sliderRealValue.value, +calcCombinedPnl({ spot: sliderRealValue.value, dte, iv }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
+          { coord: [sliderRealValue.value, +calcCombinedPnl({ spot: sliderRealValue.value, dte, ivList }).toFixed(0)], symbol: "diamond", symbolSize: 10, itemStyle: { color: "#e02020" }, label: { show: true, formatter: p => p.value, fontSize: 10 } },
         ],
       },
     }],
@@ -479,12 +493,16 @@ function initChart() {
 watch(activeTab, () => drawChart());
 watch(() => props.positions.length, (len, oldLen) => {
   if (len > 0) {
+    // 多个合约时隐藏波动率 tab，如果当前在波动率 tab 则切回盈亏图
+    if (len > 1 && activeTab.value === "iv") {
+      activeTab.value = "price";
+    }
     // 新增持仓时重置所有滑块
     if (!oldLen || oldLen === 0) {
       sliderPercent.value = defaultSliderPercent();
       timeSliderPercent.value = defaultTimeSliderPercent();
-      ivSliderPercent.value = avgIV.value && ivMaxValue.value ? (avgIV.value / ivMaxValue.value) * 100 : 0;
     }
+    initIvSliderPercentList();
     nextTick(() => { initChart(); });
   } else {
     if (chartInstance) { chartInstance.dispose(); chartInstance = null; }
