@@ -24,6 +24,7 @@
             class="px-3 py-1.5 bg-gray-500 text-white rounded text-sm hover:bg-gray-600">重置全部筛选</button>
         </div>
       </div>
+      <!-- {{ groupList }} -->
       <!-- 遍历每一个条件组 -->
       <div v-for="(group, groupIdx) in groupList" :key="groupIdx"
         class="border border-blue-200 rounded-md p-2 mb-2 bg-white">
@@ -154,7 +155,8 @@ const filter3Opts = ref(["沽", "购"]);
    */
 const groupList = ref([
   // 默认初始化一组空条件，可自行删除
-  { rules: [] },
+  // { rules: [] },
+  { "rules": [{ "field": "到期日", "value": deadline_list.slice(2, 4) }, { "field": "沽购", "value": "购" }, { "field": "一手时间价", "value": ["-9999", "1500"] }, { "field": "一手内在价", "value": ["1", "1500"] }] }
 ]);
 
 // 新增一个条件组
@@ -187,7 +189,7 @@ const resetAll = () => {
 
 // 核心计算属性：过滤数据
 const filterData = computed(() => {
-  const source = tableData.tiledData.filter(el=> formData.stockCode === 'all' || el.正股代码 === formData.stockCode);
+  const source = tableData.tiledData.filter(el => formData.stockCode === 'all' || el.正股代码 === formData.stockCode);
   // 无任何筛选条件，返回全部数据
   const totalRules = groupList.value.reduce((sum, g) => sum + g.rules.length, 0);
   if (totalRules === 0) return source;
@@ -228,3 +230,22 @@ const filterData = computed(() => {
   });
 });
 </script>
+
+<style scoped>
+.active {
+  color: white;
+  background-color: #409eff;
+}
+
+::v-deep(.el-form-item) {
+  margin-bottom: 6px;
+}
+
+::v-deep(.el-radio-group) {
+  justify-content: flex-start;
+}
+
+::v-deep(.el-table--small .cell) {
+  padding: 0 0px 0 0 !important;
+}
+</style>
