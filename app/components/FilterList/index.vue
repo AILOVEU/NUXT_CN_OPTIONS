@@ -3,7 +3,7 @@
     <div class="mx-auto overflow-x-auto border-[5px] border-[#576a8f]">
       <Capture title="期权列表" ref="captureRef">
         <el-table :data="filteredTableData" size="small" border stripe height="100%" :highlight-current-row="false"
-          ref="tableRef" show-summary :summary-method="getSummary">
+          ref="tableRef" show-summary :summary-method="getSummary" @sort-change="handleSortChange">
           <el-table-column label="序" width="40" align="center" fixed="left">
             <template #header>
               <div class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer"
@@ -172,13 +172,8 @@
 </template>
 <script setup>
 import _ from "lodash";
-import { deadline_list, OPTIONS_MAP } from "~/data";
-
-const props = defineProps(["data", "isCombo", "showHold", "过滤持变字段", "refreshNonce"]);
-const tableData = reactive({
-  tiledData: [],
-  loading: false,
-});
+import { OPTIONS_MAP } from "~/data";
+const props = defineProps(["data", "isCombo", "showHold", "过滤持变字段", "refreshNonce", 'orderFunc']);
 // 弹窗响应式
 const bsModalData = reactive({
   visible: false,
@@ -230,7 +225,7 @@ const filteredTableData = computed(() => {
   if (props.showHold) {
     filtered = _.orderBy(filtered, ["仓位", "到期日", "沽购", "正股代码"], ["desc", "asc", "asc", "asc"]);
   } else {
-    filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
+    // filtered = _.orderBy(filtered, ["杠杆"], ["asc"]);
   }
   // }
   // if (props.filterCount) {
@@ -258,6 +253,14 @@ const getSummary = ({ columns, data }) => {
 };
 
 const captureRef = ref(null);
+const tableRef = ref(null);
+
+function handleSortChange({ column, prop, order }) {
+  if (props.orderFunc) {
+    props.orderFunc({ column, prop, order })
+    // nextTick(() => tableRef.value?.clearSort())
+  }
+}
 </script>
 <style scoped>
 /* 给你的 table 加个自定义 class，避免污染全局样式，比如 .my-table */

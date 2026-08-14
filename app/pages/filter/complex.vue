@@ -97,15 +97,16 @@
     <!-- 筛选结果表格 -->
     <div>
       <h3 class="font-medium mb-2">筛选结果：共 {{ filterData.length }} 条数据</h3>
-      <FilterList :data="filterData.slice(0, formData.top)" :showHold="false" />
+      <FilterList :data="filterData.slice(0, formData.top)" :showHold="false" :orderFunc="orderFunc" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { filter } from "lodash";
 import { ref, computed } from "vue";
 import { OPTIONS_MAP, deadline_list } from "~/data";
-
+import _ from "lodash";
 const formData = reactive({
   top: 20,
   stockCode: 'all'
@@ -186,7 +187,7 @@ const delRule = (gIdx, rIdx) => {
 const resetAll = () => {
   groupList.value = [{ rules: [] }];
 };
-
+const orderCfg = ref({})
 // 核心计算属性：过滤数据
 const filterData = computed(() => {
   const source = tableData.tiledData.filter(el => formData.stockCode === 'all' || el.正股代码 === formData.stockCode);
@@ -194,7 +195,7 @@ const filterData = computed(() => {
   const totalRules = groupList.value.reduce((sum, g) => sum + g.rules.length, 0);
   if (totalRules === 0) return source;
 
-  return source.filter((row) => {
+  const filtered = source.filter((row) => {
     // 只要任意一个组完全满足，数据就通过（组之间 OR）
     return groupList.value.some((group) => {
       // 组内所有规则必须全部满足（组内 AND）
@@ -228,7 +229,22 @@ const filterData = computed(() => {
       });
     });
   });
+  if (orderCfg.value.prop) {
+    return _.orderBy(filtered, [orderCfg.value.prop], [orderCfg.value.order === 'ascending' ? 'asc' : 'desc'])
+  }
+  return filtered;
 });
+function orderFunc({ column, prop, order }) {
+  if (orderCfg.value.prop === prop && orderCfg.value.order === order ) {
+    orderCfg.value = {}
+    return
+  }
+  if(!order){
+    orderCfg.value = {}
+    return
+  }
+  orderCfg.value = { prop, order }
+}
 </script>
 
 <style scoped>
