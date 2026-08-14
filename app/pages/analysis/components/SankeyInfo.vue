@@ -14,18 +14,22 @@
   </div>
 
   <div class="w-full flex mb-[12px] gap-[20px] justify-between mx-[20px]">
-    <div v-for="item in tabOptions" :key="item.value" class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center" :class="{ active: item.value === showType }" @click="showType = item.value">
+    <div v-for="item in tabOptions" :key="item.value"
+      class="flex-1 border-[1px] leading-1 text-center cursor-pointer h-[25px] flex items-center justify-center"
+      :class="{ active: item.value === showType }" @click="showType = item.value">
       {{ item.label }}
     </div>
   </div>
 
   <template v-if="showType === 'list'">
     <div class="flex justify-center items-center">持仓列表</div>
-    <el-table size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
+    <el-table size="small" :data="validRichTableData" :border="false" preserve-expanded-content default-expand-all
+      style="width: 100%" :show-header="false" :row-class-name="() => 'highlight-line'">
       <el-table-column type="expand">
         <template #default="props">
           <div>
-            <FilterList :data="props.row.children.filter(el=> checkIsFilter(el))" :isCombo="!props.row.single" :showHold="true" />
+            <FilterList :data="props.row.children.filter(el => checkIsFilter(el))" :isCombo="!props.row.single"
+              :showHold="true" />
           </div>
         </template>
       </el-table-column>
@@ -39,7 +43,7 @@
       </el-table-column>
     </el-table>
     <div v-if="持仓变化Table.length" class="flex justify-center items-center">清仓列表</div>
-    <FilterList v-if="持仓变化Table.length"  :data="持仓变化Table" :showHold="false" />
+    <FilterList v-if="持仓变化Table.length" :data="持仓变化Table" :showHold="false" />
   </template>
 
   <div v-else-if="showType === 'symmetric'" class="flex justify-center">
@@ -54,6 +58,9 @@
       <Capture title="持仓分布" ref="captureRef">
         <VChart :option="投入分布Option" style="height: 900px; width: 100%" />
         <VChart :option="持仓分布Option" style="height: 900px; width: 100%" />
+        <!-- <VChart :option="盈利分布Option" style="height: 900px; width: 100%" />
+        <VChart :option="亏损分布Option" style="height: 900px; width: 100%" /> -->
+        <VChart :option="持仓溢价分布Option" style="height: 900px; width: 100%" />
       </Capture>
     </div>
   </div>
@@ -104,14 +111,6 @@ const stockOptions = OPTIONS_MAP.map((el) => ({
 
 // Props
 const props = defineProps(["tiledData", "comboList"]);
-
-// 方法
-function handleShowBs(row) {
-  const current期权Item = props.tiledData.find((el) => el["期权名称"] === row["期权名称"]);
-  if (!current期权Item) return;
-  bsModalData.optionInfo = { ...current期权Item };
-  bsModalData.visible = true;
-}
 
 async function handleQuery() {
   tableData.loading = true;
@@ -365,24 +364,8 @@ const validRichTableData = computed(() => {
   return hasComboData ? data : [table4];
 });
 
-// 过滤与校验
-function filterTableData(tableData) {
-  return tableData
-    .filter((el) => formData.正股List.includes(el["正股代码"]))
-    .filter((el) => formData.到期日List.includes(el["到期日"]))
-    .filter((el) => formData.沽购List.includes(el["沽购"]));
-}
-
 function checkIsFilter(el) {
   return formData.正股List.includes(el["正股代码"]) && formData.到期日List.includes(el["到期日"]) && formData.沽购List.includes(el["沽购"]);
-}
-
-// 颜色工具
-function getPercentColor(val) {
-  if (val > 50) return "#f56c6c";
-  if (val > 25) return "#e6a23c";
-  if (val > 5) return "#409eff";
-  return "#909399";
 }
 
 // 桑基图工具函数（提取公共逻辑，大幅简化代码）
@@ -436,7 +419,14 @@ function getFilterDataByDataName(dataName, tableData) {
 }
 
 // HTML 模板字符串（简化写法）
-const getSpaceBetween2Div = ($1, $2) => `<div style="font-size:20px;display:flex;justify-content:space-between;gap:30px;height:24px;"><div>${$1}</div><div>${$2}</div></div>`;
+const getSpaceBetween2Div = ($1, $2, $3) => `<div style="font-size:20px;display:flex;justify-content:space-between;gap:30px;height:24px;">
+  <div>${$1}</div>
+  <div style='display:flex;justify-content:space-between;gap:5px'>
+      <div>${$2}</div>
+      <div style='width: 60px;text-align:right;border:1px solid #409eff;color:#409eff;'>${$3 || ''}</div>
+  </div>
+
+  </div>`;
 
 const getSpaceBetween3Div = ($1, $2, $3) => {
   const color = $2 - $3 > 0 ? "red" : "green";
@@ -457,6 +447,19 @@ const getSpaceBetween4Div = ($1, $2, $3, $4, $5) =>
       <div style='width:140px;text-align:right'>${$1}</div>
     </div>`;
 
+const getSpaceBetween5Div = ($1, $2, $extra, $3, $4, $5) => {
+  const val = $extra || 0
+  const color = val < 0 ? 'green' : val <= 7 ? 'black' : val <= 12 ? 'red' : 'red'
+  return `<div style="font-size:20px;display:flex;justify-content:space-between;align-items:center;gap:5px;height:24px;">
+      <div style='width:75px;border:1px solid #409eff;padding:2px;color:#409eff;border-radius:3px;text-align:right;margin-right:20px'>${$2}</div>
+      <div style='width:80px;text-align:right;color:${color};margin-right:10px;'>${val.toFixed(1)}%</div>
+      <div style='width:200px'>${$3}</div>
+      <div style='width:50px;font-size:12px;text-align:right;color:#607cdd'>${$5}</div>
+      <div style='width:60px;color:#409eff;border-radius:3px;text-align:right'>${$4}手</div>
+      <div style='width:140px;text-align:right'>${$1}</div>
+    </div>`;
+}
+
 const getSpaceBetween7Div = ($1, $2, $3, $4, $5, $6) => {
   const color = $1 - $6 > 0 ? "red" : "green";
   return `<div style="font-size:20px;display:flex;justify-content:space-between;align-items:center;gap:5px;height:24px;">
@@ -471,9 +474,10 @@ const getSpaceBetween7Div = ($1, $2, $3, $4, $5, $6) => {
 };
 
 // 桑基图配置生成（提取公共逻辑，4个图表复用）
-function generateSankeyData(tableData, valueField) {
-  let 沽购to正股Map = {};
-  let 到日期to沽购Map = {};
+// dimKey: 可选，自定义维度分类函数 (row) => string，替代默认的"沽购"
+function generateSankeyData(tableData, valueField, dimKey) {
+  let dimTo正股Map = {};
+  let 到日期toDimMap = {};
   let 正股to到日期Map = {};
 
   // 构建映射关系
@@ -483,21 +487,23 @@ function generateSankeyData(tableData, valueField) {
 
     const 组合Str = isCombo ? "[组合]" : "";
     const 月份 = dayjs(到期日).format("M月");
+    const dim = dimKey ? dimKey(el) : 沽购;
+    if (!dim) return;
 
-    // 沽购 → 正股
-    const key1 = 组合Str + 正股代码 + 沽购;
-    沽购to正股Map[key1] = {
-      source: 沽购,
+    // 维度 → 正股
+    const key1 = 组合Str + 正股代码 + dim;
+    dimTo正股Map[key1] = {
+      source: dim,
       target: 正股代码 + 组合Str,
-      value: (沽购to正股Map[key1]?.value || 0) + Math.abs(value),
+      value: (dimTo正股Map[key1]?.value || 0) + Math.abs(value),
     };
 
-    // 月份 → 沽购
-    const key2 = 到期日 + 沽购;
-    到日期to沽购Map[key2] = {
+    // 月份 → 维度（带空格后缀，用于区分左右两列同名节点）
+    const key2 = 到期日 + dim;
+    到日期toDimMap[key2] = {
       source: 月份,
-      target: 沽购 + " ",
-      value: (到日期to沽购Map[key2]?.value || 0) + Math.abs(value),
+      target: dim + " ",
+      value: (到日期toDimMap[key2]?.value || 0) + Math.abs(value),
     };
 
     // 正股 → 月份
@@ -510,26 +516,25 @@ function generateSankeyData(tableData, valueField) {
   });
 
   return {
-    沽购to正股: Object.values(沽购to正股Map).filter((el) => el.value),
+    沽购to正股: Object.values(dimTo正股Map).filter((el) => el.value),
     正股到日期: Object.values(正股to到日期Map).filter((el) => el.value),
-    到日期to沽购: Object.values(到日期to沽购Map).filter((el) => el.value),
+    到日期to沽购: Object.values(到日期toDimMap).filter((el) => el.value),
   };
 }
 
-function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 总和标识 = "持" }) {
-  const 所有持仓期权TableData = [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])];
+function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 总和标识 = "持", nodeNames = [], nodeFilter, tooltipExtraField }) {
+  const 所有持仓期权TableData = getSankeyTableData();
 
-  const totalData = [
-    { source: "沽 ", target: 总和标识, value: 0 },
-    { source: "购 ", target: 总和标识, value: 0 },
-  ];
-
+  // 动态构建 totalData：从 沽购to正股 的 source 聚合生成 source+" " → 总和标识
+  const totalDataMap = {};
   沽购to正股.forEach((el) => {
-    const idx = totalData.findIndex((item) => item.source === el.source + " ");
-    if (idx >= 0) totalData[idx].value += el.value;
+    const key = el.source + " ";
+    totalDataMap[key] = (totalDataMap[key] || 0) + el.value;
   });
+  const finalTotalData = Object.entries(totalDataMap)
+    .filter(([, v]) => v)
+    .map(([source, value]) => ({ source, target: 总和标识, value }));
 
-  const finalTotalData = totalData.filter((el) => el.value);
   const colorMap = getSankeyLegenColorMap({ 总和标识 });
   const 亏损符号 = 总和标识 === "亏" ? -1 : 1;
 
@@ -540,9 +545,14 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
   });
   dataList = [...new Set(dataList), 总和标识];
 
-  const dataListSort = [..._.flattenDeep(OPTIONS_MAP.map((el) => [el.code, `${el.code}[组合]`])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el).format("M月")), 总和标识];
+  const dataListSort = [...nodeNames, ...nodeNames.map(n => n + " "), ..._.flattenDeep(OPTIONS_MAP.map((el) => [el.code, `${el.code}[组合]`])), "购", "购 ", "沽", "沽 ", ...deadline_list.map((el) => dayjs(el).format("M月")), 总和标识];
 
-  dataList = dataListSort.filter((el) => dataList.includes(el));
+  dataList = [...new Set(dataListSort.filter((el) => dataList.includes(el)))];
+
+  // 根据节点名过滤数据（支持自定义 nodeFilter 处理特殊节点）
+  function filterByNodeName(name, dataList) {
+    return nodeFilter ? nodeFilter(name, dataList) : getFilterDataByDataName(name, dataList)
+  }
 
   return {
     title: {
@@ -562,11 +572,11 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
 
         if (dataType === "node") {
           targetName = getStockCodeName(data.name);
-          list = getFilterDataByDataName(data.name, 所有持仓期权TableData);
+          list = filterByNodeName(data.name, 所有持仓期权TableData);
         } else {
           targetName = `${getStockCodeName(data.source)} > ${getStockCodeName(data.target)}`;
-          list = getFilterDataByDataName(data.source, 所有持仓期权TableData);
-          list = getFilterDataByDataName(data.target, list);
+          list = filterByNodeName(data.source, 所有持仓期权TableData);
+          list = filterByNodeName(data.target, list);
         }
 
         // 盈亏过滤
@@ -582,12 +592,14 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
             const percent = formatDecimal((10000 * el[展示字段]) / _.sumBy(list, 展示字段) / 100, 1).toFixed(1) + "%";
             return 总和标识 === "投"
               ? getSpaceBetween7Div(el["总价"], percent, el["期权名称"], el["持仓"], `${el["一手价"]}/${formatDecimal(el[展示字段] / el["持仓"], 0)}`, el[展示字段])
-              : getSpaceBetween4Div(el[展示字段], percent, el["期权名称"], el["持仓"], formatDecimal(el[展示字段] / el["持仓"], 0));
+              : tooltipExtraField
+                ? getSpaceBetween5Div(el[展示字段], percent, el[tooltipExtraField], el["期权名称"], el["持仓"], formatDecimal(el[展示字段] / el["持仓"], 0))
+                : getSpaceBetween4Div(el[展示字段], percent, el["期权名称"], el["持仓"], formatDecimal(el[展示字段] / el["持仓"], 0));
           })
           .join("");
 
         const targetValue = 亏损符号 * value;
-        const bottomStr = 总和标识 === "投" ? getSpaceBetween3Div(targetName, _.sumBy(list, "总价"), targetValue) : getSpaceBetween2Div(targetName, targetValue);
+        const bottomStr = 总和标识 === "投" ? getSpaceBetween3Div(targetName, _.sumBy(list, "总价"), targetValue) : getSpaceBetween2Div(targetName, targetValue, formatDecimal((100 * value) / sumValue, 1) + "%");
 
         return listStr + (listStr ? "<br>" : "") + bottomStr;
       },
@@ -622,9 +634,72 @@ function getSankeyOption({ 沽购to正股, sourceToTargetList, sumValue, title, 
   };
 }
 
-// 四个图表 computed（大幅简化）
+// 溢价分布区间常量（可在此处方便调整区间和标签）
+const PREMIUM_BUCKETS = [
+  { label: '溢<0', min: -Infinity, max: 0 },
+  { label: '溢0~3', min: 0, max: 3 },
+  { label: '溢3~7', min: 3, max: 7 },
+  { label: '溢7~12', min: 7, max: 12 },
+  { label: '溢12+', min: 12, max: Infinity },
+]
+
+// 提取公共数据源（4个桑基图共用）
+function getSankeyTableData() {
+  return [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])]
+}
+
+// 持仓溢价分布Option（桑基图，与其它分布保持一致）
+const 持仓溢价分布Option = computed(() => {
+  const tableData = getSankeyTableData()
+  const premiumLabels = PREMIUM_BUCKETS.map(b => b.label)
+
+  const { 沽购to正股, 正股到日期, 到日期to沽购 } = generateSankeyData(tableData, "总价", (el) => {
+    const 溢价率 = el["溢价率"]
+    if (溢价率 == null) return null
+    const b = PREMIUM_BUCKETS.find(b => 溢价率 > b.min && 溢价率 <= b.max)
+    return b ? b.label : null
+  })
+
+  // 沽购 → 溢价区间（最左侧新列）
+  const 沽购to溢价Map = {}
+  tableData.forEach(el => {
+    const 溢价率 = el["溢价率"]
+    if (溢价率 == null) return
+    const b = PREMIUM_BUCKETS.find(b => 溢价率 > b.min && 溢价率 <= b.max)
+    if (!b) return
+    const key = el["沽购"] + b.label
+    沽购to溢价Map[key] = {
+      source: el["沽购"],
+      target: b.label,
+      value: (沽购to溢价Map[key]?.value || 0) + (el["总价"] || 0)
+    }
+  })
+  const 沽购to溢价 = Object.values(沽购to溢价Map).filter(el => el.value)
+
+  return getSankeyOption({
+    沽购to正股,
+    sourceToTargetList: [...沽购to溢价, ...沽购to正股, ...正股到日期, ...到日期to沽购],
+    sumValue: 持仓总价.value,
+    title: '持仓溢价分布',
+    总和标识: '持',
+    nodeNames: ['沽', '购', ...premiumLabels],
+    tooltipExtraField: '溢价率',
+    nodeFilter: (name, dataList) => {
+      const b = PREMIUM_BUCKETS.find(el => el.label === name || el.label + " " === name)
+      if (b) {
+        return dataList.filter(el => {
+          const 溢价率 = el["溢价率"]
+          return 溢价率 != null && 溢价率 > b.min && 溢价率 <= b.max
+        })
+      }
+      return getFilterDataByDataName(name, dataList)
+    },
+  })
+})
+
+// 四个图表 computed（使用 getSankeyTableData 简化）
 const 持仓分布Option = computed(() => {
-  const tableData = [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])];
+  const tableData = getSankeyTableData();
   const { 沽购to正股, 正股到日期, 到日期to沽购 } = generateSankeyData(tableData, "总价");
   return getSankeyOption({
     沽购to正股,
@@ -636,7 +711,7 @@ const 持仓分布Option = computed(() => {
 });
 
 const 投入分布Option = computed(() => {
-  const tableData = [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])];
+  const tableData = getSankeyTableData();
   const { 沽购to正股, 正股到日期, 到日期to沽购 } = generateSankeyData(tableData, "总投入");
   return getSankeyOption({
     沽购to正股,
@@ -648,7 +723,7 @@ const 投入分布Option = computed(() => {
 });
 
 const 盈利分布Option = computed(() => {
-  const tableData = [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])].filter((el) => el?.今日总涨跌 > 0);
+  const tableData = getSankeyTableData().filter((el) => el?.今日总涨跌 > 0);
   const { 沽购to正股, 正股到日期, 到日期to沽购 } = generateSankeyData(tableData, "今日总涨跌");
   return getSankeyOption({
     沽购to正股,
@@ -660,7 +735,7 @@ const 盈利分布Option = computed(() => {
 });
 
 const 亏损分布Option = computed(() => {
-  const tableData = [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])].filter((el) => el?.今日总涨跌 < 0);
+  const tableData = getSankeyTableData().filter((el) => el?.今日总涨跌 < 0);
   const { 沽购to正股, 正股到日期, 到日期to沽购 } = generateSankeyData(tableData, "今日总涨跌");
   return getSankeyOption({
     沽购to正股,
@@ -680,6 +755,7 @@ const getInRowStyle = () => ({});
 ::v-deep(.el-table--small .cell) {
   padding: 0 !important;
 }
+
 ::v-deep(.el-table--small .el-table__cell) {
   padding: 0 !important;
 }
@@ -689,6 +765,7 @@ const getInRowStyle = () => ({});
 .el-progress__text {
   text-align: right;
 }
+
 .active {
   color: white;
   background-color: #409eff;
