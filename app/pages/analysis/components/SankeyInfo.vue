@@ -645,7 +645,7 @@ const PREMIUM_BUCKETS = [
 
 // 提取公共数据源（4个桑基图共用）
 function getSankeyTableData() {
-  return [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])]
+  return [...(richTableData.value?.[1]?.children || []), ...(richTableData.value?.[2]?.children || []), ...(richTableData.value?.[3]?.children || [])].filter(checkIsFilter)
 }
 
 // 持仓溢价分布Option（桑基图，与其它分布保持一致）
