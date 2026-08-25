@@ -3,8 +3,8 @@ import { getValidExerciseDate } from "~/utils/date";
 import dayjs from "dayjs";
 
 const 最低本金贷款 = 1000; // 不消除这个贷款金了，所以接下来就留出1000用来投资，其他都提现
-const 前一日贷款 = 最低本金贷款 + 3000; // 保持最低1000元贷款，还款提现部分存入出金字段
-const 当日贷款 = 0;
+const 前一日贷款 = 最低本金贷款 + 4000; // 保持最低1000元贷款，还款提现部分存入出金字段
+const 当日贷款 = 1000;
 export const 金额 = {
   第一目标: 5 * 10000,
   第二目标: 10 * 10000,
