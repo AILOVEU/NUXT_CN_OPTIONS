@@ -55,6 +55,7 @@ const CAN_REFRES_NAV_LIST = ["/hold", "/filter", "/spread", "/analysis"];
 const CAN_REFRES_STOCKINDEX_NAV_LIST = ["/stockindex"];
 
 const CUSTOM_QUERY_NAV_LIST = ["/stockindex", '/tstockindex'];
+const isTrueData = !!localStorage.getItem("TRUE_DATA");
 const navGroups = [
   {
     name: "期权",
@@ -93,10 +94,13 @@ const navGroups = [
     name: "工具",
     items: [
       { href: "/calendar2", name: "日历" },
-      { href: "/timeline", name: "事件" },
+      isTrueData && { href: "/timeline", name: "事件" },
     ],
   },
-];
+].map(el => ({
+  name: el.name,
+  items: el.items.filter(itemEl => !!itemEl)
+}));
 
 const activePath = ref(route.path || "/");
 

@@ -1,16 +1,12 @@
 <template>
   <div class="w-full">
-    <TabSelect
-      :options="[
-        { label: '日', value: '日' },
-        { label: '周', value: '周' },
-        { label: '月', value: '月' },
-        { label: '年', value: '年' },
-        { label: '2025日', value: '2025日' },
-      ]"
-      v-model="盈亏曲线Type"
-      @click="(val) => (盈亏曲线Type = val)"
-    />
+    <TabSelect :options="[
+      { label: '日', value: '日' },
+      { label: '周', value: '周' },
+      { label: '月', value: '月' },
+      { label: '年', value: '年' },
+      { label: '2025日', value: '2025日' },
+    ]" v-model="盈亏曲线Type" @click="(val) => (盈亏曲线Type = val)" />
   </div>
   <div class="w-full">
     <VChart v-if="盈亏曲线Type === '日'" :option="盈亏曲线日Option" style="height: 400px; width: 100%" />
@@ -26,7 +22,7 @@
 </template>
 <script setup>
 import { useMoneyStore } from "~/stores/useMoneyStore";
-import { 盈亏曲线数据, 盈亏曲线数据2025, 盈亏曲线数据年 } from "~/data";
+import { 盈亏曲线数据, 盈亏曲线数据2025, 盈亏曲线数据年 } from "~/data/profit";
 import _ from "lodash";
 import dayjs from "dayjs";
 import { isDateInRangeWeek } from "~/utils/utils";
@@ -192,7 +188,7 @@ const 盈亏概览Option = computed(() => {
               },
             },
             {
-              name: "贷款",
+              name: "增持",
               value: money.贷款,
               itemStyle: {
                 color: "#91cc75",
