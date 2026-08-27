@@ -82,8 +82,8 @@ const { isMobile } = useGlobal();
 
 const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 
-const max溢价Val = ref(5);
-const max一手价Val = ref(3000);
+const max溢价Val = ref(6);
+const max一手价Val = ref(1200);
 // 全局表格ref（保留原有）
 const captureRef = ref();
 const tableRef = ref();
@@ -94,7 +94,7 @@ const stockCodeOptions = computed(() => {
     value: el.code,
     label: el.code,
   }));
-  return ops;
+  return [...ops, { value: "all", label: "全" }];
 });
 
 const stockCode = ref(stockCodeOptions.value[0].value);
@@ -169,7 +169,7 @@ function getRowStyle({ row }) {
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {
   let res = tableData.data
-    .filter((el) => el["正股代码"] === code)
+    .filter((el) => el["正股代码"] === code || code === "all")
     .filter((el) => {
       if (el["_split"] || el["_current"] || el["is保留行"]) return true;
       return Math.abs(el["行权价溢价"]) < max溢价Val.value;
