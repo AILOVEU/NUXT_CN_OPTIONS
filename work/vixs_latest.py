@@ -16,7 +16,7 @@
 
 重要: 该外部站点可能不可达。本脚本已做以下防护，避免"卡住无提示":
     1. 使用带超时(默认 20s)的 requests 下载，而非 pd.read_csv(url) 直接挂起;
-    2. 支持本地离线: 若 work/k.csv 存在则优先使用，无需联网;
+    2. 每次运行强制重新下载数据源(不读本地缓存)，处理完成后删除本地 k.csv;
     3. 下载/解析失败会打印清晰报错并退出，不会无限等待;
     4. 每个 code 单独 try/except 并打印进度，单个失败不影响其余。
 
@@ -54,47 +54,36 @@ MAP = {
 }
 
 OUT_FILE = os.path.join('public', 'vixs.csv')
-LOCAL_KCSV = os.path.join('work', 'k.csv')     # 离线回退: 可手动放置 optbbs 的 k.csv
+LOCAL_KCSV = os.path.join('work', 'k.csv')     # 临时下载文件, 处理完成后删除
 OPTBBS_URL = "http://1.optbbs.com/d/csv/d/k.csv"
 DOWNLOAD_TIMEOUT = 20
 
 
 @lru_cache(maxsize=1)
 def get_optbbs_daily():
-    """带超时 + 本地回退地获取 optbbs 原始大表，替换 akshare 内部的无超时实现。
+    """带超时地下载 optbbs 原始大表，替换 akshare 内部的无超时实现。
 
-    多个 qvix 函数共用同一数据源, 用 lru_cache 保证只下载一次。
+    多个 qvix 函数共用同一数据源, 用 lru_cache 保证每次运行只下载一次。
+    不读/不写本地缓存: 每次运行都强制重新获取最新数据。
     """
-    # 1) 本地优先
-    if os.path.exists(LOCAL_KCSV):
-        print("  使用本地离线数据: {}".format(LOCAL_KCSV))
-        return pd.read_csv(LOCAL_KCSV, encoding='gbk')
-
-    # 2) 联网下载(带超时, 不会永久卡住)
     print("  下载数据源: {} (超时 {}s)".format(OPTBBS_URL, DOWNLOAD_TIMEOUT))
     try:
         r = requests.get(OPTBBS_URL, timeout=DOWNLOAD_TIMEOUT)
         r.raise_for_status()
     except requests.exceptions.Timeout:
         raise RuntimeError(
-            "下载超时({}s): 数据源 {} 不可达。可将 optbbs 的 k.csv 放到 {} 离线运行。".format(
-                DOWNLOAD_TIMEOUT, OPTBBS_URL, LOCAL_KCSV))
+            "下载超时({}s): 数据源 {} 不可达。请检查网络后重试。".format(
+                DOWNLOAD_TIMEOUT, OPTBBS_URL))
     except requests.exceptions.RequestException as e:
         raise RuntimeError(
-            "无法下载 QVIX 数据源 ({}: {}). 可将 optbbs 的 k.csv 放到 {} 离线运行。".format(
-                type(e).__name__, e, LOCAL_KCSV))
+            "无法下载 QVIX 数据源 ({}: {}). 请检查网络后重试。".format(
+                type(e).__name__, e))
 
     try:
-        df = pd.read_csv(io.StringIO(r.text), encoding='gbk')
+        # 用原始字节 + gbk 解码, 避免 requests 按 latin-1 猜编码导致中文乱码
+        df = pd.read_csv(io.BytesIO(r.content), encoding='gbk')
     except Exception as e:
         raise RuntimeError("解析数据源失败 ({}: {})".format(type(e).__name__, e))
-    # 顺手缓存到本地, 下次离线可用
-    try:
-        with open(LOCAL_KCSV, 'w', encoding='gbk') as f:
-            f.write(r.text)
-        print("  已缓存到本地: {}".format(LOCAL_KCSV))
-    except OSError:
-        pass
     return df
 
 
@@ -137,8 +126,6 @@ def main():
     except Exception as e:
         print("[FATAL] 无法获取 QVIX 数据源: {}".format(e))
         print("        未修改现有文件 {}, 保留上次成功结果。".format(OUT_FILE))
-        print("        解决方式: (a) 检查网络/代理能否访问 1.optbbs.com; "
-              "或 (b) 将 optbbs 的 k.csv 放到 {} 离线运行。".format(LOCAL_KCSV))
         return 2
 
     rows = []
@@ -201,6 +188,14 @@ def main():
         w = csv.writer(f)
         w.writerow(['code', 'time', 'open', 'high', 'low', 'close'])
         w.writerows(rows)
+
+    # 处理完成, 删除临时下载的 k.csv(下次运行会重新获取)
+    try:
+        if os.path.exists(LOCAL_KCSV):
+            os.remove(LOCAL_KCSV)
+            print("  已删除临时数据源: {}".format(LOCAL_KCSV))
+    except OSError as e:
+        print("  [WARN] 删除 {} 失败: {}".format(LOCAL_KCSV, e))
 
     print(f'raw={total_raw}, nan_dropped={nan_dropped}, kept={len(rows)} -> {OUT_FILE}')
     return 0
