@@ -108,7 +108,7 @@ function getWrapperColumnWidth(label) {
 const filteredTableData = computed(() => {
   return props.symmetricData.filter((el) => {
     if (el._current || el._split) return true;
-    if (el["is保留行"]) return true;
+    if (el["is行内有持仓"]) return true;
     // if (el["正股代码"] !== stockCode.value) return false;
     if (el["is旧期权"]) return false;
     // if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;

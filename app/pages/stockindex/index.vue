@@ -171,7 +171,7 @@ function filterTableDataByStockCode(code) {
   let res = tableData.data
     .filter((el) => el["正股代码"] === code || code === "all")
     .filter((el) => {
-      if (el["_split"] || el["_current"] || el["is保留行"]) return true;
+      if (el["_split"] || el["_current"] || el["is行内有持仓"]) return true;
       return Math.abs(el["行权价溢价"]) < max溢价Val.value;
     });
   return res.map((el) => {

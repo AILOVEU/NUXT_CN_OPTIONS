@@ -45,7 +45,7 @@ function handleHoldData(dataList, 正股代码List) {
       let call_item = dataList.find((el) => el["期权名称"] === call_期权名称);
       let put_item = dataList.find((el) => el["期权名称"] === put_期权名称);
 
-      if (call_item?.["持仓"] || put_item?.["持仓"]) record["is保留行"] = true;
+      if (call_item?.["持仓"] || put_item?.["持仓"]) record["is行内有持仓"] = true;
 
       record["C" + 实际月份 + "期权名称"] = call_item?.["期权名称"];
       record["P" + 实际月份 + "期权名称"] = put_item?.["期权名称"];

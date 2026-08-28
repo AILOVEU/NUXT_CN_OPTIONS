@@ -170,7 +170,7 @@ function handleStockCodeChange() {
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
     if (!formData.到期日List.includes(el["到期日"])) return false;
-    if (el["is保留行"]) return true;
+    if (el["is行内有持仓"]) return true;
     if (el["is旧期权"]) return false;
     if (el['_current'] || el['_split']) return true;
     return true;

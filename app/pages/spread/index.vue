@@ -155,7 +155,7 @@ function handleStockCodeChange() {
 }
 const filteredTableData = computed(() => {
   return tableData.data.filter((el) => {
-    if (el["is保留行"]) return true;
+    if (el["is行内有持仓"]) return true;
     if (el._current || el._split) return true;
     if (el["is旧期权"]) return false;
     console.log('el["行权价溢价"]', el["行权价溢价"]);
