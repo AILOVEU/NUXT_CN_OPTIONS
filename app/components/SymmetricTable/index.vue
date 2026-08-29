@@ -45,7 +45,7 @@
               <Center v-if="label === '期权'" :row="row" />
               <Data v-else-if="label.includes('市场')" :row="row" :isCall="type === 'C'" :minMaxData="minMaxData" />
               <!-- <template> -->
-              <InfoMobile v-if="isMobile" :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
+              <InfoMobile v-else-if="isMobile" :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
                 :mode="props.mode" :indexVal="indexVal" />
               <InfoMini v-else-if="showTypeVal === '精简'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />

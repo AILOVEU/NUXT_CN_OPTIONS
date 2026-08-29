@@ -12,98 +12,173 @@
   <!-- 期权卡片主体 -->
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
     class="p-[2px] cursor-pointer relative flex items-center" :style="wrapperStyle">
-    <!-- 左上 -->
-    <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
-        v-if="持仓变化">{{ "→" }}</span>
-      <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
-        <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
-      </div>
-    </div>
-
-    <!-- 左下盈亏标签 -->
-    <div v-if="isShow持仓" class="absolute left-0 bottom-0" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
-    </div>
-
-    <!-- 右上涨跌标签 -->
-    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]"
-      :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
-    </div>
-
-    <!-- 右档位标签 -->
-    <div class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagRealLevel :value="档位" :档位名称="档位名称" />
-    </div>
-
-    <!-- 限制展示：仅显示一手价 -->
-    <div v-if="optionLimitShow" class="flex gap-[5px] text-limit-show-mode">
-      <TagPrice :value="一手价" :isGray="true" />
-      <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
-
-    </div>
-
-    <!-- 普通展示中间区域 -->
-    <div v-else class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]"
-      :class="{ scale2: indexValMatchScale }">
-      <!-- 第一行：价格、打和点、溢价率 -->
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('一手价')">
-          <TagPrice :value="一手价" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('打和点')">
-          <TagAimPrice :value="打和点Val" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('溢价率')">
-          <TagPremium :value="溢价率Val" />
+    <!-- 限制展示：整块置灰（重复普通展示内容） -->
+    <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
+      <!-- 左上 -->
+      <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
+        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
+          v-if="持仓变化">{{ "→" }}</span>
+        <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+          <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
         </div>
       </div>
-      <!-- 第二行：杠杆、隐波、Delta -->
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('杠杆')">
-          <TagLeverage :value="杠杆Val" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('隐波')">
-          <TagIv :value="隐波Val" :正股="正股代码Val" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('Delta')">
-          <TagDelta :value="deltaVal" :正股="正股代码Val" />
-        </div>
+      <!-- 左下盈亏标签 -->
+      <div v-if="isShow持仓" class="absolute left-0 bottom-0">
+        <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
       </div>
-      <!-- 第三行：Vega、Gamma、单日损耗 -->
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('Vega')">
-          <TagVega :value="vegaVal" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('Gamma')">
-          <TagGamma :value="gammaVal" />
-        </div>
-        <div class="whitespace-nowrap ml-[4px]" v-if="showField('单日损耗')">
-          <TagTheta :value="单日损耗Val" />
-        </div>
+      <!-- 右上涨跌标签 -->
+      <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+        <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
       </div>
-      <!-- 第四行：持仓量、增仓量 -->
-      <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
-        <div class="whitespace-nowrap" v-if="showField('持仓量')">
-          <TagVolumn :value="持仓量" />
-        </div>
-        <div class="whitespace-nowrap" v-if="showField('增仓量')">
-          <TagVolumnAdd :value="日增量" />
-        </div>
+      <!-- 右档位标签 -->
+      <div class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]">
+        <TagRealLevel :value="档位" :档位名称="档位名称" />
       </div>
-      <!-- 持仓专属行：成本价、仓位 -->
-      <div v-if="持仓">
-        <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]">
-          <div class="whitespace-nowrap" v-if="showField('一手成本价')">
-            <TagCostPrice :value="一手成本价" />
+      <!-- 普通展示中间区域 -->
+      <div class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]"
+        :class="{ scale2: indexValMatchScale }">
+        <!-- 第一行：价格、打和点、溢价率 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('一手价')">
+            <TagPrice :value="一手价" />
           </div>
-          <div class="whitespace-nowrap" v-if="showField('仓位')">
-            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+          <div class="whitespace-nowrap" v-if="showField('打和点')">
+            <TagAimPrice :value="打和点Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('溢价率')">
+            <TagPremium :value="溢价率Val" />
+          </div>
+        </div>
+        <!-- 第二行：杠杆、隐波、Delta -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('杠杆')">
+            <TagLeverage :value="杠杆Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('隐波')">
+            <TagIv :value="隐波Val" :正股="正股代码Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('Delta')">
+            <TagDelta :value="deltaVal" :正股="正股代码Val" />
+          </div>
+        </div>
+        <!-- 第三行：Vega、Gamma、单日损耗 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('Vega')">
+            <TagVega :value="vegaVal" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('Gamma')">
+            <TagGamma :value="gammaVal" />
+          </div>
+          <div class="whitespace-nowrap ml-[4px]" v-if="showField('单日损耗')">
+            <TagTheta :value="单日损耗Val" />
+          </div>
+        </div>
+        <!-- 第四行：持仓量、增仓量 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('持仓量')">
+            <TagVolumn :value="持仓量" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('增仓量')">
+            <TagVolumnAdd :value="日增量" />
+          </div>
+        </div>
+        <!-- 持仓专属行：成本价、仓位 -->
+        <div v-if="持仓">
+          <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]">
+            <div class="whitespace-nowrap" v-if="showField('一手成本价')">
+              <TagCostPrice :value="一手成本价" />
+            </div>
+            <div class="whitespace-nowrap" v-if="showField('仓位')">
+              <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 普通展示 -->
+    <template v-else>
+      <!-- 左上 -->
+      <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
+        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
+          v-if="持仓变化">{{ "→" }}</span>
+        <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+          <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
+        </div>
+      </div>
+      <!-- 左下盈亏标签 -->
+      <div v-if="isShow持仓" class="absolute left-0 bottom-0">
+        <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
+      </div>
+      <!-- 右上涨跌标签 -->
+      <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+        <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
+      </div>
+      <!-- 右档位标签 -->
+      <div class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]">
+        <TagRealLevel :value="档位" :档位名称="档位名称" />
+      </div>
+      <!-- 普通展示中间区域 -->
+      <div class="flex flex-col justify-center mx-auto max-md:mt-[-5px] gap-[2px]"
+        :class="{ scale2: indexValMatchScale }">
+        <!-- 第一行：价格、打和点、溢价率 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('一手价')">
+            <TagPrice :value="一手价" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('打和点')">
+            <TagAimPrice :value="打和点Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('溢价率')">
+            <TagPremium :value="溢价率Val" />
+          </div>
+        </div>
+        <!-- 第二行：杠杆、隐波、Delta -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('杠杆')">
+            <TagLeverage :value="杠杆Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('隐波')">
+            <TagIv :value="隐波Val" :正股="正股代码Val" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('Delta')">
+            <TagDelta :value="deltaVal" :正股="正股代码Val" />
+          </div>
+        </div>
+        <!-- 第三行：Vega、Gamma、单日损耗 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('Vega')">
+            <TagVega :value="vegaVal" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('Gamma')">
+            <TagGamma :value="gammaVal" />
+          </div>
+          <div class="whitespace-nowrap ml-[4px]" v-if="showField('单日损耗')">
+            <TagTheta :value="单日损耗Val" />
+          </div>
+        </div>
+        <!-- 第四行：持仓量、增仓量 -->
+        <div class="flex gap-[2px] justify-center flex-wrap max-md:flex-col">
+          <div class="whitespace-nowrap" v-if="showField('持仓量')">
+            <TagVolumn :value="持仓量" />
+          </div>
+          <div class="whitespace-nowrap" v-if="showField('增仓量')">
+            <TagVolumnAdd :value="日增量" />
+          </div>
+        </div>
+        <!-- 持仓专属行：成本价、仓位 -->
+        <div v-if="持仓">
+          <div class="flex justify-center flex-wrap max-md:flex-col gap-[1px]">
+            <div class="whitespace-nowrap" v-if="showField('一手成本价')">
+              <TagCostPrice :value="一手成本价" />
+            </div>
+            <div class="whitespace-nowrap" v-if="showField('仓位')">
+              <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
   <!-- 弹窗 -->
@@ -233,7 +308,7 @@ const handleGlassStyle = (el, isEnable) => {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .glass-effect {
   filter: grayscale(0.75);
   backdrop-filter: blur(40px);
@@ -272,7 +347,7 @@ const handleGlassStyle = (el, isEnable) => {
 
 .text-limit-show-mode * {
   color: gray !important;
-  border: 0 !important;
+  border-color: #aaaaaa !important;
   filter: grayscale(1);
 }
 </style>

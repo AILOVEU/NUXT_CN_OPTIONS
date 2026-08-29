@@ -12,54 +12,89 @@
   <!-- 期权卡片主体 -->
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
     class="p-[2px] cursor-pointer relative flex items-center print-text-large" :style="wrapperStyle">
-    <!-- 左上 -->
-    <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
-        v-if="持仓变化">{{ "→" }}</span>
-      <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
-        <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
+    <!-- 限制展示：整块置灰（重复普通展示内容） -->
+    <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
+      <!-- 左上 -->
+      <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
+        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
+          v-if="持仓变化">{{ "→" }}</span>
+        <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+          <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
+        </div>
+        <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" />
       </div>
-      <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" :class="{ 'text-limit-show-mode': optionLimitShow }" />
-    </div>
-
-    <!-- 右上涨跌标签 -->
-    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]"
-      :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
-    </div>
-
-    <!-- 限制展示：仅显示一手价 -->
-    <div v-if="optionLimitShow" class="flex gap-[5px] text-limit-show-mode">
-      <TagPrice :value="一手价" :isGray="true" />
-      <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
-
-    </div>
-
-    <!-- 打印模式中间区域 -->
-    <div v-else class="flex flex-col justify-center mx-auto gap-[2px]">
-      <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
-        <div class="whitespace-nowrap">
-          <TagPrice :value="一手价" />
-        </div>
-        <div class="whitespace-nowrap">
-          <TagDelta :value="deltaVal" />
-        </div>
-        <div class="whitespace-nowrap">
-          <TagPremium :value="溢价率Val" />
-        </div>
-        <div class="whitespace-nowrap">
-          <TagIv :value="隐波Val" />
-        </div>
+      <!-- 右上涨跌标签 -->
+      <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+        <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
       </div>
-      <div v-if="持仓" class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
-        <div class="whitespace-nowrap">
-          <TagCostPrice :value="一手成本价" />
+      <!-- 打印模式中间区域 -->
+      <div class="flex flex-col justify-center mx-auto gap-[2px]">
+        <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
+          <div class="whitespace-nowrap">
+            <TagPrice :value="一手价" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagDelta :value="deltaVal" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagPremium :value="溢价率Val" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagIv :value="隐波Val" />
+          </div>
         </div>
-        <div class="whitespace-nowrap">
-          <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
+        <div v-if="持仓" class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
+          <div class="whitespace-nowrap">
+            <TagCostPrice :value="一手成本价" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- 普通展示 -->
+    <template v-else>
+      <!-- 左上 -->
+      <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
+        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
+          v-if="持仓变化">{{ "→" }}</span>
+        <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+          <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
+        </div>
+        <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" />
+      </div>
+      <!-- 右上涨跌标签 -->
+      <div class="absolute top-[0px] right-[0px] max-md:top-[20px]">
+        <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
+      </div>
+      <!-- 打印模式中间区域 -->
+      <div class="flex flex-col justify-center mx-auto gap-[2px]">
+        <div class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
+          <div class="whitespace-nowrap">
+            <TagPrice :value="一手价" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagDelta :value="deltaVal" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagPremium :value="溢价率Val" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagIv :value="隐波Val" />
+          </div>
+        </div>
+        <div v-if="持仓" class="flex gap-[2px] justify-center flex-nowrap max-md:flex-col">
+          <div class="whitespace-nowrap">
+            <TagCostPrice :value="一手成本价" />
+          </div>
+          <div class="whitespace-nowrap">
+            <TagHoldPercent :value="仓位" :仓位占比="仓位率" :isPrint="true" :总投入="总投入" />
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
   <!-- 弹窗 -->
@@ -178,7 +213,7 @@ const handleGlassStyle = (el, isEnable) => {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .glass-effect {
   filter: grayscale(0.75);
   backdrop-filter: blur(40px);
@@ -215,10 +250,10 @@ const handleGlassStyle = (el, isEnable) => {
 .print-text-large {
   .text-limit-show-mode * {
     color: gray !important;
-    border: 0 !important;
+    border-color: #aaaaaa !important;
 
     filter: grayscale(1);
-    font-size: 0.85em !important;
+    // font-size: 0.85em !important;
   }
 }
 

@@ -12,40 +12,75 @@
   <!-- 期权卡片主体 -->
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
     class="p-[4px] cursor-pointer relative flex flex-col gap-[3px]" :style="wrapperStyle">
-    <!-- 顶部：持仓（左） + 涨跌（右） -->
-    <div class="flex justify-between items-start">
-      <div v-if="isShow持仓" class="flex items-center gap-[2px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "→" }}</span>
-        <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
-          <TagHold :value="持仓 || 0" />
+    <!-- 限制展示：整块置灰（重复普通展示内容） -->
+    <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
+      <!-- 顶部：持仓（左） + 涨跌（右） -->
+      <div class="flex justify-between items-start">
+        <div v-if="isShow持仓" class="flex items-center gap-[2px]">
+          <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "→" }}</span>
+          <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+            <TagHold :value="持仓 || 0" />
+          </div>
+        </div>
+        <div>
+          <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
         </div>
       </div>
-      <div :class="{ 'text-limit-show-mode': optionLimitShow }">
-        <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" :isGray="optionLimitShow" />
+      <!-- 中间：价格 + 实值标签 -->
+      <div class="flex gap-[5px] items-center flex-wrap">
+        <TagPrice :value="一手价" />
+        <TagAimPrice v-if="showField('打和点')" :value="打和点Val" />
+        <TagRealLevel :value="档位" :档位名称="档位名称" />
+      </div>
+      <!-- 底部：希腊字母等核心指标 -->
+      <div class="flex gap-[4px] items-center flex-wrap text-[12px]">
+        <TagDelta :value="deltaVal" :正股="正股代码Val" />
+        <TagIv :value="隐波Val" :正股="正股代码Val" />
+        <TagPremium :value="溢价率Val" />
+        <TagLeverage :value="杠杆Val" />
+      </div>
+      <!-- 持仓专属行 -->
+      <div v-if="持仓" class="flex gap-[4px] items-center flex-wrap text-[12px]">
+        <TagCostPrice :value="一手成本价" />
+        <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+        <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
       </div>
     </div>
 
-    <!-- 中间：价格 + 实值标签 -->
-    <div class="flex gap-[5px] items-center flex-wrap">
-      <TagPrice :value="一手价" :isGray="optionLimitShow" />
-      <TagAimPrice v-if="showField('打和点')" :value="打和点Val" />
-      <TagRealLevel :value="档位" :档位名称="档位名称" :class="{ 'text-limit-show-mode': optionLimitShow }" />
-    </div>
-
-    <!-- 底部：希腊字母等核心指标 -->
-    <div class="flex gap-[4px] items-center flex-wrap text-[12px]">
-      <TagDelta :value="deltaVal" :正股="正股代码Val" />
-      <TagIv :value="隐波Val" :正股="正股代码Val" />
-      <TagPremium :value="溢价率Val" />
-      <TagLeverage :value="杠杆Val" />
-    </div>
-
-    <!-- 持仓专属行 -->
-    <div v-if="持仓" class="flex gap-[4px] items-center flex-wrap text-[12px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
-      <TagCostPrice :value="一手成本价" />
-      <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
-      <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
-    </div>
+    <!-- 普通展示 -->
+    <template v-else>
+      <!-- 顶部：持仓（左） + 涨跌（右） -->
+      <div class="flex justify-between items-start">
+        <div v-if="isShow持仓" class="flex items-center gap-[2px]">
+          <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "→" }}</span>
+          <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
+            <TagHold :value="持仓 || 0" />
+          </div>
+        </div>
+        <div>
+          <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
+        </div>
+      </div>
+      <!-- 中间：价格 + 实值标签 -->
+      <div class="flex gap-[5px] items-center flex-wrap">
+        <TagPrice :value="一手价" />
+        <TagAimPrice v-if="showField('打和点')" :value="打和点Val" />
+        <TagRealLevel :value="档位" :档位名称="档位名称" />
+      </div>
+      <!-- 底部：希腊字母等核心指标 -->
+      <div class="flex gap-[4px] items-center flex-wrap text-[12px]">
+        <TagDelta :value="deltaVal" :正股="正股代码Val" />
+        <TagIv :value="隐波Val" :正股="正股代码Val" />
+        <TagPremium :value="溢价率Val" />
+        <TagLeverage :value="杠杆Val" />
+      </div>
+      <!-- 持仓专属行 -->
+      <div v-if="持仓" class="flex gap-[4px] items-center flex-wrap text-[12px]">
+        <TagCostPrice :value="一手成本价" />
+        <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
+        <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
+      </div>
+    </template>
   </div>
 
   <!-- 弹窗 -->
@@ -155,7 +190,7 @@ function handleShowBs() {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .borderRed {
   border: 1px solid red;
 }
@@ -166,7 +201,7 @@ function handleShowBs() {
 
 .text-limit-show-mode * {
   color: gray !important;
-  border: 0 !important;
+  border-color: #aaaaaa !important;
   filter: grayscale(1);
 }
 </style>
