@@ -9,14 +9,14 @@
       <div class="text-[12px] pt-[4px]" v-if="props.row['正股代码'] === '159922'">
         ({{ formatDecimal(千行权价 * 2.513 / 1000, 2) }})
       </div>
-      <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap">
+      <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap" v-if="props.showTypeVal !== '空白'">
         <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
           {{ formatDecimal(溢价, 2) + "%" }}
         </span>
       </div>
     </div>
   </div>
-  <div v-else class="h-[22px] leading-[22px] text-[20px] font-extrabold" :style="props.isCall
+  <div v-else-if="props.showTypeVal !== '空白'" class="h-[22px] leading-[22px] text-[20px] font-extrabold" :style="props.isCall
     ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
     : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     {{ formatDecimal(行权价, 3) }}
@@ -25,7 +25,7 @@
 <script setup>
 import { formatDecimal } from "~/utils/utils";
 
-const props = defineProps(["row"]);
+const props = defineProps(["row", "showTypeVal"]);
 
 const 展示正股名称 = computed(() => {
   return props.row["展示正股名称"];

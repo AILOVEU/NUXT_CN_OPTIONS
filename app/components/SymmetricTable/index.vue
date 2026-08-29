@@ -22,8 +22,8 @@
           class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">
           {{ props.tableTitle || "" }}{{ dayStr }}</div>
         <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%"
-          :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef" show-summary
-          :summary-method="getSummary">
+          :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef"
+          :show-summary="showTypeVal !== '筛选' && showTypeVal !== '空白'" :summary-method="getSummary">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label"
             align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
@@ -42,19 +42,22 @@
               </div>
             </template>
             <template #default="{ row }">
-              <Center v-if="label === '期权'" :row="row" />
-              <Data v-else-if="label.includes('市场')" :row="row" :isCall="type === 'C'" :minMaxData="minMaxData" />
+              <Center v-if="label === '期权'" :row="row" :showTypeVal="showTypeVal" />
+              <Data v-else-if="label.includes('市场')" :row="row" :isCall="type === 'C'" :minMaxData="minMaxData"
+                :showTypeVal="showTypeVal" />
               <!-- <template> -->
-              <InfoMobile v-else-if="isMobile" :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
-                :mode="props.mode" :indexVal="indexVal" />
+              <InfoMobile v-else-if="isMobile" :row="row" :isCall="type === 'C'" :date="label"
+                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <InfoFull v-else-if="showTypeVal === '完整'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <InfoPrint v-else-if="showTypeVal === '打印'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <InfoFilter v-else-if="showTypeVal === '筛选'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="filteredTiledData" :mode="props.mode" :indexVal="indexVal" />
-              <InfoMinimal v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
-                :mode="props.mode" :indexVal="indexVal" />
+              <InfoMinimal v-else-if="showTypeVal === '极简'" :row="row" :isCall="type === 'C'" :date="label"
+                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+              <InfoBlank v-else-if="showTypeVal === '空白'" :row="row" :isCall="type === 'C'" :date="label"
+                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <!-- </template> -->
             </template>
           </el-table-column>
@@ -70,6 +73,7 @@ import Center from "./components/Center.vue";
 import InfoFull from "./components/InfoFull.vue";
 import InfoPrint from "./components/InfoPrint.vue";
 import InfoMinimal from "./components/InfoMinimal.vue";
+import InfoBlank from "./components/InfoBlank.vue";
 import InfoMobile from "./components/InfoMobile.vue";
 import InfoFilter from "./components/InfoFilter.vue";
 import Data from "./components/Data.vue";
@@ -82,13 +86,15 @@ const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = computed(() =>
   isMobile
     ? [{ label: "完整", value: "完整" }]
-    : ["完整", "筛选", "打印", "极简"].map((el) => ({ label: el, value: el }))
+    : ["完整", "筛选", "打印", "极简", "空白"].map((el) => ({ label: el, value: el }))
 );
 const showTypeVal = ref("完整");
 watch(
   () => props.showTypeVal,
   () => {
-    showTypeVal.value = isMobile ? "完整" : props.showTypeVal;
+    if (props.showTypeVal) {
+      showTypeVal.value = isMobile ? "完整" : props.showTypeVal;
+    }
   },
   {
     immediate: true,

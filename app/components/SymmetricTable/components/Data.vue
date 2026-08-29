@@ -1,6 +1,6 @@
 <template>
   <div v-if="props.row._split" class="bg-[#576a8f] h-[10px] text-[white] flex items-center justify-center">&nbsp;</div>
-  <div v-else-if="props.row._current" :style="props.isCall
+  <div v-else-if="props.row._current && props.showTypeVal !== '空白'" :style="props.isCall
     ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
     : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     &nbsp;
@@ -47,7 +47,7 @@ import { OPTIONS_MAP } from "~/data";
 import { formatDecimal, formatNumberToWan } from "~/utils/utils";
 import dayjs from "dayjs";
 
-const props = defineProps(["row", "isCall", 'minMaxData']);
+const props = defineProps(["row", "isCall", 'minMaxData', "showTypeVal"]);
 const info = computed(() => {
   return props.row[(props.isCall ? "C" : "P") + "市场数据"];
 });

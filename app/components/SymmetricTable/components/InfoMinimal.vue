@@ -56,7 +56,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 // 全局、仓库
 const { globalLoading } = useGlobal();
 
-// props（极简模式，showTypeVal 已内置，不再作为入参）
+// props（极简模式）
 const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
 
 // 弹窗响应式
