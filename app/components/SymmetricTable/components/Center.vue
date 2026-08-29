@@ -23,9 +23,7 @@
   </div>
 </template>
 <script setup>
-import { OPTIONS_MAP } from "~/data";
 import { formatDecimal } from "~/utils/utils";
-import dayjs from "dayjs";
 
 const props = defineProps(["row"]);
 
