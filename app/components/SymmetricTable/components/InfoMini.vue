@@ -22,7 +22,7 @@
     </div>
 
     <!-- 左下盈亏标签 -->
-    <div v-if="isShow持仓" class="absolute left-0 bottom-0">
+    <div v-if="isShow持仓" class="absolute left-0 bottom-0" :class="{ 'text-limit-show-mode': optionLimitShow }">
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
     </div>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- 右档位标签 -->
-    <div class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]">
+    <div class="absolute bottom-[0px] right-[0px] max-md:bottom-[20px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
       <TagRealLevel :value="档位" :档位名称="档位名称" />
     </div>
 
@@ -136,7 +136,7 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 期权单项快捷取值（减少重复访问current期权Item.value）
 const optionItem = computed(() => current期权Item.value);
-const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示2"]);
+const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示_有持仓"]);
 const indexValMatchScale = computed(() => [1, 2, 3, 4].includes(props.indexVal.length));
 
 // 标的基础字段
@@ -204,6 +204,10 @@ const wrapperStyle = computed(() => {
       }
       break;
   }
+  // 限制展示：有持仓时边框置灰
+  if (持仓.value && optionLimitShow.value) {
+    finalStyle = { ...finalStyle, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
+  }
   return finalStyle;
 });
 
@@ -264,5 +268,11 @@ const handleGlassStyle = (el, isEnable) => {
 
 .borderGreen {
   border: 1px solid green;
+}
+
+.text-limit-show-mode * {
+  color: gray !important;
+  border: 0 !important;
+  filter: grayscale(1);
 }
 </style>

@@ -29,7 +29,7 @@
     <div class="flex gap-[5px] items-center flex-wrap">
       <TagPrice :value="一手价" :isGray="optionLimitShow" />
       <TagAimPrice v-if="showField('打和点')" :value="打和点Val" />
-      <TagRealLevel :value="档位" :档位名称="档位名称" />
+      <TagRealLevel :value="档位" :档位名称="档位名称" :class="{ 'text-limit-show-mode': optionLimitShow }" />
     </div>
 
     <!-- 底部：希腊字母等核心指标 -->
@@ -41,7 +41,7 @@
     </div>
 
     <!-- 持仓专属行 -->
-    <div v-if="持仓" class="flex gap-[4px] items-center flex-wrap text-[12px]">
+    <div v-if="持仓" class="flex gap-[4px] items-center flex-wrap text-[12px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
       <TagCostPrice :value="一手成本价" />
       <TagHoldPercent :value="仓位" :仓位占比="仓位率" :总投入="总投入" />
       <TagHoldDiffPercent :value="盈亏" :收益率="收益率" />
@@ -80,7 +80,7 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 期权单项快捷取值
 const optionItem = computed(() => current期权Item.value);
-const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示2"]);
+const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示_有持仓"]);
 const indexValMatchScale = computed(() => [1, 2, 3, 4].includes(props.indexVal.length));
 
 // 标的基础字段
@@ -141,6 +141,10 @@ const wrapperStyle = computed(() => {
       }
       break;
   }
+  // 限制展示：有持仓时边框置灰
+  if (持仓.value && optionLimitShow.value) {
+    finalStyle = { ...finalStyle, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
+  }
   return finalStyle;
 });
 
@@ -158,5 +162,11 @@ function handleShowBs() {
 
 .borderGreen {
   border: 1px solid green;
+}
+
+.text-limit-show-mode * {
+  color: gray !important;
+  border: 0 !important;
+  filter: grayscale(1);
 }
 </style>

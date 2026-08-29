@@ -4,14 +4,14 @@
   <div v-else-if="props.row._current" style="background-color: #dff1f1; height: 22px">&nbsp;</div>
 
   <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价" class="p-[2px] cursor-pointer relative border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
-    <div v-if="持仓" class="absolute top-[0px] left-[0px]">
+    <div v-if="持仓" class="absolute top-[0px] left-[0px]" :class="{ 'text-limit-show-mode': optionLimitShow }">
       <div class="inline-block rounded-md" :style="{ border: 持仓 > 0 ? '1px solid red' : '1px solid green' }"><TagHold :value="持仓" /></div>
       <div class="inline-block text-[12px]">{{ 盈亏 }}</div>
     </div>
-    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]" v-if="!current期权Item['_限制展示']">
+    <div class="absolute top-[0px] right-[0px] max-md:top-[20px]" v-if="!optionLimitShow">
       <TagDiff :value="一手涨跌价" :涨跌率="涨跌率" />
     </div>
-    <div class="flex flex-col gap-[2px] flex-wrap justify-end stockindex_scale2" v-if="!current期权Item['_限制展示']">
+    <div class="flex flex-col gap-[2px] flex-wrap justify-end stockindex_scale2" v-if="!optionLimitShow">
       <TagPrice :value="一手价" />
       <div class="flex gap-[5px] flex-nowrap justify-center">
         <TagDelta :value="current期权Item['Delta']" />
@@ -43,6 +43,9 @@ const bsModalData = reactive({
 
 // 筛选模式固定常量
 const isPrint = false;
+
+// 限制展示（与其他 Info 组件保持一致）
+const optionLimitShow = computed(() => !!current期权Item.value["_限制展示"] || !!current期权Item.value["_限制展示_有持仓"]);
 
 // 期权名称（与 SymmetricTable 数据 key 格式保持一致：M月）
 const 期权名称 = computed(() => {
@@ -94,6 +97,10 @@ const wrapperStyle = computed(() => {
       style = { ...style, background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
     }
   }
+  // 限制展示：有持仓时边框置灰
+  if (持仓.value && optionLimitShow.value) {
+    style = { ...style, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
+  }
   return style;
 });
 
@@ -131,5 +138,11 @@ function handleShowBs() {
       font-size: 1.3em;
     }
   }
+}
+
+.text-limit-show-mode * {
+  color: gray !important;
+  border: 0 !important;
+  filter: grayscale(1);
 }
 </style>

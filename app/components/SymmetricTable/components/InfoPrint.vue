@@ -19,7 +19,7 @@
       <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
         <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
       </div>
-      <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" />
+      <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" :class="{ 'text-limit-show-mode': optionLimitShow }" />
     </div>
 
     <!-- 右上涨跌标签 -->
@@ -92,7 +92,7 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 期权单项快捷取值（减少重复访问current期权Item.value）
 const optionItem = computed(() => current期权Item.value);
-const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示2"]);
+const optionLimitShow = computed(() => !!optionItem.value["_限制展示"] || !!optionItem.value["_限制展示_有持仓"]);
 
 // 持仓相关
 const 持仓 = computed(() => optionItem.value["持仓"]);
@@ -148,6 +148,10 @@ const wrapperStyle = computed(() => {
         finalStyle = { ...finalStyle, ...holdChangeStyle };
       }
       break;
+  }
+  // 限制展示：有持仓时边框置灰
+  if (持仓.value && optionLimitShow.value) {
+    finalStyle = { ...finalStyle, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
   }
   return finalStyle;
 });
