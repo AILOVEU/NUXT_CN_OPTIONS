@@ -17,8 +17,8 @@
     </div>
   </div>
   <div v-else class="h-[22px] leading-[22px] text-[20px] font-extrabold" :style="props.isCall
-    ? 'background: linear-gradient(rgb(255, 220, 220), rgb(190, 220, 190)); height: 22px'
-    : 'background: linear-gradient(rgb(190, 220, 190), rgb(255, 220, 220)); height: 22px'">
+    ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
+    : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>

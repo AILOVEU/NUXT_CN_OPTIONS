@@ -5,8 +5,8 @@
   <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
   <!-- 当前高亮行 -->
   <div v-else-if="props.row._current" :style="props.isCall
-    ? 'background: linear-gradient(rgb(255, 220, 220), rgb(190, 220, 190)); height: 22px'
-    : 'background: linear-gradient(rgb(190, 220, 190), rgb(255, 220, 220)); height: 22px'">
+    ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
+    : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     &nbsp;
   </div>
   <!-- 期权卡片主体 -->

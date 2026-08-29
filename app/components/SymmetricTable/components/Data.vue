@@ -1,8 +1,8 @@
 <template>
   <div v-if="props.row._split" class="bg-[#576a8f] h-[10px] text-[white] flex items-center justify-center">&nbsp;</div>
   <div v-else-if="props.row._current" :style="props.isCall
-    ? 'background: linear-gradient(rgb(255, 220, 220), rgb(190, 220, 190)); height: 22px'
-    : 'background: linear-gradient(rgb(190, 220, 190), rgb(255, 220, 220)); height: 22px'">
+    ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
+    : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     &nbsp;
   </div>
   <div class="flex flex-col justify-between flex-1" v-else-if="info">
