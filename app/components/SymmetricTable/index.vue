@@ -12,7 +12,7 @@
     <!-- <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="columnOptions" v-model="columnVal" />
     </div> -->
-    <div class="w-full pb-[12px] h-[30px]" v-if="showTypeVal === '精简'">
+    <div class="w-full pb-[12px] h-[30px]" v-if="showTypeVal === '完整'">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
     <div class="h-[calc(100%-120px)]">
@@ -47,13 +47,13 @@
               <!-- <template> -->
               <InfoMobile v-else-if="isMobile" :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
                 :mode="props.mode" :indexVal="indexVal" />
-              <InfoMini v-else-if="showTypeVal === '精简'" :row="row" :isCall="type === 'C'" :date="label"
+              <InfoFull v-else-if="showTypeVal === '完整'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <InfoPrint v-else-if="showTypeVal === '打印'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
               <InfoFilter v-else-if="showTypeVal === '筛选'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="filteredTiledData" :mode="props.mode" :indexVal="indexVal" />
-              <InfoBlank v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
+              <InfoMinimal v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="props.tiledData"
                 :mode="props.mode" :indexVal="indexVal" />
               <!-- </template> -->
             </template>
@@ -67,9 +67,9 @@
 import { OPTIONS_MAP, deadline_list } from "~/data";
 import dayjs from "dayjs";
 import Center from "./components/Center.vue";
-import InfoMini from "./components/InfoMini.vue";
+import InfoFull from "./components/InfoFull.vue";
 import InfoPrint from "./components/InfoPrint.vue";
-import InfoBlank from "./components/InfoBlank.vue";
+import InfoMinimal from "./components/InfoMinimal.vue";
 import InfoMobile from "./components/InfoMobile.vue";
 import InfoFilter from "./components/InfoFilter.vue";
 import Data from "./components/Data.vue";
@@ -81,21 +81,21 @@ const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = computed(() =>
   isMobile
-    ? [{ label: "精简", value: "精简" }]
-    : ["精简", "筛选", "打印", "空白"].map((el) => ({ label: el, value: el }))
+    ? [{ label: "完整", value: "完整" }]
+    : ["完整", "筛选", "打印", "极简"].map((el) => ({ label: el, value: el }))
 );
-const showTypeVal = ref("精简");
+const showTypeVal = ref("完整");
 watch(
   () => props.showTypeVal,
   () => {
-    showTypeVal.value = isMobile ? "精简" : props.showTypeVal;
+    showTypeVal.value = isMobile ? "完整" : props.showTypeVal;
   },
   {
     immediate: true,
   }
 );
 watch(isMobile, () => {
-  if (isMobile) showTypeVal.value = "精简";
+  if (isMobile) showTypeVal.value = "完整";
 });
 const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位", "持仓量", "增仓量"].map((el) => ({ label: el, value: el }));
 const indexVal = ref([]);
@@ -126,8 +126,8 @@ const showColumns = computed(() => {
   if (columnVal.value.length) {
     columns = columns.filter((el) => columnVal.value.includes(el.label));
   }
-  // C市场 / P市场 列只在“精简”模式下显示
-  if (showTypeVal.value !== "精简") {
+  // C市场 / P市场 列只在“完整”模式下显示
+  if (showTypeVal.value !== "完整") {
     columns = columns.filter((el) => !el.label.includes("市场"));
   }
   return columns;
@@ -137,7 +137,7 @@ function getWrapperColumnWidth(label) {
 
   if (label === "期权") return "80px";
   if (isMobile) return "100px";
-  return showTypeVal.value === "打印" || showTypeVal.value === "空白" ? "340px" : "172px";
+  return showTypeVal.value === "打印" || showTypeVal.value === "极简" ? "340px" : "172px";
 }
 const max溢价Val = ref(5);
 const max一手价Val = ref(500);

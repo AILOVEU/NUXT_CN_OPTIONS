@@ -60,7 +60,7 @@
           <template #default="{ row }">
             <Center v-if="label === '期权'" :row="row" />
             <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" mode="hold"
-              :indexVal="[]" showTypeVal="精简" />
+              :indexVal="[]" showTypeVal="完整" />
           </template>
         </el-table-column>
       </el-table>

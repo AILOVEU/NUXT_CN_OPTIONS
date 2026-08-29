@@ -16,8 +16,6 @@
     <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
       <!-- 左上 -->
       <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
-          v-if="持仓变化">{{ "→" }}</span>
         <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
           <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
         </div>
@@ -58,8 +56,6 @@
     <template v-else>
       <!-- 左上 -->
       <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-        <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span
-          v-if="持仓变化">{{ "→" }}</span>
         <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
           <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
         </div>
@@ -253,7 +249,7 @@ const handleGlassStyle = (el, isEnable) => {
     border-color: #aaaaaa !important;
 
     filter: grayscale(1);
-    // font-size: 0.85em !important;
+    font-size: 0.85em !important;
   }
 }
 

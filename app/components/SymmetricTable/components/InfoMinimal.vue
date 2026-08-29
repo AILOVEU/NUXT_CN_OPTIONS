@@ -16,13 +16,12 @@
         <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
             <!-- 左上 -->
             <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-                <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "→" }}</span>
                 <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
                     <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
                 </div>
                 <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" />
             </div>
-            <!-- 空白模式中间区域 -->
+            <!-- 极简模式中间区域 -->
             <div class="flex gap-[5px]">
                 <TagPrice :value="一手价" />
                 <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
@@ -33,13 +32,12 @@
         <template v-else>
             <!-- 左上 -->
             <div v-if="isShow持仓" class="absolute top-[0px] left-[0px]">
-                <TagHold :showPlus="true" v-if="持仓变化" :value="持仓变化" /><span v-if="持仓变化">{{ "→" }}</span>
                 <div class="inline-block rounded-md" :class="{ borderRed: 持仓 > 0, borderGreen: 持仓 < 0 }">
                     <TagHold :value="isShow持仓 ? 持仓 || 0 : 持仓" />
                 </div>
                 <TagHoldDiffPercent v-if="持仓" :value="盈亏" :收益率="收益率" />
             </div>
-            <!-- 空白模式中间区域 -->
+            <!-- 极简模式中间区域 -->
             <div class="flex gap-[5px]">
                 <TagPrice :value="一手价" />
                 <TagHoldPercent v-if="持仓" :value="仓位" :仓位占比="0" :总投入="0" />
@@ -58,7 +56,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 // 全局、仓库
 const { globalLoading } = useGlobal();
 
-// props（空白模式，showTypeVal 已内置，不再作为入参）
+// props（极简模式，showTypeVal 已内置，不再作为入参）
 const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
 
 // 弹窗响应式
@@ -91,7 +89,7 @@ const 一手价 = computed(() => optionItem.value["一手价"]);
 const 一手成本价 = computed(() => optionItem.value["一手成本价"]);
 const 收益率 = computed(() => optionItem.value["收益率"]);
 
-// 外层容器样式（空白模式，mode 仍作为背景策略入参）
+// 外层容器样式（极简模式，mode 仍作为背景策略入参）
 const wrapperStyle = computed(() => {
     const baseStyle = {
         padding: "35px 0 5px 0",
@@ -115,7 +113,7 @@ const wrapperStyle = computed(() => {
             if (item["持仓"]) {
                 finalStyle = { ...finalStyle, ...holdBgStyle };
             } else if (item["持仓变化"]) {
-                // 空白模式下持仓变化行不保留底色，直接还原基础样式
+                // 极简模式下持仓变化行不保留底色，直接还原基础样式
                 finalStyle = { ...baseStyle };
             }
             break;
@@ -179,7 +177,7 @@ const handleGlassStyle = (el, isEnable) => {
         border-color: #aaaaaa !important;
 
         filter: grayscale(1);
-        font-size: 0.85em !important;
+        // font-size: 0.85em !important;
     }
 }
 

@@ -96,7 +96,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading, isMobile } = useGlobal();
 const { money } = useMoneyStore();
 
-// props（移动端精简展示，不再区分 showTypeVal）
+// props（移动端完整展示，不再区分 showTypeVal）
 const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
 
 // 弹窗响应式

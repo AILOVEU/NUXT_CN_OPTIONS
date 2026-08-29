@@ -192,7 +192,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 // 全局、仓库
 const { globalLoading } = useGlobal();
 
-// props（精简模式，showTypeVal 已内置，不再作为入参）
+// props（完整模式，showTypeVal 已内置，不再作为入参）
 const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
 
 // 弹窗响应式
@@ -251,7 +251,7 @@ const showField = (fieldName) => {
   return !list?.length || list.includes(fieldName);
 };
 
-// 外层容器样式（精简模式，mode 仍作为背景策略入参）
+// 外层容器样式（完整模式，mode 仍作为背景策略入参）
 const wrapperStyle = computed(() => {
   const baseStyle = {
     padding: "25px 0",
