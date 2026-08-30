@@ -9,6 +9,10 @@
       <span class="text-[14px] whitespace-nowrap">最大一手价</span>
       <el-input v-model="max一手价Val" class="w-[80px]" size="small" controls-position="right" />
     </div>
+    <div class="w-full pb-[12px] flex items-center gap-[12px] h-[30px]" v-if="showTypeVal === '空白'">
+      <span class="text-[14px] whitespace-nowrap">最大溢价</span>
+      <el-input v-model="max溢价Val空白" class="w-[80px]" size="small" controls-position="right" />
+    </div>
     <!-- <div class="w-full pb-[12px] h-[30px]">
       <TabSelectMult :options="columnOptions" v-model="columnVal" />
     </div> -->
@@ -86,7 +90,7 @@ const reversed_deadline_list = [...deadline_list].reverse();
 const typeOptions = computed(() =>
   isMobile
     ? [{ label: "完整", value: "完整" }]
-    : ["完整", "筛选", "打印", "极简", "空白"].map((el) => ({ label: el, value: el }))
+    : ["完整", "打印", "极简", "筛选", "空白"].map((el) => ({ label: el, value: el }))
 );
 const showTypeVal = ref("完整");
 watch(
@@ -145,19 +149,26 @@ function getWrapperColumnWidth(label) {
   if (isMobile) return "100px";
   return showTypeVal.value === "打印" || showTypeVal.value === "极简" ? "340px" : "172px";
 }
-const max溢价Val = ref(5);
+const max溢价Val = ref(7);
 const max一手价Val = ref(500);
+// 空白模式专用（与筛选模式独立，避免切换模式时数据互相影响）
+const max溢价Val空白 = ref(100);
 const filteredTableData = computed(() => {
   const isFilterMode = showTypeVal.value === "筛选";
+  const isSpacesMode = showTypeVal.value === "空白";
   return props.symmetricData
     .filter((el) => {
       if (el._current || el._split) return true;
-      if (el["is行内有持仓"] && !isFilterMode) return true;
+      if (el["is行内有持仓"] && !isFilterMode && !isSpacesMode) return true;
       // if (el["正股代码"] !== stockCode.value) return false;
       if (el["is旧期权"]) return false;
       // if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
       // 最大溢价：筛选模式下过滤数据行
       if (isFilterMode && Math.abs(el["行权价溢价"]) > max溢价Val.value) {
+        return false;
+      }
+      // 最大溢价：空白模式下按独立阈值过滤数据行
+      if (isSpacesMode && Math.abs(el["行权价溢价"]) > max溢价Val空白.value) {
         return false;
       }
       return true;
