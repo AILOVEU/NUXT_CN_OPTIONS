@@ -3,12 +3,13 @@
   <div v-else-if="!props.row?._current" class="center-full-cell" :class="{ isLimit: props.row['_行限制展示'] }">
     <div>
       <div class="text-[17px] whitespace-nowrap">{{ 展示正股名称 }}</div>
-      <div class="text-[17px] pt-[4px]">
-        {{ 千行权价 }}
+      <div class="text-[17px] pt-[4px] flex justify-center">
+        <div> {{ 千行权价 }}</div>
+        <div class="text-[12px] pt-[4px]" v-if="props.row['正股代码'] === '159922'">
+          ({{ formatDecimal(千行权价 * 2.513 / 1000, 2) }})
+        </div>
       </div>
-      <div class="text-[12px] pt-[4px]" v-if="props.row['正股代码'] === '159922'">
-        ({{ formatDecimal(千行权价 * 2.513 / 1000, 2) }})
-      </div>
+
       <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap" v-if="props.showTypeVal !== '空白'">
         <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
           {{ formatDecimal(溢价, 2) + "%" }}
@@ -16,9 +17,8 @@
       </div>
     </div>
   </div>
-  <div v-else-if="props.showTypeVal !== '空白'" class="h-[22px] leading-[22px] text-[20px] font-extrabold" :style="props.isCall
-    ? 'background: linear-gradient(rgb(255, 240, 240), rgb(225, 240, 225)); height: 22px'
-    : 'background: linear-gradient(rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
+  <div v-else-if="props.showTypeVal !== '空白'" class="h-[22px] leading-[22px] text-[20px] font-extrabold"
+    :style="'background: conic-gradient(from 135deg, rgb(255, 240, 240), rgb(225, 240, 225), rgb(255, 240, 240), rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     {{ formatDecimal(行权价, 3) }}
   </div>
 </template>
