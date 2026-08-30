@@ -34,7 +34,7 @@ const 一手价 = computed(() => optionItem.value["一手价"]);
 // 卡片尺寸（仅保留高度、内边距，空白模式不显示内容也不加边框/底色）
 const cardStyle = {
     padding: "35px 0 5px 0",
-    height: "83px",
+    height: "23px",
 };
 </script>
 

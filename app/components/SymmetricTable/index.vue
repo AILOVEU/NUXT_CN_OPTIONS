@@ -237,8 +237,8 @@ function getCellStyle({ column, row }) {
   // 红 | 绿
   // -------
   // 绿 | 红
-  const 实值style = { border: "2px solid rgb(255, 240, 240)", background: "white" };
-  const 虚值style = { border: "2px solid rgb(225, 240, 225)", background: "white" };
+  const 实值style = { border: "1px solid rgb(255, 240, 240)", background: "white" };
+  const 虚值style = { border: "1px solid rgb(225, 240, 225)", background: "white" };
   if (row["行权价"] > row["正股价格"]) {
     return column?.["property"]?.includes("C") ? 虚值style : 实值style;
   } else {

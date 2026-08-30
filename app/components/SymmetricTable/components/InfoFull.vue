@@ -283,6 +283,10 @@ const wrapperStyle = computed(() => {
   if (持仓.value && optionLimitShow.value) {
     finalStyle = { ...finalStyle, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
   }
+  // 限制展示：浅灰背景
+  if (optionLimitShow.value) {
+    finalStyle = { ...finalStyle, background: "rgb(235, 235, 235)" };
+  }
   return finalStyle;
 });
 
