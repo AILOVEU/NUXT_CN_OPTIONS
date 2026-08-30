@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full min-w-0 max-w-full">
     <div class="w-full pb-[12px] h-[30px]" v-if="!isMobile">
       <TabSelect :options="typeOptions" v-model="showTypeVal" />
     </div>
@@ -19,7 +19,7 @@
     <div class="w-full pb-[12px] h-[30px]" v-if="showTypeVal === '完整'">
       <TabSelectMult :options="indexOptions" v-model="indexVal" />
     </div>
-    <div class="h-[calc(100%-120px)]">
+    <div class="h-[calc(100%-120px)] overflow-x-auto">
       <Capture title="期权T型" ref="captureRef"
         :style="{ 'border-left': '10px solid #576a8f', 'border-right': '10px solid #576a8f', width: 'fit-content' }">
         <div
@@ -311,6 +311,11 @@ const getSummary = ({ columns, data }) => {
 };
 
 const captureRef = ref(null);
+// 暴露内部全宽截图能力（内部Capture为max-content宽度，不受外层滚动容器裁剪影响）
+defineExpose({
+  download: () => captureRef.value?.download(),
+  getDataURL: () => captureRef.value?.getDataURL(),
+});
 </script>
 <style lang="less">
 .el-table--small .cell {
@@ -337,6 +342,10 @@ const captureRef = ref(null);
     font-weight: 600; // 可选加粗
     height: 30px;
   }
+  // margin: 0 auto;
+  // overflow: auto;
+
+  // width: fit-content;
 }
 
 // .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf{
