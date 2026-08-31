@@ -7,10 +7,17 @@
     <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px]"
         :style="cardStyle">
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
+        <!-- => 两边各一个 div（左：成本价 手数；右：目标价格与 1.5 倍目标价格），同行不换行；组合配色直接写在两个 div 上 -->
         <div v-for="item in 组合项列表" :key="item.key"
-            class="inline-block rounded-[3px] px-[4px] text-[20px] leading-[24px] whitespace-nowrap" :style="item.样式">
-            {{ item.成本价 }} {{ item.手数 }} => {{ item.目标价格 }} * {{ Math.ceil(item.手数 / 3) }}，{{ item.目标价格15倍 }}*
-            {{ Math.ceil(item.手数 / 3) }}
+            class="inline-flex items-center gap-[2px] text-[20px] leading-[25px] whitespace-nowrap">
+            <!-- <div class="rounded-[3px] px-[4px] text-[12px]"> {{ item.目标价格 * item.手数 }} </div> -->
+            <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
+            </div>
+            <div class="text-[11px]">=></div>
+            <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ formatDecimal(item.目标价格, 0) }} * {{
+                Math.ceil(item.手数 / 3) }}</div>
+            <div class="rounded-[3px] px-[4px]" :style="item.样式"> {{
+                formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
         </div>
     </div>
 </template>
@@ -18,6 +25,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { SPREAD_DATA } from "~/data/spread.js";
+import { formatDecimal } from "~/utils/utils.js";
 
 // props（跨市模式，结构同 InfoBlank）
 const props = defineProps(["row", "isCall", "date", "tiledData", "indexVal"]);
