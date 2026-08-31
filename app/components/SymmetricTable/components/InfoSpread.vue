@@ -9,7 +9,7 @@
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
         <!-- => 两边各一个 div（左：成本价 手数；右：目标价格与 1.5 倍目标价格），同行不换行；组合配色直接写在两个 div 上 -->
         <div v-for="item in 组合项列表" :key="item.key"
-            class="inline-flex items-center gap-[2px] text-[20px] leading-[25px] whitespace-nowrap">
+            class="inline-flex items-center gap-[2px] text-[20px] leading-[30px] pb-[4px] whitespace-nowrap">
             <!-- <div class="rounded-[3px] px-[4px] text-[12px]"> {{ item.目标价格 * item.手数 }} </div> -->
             <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
             </div>
@@ -46,6 +46,7 @@ const 置灰样式 = {
     background: "rgb(235, 235, 235)",
     border: "1px solid #aaaaaa",
     color: "gray",
+    paddingBottom: '3px'
 };
 
 // 字段是否有值（非空：排除 null / undefined / 空字符串）
@@ -91,6 +92,7 @@ function 组合颜色(index) {
         background: "hsl(" + hue + ", 70%, 86%)",
         border: "1px solid hsl(" + hue + ", 65%, 55%)",
         color: "hsl(" + hue + ", 70%, 25%)",
+        paddingBottom: '3px'
     };
 }
 
