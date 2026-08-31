@@ -14,9 +14,9 @@
             <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
             </div>
             <div class="text-[11px]">=></div>
-            <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ formatDecimal(item.目标价格, 0) }} * {{
+            <div class="rounded-[3px] px-[4px]" :style="item.目标价格样式">{{ formatDecimal(item.目标价格, 0) }} * {{
                 Math.ceil(item.手数 / 3) }}</div>
-            <div class="rounded-[3px] px-[4px]" :style="item.样式"> {{
+            <div class="rounded-[3px] px-[4px]" :style="item.目标价格15倍样式"> {{
                 formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
         </div>
     </div>
@@ -41,8 +41,21 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 // 行情数值
 const 一手价 = computed(() => current期权Item.value["一手价"]);
 
+// 置灰样式：第四/第五字段有值时，对应块用灰色替代组合配色
+const 置灰样式 = {
+    background: "rgb(235, 235, 235)",
+    border: "1px solid #aaaaaa",
+    color: "gray",
+};
+
+// 字段是否有值（非空：排除 null / undefined / 空字符串）
+function 有值(val) {
+    return val != null && val !== "";
+}
+
 // 当前单元格命中的全部组合项（同一个期权可同时属于多个组合，需全部展示）
-// SPREAD_DATA：多条组合，每条为 [认购, 认沽] 两项；单项为 [期权名称, 成本价, 手数]
+// SPREAD_DATA：多条组合，每条为 [认购, 认沽] 两项；单项为 [期权名称, 成本价, 手数, 字段4, 字段5]
+// 第四字段有值 -> 目标价格块置灰；第五字段有值 -> 1.5 倍目标价格块置灰
 const 组合项列表 = computed(() => {
     const name = 期权名称.value;
     if (!name) return [];
@@ -63,6 +76,9 @@ const 组合项列表 = computed(() => {
             目标价格: 目标价格,
             目标价格15倍: 保留两位((目标价格 * 3) / 2),
             样式: 组合颜色(index),
+            // 第四、第五字段有值时对应块置灰，否则沿用组合配色
+            目标价格样式: 有值(leg[3]) ? 置灰样式 : 组合颜色(index),
+            目标价格15倍样式: 有值(leg[4]) ? 置灰样式 : 组合颜色(index),
         });
     });
     return list;
