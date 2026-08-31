@@ -145,6 +145,8 @@ const showField = (fieldName) => {
 const wrapperStyle = computed(() => {
   const baseStyle = {
     border: 持仓.value > 0 ? "2px solid red" : 持仓.value < 0 ? "2px solid green" : "",
+    // 撑满单元格，避免限制展示时灰底未铺满、上下露白
+    height: "100%",
   };
   let finalStyle = { ...baseStyle };
 

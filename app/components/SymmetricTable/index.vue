@@ -274,6 +274,20 @@ function getCellStyle({ column, row }) {
   // 绿 | 红
   const 实值style = { border: "1px solid rgb(255, 240, 240)", background: "white" };
   const 虚值style = { border: "1px solid rgb(225, 240, 225)", background: "white" };
+  // 限制展示：整格置灰，避免卡片未铺满时上下露白（与 Info 组件灰底一致）
+  if (column?.["property"] && (column.property.includes("C") || column.property.includes("P"))) {
+    const type = column.property[0];
+    const dateStr = column.property.slice(1);
+    const month = dayjs(dateStr, "YYYY-MM-DD").format("M月");
+    const 期权名称 = row[type + month + "期权名称"];
+    const item = props.tiledData?.find((el) => el["期权名称"] === 期权名称);
+    if (item && (item["_限制展示"] || item["_限制展示_有持仓"])) {
+      const base = row["行权价"] > row["正股价格"]
+        ? (column.property.includes("C") ? 虚值style : 实值style)
+        : (column.property.includes("C") ? 实值style : 虚值style);
+      return { ...base, backgroundColor: "rgb(235, 235, 235)" };
+    }
+  }
   if (row["行权价"] > row["正股价格"]) {
     return column?.["property"]?.includes("C") ? 虚值style : 实值style;
   } else {
@@ -294,6 +308,8 @@ watch(
     deep: true,
   }
 );
+
+
 
 // 通用合计方法（永远不用改）
 const getSummary = ({ columns, data }) => {
@@ -344,6 +360,8 @@ defineExpose({
 <style lang="less">
 .el-table--small .cell {
   padding: 0 0px !important;
+  // 撑满行高，使卡片（如 InfoMobile 的灰底）能铺满整格，避免出现白色间隙
+  height: 100%;
 }
 
 .el-table--small .el-table__cell {
@@ -359,17 +377,20 @@ defineExpose({
   flex: 1;
 }
 
+// 关闭 el-table 行悬浮高亮（官方 CSS 变量）：
+// EP 规则 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell { background-color: var(--el-table-row-hover-bg-color) }
+// 该变量由 EP 定义在 .el-table 上，直接声明在 body 的 td 上可优先于继承值，不受层叠顺序影响。
+// 仅作用于 body 单元格，避免影响合计行（EP 的 footer 也复用该变量做背景）。
+.symmetic-table .el-table__body td.el-table__cell {
+  --el-table-row-hover-bg-color: transparent;
+}
+
 // 新增：合计行全局放大字体
 .symmetic-table {
   .el-table__footer-wrapper .cell {
     font-size: 24px; // 按需调整大小
     font-weight: 600; // 可选加粗
     height: 30px;
-  }
-
-  // 去除悬浮高亮
-  .el-table__body tr:hover > td.el-table__cell {
-    background-color: transparent !important;
   }
 
   // margin: 0 auto;

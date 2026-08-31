@@ -288,10 +288,10 @@ handleQuery();
   padding: 0px 0 !important;
 }
 
-// 去除悬浮高亮
-.stockindex-el-table {
-  .el-table__body tr:hover > td.el-table__cell {
-    background-color: transparent !important;
-  }
+// 关闭 el-table 行悬浮高亮（官方 CSS 变量）：
+// EP 规则 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell { background-color: var(--el-table-row-hover-bg-color) }
+// 该变量由 EP 定义在 .el-table 上，直接声明在 body 的 td 上可优先于继承值，不受层叠顺序影响。
+.stockindex-el-table .el-table__body td.el-table__cell {
+  --el-table-row-hover-bg-color: transparent;
 }
 </style>

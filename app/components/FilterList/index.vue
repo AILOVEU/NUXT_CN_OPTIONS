@@ -313,4 +313,11 @@ function handleSortChange({ column, prop, order }) {
   /* 关键：取消文字截断和省略号 */
   text-overflow: clip !important;
 }
+
+/* 本组件的 el-table 保留 #C4E2F5 悬浮高亮
+   （app.vue 中的同名全局规则已移除，此处用 :deep 在本组件内局部恢复，
+    避免影汚其他表格；scoped 下 :deep 编译为 [data-v-xxx] ... 才能匹配到 el-table 内部渲染的 td） */
+:deep(.el-table__body tr:hover > td) {
+  background-color: #C4E2F5 !important;
+}
 </style>
