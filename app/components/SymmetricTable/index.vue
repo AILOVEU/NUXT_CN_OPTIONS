@@ -98,9 +98,12 @@ const reversed_deadline_list = [...deadline_list].reverse();
 // 数组式 defineProps 无 type 声明，无值属性会被解析为空串（falsy），这里做兼容：只要传了且不是显式 false 即视为开启
 const isHideFilterMode = computed(() => props.hideFilterMode != null && props.hideFilterMode !== false);
 const typeOptions = computed(() => {
-  // 移动端只保留手机模式（替换完整模式）；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
+  // 移动端默认手机模式，可切换到筛选模式；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
   const list = ["完整", "打印", "极简", "筛选", "空白", "手机"].filter((el) => !(isHideFilterMode.value && el === "筛选"));
-  return isMobile.value ? [{ label: "手机", value: "手机" }] : list.map((el) => ({ label: el, value: el }));
+  if (isMobile.value) {
+    return list.filter((el) => el === "手机" || el === "筛选").map((el) => ({ label: el, value: el }));
+  }
+  return list.map((el) => ({ label: el, value: el }));
 });
 // 各展示模式的说明文案
 const showTypeDescMap = {
