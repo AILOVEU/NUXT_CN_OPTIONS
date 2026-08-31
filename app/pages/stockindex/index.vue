@@ -21,13 +21,24 @@
     <div class="w-full pb-[12px]">
       <TabSelect :options="stockCodeOptions" v-model="stockCode" @click="handleStockCodeChange" />
     </div>
-    <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
-      <div class="w-[80px]">最大溢价:</div>
-      <el-input v-model="max溢价Val" />
+    <div class="w-full pb-[12px] flex justify-center">
+      <TabSelect :options="typeOptions" v-model="showTypeVal" />
     </div>
-    <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
-      <div class="w-[80px]">最大一手价:</div>
-      <el-input v-model="max一手价Val" />
+    <!-- 筛选模式：最大溢价 + 最大一手价 -->
+    <template v-if="showTypeVal === '筛选'">
+      <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
+        <div class="w-[80px]">最大溢价:</div>
+        <el-input v-model="max溢价Val" />
+      </div>
+      <div class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
+        <div class="w-[80px]">最大一手价:</div>
+        <el-input v-model="max一手价Val" />
+      </div>
+    </template>
+    <!-- 空白模式：仅一个独立的最大溢价筛选器 -->
+    <div v-else class="w-full pb-[12px] flex gap-[10px] items-center text-[12px] mx-[12px]">
+      <div class="w-[80px]">最大溢价:</div>
+      <el-input v-model="max溢价ValBlank" />
     </div>
     <Flip :gammaFlipData="gammaFlipData" />
     <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{
@@ -57,7 +68,10 @@
           </template>
           <template #default="{ row }">
             <Center v-if="label === '期权'" :row="row" />
-            <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" />
+            <InfoFilter v-else-if="showTypeVal === '筛选'" :row="row" :isCall="type === 'C'" :date="label"
+              :tiledData="filteredTiledData" />
+            <InfoBlank v-else-if="showTypeVal === '空白'" :row="row" :isCall="type === 'C'" :date="label"
+              :tiledData="filteredTiledData" />
           </template>
         </el-table-column>
       </el-table>
@@ -70,7 +84,8 @@ import { formatNumberToWan, formatDecimal } from "~/utils/utils";
 import { STOCK_INDEX_OPTIONS_MAP, stock_index_fields_dict, STOCK_INDEX_DAY_MAP } from "~/data";
 import { get_http_data_stock_index } from "~/utils/stockIndexOptions";
 import Center from "./components/Center";
-import Info from "./components/Info";
+import InfoFilter from "./components/InfoFilter";
+import InfoBlank from "./components/InfoBlank";
 import Flip from "./components/Flip";
 import _ from "lodash";
 import dayjs from "dayjs";
@@ -79,7 +94,13 @@ const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 
 const max溢价Val = ref(6);
 const max一手价Val = ref(1200);
+// 空白模式独立的最大溢价筛选器（不共用筛选模式的筛选器，且只有这一个）
+const max溢价ValBlank = ref(6);
 const tableRef = ref();
+
+// 展示模式切换（筛选 / 空白）
+const showTypeVal = ref("筛选");
+const typeOptions = ["筛选", "空白"].map(el => ({ label: el, value: el }));
 
 const deadline_list = Object.values(STOCK_INDEX_DAY_MAP);
 const stockCodeOptions = computed(() => {
@@ -129,7 +150,15 @@ async function handleQuery(useCatch = true) {
 }
 
 const filteredTiledData = computed(() => {
+  // 空白模式仅使用自身的最大溢价筛选器（无最大一手价）；筛选模式使用自身的最大溢价 + 最大一手价
+  const isBlank = showTypeVal.value === "空白";
   return tiledData.value.map((el) => {
+    if (isBlank) {
+      if (Math.abs(el["行权价溢价"]) > max溢价ValBlank.value) {
+        return { ...el, _限制展示: true };
+      }
+      return el;
+    }
     if (el["一手价"] >= max一手价Val.value || Math.abs(el["行权价溢价"]) > max溢价Val.value) {
       return {
         ...el,
@@ -161,14 +190,16 @@ function getRowStyle({ row }) {
 
 // 根据代码过滤表格数据
 function filterTableDataByStockCode(code) {
+  // 空白模式使用独立的最大溢价筛选器，筛选模式使用自身的最大溢价
+  const 当前最大溢价 = showTypeVal.value === "空白" ? max溢价ValBlank.value : max溢价Val.value;
   let res = tableData.data
     .filter((el) => el["正股代码"] === code || code === "all")
     .filter((el) => {
       if (el["_split"] || el["_current"] || el["is行内有持仓"]) return true;
-      return Math.abs(el["行权价溢价"]) < max溢价Val.value;
+      return Math.abs(el["行权价溢价"]) < 当前最大溢价;
     });
   return res.map((el) => {
-    if (Math.abs(el["行权价溢价"]) < max溢价Val.value) return el;
+    if (Math.abs(el["行权价溢价"]) < 当前最大溢价) return el;
     return {
       ...el,
       _行限制展示: true,
