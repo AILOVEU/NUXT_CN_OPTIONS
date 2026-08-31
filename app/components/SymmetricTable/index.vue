@@ -172,10 +172,9 @@ const showColumns = computed(() => {
 });
 function getWrapperColumnWidth(label) {
   if (label.includes("市场")) return "90px";
-
   if (label === "期权") return "80px";
   if (isMobile.value || showTypeVal.value === "手机") return "100px";
-  return showTypeVal.value === "打印" || showTypeVal.value === "极简" ? "340px" : "172px";
+  return ['打印', '跨市', '极简'].includes(showTypeVal.value) ? "340px" : "172px";
 }
 const max溢价Val = ref(7);
 const max一手价Val = ref(500);

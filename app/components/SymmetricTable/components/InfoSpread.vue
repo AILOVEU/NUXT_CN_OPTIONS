@@ -8,7 +8,7 @@
         :style="cardStyle">
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
         <div v-for="item in 组合项列表" :key="item.key"
-            class="inline-block rounded-[3px] px-[4px] text-[14px] leading-[17px] whitespace-nowrap" :style="item.样式">
+            class="inline-block rounded-[3px] px-[4px] text-[20px] leading-[24px] whitespace-nowrap" :style="item.样式">
             {{ item.成本价 }} {{ item.手数 }} => {{ item.目标价格 }} * {{ Math.ceil(item.手数 / 3) }}，{{ item.目标价格15倍 }}*
             {{ Math.ceil(item.手数 / 3) }}
         </div>
