@@ -8,7 +8,7 @@
         &nbsp;
     </div>
     <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
-        class="p-[2px] cursor-pointer relative border-[black]" :style="wrapperStyle" :class="{ 'print-text-large': isPrint }">
+        class="p-[2px] cursor-pointer relative border-[black]" :style="wrapperStyle">
         <!-- 限制展示：整块置灰（重复普通展示内容） -->
         <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
             <div v-if="持仓" class="absolute top-[0px] left-[0px]">
@@ -47,19 +47,13 @@
 </template>
 <script setup>
 import dayjs from "dayjs";
-import { useMoneyStore } from "~/stores/useMoneyStore";
-import { getColorSplitHander } from "~/utils/color";
-import { formatDecimal } from "~/utils/utils";
 import { 最大建议买入时间价, 最大建议买入价 } from "~/data";
-import { useGlobal } from "~/stores/useGlobal.js";
-const { globalLoading, isMobile } = useGlobal();
 
 const bsModalData = reactive({
     visible: false,
     optionInfo: {},
 });
-const { money } = useMoneyStore();
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal", "showTypeVal"]);
+const props = defineProps(["row", "isCall", "date", "mode", "tiledData"]);
 // props.row 示例
 // {
 //   C1月期权名称: "50ETF购1月3200",
@@ -82,7 +76,6 @@ function formatYm(str) {
     const month = Number(str.slice(2, 4));
     return `${year}年${month}月`;
 }
-const isPrint = computed(() => props.showTypeVal === "打印");
 const 期权名称 = computed(() => {
     const type = props.isCall ? "C" : "P";
     const month = dayjs(props.date, "YYYY-MM-DD").format("YY年M月");
@@ -99,27 +92,6 @@ const optionLimitShow = computed(() => !!current期权Item.value["_限制展示"
 const 持仓 = computed(() => {
     return current期权Item.value["持仓"];
 });
-const 持仓变化 = computed(() => {
-    return current期权Item.value["持仓变化"];
-});
-
-const isShow持仓 = computed(() => {
-    if (持仓.value) return true;
-    if (!持仓.value && 持仓变化.value) return true;
-    return false;
-});
-const 日增量 = computed(() => {
-    return current期权Item.value["日增量"];
-});
-const 持仓量 = computed(() => {
-    return current期权Item.value["持仓量"];
-});
-const 档位 = computed(() => {
-    return current期权Item.value["档位"];
-});
-const 档位名称 = computed(() => {
-    return current期权Item.value["档位名称"];
-});
 const 一手价 = computed(() => {
     return current期权Item.value["一手价"];
 });
@@ -129,44 +101,12 @@ const 一手成本价 = computed(() => {
 const 一手涨跌价 = computed(() => {
     return current期权Item.value["一手涨跌价"];
 });
-
-const is彩票 = computed(() => {
-    return current期权Item.value["is彩票"];
-});
-
-const is禁止加仓 = computed(() => {
-    return current期权Item.value["is禁止加仓"];
-});
-
-const 总投入 = computed(() => {
-    return current期权Item.value["总投入"];
-});
-
 const 涨跌率 = computed(() => {
     return current期权Item.value["涨跌率"];
-});
-
-const 收益率 = computed(() => {
-    return current期权Item.value["收益率"];
 });
 const 盈亏 = computed(() => {
     return (一手价.value - 一手成本价.value) * 持仓.value;
 });
-
-const 盈亏百分比 = computed(() => {
-    return (一手价.value - 一手成本价.value) / 一手成本价.value;
-});
-
-const 仓位 = computed(() => {
-    return 持仓.value * 一手价.value;
-});
-
-const 仓位率 = computed(() => {
-    return current期权Item.value["仓位率"];
-});
-
-const greenColorHandler = getColorSplitHander("#F0FFF0", "#006400");
-const redColorHandler = getColorSplitHander("#FFE4E1", "#FF0000");
 
 const wrapperStyle = computed(() => {
     const grayStyle = {
@@ -178,8 +118,8 @@ const wrapperStyle = computed(() => {
         // filter: "grayscale(0.75)",
     };
     let style = {
-        padding: isPrint.value ? "32px 0 5px 0" : "22px 0",
-        height: isMobile ? "70px" : "70px",
+        padding: "22px 0",
+        height: "70px",
         border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
     };
     if (props.mode === "in-val") {
@@ -226,34 +166,6 @@ function handleShowBs() {
     bsModalData.optionInfo = current期权Item.value;
     bsModalData.visible = true;
 }
-const vGlass = {
-    /**
-     * 元素挂载到DOM时执行（替代Vue2的bind）
-     * @param el 指令绑定的DOM元素
-     * @param binding 指令绑定信息（value为指令值）
-     */
-    mounted(el, binding) {
-        // 根据指令值添加/移除毛玻璃样式
-        handleGlassStyle(el, binding.value);
-    },
-    /**
-     * 指令值更新时执行
-     */
-    updated(el, binding) {
-        // 避免重复操作：只有值真正变化时才更新样式
-        if (binding.oldValue !== binding.value) {
-            handleGlassStyle(el, binding.value);
-        }
-    },
-};
-// 封装毛玻璃样式控制逻辑
-const handleGlassStyle = (el, isEnable) => {
-    if (isEnable) {
-        el.classList.add("glass-effect");
-    } else {
-        el.classList.remove("glass-effect");
-    }
-};
 </script>
 <style lang="less">
 .glass-effect {

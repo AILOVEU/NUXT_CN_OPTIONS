@@ -30,7 +30,6 @@
       <el-input v-model="max一手价Val" />
     </div>
     <Flip :gammaFlipData="gammaFlipData" />
-    <!-- 优化key + 修复单条下载作用域，不再依赖全局captureRef -->
     <Capture v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)" title="股指T型" :style="{
       'border-left': '10px solid #576a8f',
       'border-right': '10px solid #576a8f',
@@ -50,7 +49,6 @@
               <div class="leading-[1.2] text-rose-950">({{ dayjs(label, "YYYY-MM-DD").diff(dayjs(), "days") + 1 }})
               </div>
             </div>
-            <!-- 改用当前项 ref，消除全局 captureRef 隐患 -->
             <div v-else class="leading-[1.2] flex items-center gap-[2px] justify-center cursor-pointer"
               @click="() => itemRefs[idx]?.download()">
               <div>{{ label }}</div>
@@ -59,8 +57,7 @@
           </template>
           <template #default="{ row }">
             <Center v-if="label === '期权'" :row="row" />
-            <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" mode="hold"
-              :indexVal="[]" showTypeVal="完整" />
+            <Info v-else :row="row" :isCall="type === 'C'" :date="label" :tiledData="filteredTiledData" />
           </template>
         </el-table-column>
       </el-table>
@@ -77,15 +74,11 @@ import Info from "./components/Info";
 import Flip from "./components/Flip";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { useGlobal } from "~/stores/useGlobal.js";
-const { isMobile } = useGlobal();
 
 const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 
 const max溢价Val = ref(6);
 const max一手价Val = ref(1200);
-// 全局表格ref（保留原有）
-const captureRef = ref();
 const tableRef = ref();
 
 const deadline_list = Object.values(STOCK_INDEX_DAY_MAP);
@@ -233,13 +226,6 @@ function handleStockCodeChange() {
   tableList.value = [stockCode.value];
   // handleQuery();
 }
-
-// 收集子组件ref
-const setItemRef = (el, index) => {
-  if (el) {
-    itemRefs.value[index] = el;
-  }
-};
 
 // 批量下载PDF：改用nextTick，重置ref，时序更稳定
 async function handleDownload() {
