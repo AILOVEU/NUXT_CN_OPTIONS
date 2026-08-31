@@ -10,8 +10,8 @@
     &nbsp;
   </div>
   <!-- 期权卡片主体 -->
-  <div @click="handleShowBs" v-else-if="!props.row?._current && 一手价"
-    class="p-[4px] cursor-pointer relative flex flex-col gap-[3px]" :style="wrapperStyle">
+  <div v-else-if="!props.row?._current && 一手价"
+    class="p-[4px] relative flex flex-col gap-[3px]" :style="wrapperStyle">
     <!-- 限制展示：整块置灰（重复普通展示内容） -->
     <div v-if="optionLimitShow" class="w-full h-full text-limit-show-mode">
       <!-- 顶部：持仓（左） + 涨跌（右） -->
@@ -82,9 +82,6 @@
       </div>
     </template>
   </div>
-
-  <!-- 弹窗 -->
-  <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
 </template>
 
 <script setup>
@@ -98,12 +95,6 @@ const { money } = useMoneyStore();
 
 // props（移动端完整展示）
 const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
-
-// 弹窗响应式
-const bsModalData = reactive({
-  visible: false,
-  optionInfo: {},
-});
 
 // 基础计算属性
 const 期权名称 = computed(() => {
@@ -187,11 +178,6 @@ const wrapperStyle = computed(() => {
   return finalStyle;
 });
 
-// 点击弹窗
-function handleShowBs() {
-  bsModalData.optionInfo = optionItem.value;
-  bsModalData.visible = true;
-}
 </script>
 
 <style lang="less" scoped>

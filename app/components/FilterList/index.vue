@@ -17,7 +17,7 @@
             </template>
           </el-table-column>
           <el-table-column #default="{ row }" label="期权名称" prop="期权名称" width="140" sortable align="left" fixed="left">
-            <div @click="() => handleShowBs(row)">{{ row['期权名称'] }}</div>
+            <div @click="!isMobile && handleShowBs(row)">{{ row['期权名称'] }}</div>
           </el-table-column>
           <!-- <el-table-column label="评分" prop="评分" width="80" sortable align="left" fixed="left" /> -->
 
@@ -173,7 +173,11 @@
 <script setup>
 import _ from "lodash";
 import { OPTIONS_MAP } from "~/data";
+import { storeToRefs } from "pinia";
+import { useGlobal } from "~/stores/useGlobal";
 const props = defineProps(["data", "isCombo", "showHold", "过滤持变字段", "refreshNonce", 'orderFunc']);
+// 解构 store 需用 storeToRefs，保证 isMobile 响应式：手机端点击不会触发弹窗
+const { isMobile } = storeToRefs(useGlobal());
 // 弹窗响应式
 const bsModalData = reactive({
   visible: false,
