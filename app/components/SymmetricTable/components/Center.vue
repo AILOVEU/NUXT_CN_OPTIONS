@@ -10,14 +10,14 @@
         </div>
       </div>
 
-      <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap" v-if="props.showTypeVal !== '空白'">
+      <div class="text-[17px] pt-[2px] pb-[4px] whitespace-nowrap" v-if="!['空白', '跨市'].includes(props.showTypeVal)">
         <span class="font-semibold" :style="{ color: 溢价 > 0 ? 'red' : 'green' }">
           {{ formatDecimal(溢价, 2) + "%" }}
         </span>
       </div>
     </div>
   </div>
-  <div v-else-if="props.showTypeVal !== '空白'" class="h-[22px] leading-[22px] text-[20px] font-extrabold"
+  <div v-else-if="!['空白', '跨市'].includes(props.showTypeVal)" class="h-[22px] leading-[22px] text-[20px] font-extrabold"
     :style="'background: conic-gradient(from 135deg, rgb(255, 240, 240), rgb(225, 240, 225), rgb(255, 240, 240), rgb(225, 240, 225), rgb(255, 240, 240)); height: 22px'">
     {{ formatDecimal(行权价, 3) }}
   </div>

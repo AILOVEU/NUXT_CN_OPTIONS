@@ -31,7 +31,7 @@
           {{ props.tableTitle || "" }}{{ dayStr }}</div>
         <el-table class="symmetic-table" :data="filteredTableData" size="small" border height="100%"
           :highlight-current-row="false" :row-style="getRowStyle" :cell-style="getCellStyle" ref="tableRef"
-          :show-summary="showTypeVal !== '筛选' && showTypeVal !== '空白'" :summary-method="getSummary">
+          :show-summary="!['筛选', '空白', '跨市'].includes(showTypeVal)" :summary-method="getSummary">
           <el-table-column v-for="{ label, type } in showColumns" :key="type + label" :prop="type + label"
             align="center" :width="getWrapperColumnWidth(label)">
             <template #header>
@@ -66,6 +66,8 @@
                 :tiledData="props.tiledData" :indexVal="indexVal" />
               <InfoBlank v-else-if="showTypeVal === '空白'" :row="row" :isCall="type === 'C'" :date="label"
                 :tiledData="props.tiledData" :indexVal="indexVal" />
+              <InfoSpread v-else-if="showTypeVal === '跨市'" :row="row" :isCall="type === 'C'" :date="label"
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <!-- </template> -->
             </template>
           </el-table-column>
@@ -84,6 +86,7 @@ import InfoMinimal from "./components/InfoMinimal.vue";
 import InfoBlank from "./components/InfoBlank.vue";
 import InfoMobile from "./components/InfoMobile.vue";
 import InfoFilter from "./components/InfoFilter.vue";
+import InfoSpread from "./components/InfoSpread.vue";
 import Data from "./components/Data.vue";
 import { storeToRefs } from "pinia";
 import { useGlobal } from "~/stores/useGlobal.js";
@@ -99,7 +102,7 @@ const reversed_deadline_list = [...deadline_list].reverse();
 const isHideFilterMode = computed(() => props.hideFilterMode != null && props.hideFilterMode !== false);
 const typeOptions = computed(() => {
   // 移动端默认手机模式，可切换到筛选模式；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
-  const list = ["完整", "打印", "极简", "筛选", "空白", "手机"].filter((el) => !(isHideFilterMode.value && el === "筛选"));
+  const list = ["完整", "打印", "极简", "筛选", "空白", "手机", "跨市"].filter((el) => !(isHideFilterMode.value && el === "筛选"));
   if (isMobile.value) {
     return list.filter((el) => el === "手机" || el === "筛选").map((el) => ({ label: el, value: el }));
   }
@@ -111,6 +114,7 @@ const showTypeDescMap = {
   打印: "必显示持仓，适配打印机",
   筛选: "无持仓限制，过滤",
   空白: "无持仓限制，筛选溢价，对称打印",
+  跨市: "40%，60%，剩余0~3手",
   极简: "必显示持仓，打印一手价",
   手机: "移动端卡片展示，逐日期渲染",
 };
