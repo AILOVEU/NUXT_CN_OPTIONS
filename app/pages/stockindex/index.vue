@@ -50,7 +50,7 @@
     }">
       <div class="w-full flex justify-center items-center h-[28px] text-[24px] font-semibold text-[white] bg-[#576a8f]">
         {{ item }}{{ dayStr }}</div>
-      <el-table :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false"
+      <el-table class="stockindex-el-table" :data="filterTableDataByStockCode(item)" size="small" height="100%" :highlight-current-row="false"
         ref="tableRef" :row-style="getRowStyle" :cell-style="getCellStyle">
         <el-table-column v-for="{ label, type } in tableData.columns" :key="type + label" :prop="type + label"
           align="center" width="138px">
@@ -286,5 +286,12 @@ handleQuery();
 
 .el-table--small .el-table__cell {
   padding: 0px 0 !important;
+}
+
+// 去除悬浮高亮
+.stockindex-el-table {
+  .el-table__body tr:hover > td.el-table__cell {
+    background-color: transparent !important;
+  }
 }
 </style>

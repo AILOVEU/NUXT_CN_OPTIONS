@@ -367,6 +367,11 @@ defineExpose({
     height: 30px;
   }
 
+  // 去除悬浮高亮
+  .el-table__body tr:hover > td.el-table__cell {
+    background-color: transparent !important;
+  }
+
   // margin: 0 auto;
   // overflow: auto;
 
