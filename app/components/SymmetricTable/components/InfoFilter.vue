@@ -54,7 +54,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 
 // props（筛选模式，参考 stockindex/components/Info.vue 实现；本组件仅 PC 显示）
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
+const props = defineProps(["row", "isCall", "date", "tiledData", "indexVal"]);
 
 // 弹窗响应式
 const bsModalData = reactive({
@@ -91,33 +91,13 @@ const 涨跌率 = computed(() => current期权Item.value["涨跌率"]);
 // 盈亏（参考实现：仅持仓时计算）
 const 盈亏 = computed(() => (一手价.value - 一手成本价.value) * 持仓.value);
 
-// 外层容器样式（参考实现：mode 作为背景策略；无 in-val 分支）
+// 外层容器样式（筛选模式）
 const wrapperStyle = computed(() => {
-    const grayStyle = {
-        background: "white",
-        filter: "grayscale(0.25)",
-    };
-    const 实值Style = {
-        background: "#F6FFDC",
-    };
     let style = {
         padding: isPrint.value ? "32px 0 5px 0" : "22px 0",
         height: "70px",
         border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
     };
-    if (props.mode === "custom" || props.mode === "chance") {
-        if (!current期权Item.value["_isChance"]) {
-            style = { ...style, ...grayStyle };
-        } else {
-            style = { ...style, ...实值Style };
-        }
-    } else if (props.mode === "hold") {
-        if (current期权Item.value["持仓"]) {
-            // 持仓行：保持基础样式
-        } else if (current期权Item.value["持仓变化"]) {
-            style = { ...style, background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
-        }
-    }
     // 限制展示：有持仓时边框置灰
     if (持仓.value && optionLimitShow.value) {
         style = { ...style, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };

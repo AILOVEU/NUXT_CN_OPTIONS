@@ -3,6 +3,10 @@
     <div class="w-full pb-[12px] h-[30px]" v-if="!isMobile">
       <TabSelect :options="typeOptions" v-model="showTypeVal" />
     </div>
+    <!-- 当前展示模式的说明文案 -->
+    <div class="w-full pb-[8px] text-[12px] text-gray-500 leading-[16px]" v-if="!isMobile && showTypeDesc">
+      {{ showTypeDesc }}
+    </div>
     <div class="w-full pb-[12px] flex items-center gap-[12px] h-[30px]" v-if="showTypeVal === '筛选'">
       <span class="text-[14px] whitespace-nowrap">最大溢价</span>
       <el-input v-model="max溢价Val" class="w-[80px]" size="small" controls-position="right" />
@@ -50,18 +54,18 @@
               <Data v-else-if="label.includes('市场')" :row="row" :isCall="type === 'C'" :minMaxData="minMaxData"
                 :showTypeVal="showTypeVal" />
               <!-- <template> -->
-              <InfoMobile v-else-if="isMobile" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+              <InfoMobile v-else-if="showTypeVal === '手机'" :row="row" :isCall="type === 'C'" :date="label"
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <InfoFull v-else-if="showTypeVal === '完整'" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <InfoPrint v-else-if="showTypeVal === '打印'" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <InfoFilter v-else-if="showTypeVal === '筛选'" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="filteredTiledData" :mode="props.mode" :indexVal="indexVal" />
+                :tiledData="filteredTiledData" :indexVal="indexVal" />
               <InfoMinimal v-else-if="showTypeVal === '极简'" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <InfoBlank v-else-if="showTypeVal === '空白'" :row="row" :isCall="type === 'C'" :date="label"
-                :tiledData="props.tiledData" :mode="props.mode" :indexVal="indexVal" />
+                :tiledData="props.tiledData" :indexVal="indexVal" />
               <!-- </template> -->
             </template>
           </el-table-column>
@@ -81,32 +85,49 @@ import InfoBlank from "./components/InfoBlank.vue";
 import InfoMobile from "./components/InfoMobile.vue";
 import InfoFilter from "./components/InfoFilter.vue";
 import Data from "./components/Data.vue";
+import { storeToRefs } from "pinia";
 import { useGlobal } from "~/stores/useGlobal.js";
-const { globalLoading, isMobile } = useGlobal();
-const props = defineProps(["mode", "symmetricData", "tiledData", "tableTitle", "showTypeVal"]);
+// isMobile 需经 storeToRefs 解构，直接解构会拿到非响应式快照，导致端切换时视图不更新
+const globalStore = useGlobal();
+const { globalLoading } = globalStore;
+const { isMobile } = storeToRefs(globalStore);
+const props = defineProps(["symmetricData", "tiledData", "tableTitle", "showTypeVal", "hideFilterMode"]);
 const dayStr = computed(() => `(${dayjs().format("YYYY-MM-DD HH:mm:ss")})`);
 const tableRef = ref();
 const reversed_deadline_list = [...deadline_list].reverse();
-const typeOptions = computed(() =>
-  isMobile
-    ? [{ label: "完整", value: "完整" }]
-    : ["完整", "打印", "极简", "筛选", "空白"].map((el) => ({ label: el, value: el }))
-);
+// 数组式 defineProps 无 type 声明，无值属性会被解析为空串（falsy），这里做兼容：只要传了且不是显式 false 即视为开启
+const isHideFilterMode = computed(() => props.hideFilterMode != null && props.hideFilterMode !== false);
+const typeOptions = computed(() => {
+  // 移动端只保留手机模式（替换完整模式）；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
+  const list = ["完整", "打印", "极简", "筛选", "空白", "手机"].filter((el) => !(isHideFilterMode.value && el === "筛选"));
+  return isMobile.value ? [{ label: "手机", value: "手机" }] : list.map((el) => ({ label: el, value: el }));
+});
+// 各展示模式的说明文案
+const showTypeDescMap = {
+  完整: "必显示持仓，PC端显示",
+  打印: "必显示持仓，适配打印机",
+  筛选: "无持仓限制，过滤",
+  空白: "无持仓限制，筛选溢价，对称打印",
+  极简: "必显示持仓，打印一手价",
+  手机: "移动端卡片展示，逐日期渲染",
+};
 const showTypeVal = ref("完整");
+const showTypeDesc = computed(() => showTypeDescMap[showTypeVal.value] || "");
+// 展示模式同步：移动端固定「完整」；外部传入时同步，hideFilterMode 下忽略已被隐藏的「筛选」
+// isHideFilterMode 已依赖 props.hideFilterMode，无需重复列入监听源
 watch(
-  () => props.showTypeVal,
-  () => {
-    if (props.showTypeVal) {
-      showTypeVal.value = isMobile ? "完整" : props.showTypeVal;
+  () => [props.showTypeVal, isHideFilterMode.value, isMobile.value],
+  ([outerVal, hideFilter, mobile]) => {
+    if (mobile) {
+      showTypeVal.value = "手机";
+    } else if (outerVal && !(hideFilter && outerVal === "筛选")) {
+      showTypeVal.value = outerVal;
     }
   },
   {
     immediate: true,
   }
 );
-watch(isMobile, () => {
-  if (isMobile) showTypeVal.value = "完整";
-});
 const indexOptions = ["一手价", "打和点", "溢价率", "杠杆", "隐波", "Delta", "Vega", "Gamma", "单日损耗", "一手成本价", "仓位", "持仓量", "增仓量"].map((el) => ({ label: el, value: el }));
 const indexVal = ref([]);
 const columnVal = ref([]);
@@ -146,7 +167,7 @@ function getWrapperColumnWidth(label) {
   if (label.includes("市场")) return "90px";
 
   if (label === "期权") return "80px";
-  if (isMobile) return "100px";
+  if (isMobile.value || showTypeVal.value === "手机") return "100px";
   return showTypeVal.value === "打印" || showTypeVal.value === "极简" ? "340px" : "172px";
 }
 const max溢价Val = ref(7);
@@ -342,6 +363,7 @@ defineExpose({
     font-weight: 600; // 可选加粗
     height: 30px;
   }
+
   // margin: 0 auto;
   // overflow: auto;
 

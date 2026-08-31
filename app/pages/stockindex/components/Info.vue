@@ -182,19 +182,7 @@ const wrapperStyle = computed(() => {
         height: isMobile ? "70px" : "70px",
         border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
     };
-    if (props.mode === "custom") {
-        if (!current期权Item.value["_isChance"]) {
-            style = { ...style, ...grayStyle };
-        } else {
-            style = { ...style, ...实值Style };
-        }
-    } else if (props.mode === "chance") {
-        if (!current期权Item.value["_isChance"]) {
-            style = { ...style, ...grayStyle };
-        } else {
-            style = { ...style, ...实值Style };
-        }
-    } else if (props.mode === "in-val") {
+    if (props.mode === "in-val") {
         if (current期权Item.value["一手内在价"] === 0 || current期权Item.value["一手内在价"] > 最大建议买入价 || current期权Item.value["一手时间价"] > 最大建议买入时间价) {
             style = { ...style, ...grayStyle };
         } else {

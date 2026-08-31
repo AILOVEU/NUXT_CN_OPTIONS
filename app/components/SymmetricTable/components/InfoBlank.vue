@@ -15,7 +15,7 @@
 import dayjs from "dayjs";
 
 // props（空白模式）
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
+const props = defineProps(["row", "isCall", "date", "tiledData", "indexVal"]);
 
 // 基础计算属性
 const 期权名称 = computed(() => {

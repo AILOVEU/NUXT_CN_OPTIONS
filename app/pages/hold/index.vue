@@ -1,7 +1,7 @@
 <template>
   <div v-loading="tableData.loading || globalLoading.value" class="max-md:w-[255%]">
     <div>
-      <Nav v-if="mode === 'hold'" @download="handleDownload" />
+      <Nav @download="handleDownload" />
       <div class="w-full pb-[12px]">
         <div class="flex items-center gap-[8px] px-[10px] pb-[6px]">
           <el-button size="small" @click="handleSingleRefresh"
@@ -16,7 +16,7 @@
       <div class="mx-auto min-w-0">
         <SymmetricTable v-for="(item, idx) in tableList" :key="idx" :ref="(el) => el && (itemRefs[idx] = el)"
           :showTypeVal="showTypeVal" :symmetricData="filterTableDataByStockCode(item)"
-          :tiledData="tableData.tiledData" :mode="mode" :formData="props.formData" />
+          :tiledData="tableData.tiledData" :formData="props.formData" />
       </div>
     </div>
   </div>
@@ -30,11 +30,7 @@ const showTypeVal = ref();
 const { globalLoading, isMobile } = useGlobal();
 
 // formData ： 筛选条件
-const props = defineProps(["mode", "formData"]);
-
-const mode = computed(() => {
-  return props.mode || "hold";
-});
+const props = defineProps(["formData"]);
 
 const stockCode = ref(OPTIONS_MAP[0].code);
 const reversed_deadline_list = [...deadline_list].reverse();

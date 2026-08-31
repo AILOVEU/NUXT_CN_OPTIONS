@@ -14,7 +14,7 @@
 
     <div class="h-[calc(100vh-100px)] max-md:h-[calc(220vh-200px)] flex justify-center">
       <SymmetricTable tableTitle="杠杆>20筛选" :symmetricData="filteredSymmetricData" :tiledData="filteredTiledData"
-        mode="chance" />
+        :hide-filter-mode="true" />
     </div>
   </div>
 </template>

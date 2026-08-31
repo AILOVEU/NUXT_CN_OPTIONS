@@ -193,7 +193,7 @@ import { useGlobal } from "~/stores/useGlobal.js";
 const { globalLoading } = useGlobal();
 
 // props（完整模式）
-const props = defineProps(["row", "isCall", "date", "mode", "tiledData", "indexVal"]);
+const props = defineProps(["row", "isCall", "date", "tiledData", "indexVal"]);
 
 // 弹窗响应式
 const bsModalData = reactive({
@@ -251,34 +251,15 @@ const showField = (fieldName) => {
   return !list?.length || list.includes(fieldName);
 };
 
-// 外层容器样式（完整模式，mode 仍作为背景策略入参）
+// 外层容器样式（完整模式）
 const wrapperStyle = computed(() => {
   const baseStyle = {
     padding: "25px 0",
     height: "165px",
     border: 持仓.value > 0 ? "3px solid red" : 持仓.value < 0 ? "3px solid green" : "",
   };
-  const grayStyle = { background: "white", filter: "grayscale(0.25)" };
-  const 实值Style = { background: "#F6FFDC" };
-  const holdBgStyle = { background: "rgba(246, 255, 220, 0.35)" };
-  const holdChangeStyle = { background: "rgba(0, 0, 0, 0.4)", filter: "grayscale(0.25)" };
-
-  const item = optionItem.value;
   let finalStyle = { ...baseStyle };
 
-  switch (props.mode) {
-    case "spaces":
-    case "chance":
-      finalStyle = { ...finalStyle, ...(item["_isChance"] ? 实值Style : grayStyle) };
-      break;
-    case "hold":
-      if (item["持仓"]) {
-        finalStyle = { ...finalStyle, ...holdBgStyle };
-      } else if (item["持仓变化"]) {
-        finalStyle = { ...finalStyle, ...holdChangeStyle };
-      }
-      break;
-  }
   // 限制展示：有持仓时边框置灰
   if (持仓.value && optionLimitShow.value) {
     finalStyle = { ...finalStyle, border: "3px solid #aaaaaa", filter: "grayscale(0.25)" };
