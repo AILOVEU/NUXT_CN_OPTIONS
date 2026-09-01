@@ -19,7 +19,7 @@
                 <div class="inline-block text-[12px]">{{ 盈亏 }}</div>
             </div>
             <div class="flex flex-col gap-[5px] flex-wrap justify-center stockindex_scale2 px-[15px]">
-                <TagPrice :value="一手价" />
+                <TagPrice :value="一手价" :isGray="optionLimitShow" />
             </div>
         </div>
 
