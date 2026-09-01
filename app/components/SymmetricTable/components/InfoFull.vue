@@ -181,6 +181,9 @@
     </template>
   </div>
 
+  <!-- 无一手价：整格置灰（参考 InfoBlank） -->
+  <div v-else-if="!props.row?._current" :style="无一手价样式"></div>
+
   <!-- 弹窗 -->
   <BsModal v-model:visible="bsModalData.visible" :optionInfo="bsModalData.optionInfo" />
 </template>
@@ -270,6 +273,12 @@ const wrapperStyle = computed(() => {
   }
   return finalStyle;
 });
+
+// 无一手价：整格置灰（参考 InfoBlank，高度与卡片一致以铺满单元格）
+const 无一手价样式 = computed(() => ({
+  height: "165px",
+  background: "rgb(235, 235, 235)",
+}));
 
 // 点击弹窗
 function handleShowBs() {

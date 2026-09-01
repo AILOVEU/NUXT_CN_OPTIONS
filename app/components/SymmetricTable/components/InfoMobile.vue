@@ -82,6 +82,8 @@
       </div>
     </template>
   </div>
+  <!-- 无一手价：整格置灰（参考 InfoBlank） -->
+  <div v-else-if="!props.row?._current" :style="无一手价样式"></div>
 </template>
 
 <script setup>
@@ -160,6 +162,12 @@ const wrapperStyle = computed(() => {
   }
   return finalStyle;
 });
+
+// 无一手价：整格置灰（参考 InfoBlank，高度撑满单元格）
+const 无一手价样式 = computed(() => ({
+  height: "100%",
+  background: "rgb(235, 235, 235)",
+}));
 
 </script>
 

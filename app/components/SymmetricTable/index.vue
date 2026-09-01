@@ -101,11 +101,8 @@ const reversed_deadline_list = [...deadline_list].reverse();
 // 数组式 defineProps 无 type 声明，无值属性会被解析为空串（falsy），这里做兼容：只要传了且不是显式 false 即视为开启
 const isHideFilterMode = computed(() => props.hideFilterMode != null && props.hideFilterMode !== false);
 const typeOptions = computed(() => {
-  // 移动端默认手机模式，可切换到筛选模式；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
+  // 移动端与 PC 保持一致，不再过滤模式；hideFilterMode 时隐藏「筛选」页签（调用方自带筛选表单，避免重复）
   const list = ["完整", "打印", "极简", "筛选", "空白", "手机", "跨市"].filter((el) => !(isHideFilterMode.value && el === "筛选"));
-  if (isMobile.value) {
-    return list.filter((el) => el === "手机" || el === "筛选").map((el) => ({ label: el, value: el }));
-  }
   return list.map((el) => ({ label: el, value: el }));
 });
 // 各展示模式的说明文案
@@ -118,9 +115,10 @@ const showTypeDescMap = {
   极简: "必显示持仓，打印一手价",
   手机: "移动端卡片展示，逐日期渲染",
 };
-const showTypeVal = ref("完整");
+// 移动端默认「手机」模式，PC 默认「完整」（下方 watch 会在端切换时再次校正）
+const showTypeVal = ref(isMobile.value ? "手机" : "完整");
 const showTypeDesc = computed(() => showTypeDescMap[showTypeVal.value] || "");
-// 展示模式同步：移动端固定「完整」；外部传入时同步，hideFilterMode 下忽略已被隐藏的「筛选」
+// 展示模式同步：移动端默认「手机」；外部传入时同步，hideFilterMode 下忽略已被隐藏的「筛选」
 // isHideFilterMode 已依赖 props.hideFilterMode，无需重复列入监听源
 watch(
   () => [props.showTypeVal, isHideFilterMode.value, isMobile.value],
@@ -284,7 +282,7 @@ function getCellStyle({ column, row }) {
     const month = dayjs(dateStr, "YYYY-MM-DD").format("M月");
     const 期权名称 = row[type + month + "期权名称"];
     const item = props.tiledData?.find((el) => el["期权名称"] === 期权名称);
-    if (item && (item["_限制展示"] || item["_限制展示_有持仓"])) {
+    if ((item && (item["_限制展示"] || item["_限制展示_有持仓"]))) {
       const base = row["行权价"] > row["正股价格"]
         ? (column.property.includes("C") ? 虚值style : 实值style)
         : (column.property.includes("C") ? 实值style : 虚值style);
