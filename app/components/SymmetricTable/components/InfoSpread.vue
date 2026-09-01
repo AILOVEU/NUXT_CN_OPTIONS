@@ -9,7 +9,8 @@
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
         <!-- => 两边各一个 div（左：成本价 手数；右：目标价格与 1.5 倍目标价格），同行不换行；组合配色直接写在两个 div 上 -->
         <div v-for="item in 组合项列表" :key="item.key"
-            class="inline-flex items-center gap-[2px] text-[20px] leading-[30px] pb-[4px] whitespace-nowrap">
+            class="inline-flex items-center gap-[2px] text-[14px] leading-[22px] pb-[4px] whitespace-nowrap"
+            :style="item.组合边框样式">
             <!-- <div class="rounded-[3px] px-[4px] text-[12px]"> {{ item.目标价格 * item.手数 }} </div> -->
             <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
             </div>
@@ -49,6 +50,17 @@ const 置灰样式 = {
     paddingBottom: '3px'
 };
 
+// 白色样式：第五字段有值时，除置灰块以外的其他块转为白底
+const 白色样式 = {
+    background: "white",
+    border: "1px solid #dddddd",
+    // color: "#333333",
+    paddingBottom: "3px",
+};
+
+// 字号放大：当前基础字号 20px（外层 text-[20px]），放大 1.25 倍为 25px
+const 放大字号 = "25px";
+
 // 字段是否有值（非空：排除 null / undefined / 空字符串）
 function 有值(val) {
     return val != null && val !== "";
@@ -69,25 +81,44 @@ const 组合项列表 = computed(() => {
         // 该组合总成本 = 各腿（成本价 * 手数）之和
         const 总成本 = group.reduce((sum, item) => sum + item[1] * item[2], 0);
         // 目标价格 = 该组合总成本 / 该组合中该期权的手数
-        const 目标价格 = 手数 ? 保留两位(总成本 / 手数) : 0;
+        const 目标价格 = 手数 ? 保留两位(总成本 * 1 / 手数) : 0;
+        // 组合维度：任一项第五字段有值即生效，保证同一组合的认购/认沽同时变化
+        const 组合有第五字段 = group.some((l) => 有值(l[4]));
+        // 各块基础样式（不含字号放大）
+        const 目标价格基础 = 有值(leg[3]) ? 置灰样式 : 组合有第五字段 ? 白色样式 : 组合颜色(index);
+        const 目标价格15倍基础 = 有值(leg[4]) ? 置灰样式 : 组合有第五字段 ? 白色样式 : 组合颜色(index);
+        // 字号放大：第四字段无值 -> 放大目标价格块；第四字段有值且第五字段无值 -> 放大 1.5 倍块；其余情况不变
+        // 第五字段有值时取消放大，且按组合维度判断，保证该组合两项都不放大
+        const 放大目标价格 = !有值(leg[3]) && !组合有第五字段;
+        const 放大目标价格15倍 = 有值(leg[3]) && !有值(leg[4]) && !组合有第五字段;
         list.push({
             key: index,
             成本价: leg[1],
             手数: 手数,
             目标价格: 目标价格,
             目标价格15倍: 保留两位((目标价格 * 3) / 2),
-            样式: 组合颜色(index),
-            // 第四、第五字段有值时对应块置灰，否则沿用组合配色
-            目标价格样式: 有值(leg[3]) ? 置灰样式 : 组合颜色(index),
-            目标价格15倍样式: 有值(leg[4]) ? 置灰样式 : 组合颜色(index),
+            // 第五字段有值：未被置灰的其他块转为白底
+            样式: 组合有第五字段 ? 白色样式 : 组合颜色(index),
+            // 第四、第五字段有值时对应块置灰（置灰逻辑不变），其余按是否命中第五字段取白底或组合配色
+            目标价格样式: 放大目标价格 ? { ...目标价格基础, fontSize: 放大字号 } : 目标价格基础,
+            目标价格15倍样式: 放大目标价格15倍 ? { ...目标价格15倍基础, fontSize: 放大字号 } : 目标价格15倍基础,
+            // 第五字段有值时，该组合两项都用 2px 边框 + 2px 内边距包裹，边框取该组合的颜色
+            组合边框样式: 组合有第五字段
+                ? { border: "2px solid hsl(" + 组合色相(index) + ", 65%, 55%)", padding: "2px" }
+                : {},
         });
     });
     return list;
 });
 
+// 组合色相：由组合下标生成（黄金角分布，色相分散），保证同一组合的认购/认沽一致
+function 组合色相(index) {
+    return Math.round((index * 137.508) % 360);
+}
+
 // 组合配色：由组合下标生成稳定色相（黄金角分布），同一组合的认购/认沽颜色一致
 function 组合颜色(index) {
-    const hue = Math.round((index * 137.508) % 360);
+    const hue = 组合色相(index);
     return {
         background: "hsl(" + hue + ", 70%, 86%)",
         border: "1px solid hsl(" + hue + ", 65%, 55%)",
