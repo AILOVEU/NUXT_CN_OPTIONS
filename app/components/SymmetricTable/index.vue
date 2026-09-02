@@ -329,13 +329,22 @@ const getSummary = ({ columns, data }) => {
       el[propName] && curColOptionNameList.push(el[propName]);
     });
     const curColOptionList = props.tiledData?.filter((el) => curColOptionNameList.includes(el["期权名称"]));
+    // sum：该列持仓仓位合计（用于判断该列是否有持仓）
     let sum = 0;
+    // sum总盈亏：该列持仓总盈亏合计
+    let sum总盈亏 = 0;
     curColOptionList
       .filter((el) => el["持仓"])
       .forEach((el) => {
         sum += el["仓位"];
+        // 数据源无现成“总盈亏”字段时，按 (一手价 - 一手成本价) × 持仓 现算单腿持仓总盈亏
+        const item总盈亏 =
+          el["总盈亏"] ??
+          ((el["一手价"] || 0) - (el["一手成本价"] || 0)) * el["持仓"];
+        if (!Number.isNaN(item总盈亏)) sum总盈亏 += item总盈亏;
       });
-    return sum || "";
+    // 该列有持仓时返回该列总盈亏，否则返回空
+    return sum ? `${sum} (${sum总盈亏.toFixed(0)})` : "";
     //     const 期权名称 = computed(() => {
     //   const type = props.isCall ? "C" : "P";
     //   const month = dayjs(props.date, "YYYY-MM-DD").format("M月");
