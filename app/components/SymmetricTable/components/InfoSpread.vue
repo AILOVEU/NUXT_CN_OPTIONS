@@ -11,6 +11,8 @@
         <div v-for="item in 组合项列表" :key="item.key"
             class="inline-flex items-center gap-[2px] text-[14px] leading-[22px] pb-[4px] whitespace-nowrap"
             :style="item.组合边框样式">
+            <div class="rounded-[3px] px-[4px]">{{ 一手价 }}</div>
+
             <!-- <div class="rounded-[3px] px-[4px] text-[12px]"> {{ item.目标价格 * item.手数 }} </div> -->
             <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
             </div>
@@ -19,6 +21,7 @@
                 Math.ceil(item.手数 / 3) }}</div>
             <div class="rounded-[3px] px-[4px]" :style="item.目标价格15倍样式"> {{
                 formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
+            <div class="rounded-[3px] px-[4px]" :style="item.盈亏样式">{{ item.盈亏 }}</div>
         </div>
     </div>
 </template>
@@ -84,6 +87,8 @@ const 组合项列表 = computed(() => {
         const 目标价格 = 手数 ? 保留两位(总成本 * 1 / 手数) : 0;
         // 组合维度：任一项第五字段有值即生效，保证同一组合的认购/认沽同时变化
         const 组合有第五字段 = group.some((l) => 有值(l[4]));
+        // 第五字段（leg[4]）有值：该组合已平仓，隐藏整个组合（含同组合另一端）
+        if (组合有第五字段) return;
         // 各块基础样式（不含字号放大）
         const 目标价格基础 = 有值(leg[3]) ? 置灰样式 : 组合有第五字段 ? 白色样式 : 组合颜色(index);
         const 目标价格15倍基础 = 有值(leg[4]) ? 置灰样式 : 组合有第五字段 ? 白色样式 : 组合颜色(index);
@@ -91,12 +96,20 @@ const 组合项列表 = computed(() => {
         // 第五字段有值时取消放大，且按组合维度判断，保证该组合两项都不放大
         const 放大目标价格 = !有值(leg[3]) && !组合有第五字段;
         const 放大目标价格15倍 = 有值(leg[3]) && !有值(leg[4]) && !组合有第五字段;
+        // 盈亏：第四字段（leg[3]）有值表示已按目标价格平仓，按 (目标价格 - 成本价) * 平仓手数 计算；否则按当前一手价浮动盈亏
+        const 已平仓 = 有值(leg[3]);
+        const 盈亏值 = 已平仓
+            ? (目标价格 - leg[1]) * leg[3]
+            : (一手价.value - leg[1]) * 手数;
+        const 盈亏样式 = { color: 盈亏值 > 0 ? "red" : "green" };
         list.push({
             key: index,
             成本价: leg[1],
             手数: 手数,
             目标价格: 目标价格,
             目标价格15倍: 保留两位((目标价格 * 3) / 2),
+            盈亏: 盈亏值,
+            盈亏样式: 盈亏样式,
             // 第五字段有值：未被置灰的其他块转为白底
             样式: 组合有第五字段 ? 白色样式 : 组合颜色(index),
             // 第四、第五字段有值时对应块置灰（置灰逻辑不变），其余按是否命中第五字段取白底或组合配色
