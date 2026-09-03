@@ -4,30 +4,48 @@
     <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
     <!-- 当前高亮行（跨市模式不显示） -->
     <!-- 期权卡片主体：命中跨市组合时展示组合信息，否则保持空白占位 -->
-    <div v-else-if="!props.row?._current" class="p-[1px] relative flex flex-col items-center justify-center gap-[2px]"
+    <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px]"
         :style="cardStyle">
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
         <!-- => 两边各一个 div（左：成本价 手数；右：目标价格与 1.5 倍目标价格），同行不换行；组合配色直接写在两个 div 上 -->
         <div v-for="item in 组合项列表" :key="item.key"
-            class="inline-flex items-center gap-[2px] text-[14px] leading-[22px] pb-[4px] whitespace-nowrap"
+            class="flex w-full items-center justify-between gap-[4px] text-[14px] leading-[22px] whitespace-nowrap"
             :style="item.组合边框样式">
-            <!-- 目标价涨幅：无第一次平仓手数 -> 涨到目标价格的百分比；有第一次平仓手数（未二次平仓）-> 涨到目标价格 1.5 倍的百分比；二次平仓后不显示 -->
-            <div v-if="item.显示涨到目标百分比" class="rounded-[3px] px-[4px] text-[16px] text-[red]">{{ item.涨到目标百分比 }}%</div>
-
-            <div class="rounded-[3px] px-[4px]">{{ 一手价 }}</div>
-            <!-- 剩余手数：第一次或第二次平仓手数缺失（未完全平仓）时展示 -->
-            <div v-if="item.显示剩余手数" class="rounded-[3px] px-[4px]">{{ item.剩余手数 }}</div>
-
-            <!-- <div class="rounded-[3px] px-[4px] text-[12px]"> {{ item.目标价格 * item.手数 }} </div> -->
-            <div class="rounded-[3px] px-[4px]" :style="item.样式">{{ item.成本价 }} {{ item.手数 }}
+            <!-- 块1、2、3：整体居左，各自固定宽度 -->
+            <div class="flex items-center gap-[4px]">
+                <!-- 块1 一手价 * 剩余手数 -->
+                <div class="flex items-center" style="width: 58px">
+                    <div class="text-[16px]">{{ 一手价 }}</div>
+                    <div v-if="item.显示剩余手数">&nbsp;*&nbsp;{{ item.剩余手数 }}</div>
+                </div>
+                <!-- 块2 成本价*手数 -->
+                <div class="rounded-[3px] px-[2px] text-center" style="width: 54px" :style="item.样式">{{ item.成本价 }}*{{
+                    item.手数 }}
+                </div>
+                <!-- 块3 => -->
+                <div class="text-[11px] text-center">=></div>
             </div>
-            <div class="text-[11px]">=></div>
-            <div class="rounded-[3px] px-[4px]" :style="item.目标价格样式">{{ formatDecimal(item.目标价格, 0) }} * {{
-                Math.ceil(item.手数 / 3) }}</div>
-            <div class="rounded-[3px] px-[4px]" :style="item.目标价格15倍样式"> {{
-                formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
-            <div v-if="item.显示盈亏" class="rounded-[3px] px-[4px]" :style="item.盈亏样式">{{ item.盈亏 > 0 ? '盈' : '亏' }}{{
-                item.盈亏 }}</div>
+            <!-- 块4、5：合并占据一个固定宽度（居中） -->
+            <div class="flex items-center justify-start gap-[4px] flex-1">
+                <!-- 块4 目标价格 -->
+                <div class="rounded-[3px] px-[2px] text-center" :style="item.目标价格样式">{{ formatDecimal(item.目标价格, 0) }} *
+                    {{
+                        Math.ceil(item.手数 / 3) }}</div>
+                <!-- 块5 目标价格1.5倍 -->
+                <div class="rounded-[3px] px-[2px] text-center" :style="item.目标价格15倍样式"> {{
+                    formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
+            </div>
+            <!-- 块6、7：整体居右，各自固定宽度 -->
+            <div class="flex items-center gap-[4px] justify-between">
+                <!-- 块6 盈亏 -->
+                <div class="rounded-[3px] px-[2px] text-left text-[12px]" :style="{ ...item.盈亏样式, width: '40px' }">
+                    <span v-if="item.显示盈亏">{{ item.盈亏 > 0 ? '盈' : '亏' }}{{ item.盈亏 }}</span>
+                </div>
+                <!-- 块7 涨到目标百分比 -->
+                <div class="shrink-0 text-right" style="width: 64px;padding-right: 4px;">
+                    <span v-if="item.显示涨到目标百分比" class="text-[16px] text-[red]">{{ item.涨到目标百分比 }}%</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
