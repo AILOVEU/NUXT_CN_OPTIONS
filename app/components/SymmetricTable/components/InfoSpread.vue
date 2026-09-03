@@ -4,13 +4,16 @@
     <div v-else-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
     <!-- 当前高亮行（跨市模式不显示） -->
     <!-- 期权卡片主体：命中跨市组合时展示组合信息，否则保持空白占位 -->
-    <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px]"
+    <div v-else-if="!props.row?._current" class="p-[1px] relative flex flex-col items-center justify-center gap-[2px]"
         :style="cardStyle">
         <!-- 跨市组合：同一期权可能属于多个组合，命中的每个组合各显示一个 tag -->
         <!-- => 两边各一个 div（左：成本价 手数；右：目标价格与 1.5 倍目标价格），同行不换行；组合配色直接写在两个 div 上 -->
         <div v-for="item in 组合项列表" :key="item.key"
             class="inline-flex items-center gap-[2px] text-[14px] leading-[22px] pb-[4px] whitespace-nowrap"
             :style="item.组合边框样式">
+            <!-- 目标价涨幅：无第一次平仓手数 -> 涨到目标价格的百分比；有第一次平仓手数（未二次平仓）-> 涨到目标价格 1.5 倍的百分比；二次平仓后不显示 -->
+            <div v-if="item.显示涨到目标百分比" class="rounded-[3px] px-[4px] text-[16px] text-[red]">{{ item.涨到目标百分比 }}%</div>
+
             <div class="rounded-[3px] px-[4px]">{{ 一手价 }}</div>
             <!-- 剩余手数：第一次或第二次平仓手数缺失（未完全平仓）时展示 -->
             <div v-if="item.显示剩余手数" class="rounded-[3px] px-[4px]">{{ item.剩余手数 }}</div>
@@ -23,7 +26,8 @@
                 Math.ceil(item.手数 / 3) }}</div>
             <div class="rounded-[3px] px-[4px]" :style="item.目标价格15倍样式"> {{
                 formatDecimal(item.目标价格15倍, 0) }} * {{ Math.ceil(item.手数 / 3) }}</div>
-            <div v-if="item.显示盈亏" class="rounded-[3px] px-[4px]" :style="item.盈亏样式">{{ item.盈亏 }}</div>
+            <div v-if="item.显示盈亏" class="rounded-[3px] px-[4px]" :style="item.盈亏样式">{{ item.盈亏 > 0 ? '盈' : '亏' }}{{
+                item.盈亏 }}</div>
         </div>
     </div>
 </template>
@@ -64,7 +68,7 @@ const 白色样式 = {
 };
 
 // 字号放大：当前基础字号 20px（外层 text-[20px]），放大 1.25 倍为 25px
-const 放大字号 = "25px";
+const 放大字号 = "21px";
 
 // 字段是否有值（非空：排除 null / undefined / 空字符串）
 function 有值(val) {
@@ -115,6 +119,11 @@ const 组合项列表 = computed(() => {
         const 已平总量 = (有值(第一次平仓手数) ? 第一次平仓手数 : 0) + (有值(第二次平仓手数) ? 第二次平仓手数 : 0);
         const 剩余手数 = 保留两位(手数 - 已平总量);
         const 显示剩余手数 = !有值(第一次平仓手数) || !有值(第二次平仓手数);
+        // 涨到目标价百分比：无第一次平仓手数 -> 目标价为基准；有第一次平仓手数（无第二次）-> 目标价 1.5 倍为基准
+        // 当前价即该期权一手价（与成本价/目标价同量纲）；第二次平仓手数有值时不显示
+        const 目标价基准 = 有值(第一次平仓手数) ? 保留两位((目标价格 * 3) / 2) : 目标价格;
+        const 当前价 = 一手价.value;
+        const 涨到目标百分比 = 当前价 ? formatDecimal((100 * (目标价基准 - 当前价)) / 当前价, 1) : null;
         list.push({
             key: index,
             成本价: 成本价,
@@ -127,6 +136,9 @@ const 组合项列表 = computed(() => {
             显示盈亏: !组合有第二次平仓手数,
             剩余手数: 剩余手数,
             显示剩余手数: 显示剩余手数,
+            // 已二次平仓（第二次平仓手数有值）时不显示涨到目标价百分比
+            显示涨到目标百分比: !有值(第二次平仓手数) && 涨到目标百分比 != null,
+            涨到目标百分比: 涨到目标百分比,
             // 第二次平仓手数有值：未被置灰的其他块转为白底
             样式: 组合有第二次平仓手数 ? 白色样式 : 组合颜色(index),
             // 第四、第二次平仓手数有值时对应块置灰（置灰逻辑不变），其余按是否命中第二次平仓手数取白底或组合配色
