@@ -9,8 +9,13 @@
     <!-- 行3：期权卡片主体（_current 行不匹配任何分支 → 自动空渲染，即“跨市模式不显示”） -->
     <div v-else-if="!props.row?._current"
         class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[128px]" :style="cardStyle">
-        <!-- 当前一手价：absolute 悬浮于卡片左上角（卡片级信息，命中的多个组合 tag 共用一次） -->
+        <!-- 卡片左上角悬浮区：一手价 + 非组合持仓（卡片级信息，命中的多个组合 tag 共用一次） -->
         <div v-if="组合项列表.length" class="absolute left-0 top-[0px] text-[16px]">{{ 一手价 }}</div>
+        <div v-if="组合项列表.length && 非组合持仓" class="absolute right-0 top-[0px] text-[16px] flex items-center">
+            <div class="text-[0.8em] mr-[6px]">非组*</div>
+            <div class="font-extrabold">{{ 非组合持仓 }}</div>
+        </div>
+
         <!-- 跨市组合：同一期权可能同时属于多个组合，命中的每个组合各渲染一行 tag -->
         <div v-for="item in 组合项列表" :key="item.key"
             class="flex w-full items-center justify-between gap-[4px] text-[14px] leading-[22px] whitespace-nowrap"
@@ -23,7 +28,10 @@
                 </div>
                 <!-- 块1 剩余手数（原“一手价”已移至卡片左上角悬浮；组合完结后隐藏剩余） -->
                 <div class="flex items-center" style="width: 58px">
-                    <div v-if="item.显示剩余手数">&nbsp;*&nbsp;{{ item.剩余手数 }}</div>
+                    <div v-if="item.显示剩余手数" class="flex items-center">
+                        <div class="text-[0.8em]">组合*</div>
+                        <div> {{ item.剩余手数 }}</div>
+                    </div>
                 </div>
                 <!-- 块2 成本价×总手数：组合完结 → 白底；推进中 → 组合底色 -->
                 <div class="rounded-[3px] px-[2px] text-center" style="width: 54px" :style="item.样式">{{ item.成本价 }}*{{
@@ -93,6 +101,33 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 行情数值：当前一手价（成本价/目标价同量纲；为空时整卡灰底兜底）
 const 一手价 = computed(() => current期权Item.value["一手价"]);
+
+// 总持仓：行情行的持仓字段（无持仓时为 undefined）
+const 总持仓 = computed(() => current期权Item.value["持仓"]);
+
+// 组合持仓和：同一期权在所有跨市组合中的【剩余手数】之和。
+// 口径与下方“剩余手数”保持一致（剩余手数 = 手数 − 已一平 − 已二平），
+// 即逐组合取出命中腿，累加其（手数 − 已一平 − 已二平），已平掉的仓位不再计入。
+const 组合持仓和 = computed(() => {
+    const name = 期权名称.value;
+    if (!name) return 0;
+    let sum = 0;
+    SPREAD_DATA.forEach((group) => {
+        const leg = group.find((item) => item[0] === name);
+        if (!leg) return;
+        const 手数 = leg[2];
+        const 已平总量 = (有值(leg[3]) ? leg[3] : 0) + (有值(leg[4]) ? leg[4] : 0);
+        sum += 保留两位(手数 - 已平总量);
+    });
+    return sum;
+});
+
+// 非组合持仓 = 总持仓 − 组合持仓和（无总持仓时记为 null，不展示）
+const 非组合持仓 = computed(() => {
+    const total = 总持仓.value;
+    if (!有值(total)) return null;
+    return 保留两位(total - 组合持仓和.value);
+});
 const 一手昨收价 = computed(() => current期权Item.value["一手昨收价"]);
 // ============================================================================
 // 二、样式工具（三态底色 + 放大 + 组合配色）
@@ -276,7 +311,7 @@ function 构建组合展示项(group, groupIndex, name) {
 const cardStyle = computed(() => {
     const background = 一手价.value ? "" : "rgb(235, 235, 235)";
     return 组合项列表.value.length
-        ? { padding: "22px 0", minHeight: "70px", background }
+        ? { padding: "42px 0 4px 0", minHeight: "70px", background }
         : { padding: "35px 0 5px 0", minHeight: "100px", background };
 });
 </script>

@@ -30,13 +30,16 @@ export async function getOrderJSON() {
                 let list = el.replaceAll(" ", "").split("\t");
                 return list;
               })
-              .map((el) => ({
-                期权名称: el[3],
-                成交时间: el[1],
-                持仓变化: 操作Map[el[4]] * +el[8], // 正值
-                成交价格: +el[7],
-                正股代码: el[15],
-              }))
+              .map((el) => {
+                console.log('queryOrderJsonByQianlong', el)
+                return {
+                  期权名称: el[3],
+                  成交时间: el[1],
+                  持仓变化: 操作Map[el[4]] * +el[8], // 正值
+                  成交价格: +el[7],
+                  正股代码: el[15],
+                }
+              })
               .filter((el) => el["期权名称"])
           );
         })
