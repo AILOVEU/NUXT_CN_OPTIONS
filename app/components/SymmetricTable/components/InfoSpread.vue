@@ -7,8 +7,8 @@
     <div v-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
 
     <!-- 行3：期权卡片主体（_current 行不匹配任何分支 → 自动空渲染，即“跨市模式不显示”） -->
-    <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[128px]"
-        :style="cardStyle">
+    <div v-else-if="!props.row?._current"
+        class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[128px]" :style="cardStyle">
         <!-- 当前一手价：absolute 悬浮于卡片左上角（卡片级信息，命中的多个组合 tag 共用一次） -->
         <div v-if="组合项列表.length" class="absolute left-0 top-[0px] text-[16px]">{{ 一手价 }}</div>
         <!-- 跨市组合：同一期权可能同时属于多个组合，命中的每个组合各渲染一行 tag -->
@@ -93,7 +93,7 @@ const current期权Item = computed(() => props.tiledData?.find((el) => el["期�
 
 // 行情数值：当前一手价（成本价/目标价同量纲；为空时整卡灰底兜底）
 const 一手价 = computed(() => current期权Item.value["一手价"]);
-
+const 一手昨收价 = computed(() => current期权Item.value["一手昨收价"]);
 // ============================================================================
 // 二、样式工具（三态底色 + 放大 + 组合配色）
 // ----------------------------------------------------------------------------
@@ -226,8 +226,8 @@ function 构建组合展示项(group, groupIndex, name) {
     // ③ 涨到目标价百分比（腿级，推进中才展示）：
     //    目标基准价 —— 未一平盯 1 倍目标价；已一平后剩余手数改盯 1.5 倍目标价
     const 目标价基准 = 已一平 ? 目标价格15倍 : 目标价格;
-    const 当前价 = 一手价.value;
-    const 涨到目标百分比 = 当前价 ? formatDecimal((100 * (目标价基准 - 当前价)) / 当前价,0) : null;
+    const 当前价 = 一手昨收价.value;
+    const 涨到目标百分比 = 当前价 ? formatDecimal((100 * (目标价基准 - 当前价)) / 当前价, 0) : null;
     // 组合完结后不再有后续目标 → 隐藏（组合维度两端一致）
     const 显示涨到目标百分比 = !组合二平 && 涨到目标百分比 != null;
 
