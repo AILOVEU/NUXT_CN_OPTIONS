@@ -7,21 +7,22 @@
     <div v-if="props.row._split" style="background-color: #576a8f" class="h-[10px]">&nbsp;</div>
 
     <!-- 行3：期权卡片主体（_current 行不匹配任何分支 → 自动空渲染，即“跨市模式不显示”） -->
-    <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px]"
+    <div v-else-if="!props.row?._current" class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[128px]"
         :style="cardStyle">
+        <!-- 当前一手价：absolute 悬浮于卡片左上角（卡片级信息，命中的多个组合 tag 共用一次） -->
+        <div v-if="组合项列表.length" class="absolute left-0 top-[0px] text-[16px]">{{ 一手价 }}</div>
         <!-- 跨市组合：同一期权可能同时属于多个组合，命中的每个组合各渲染一行 tag -->
         <div v-for="item in 组合项列表" :key="item.key"
             class="flex w-full items-center justify-between gap-[4px] text-[14px] leading-[22px] whitespace-nowrap"
             :style="item.组合边框样式">
-            <!-- ── 左区：块1 当前一手价 / 块2 成本价×手数 / 块3 连接符（整体居左，各自固定宽度） -->
+            <!-- ── 左区：块1 剩余手数 / 块2 成本价×手数 / 块3 连接符（整体居左，各自固定宽度） -->
             <div class="flex items-center gap-[4px]">
                 <!-- 块7 涨到目标价百分比：组合完结后不再有后续目标 → 隐藏 -->
                 <div class="shrink-0 text-right" style="width: 50px">
                     <div v-if="item.显示涨到目标百分比" class="text-[16px] text-[red] text-left">{{ item.涨到目标百分比 }}%</div>
                 </div>
-                <!-- 块1 一手价，推进中叠加“* 剩余手数”（组合完结后隐藏剩余） -->
+                <!-- 块1 剩余手数（原“一手价”已移至卡片左上角悬浮；组合完结后隐藏剩余） -->
                 <div class="flex items-center" style="width: 58px">
-                    <div class="text-[16px]">{{ 一手价 }}</div>
                     <div v-if="item.显示剩余手数">&nbsp;*&nbsp;{{ item.剩余手数 }}</div>
                 </div>
                 <!-- 块2 成本价×总手数：组合完结 → 白底；推进中 → 组合底色 -->
