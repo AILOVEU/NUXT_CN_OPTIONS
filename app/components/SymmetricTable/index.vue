@@ -88,6 +88,7 @@ import InfoMobile from "./components/InfoMobile.vue";
 import InfoFilter from "./components/InfoFilter.vue";
 import InfoSpread from "./components/InfoSpread.vue";
 import Data from "./components/Data.vue";
+import { SPREAD_DATA } from "~/data/spread.js";
 import { storeToRefs } from "pinia";
 import { useGlobal } from "~/stores/useGlobal.js";
 // isMobile 需经 storeToRefs 解构，直接解构会拿到非响应式快照，导致端切换时视图不更新
@@ -179,13 +180,23 @@ const max溢价Val = ref(7);
 const max一手价Val = ref(500);
 // 空白模式专用（与筛选模式独立，避免切换模式时数据互相影响）
 const max溢价Val空白 = ref(100);
+// 跨市模式下：所有跨市组合涉及的期权名称集合（用于过滤“无任何跨市组合持仓”的行）
+const 跨市组合名称集合 = new Set(SPREAD_DATA.flat().map((leg) => leg[0]));
+// 判断一行是否命中跨市组合：遍历该行的 C*/P* 期权名称列，命中集合即视为有组合持仓
+function rowHas跨市组合(row) {
+  return Object.keys(row).some((key) => key.endsWith("期权名称") && 跨市组合名称集合.has(row[key]));
+}
+
 const filteredTableData = computed(() => {
   const isFilterMode = showTypeVal.value === "筛选";
   const isSpacesMode = showTypeVal.value === "空白";
+  const isSpreadMode = showTypeVal.value === "跨市";
   return props.symmetricData
     .filter((el) => {
       if (el._current || el._split) return true;
-      if (el["is行内有持仓"] && !isFilterMode && !isSpacesMode) return true;
+      if (el["is行内有持仓"] && !isFilterMode && !isSpacesMode && !isSpreadMode) return true;
+      // 跨市模式：行内无任何跨市组合持仓的行过滤掉（_split/_current 已在上行保留）
+      if (isSpreadMode && !rowHas跨市组合(el)) return false;
       // if (el["正股代码"] !== stockCode.value) return false;
       if (el["is旧期权"]) return false;
       // if (el["千行权价"] < 5000 && el["千行权价"] % 100 !== 0) return false;
