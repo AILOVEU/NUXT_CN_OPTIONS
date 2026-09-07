@@ -8,7 +8,7 @@
 
     <!-- 行3：期权卡片主体（_current 行不匹配任何分支 → 自动空渲染，即“跨市模式不显示”） -->
     <div v-else-if="!props.row?._current"
-        class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[128px]" :style="cardStyle">
+        class="p-[2px] relative flex flex-col items-center justify-center gap-[2px] h-[148px]" :style="cardStyle">
         <!-- 卡片左上角悬浮区：一手价 + 非组合持仓（卡片级信息，命中的多个组合 tag 共用一次） -->
         <div v-if="组合项列表.length" class="absolute left-0 top-[0px] text-[16px]">{{ 一手价 }}</div>
         <div v-if="组合项列表.length && 非组合持仓" class="absolute right-0 top-[0px] text-[16px] flex items-center">
@@ -312,6 +312,6 @@ const cardStyle = computed(() => {
     const background = 一手价.value ? "" : "rgb(235, 235, 235)";
     return 组合项列表.value.length
         ? { padding: "42px 0 4px 0", minHeight: "70px", background }
-        : { padding: "35px 0 5px 0", minHeight: "100px", background };
+        : { padding: "35px 0 5px 0", minHeight: "120px", background };
 });
 </script>
