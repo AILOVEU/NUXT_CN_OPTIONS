@@ -129,6 +129,13 @@ const 非组合持仓 = computed(() => {
     return 保留两位(total - 组合持仓和.value);
 });
 const 一手昨收价 = computed(() => current期权Item.value["一手昨收价"]);
+
+// 交易时段判断：9:30–15:00 之间视为盘中（涨到目标百分比取昨收价作基准），其余时段取实时一手价
+const is交易时段 = computed(() => {
+    const now = dayjs();
+    const minutes = now.hour() * 60 + now.minute();
+    return minutes >= 570 && minutes <= 900; // 9:30 = 570, 15:00 = 900
+});
 // ============================================================================
 // 二、样式工具（三态底色 + 放大 + 组合配色）
 // ----------------------------------------------------------------------------
@@ -218,7 +225,7 @@ function 构建组合展示项(group, groupIndex, name) {
     // ---- 第 1 步：当前腿基础数据 + 腿级进度标记 ----
     const leg = group.find((item) => item[0] === name);
     if (!leg) return null;
-    const 成本价 = leg[1];
+    const 成本价 = Math.ceil(leg[1]);
     const 手数 = leg[2];
     const 第一次平仓手数 = leg[3]; // 一平：1 倍目标价处已平手数（腿级）
     const 第二次平仓手数 = leg[4]; // 二平：1.5 倍目标价处已平手数（腿级）
@@ -261,7 +268,7 @@ function 构建组合展示项(group, groupIndex, name) {
     // ③ 涨到目标价百分比（腿级，推进中才展示）：
     //    目标基准价 —— 未一平盯 1 倍目标价；已一平后剩余手数改盯 1.5 倍目标价
     const 目标价基准 = 已一平 ? 目标价格15倍 : 目标价格;
-    const 当前价 = 一手昨收价.value;
+    const 当前价 = is交易时段.value ? 一手昨收价.value : 一手价.value;
     const 涨到目标百分比 = 当前价 ? formatDecimal((100 * (目标价基准 - 当前价)) / 当前价, 0) : null;
     // 组合完结后不再有后续目标 → 隐藏（组合维度两端一致）
     const 显示涨到目标百分比 = !组合二平 && 涨到目标百分比 != null;
