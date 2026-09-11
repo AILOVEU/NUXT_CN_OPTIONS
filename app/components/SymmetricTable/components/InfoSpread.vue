@@ -56,7 +56,7 @@
             <div class="flex items-center gap-[4px] justify-between">
                 <!-- 块6 盈亏（盈/亏 + 数值）：组合完结后全部落袋、不再浮动 → 隐藏 -->
                 <div class="rounded-[3px] px-[2px] text-left text-[12px]" :style="{ ...item.盈亏样式, width: '47px' }">
-                    <span v-if="item.显示盈亏">{{ item.盈亏 > 0 ? '盈' : '亏' }}{{ item.盈亏 }}</span>
+                    <span v-if="item.显示盈亏">{{ item.盈亏 > 0 ? '盈' : '亏' }}{{ item.盈亏.toFixed(0) }}</span>
                 </div>
 
             </div>
