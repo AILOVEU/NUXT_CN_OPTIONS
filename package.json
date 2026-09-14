@@ -26,6 +26,7 @@
     "nuxt-echarts": "^1.0.1",
     "papaparse": "^5.5.3",
     "pinia": "^3.0.3",
+    "three": "^0.135.0",
     "ua-parser-js": "^2.0.7",
     "vue": "^3.5.20",
     "vue-echarts": "^8.0.0",
