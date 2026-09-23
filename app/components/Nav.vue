@@ -91,6 +91,14 @@ const navGroups = [
     ],
   },
   {
+    name: "游戏",
+    items: [
+      { href: "/game/huaban", name: "滑板挑战" },
+      { href: "/game/lushi", name: "妖乱斗" },
+      { href: "/game/handbook", name: "手帐" },
+    ],
+  },
+  {
     name: "工具",
     items: [
       { href: "/calendar2", name: "日历" },
